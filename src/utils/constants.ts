@@ -1,3 +1,11 @@
+// 品牌資訊
+export const BRAND = {
+  NAME: 'Picklemaster Taiwan',
+  NAME_ZH: '匹克大師台灣',
+  TAGLINE: '台灣匹克球玩家社群與資源平台',
+  DESCRIPTION: '一起玩匹克球！分享球場、交流技巧、尋找球友',
+} as const;
+
 // 球場尺寸常數（英尺）
 export const COURT_DIMENSIONS = {
   WIDTH: 20, // 英尺

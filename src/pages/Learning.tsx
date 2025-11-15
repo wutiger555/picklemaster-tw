@@ -2,6 +2,9 @@ import { motion } from 'framer-motion';
 import InteractiveCourt from '../components/court/InteractiveCourt';
 import BallAnimation from '../components/court/BallAnimation';
 import TechniqueViewer3D from '../components/learning/TechniqueViewer3D';
+import PaddleGuide from '../components/equipment/PaddleGuide';
+import ProPlayerPaddles from '../components/equipment/ProPlayerPaddles';
+import PaddleRecommender from '../components/equipment/PaddleRecommender';
 
 const Learning = () => {
   const learningPaths = [
@@ -100,6 +103,39 @@ const Learning = () => {
             viewport={{ once: true }}
           >
             <TechniqueViewer3D />
+          </motion.div>
+        </section>
+
+        {/* 球拍完全指南 */}
+        <section className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <PaddleGuide />
+          </motion.div>
+        </section>
+
+        {/* 頂尖選手裝備 */}
+        <section className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <ProPlayerPaddles />
+          </motion.div>
+        </section>
+
+        {/* 球拍選擇建議工具 */}
+        <section className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <PaddleRecommender />
           </motion.div>
         </section>
 

@@ -4,40 +4,157 @@ import { OrbitControls, PerspectiveCamera, Html } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
 
-// 簡化的 3D 人形模型（使用基礎幾何體）
+// 3D 人形模型（使用基礎幾何體）
 function PlayerModel({ technique, step }: { technique: string; step: number }) {
   const groupRef = useRef<THREE.Group>(null);
+  const leftArmRef = useRef<THREE.Group>(null);
+  const rightArmRef = useRef<THREE.Group>(null);
+  const bodyRef = useRef<THREE.Group>(null);
 
-  // 根據技術和步驟設定姿勢
+  // 根據技術和步驟設定詳細姿勢（基於 USA Pickleball 官方規範）
   const getPose = () => {
     if (technique === 'serve') {
       switch (step) {
-        case 0: return { armRotation: 0, bodyRotation: 0 }; // 準備
-        case 1: return { armRotation: -Math.PI / 4, bodyRotation: -0.2 }; // 後擺
-        case 2: return { armRotation: Math.PI / 4, bodyRotation: 0.2 }; // 擊球
-        case 3: return { armRotation: Math.PI / 2, bodyRotation: 0.3 }; // 跟進
-        default: return { armRotation: 0, bodyRotation: 0 };
+        case 0: // 準備姿勢
+          return {
+            armRotation: 0,
+            armSwing: 0,
+            bodyRotation: 0,
+            bodyLean: 0,
+            leftLegBend: 0,
+            rightLegBend: 0,
+            paddleAngle: 0,
+          };
+        case 1: // 後擺動作
+          return {
+            armRotation: -0.3,
+            armSwing: -Math.PI / 6,
+            bodyRotation: -0.3,
+            bodyLean: 0.1,
+            leftLegBend: 0.1,
+            rightLegBend: -0.1,
+            paddleAngle: -Math.PI / 6,
+          };
+        case 2: // 擊球瞬間（關鍵：由下往上）
+          return {
+            armRotation: 0.2,
+            armSwing: Math.PI / 3,
+            bodyRotation: 0.2,
+            bodyLean: -0.15,
+            leftLegBend: 0.2,
+            rightLegBend: -0.2,
+            paddleAngle: Math.PI / 4,
+          };
+        case 3: // 跟進動作
+          return {
+            armRotation: 0.4,
+            armSwing: Math.PI / 2,
+            bodyRotation: 0.4,
+            bodyLean: -0.2,
+            leftLegBend: 0.15,
+            rightLegBend: -0.15,
+            paddleAngle: Math.PI / 3,
+          };
+        default:
+          return {
+            armRotation: 0,
+            armSwing: 0,
+            bodyRotation: 0,
+            bodyLean: 0,
+            leftLegBend: 0,
+            rightLegBend: 0,
+            paddleAngle: 0,
+          };
+      }
+    } else if (technique === 'volley') {
+      switch (step) {
+        case 0: // 準備站位
+          return {
+            armRotation: 0,
+            armSwing: Math.PI / 6,
+            bodyRotation: 0,
+            bodyLean: 0.05,
+            leftLegBend: 0.1,
+            rightLegBend: 0.1,
+            paddleAngle: Math.PI / 6,
+          };
+        case 1: // 預判來球
+          return {
+            armRotation: -0.2,
+            armSwing: Math.PI / 4,
+            bodyRotation: -0.2,
+            bodyLean: 0.1,
+            leftLegBend: 0.15,
+            rightLegBend: 0.05,
+            paddleAngle: Math.PI / 4,
+          };
+        case 2: // 快速反應擊球
+          return {
+            armRotation: 0.3,
+            armSwing: Math.PI / 3,
+            bodyRotation: 0.3,
+            bodyLean: -0.1,
+            leftLegBend: 0.2,
+            rightLegBend: 0.1,
+            paddleAngle: Math.PI / 3,
+          };
+        case 3: // 回位
+          return {
+            armRotation: 0.1,
+            armSwing: Math.PI / 6,
+            bodyRotation: 0,
+            bodyLean: 0,
+            leftLegBend: 0.1,
+            rightLegBend: 0.1,
+            paddleAngle: Math.PI / 6,
+          };
+        default:
+          return {
+            armRotation: 0,
+            armSwing: 0,
+            bodyRotation: 0,
+            bodyLean: 0,
+            leftLegBend: 0,
+            rightLegBend: 0,
+            paddleAngle: 0,
+          };
       }
     }
-    return { armRotation: 0, bodyRotation: 0 };
+    return {
+      armRotation: 0,
+      armSwing: 0,
+      bodyRotation: 0,
+      bodyLean: 0,
+      leftLegBend: 0,
+      rightLegBend: 0,
+      paddleAngle: 0,
+    };
   };
 
   const pose = getPose();
 
   useFrame(() => {
     if (groupRef.current) {
-      // 平滑過渡到目標姿勢
+      // 平滑過渡身體旋轉
       groupRef.current.rotation.y += (pose.bodyRotation - groupRef.current.rotation.y) * 0.1;
+      groupRef.current.rotation.x += (pose.bodyLean - groupRef.current.rotation.x) * 0.1;
+    }
+    if (leftArmRef.current) {
+      // 平滑過渡左手臂動作
+      leftArmRef.current.rotation.z += (pose.armRotation - leftArmRef.current.rotation.z) * 0.1;
+      leftArmRef.current.rotation.x += (pose.armSwing - leftArmRef.current.rotation.x) * 0.1;
     }
   });
 
   return (
     <group ref={groupRef}>
       {/* 身體 */}
-      <mesh position={[0, 1.2, 0]}>
-        <boxGeometry args={[0.6, 1.2, 0.4]} />
-        <meshStandardMaterial color="#3b82f6" />
-      </mesh>
+      <group ref={bodyRef} position={[0, 1.2, 0]}>
+        <mesh>
+          <boxGeometry args={[0.6, 1.2, 0.4]} />
+          <meshStandardMaterial color="#3b82f6" />
+        </mesh>
+      </group>
 
       {/* 頭部 */}
       <mesh position={[0, 2.1, 0]}>
@@ -45,53 +162,99 @@ function PlayerModel({ technique, step }: { technique: string; step: number }) {
         <meshStandardMaterial color="#f59e0b" />
       </mesh>
 
-      {/* 左手臂 */}
-      <group position={[-0.5, 1.5, 0]} rotation={[0, 0, pose.armRotation]}>
-        <mesh position={[0, -0.4, 0]}>
-          <cylinderGeometry args={[0.1, 0.1, 0.8]} />
+      {/* 左手臂（持拍手）*/}
+      <group ref={leftArmRef} position={[-0.5, 1.5, 0]}>
+        {/* 上臂 */}
+        <mesh position={[0, -0.2, 0]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.4]} />
           <meshStandardMaterial color="#60a5fa" />
         </mesh>
-        {/* 球拍 */}
-        <mesh position={[0, -0.9, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.25, 0.25, 0.05]} />
-          <meshStandardMaterial color="#fbbf24" />
+        {/* 前臂 */}
+        <mesh position={[0, -0.5, 0]}>
+          <cylinderGeometry args={[0.07, 0.07, 0.4]} />
+          <meshStandardMaterial color="#93c5fd" />
         </mesh>
+        {/* 球拍 */}
+        <group position={[0, -0.8, 0]} rotation={[Math.PI / 2, 0, pose.paddleAngle]}>
+          {/* 拍面 */}
+          <mesh>
+            <cylinderGeometry args={[0.28, 0.28, 0.04]} />
+            <meshStandardMaterial color="#fbbf24" />
+          </mesh>
+          {/* 拍柄 */}
+          <mesh position={[0, -0.15, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.04, 0.04, 0.25]} />
+            <meshStandardMaterial color="#78350f" />
+          </mesh>
+        </group>
       </group>
 
       {/* 右手臂 */}
-      <group position={[0.5, 1.5, 0]} rotation={[0, 0, -0.3]}>
+      <group ref={rightArmRef} position={[0.5, 1.5, 0]} rotation={[0, 0, -0.3]}>
         <mesh position={[0, -0.4, 0]}>
-          <cylinderGeometry args={[0.1, 0.1, 0.8]} />
+          <cylinderGeometry args={[0.08, 0.08, 0.8]} />
           <meshStandardMaterial color="#60a5fa" />
         </mesh>
       </group>
 
       {/* 左腿 */}
-      <mesh position={[-0.2, 0.3, 0]}>
+      <mesh position={[-0.2, 0.3 + pose.leftLegBend * 0.2, 0]} rotation={[pose.leftLegBend, 0, 0]}>
         <cylinderGeometry args={[0.12, 0.12, 0.6]} />
         <meshStandardMaterial color="#1e40af" />
       </mesh>
 
       {/* 右腿 */}
-      <mesh position={[0.2, 0.3, 0]}>
+      <mesh position={[0.2, 0.3 + pose.rightLegBend * 0.2, 0]} rotation={[pose.rightLegBend, 0, 0]}>
         <cylinderGeometry args={[0.12, 0.12, 0.6]} />
         <meshStandardMaterial color="#1e40af" />
       </mesh>
 
-      {/* 關鍵點標註 */}
+      {/* 腳部位置標記 */}
+      {technique === 'serve' && step === 0 && (
+        <Html position={[0, -0.2, 0]} center>
+          <div className="bg-court-500 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
+            🦶 雙腳站穩
+          </div>
+        </Html>
+      )}
+
+      {/* 擊球點標註 */}
       {step === 2 && (
         <>
-          <Html position={[-0.5, 1.5, 0]} center>
-            <div className="bg-pickleball-500 text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap">
-              擊球點
+          <Html position={[-0.5, 1.0, 0]} center>
+            <div className="bg-pickleball-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
+              🏓 擊球點（低於腰部）
             </div>
           </Html>
-          <Html position={[0, 0.3, 0]} center>
-            <div className="bg-sport-500 text-white px-2 py-1 rounded text-xs font-bold">
-              重心
+          <Html position={[0, 0.5, 0]} center>
+            <div className="bg-sport-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+              ⚖️ 重心前移
+            </div>
+          </Html>
+          <Html position={[-0.5, 1.6, 0]} center>
+            <div className="bg-court-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
+              📐 拍面由下往上
             </div>
           </Html>
         </>
+      )}
+
+      {/* 後擺標註 */}
+      {technique === 'serve' && step === 1 && (
+        <Html position={[-0.5, 1.3, 0]} center>
+          <div className="bg-pickleball-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
+            ↙️ 後擺準備
+          </div>
+        </Html>
+      )}
+
+      {/* 跟進標註 */}
+      {technique === 'serve' && step === 3 && (
+        <Html position={[-0.5, 1.5, 0]} center>
+          <div className="bg-sport-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
+            ↗️ 順勢跟進
+          </div>
+        </Html>
       )}
     </group>
   );
@@ -138,27 +301,109 @@ const TechniqueViewer3D = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // 資料來源：USA Pickleball Official Rulebook 2024
   const techniques = [
     {
       id: 'serve',
-      name: '發球',
+      name: '發球技術',
       icon: '🎾',
       steps: [
-        { name: '準備姿勢', description: '雙腳與肩同寬，身體放鬆' },
-        { name: '後擺動作', description: '球拍向後擺動，準備發力' },
-        { name: '擊球瞬間', description: '由下往上擊球，接觸點在身體側面' },
-        { name: '跟進動作', description: '球拍順勢向前跟進，保持平衡' },
+        {
+          name: '準備姿勢',
+          description: '站在底線後，雙腳與肩同寬，身體放鬆面向球場',
+          keyPoints: [
+            '🦶 至少一隻腳在底線後方',
+            '⚖️ 重心均勻分配於雙腳',
+            '👀 視線注視對角發球區',
+            '🏓 球拍自然握持，手腕放鬆',
+          ],
+          source: 'USA Pickleball Official Rulebook 2024, Section 4.A.4',
+        },
+        {
+          name: '後擺動作',
+          description: '球拍向後下方擺動，為擊球蓄積力量',
+          keyPoints: [
+            '↙️ 球拍向身體後方擺動',
+            '🔄 身體微微轉向持拍側',
+            '⬇️ 球拍頭部位置低於手腕',
+            '💪 手臂保持放鬆，不要過度用力',
+          ],
+          source: 'USA Pickleball Official Rulebook 2024, Section 4.A.5',
+        },
+        {
+          name: '擊球瞬間',
+          description: '由下往上擊球，擊球點必須低於腰部高度',
+          keyPoints: [
+            '🏓 擊球點必須低於腰部',
+            '📐 球拍面由下往上揮動',
+            '⬆️ 擊球時手臂向上延伸',
+            '🎯 球必須越過廚房線落在對角區',
+            '⚠️ 手腕不能高於肘部（規則限制）',
+          ],
+          source: 'USA Pickleball Official Rulebook 2024, Section 4.A.5-7',
+        },
+        {
+          name: '跟進動作',
+          description: '球拍順勢向前上方跟進，保持身體平衡',
+          keyPoints: [
+            '↗️ 球拍自然向目標方向延伸',
+            '🏃 重心隨擊球動作向前移動',
+            '⚖️ 保持身體平衡，準備下一步移動',
+            '👀 眼睛追蹤球的飛行軌跡',
+          ],
+          source: 'USA Pickleball Official Rulebook 2024, Section 4.L',
+        },
       ],
     },
     {
       id: 'volley',
-      name: '截擊',
+      name: '截擊技術',
       icon: '⚡',
       steps: [
-        { name: '準備站位', description: '站在非截擊區外，保持警覺' },
-        { name: '預判來球', description: '觀察對方動作，預判球路' },
-        { name: '快速反應', description: '短促有力的擊球動作' },
-        { name: '回位', description: '擊球後立即回到準備位置' },
+        {
+          name: '準備站位',
+          description: '站在非截擊區外，雙腳微彎保持警覺',
+          keyPoints: [
+            '📍 必須站在廚房區外',
+            '⚖️ 重心略微下降，雙腳與肩同寬',
+            '🏓 球拍舉至胸前高度',
+            '👀 注視對方與來球',
+          ],
+          source: 'USA Pickleball Official Rulebook 2024, Section 9',
+        },
+        {
+          name: '預判來球',
+          description: '觀察對方動作，預判球的方向和速度',
+          keyPoints: [
+            '👁️ 觀察對方擊球動作',
+            '🧠 預判球的落點和速度',
+            '🦶 調整步伐準備移動',
+            '⚡ 保持反應準備狀態',
+          ],
+          source: 'USA Pickleball Official Rulebook 2024, Section 7',
+        },
+        {
+          name: '快速反應',
+          description: '短促有力的擊球動作，在空中截擊來球',
+          keyPoints: [
+            '⚡ 動作要快速簡潔',
+            '💪 使用前臂和手腕發力',
+            '🎯 控制球的方向和力道',
+            '❌ 確保雙腳未觸碰廚房區',
+          ],
+          source: 'USA Pickleball Official Rulebook 2024, Section 9.B',
+        },
+        {
+          name: '回位準備',
+          description: '擊球後立即調整位置，準備下一球',
+          keyPoints: [
+            '🏃 快速回到準備位置',
+            '⚖️ 保持平衡和警覺',
+            '👀 注視對方和球的動向',
+            '🎯 維持在最佳防守位置',
+          ],
+          source: 'USA Pickleball Official Rulebook 2024, Section 9',
+        },
       ],
     },
   ];
@@ -242,21 +487,37 @@ const TechniqueViewer3D = () => {
           </div>
         </div>
 
-        {/* 步驟說明 */}
+        {/* 步驟說明與關鍵點 */}
         <div className="bg-gradient-to-br from-pickleball-50 to-sport-50 rounded-2xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-2xl font-bold text-gray-800">
               步驟 {currentStep + 1}: {currentTechnique.steps[currentStep].name}
             </h3>
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 font-semibold">
                 {currentStep + 1} / {currentTechnique.steps.length}
               </span>
             </div>
           </div>
-          <p className="text-gray-700 text-lg">
+          <p className="text-gray-700 text-base mb-4">
             {currentTechnique.steps[currentStep].description}
           </p>
+
+          <div className="border-t border-gray-200 pt-4 mt-4">
+            <p className="text-sm font-semibold text-gray-600 mb-3">🔑 關鍵要點：</p>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {currentTechnique.steps[currentStep].keyPoints.map((point: string, index: number) => (
+                <li key={index} className="flex items-start text-sm text-gray-700 bg-white rounded-lg p-3 shadow-sm">
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+            {currentTechnique.steps[currentStep].source && (
+              <p className="text-xs text-gray-400 mt-4 italic">
+                資料來源：{currentTechnique.steps[currentStep].source}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* 控制按鈕 */}
@@ -327,6 +588,72 @@ const TechniqueViewer3D = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* 重要規則提醒 */}
+        {selectedTechnique === 'serve' && (
+          <div className="mt-8 bg-gradient-to-r from-pickleball-50 to-sport-50 rounded-2xl p-6 border-2 border-pickleball-200">
+            <div className="flex items-start space-x-3">
+              <span className="text-3xl">⚠️</span>
+              <div>
+                <h4 className="font-bold text-gray-800 mb-3 text-lg">下手發球規則（Underhand Serve）</h4>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <p className="flex items-start">
+                    <span className="mr-2">🏓</span>
+                    <span><strong>擊球點位置：</strong>擊球時，球必須在腰部以下。腰部定義為肚臍的位置。</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="mr-2">📐</span>
+                    <span><strong>球拍角度：</strong>擊球時，球拍頭部（拍面頂端）不能高於手腕。球拍面必須由下往上揮動。</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="mr-2">⚖️</span>
+                    <span><strong>手腕位置：</strong>擊球瞬間，持拍手的手腕不能高於肘部。</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="mr-2">🦶</span>
+                    <span><strong>腳部位置：</strong>發球時至少一隻腳必須在底線後方，不能踩踏或越過底線。</span>
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-4 italic">
+                  USA Pickleball Official Rulebook 2024, Section 4.A.5-7
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 截擊規則提醒 */}
+        {selectedTechnique === 'volley' && (
+          <div className="mt-8 bg-gradient-to-r from-sport-50 to-court-50 rounded-2xl p-6 border-2 border-sport-200">
+            <div className="flex items-start space-x-3">
+              <span className="text-3xl">🚫</span>
+              <div>
+                <h4 className="font-bold text-gray-800 mb-3 text-lg">非截擊區規則（Kitchen Rules）</h4>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <p className="flex items-start">
+                    <span className="mr-2">❌</span>
+                    <span><strong>禁止截擊：</strong>不能站在廚房區（非截擊區）內進行截擊（volley）。</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="mr-2">🦶</span>
+                    <span><strong>腳部限制：</strong>雙腳都不能觸碰廚房區線或進入廚房區。壓線也算犯規。</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="mr-2">🏃</span>
+                    <span><strong>慣性動作：</strong>截擊後的慣性動作如果讓你踏入廚房區也算犯規。</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="mr-2">✅</span>
+                    <span><strong>允許擊球：</strong>球彈地後可以進入廚房區擊球，但必須重新建立站位（雙腳觸地於區外）才能再次截擊。</span>
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-4 italic">
+                  USA Pickleball Official Rulebook 2024, Section 9
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import InteractiveCourt from '../components/court/InteractiveCourt';
 import BallAnimation from '../components/court/BallAnimation';
+import TechniqueViewer3D from '../components/learning/TechniqueViewer3D';
 
 const Learning = () => {
   const learningPaths = [
@@ -88,6 +89,17 @@ const Learning = () => {
             viewport={{ once: true }}
           >
             <BallAnimation />
+          </motion.div>
+        </section>
+
+        {/* 3D 技術動作教學 */}
+        <section className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <TechniqueViewer3D />
           </motion.div>
         </section>
 

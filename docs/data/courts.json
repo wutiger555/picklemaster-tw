@@ -1,0 +1,72 @@
+{
+  "courts": [
+    {
+      "id": 1,
+      "name": "台北市大安森林公園匹克球場",
+      "location": {
+        "address": "台北市大安區新生南路二段1號",
+        "lat": 25.0330,
+        "lng": 121.5354
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 4,
+      "opening_hours": "06:00-21:00",
+      "contact": "02-2700-3830",
+      "facilities": ["飲水機", "廁所", "遮陽棚"],
+      "line_group": ""
+    },
+    {
+      "id": 2,
+      "name": "新北市河濱匹克球中心",
+      "location": {
+        "address": "新北市板橋區華江一路",
+        "lat": 25.0231,
+        "lng": 121.4683
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 8,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2960-3456",
+      "facilities": ["更衣室", "停車場", "飲水機", "廁所"],
+      "line_group": ""
+    },
+    {
+      "id": 3,
+      "name": "台中市南屯運動中心",
+      "location": {
+        "address": "台中市南屯區黎明路一段568號",
+        "lat": 24.1390,
+        "lng": 120.6380
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 200 元",
+      "courts_count": 6,
+      "opening_hours": "08:00-22:00",
+      "contact": "04-2389-2211",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "line_group": ""
+    },
+    {
+      "id": 4,
+      "name": "高雄市鳳山運動園區",
+      "location": {
+        "address": "高雄市鳳山區體育路50號",
+        "lat": 22.6273,
+        "lng": 120.3014
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 6,
+      "opening_hours": "06:00-22:00",
+      "contact": "07-740-5823",
+      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "line_group": ""
+    }
+  ]
+}

@@ -19,8 +19,8 @@ const PLAYER = {
 
 const BALL = {
   RADIUS: 14,
-  GRAVITY: 0.25,
-  BOUNCE: 0.78,
+  GRAVITY: 0.2, // 降低重力，讓球飛得更高更久
+  BOUNCE: 0.85, // 提高彈性，讓球彈得更高
   INITIAL_VX: 6,
   INITIAL_VY: -8,
 };
@@ -242,15 +242,15 @@ const PickleballGame = () => {
 
       // 計算蓄力加成（玩家專用）
       const chargePower = isPlayer ? (1 + chargeTime.current * 0.8) : 1;
-      const baseSpeed = isPlayer ? 6 : 8; // 提高對手擊球速度
+      const baseSpeed = isPlayer ? 5 : 6; // 降低整體速度，讓球更好接
 
       ball.current.vx = direction * baseSpeed * chargePower;
 
       // 根據擊球位置調整垂直速度
       const hitPosition = (ball.current.y - paddle.y) / (PLAYER.PADDLE_HEIGHT / 2);
       // 對手擊球時給予更大的向上力量，確保球能飛回來
-      const verticalBoost = isPlayer ? 1 : 1.5;
-      ball.current.vy = hitPosition * 3 * chargePower * verticalBoost - 2;
+      const verticalBoost = isPlayer ? 1 : 2.0; // 增加到 2.0 倍
+      ball.current.vy = hitPosition * 2.5 * chargePower * verticalBoost - 3; // 增加向上力量
 
       // 重置蓄力
       if (isPlayer) {

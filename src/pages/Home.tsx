@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
+
+const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 
 const Home = () => {
   const features = [
@@ -46,58 +49,23 @@ const Home = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* 左側：視覺裝飾 */}
+            {/* 左側：3D 球場預覽 */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="order-2 lg:order-1 flex items-center justify-center"
+              className="order-2 lg:order-1"
             >
-              <div className="relative w-64 h-64 md:w-80 md:h-80">
-                {/* 裝飾圓圈 */}
-                <motion.div
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 180, 360],
-                  }}
-                  transition={{
-                    duration: 10,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                  className="absolute inset-0 rounded-full border-8 border-white/30"
-                />
-                <motion.div
-                  animate={{
-                    scale: [1.2, 1, 1.2],
-                    rotate: [360, 180, 0],
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                  className="absolute inset-4 rounded-full border-4 border-white/20"
-                />
-
-                {/* 中央表情符號 */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                    className="text-9xl"
-                  >
-                    🏓
-                  </motion.div>
+              <Suspense fallback={
+                <div className="w-full h-64 md:h-80 flex items-center justify-center bg-white/10 rounded-2xl">
+                  <div className="text-6xl animate-pulse">🏓</div>
                 </div>
-              </div>
+              }>
+                <HeroCourtPreview />
+              </Suspense>
+              <p className="text-center text-white/80 text-sm mt-4">
+                ↻ 360° 旋轉檢視真實球場配置
+              </p>
             </motion.div>
 
             {/* 右側：Glassmorphism 文字卡片 */}

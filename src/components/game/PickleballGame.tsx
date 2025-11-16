@@ -19,10 +19,10 @@ const PLAYER = {
 
 const BALL = {
   RADIUS: 14,
-  GRAVITY: 0.4,
-  BOUNCE: 0.75,
-  INITIAL_VX: 5,
-  INITIAL_VY: -8,
+  GRAVITY: 0.3,
+  BOUNCE: 0.65,
+  INITIAL_VX: 4,
+  INITIAL_VY: -6,
 };
 
 interface GameObject {
@@ -50,6 +50,11 @@ const PickleballGame = () => {
   const lastHitter = useRef<'player' | 'opponent' | null>(null);
   const canHit = useRef(true); // 是否可以擊球
   const mustBounce = useRef(true); // 是否必須彈地
+
+  // 蓄力系統
+  const chargeTime = useRef(0); // 蓄力時間
+  const isCharging = useRef(false); // 是否正在蓄力
+  const [chargeLevel, setChargeLevel] = useState(0); // 顯示蓄力條
 
   // 玩家（左側）
   const player = useRef<GameObject>({
@@ -234,14 +239,26 @@ const PickleballGame = () => {
 
       // 擊中球拍 - 反彈
       const direction = isPlayer ? 1 : -1;
-      ball.current.vx = direction * (Math.abs(ball.current.vx) * 1.1 + 2);
+
+      // 計算蓄力加成（玩家專用）
+      const chargePower = isPlayer ? (1 + chargeTime.current * 0.5) : 1;
+      const baseSpeed = isPlayer ? 4 : 5;
+
+      ball.current.vx = direction * baseSpeed * chargePower;
 
       // 根據擊球位置調整垂直速度
       const hitPosition = (ball.current.y - paddle.y) / (PLAYER.PADDLE_HEIGHT / 2);
-      ball.current.vy = hitPosition * 4 - 2;
+      ball.current.vy = hitPosition * 3 * chargePower - 1;
+
+      // 重置蓄力
+      if (isPlayer) {
+        chargeTime.current = 0;
+        isCharging.current = false;
+        setChargeLevel(0);
+      }
 
       // 速度限制
-      const maxSpeed = 12;
+      const maxSpeed = 10;
       ball.current.vx = Math.max(-maxSpeed, Math.min(maxSpeed, ball.current.vx));
       ball.current.vy = Math.max(-maxSpeed, Math.min(maxSpeed, ball.current.vy));
 
@@ -273,33 +290,57 @@ const PickleballGame = () => {
     return false;
   };
 
-  // AI 對手邏輯（簡化）
+  // AI 對手邏輯（改善版）
   const updateOpponentAI = () => {
     const opp = opponent.current;
     const b = ball.current;
 
-    // AI 追蹤球的 Y 位置
-    if (b.vx > 0 && b.x > COURT.NET_X) {
-      // 球往對手方向移動
+    // AI 追蹤球的位置（上下和左右）
+    if (b.vx > 0 && b.x > COURT.NET_X - 200) {
+      // 球往對手方向移動 - 積極追球
       const targetY = b.y;
-      const diff = targetY - opp.y;
+      const targetX = COURT.WIDTH - 80; // 保持在後場
 
-      if (Math.abs(diff) > 10) {
-        opp.vy = diff > 0 ? PLAYER.SPEED * 0.7 : -PLAYER.SPEED * 0.7;
+      // Y 軸追蹤
+      const diffY = targetY - opp.y;
+      if (Math.abs(diffY) > 5) {
+        opp.vy = diffY > 0 ? PLAYER.SPEED * 0.9 : -PLAYER.SPEED * 0.9;
       } else {
         opp.vy = 0;
       }
+
+      // X 軸追蹤
+      const diffX = targetX - opp.x;
+      if (Math.abs(diffX) > 10) {
+        opp.vx = diffX > 0 ? PLAYER.SPEED * 0.6 : -PLAYER.SPEED * 0.6;
+      } else {
+        opp.vx = 0;
+      }
     } else {
-      // 回到中央
-      const diff = COURT.CENTER_Y - opp.y;
-      if (Math.abs(diff) > 10) {
-        opp.vy = diff > 0 ? PLAYER.SPEED * 0.5 : -PLAYER.SPEED * 0.5;
+      // 回到預設位置
+      const defaultX = COURT.WIDTH - 80;
+      const defaultY = COURT.CENTER_Y;
+
+      const diffY = defaultY - opp.y;
+      if (Math.abs(diffY) > 10) {
+        opp.vy = diffY > 0 ? PLAYER.SPEED * 0.4 : -PLAYER.SPEED * 0.4;
       } else {
         opp.vy = 0;
+      }
+
+      const diffX = defaultX - opp.x;
+      if (Math.abs(diffX) > 10) {
+        opp.vx = diffX > 0 ? PLAYER.SPEED * 0.4 : -PLAYER.SPEED * 0.4;
+      } else {
+        opp.vx = 0;
       }
     }
 
+    opp.x += opp.vx;
     opp.y += opp.vy;
+
+    // 限制範圍
+    opp.x = Math.max(PLAYER.PADDLE_WIDTH / 2, Math.min(COURT.WIDTH - PLAYER.PADDLE_WIDTH / 2, opp.x));
     opp.y = Math.max(PLAYER.PADDLE_HEIGHT / 2, Math.min(COURT.HEIGHT - PLAYER.PADDLE_HEIGHT / 2, opp.y));
   };
 
@@ -307,18 +348,35 @@ const PickleballGame = () => {
   const update = useCallback(() => {
     if (gameState !== 'playing') return;
 
-    // 玩家移動（上下）
+    // 玩家移動（上下左右）
     if (keys.current.has('ArrowUp') || keys.current.has('w') || keys.current.has('W')) {
       player.current.y -= PLAYER.SPEED;
     }
     if (keys.current.has('ArrowDown') || keys.current.has('s') || keys.current.has('S')) {
       player.current.y += PLAYER.SPEED;
     }
+    if (keys.current.has('ArrowLeft') || keys.current.has('a') || keys.current.has('A')) {
+      player.current.x -= PLAYER.SPEED;
+    }
+    if (keys.current.has('ArrowRight') || keys.current.has('d') || keys.current.has('D')) {
+      player.current.x += PLAYER.SPEED;
+    }
 
+    // 限制玩家範圍
+    player.current.x = Math.max(
+      PLAYER.PADDLE_WIDTH / 2,
+      Math.min(COURT.WIDTH / 2 - 50, player.current.x) // 限制在左半場
+    );
     player.current.y = Math.max(
       PLAYER.PADDLE_HEIGHT / 2,
       Math.min(COURT.HEIGHT - PLAYER.PADDLE_HEIGHT / 2, player.current.y)
     );
+
+    // 蓄力系統更新
+    if (isCharging.current && chargeTime.current < 2) {
+      chargeTime.current += 0.05;
+      setChargeLevel(Math.min(chargeTime.current / 2, 1));
+    }
 
     // AI 對手
     updateOpponentAI();
@@ -335,9 +393,17 @@ const PickleballGame = () => {
       bounceCount.current++;
       canHit.current = true; // 彈地後可以擊球
 
-      // 檢查是否彈地兩次（失分）
+      // 檢查是否彈地兩次（失分）- 修正邏輯
       if (bounceCount.current >= 2) {
-        const winner = lastHitter.current === 'player' ? 'opponent' : 'player';
+        // 球在哪邊彈地兩次，那邊就失分
+        let winner: 'player' | 'opponent';
+        if (ball.current.x < COURT.NET_X) {
+          // 球在左側（玩家側）彈地兩次，玩家失分
+          winner = 'opponent';
+        } else {
+          // 球在右側（對手側）彈地兩次，對手失分
+          winner = 'player';
+        }
         setScore((s) => ({ ...s, [winner]: s[winner] + 1 }));
         setMessage(`球彈地兩次！${winner === 'player' ? '你' : '對手'}得分`);
         setGameState('point');
@@ -411,7 +477,31 @@ const PickleballGame = () => {
     ctx.font = 'bold 28px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`${score.player} - ${score.opponent}`, COURT.WIDTH / 2, 45);
-  }, [gameState, score]);
+
+    // 繪製蓄力條
+    if (chargeLevel > 0) {
+      const barWidth = 150;
+      const barHeight = 20;
+      const barX = player.current.x - barWidth / 2;
+      const barY = player.current.y - PLAYER.PADDLE_HEIGHT / 2 - 35;
+
+      // 背景
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.roundRect(barX, barY, barWidth, barHeight, 10);
+      ctx.fill();
+
+      // 蓄力進度
+      const chargeColor = chargeLevel < 0.5 ? '#fbbf24' : chargeLevel < 0.8 ? '#f59e0b' : '#ef4444';
+      ctx.fillStyle = chargeColor;
+      ctx.roundRect(barX + 2, barY + 2, (barWidth - 4) * chargeLevel, barHeight - 4, 8);
+      ctx.fill();
+
+      // 文字
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('蓄力', barX + barWidth / 2, barY + 14);
+    }
+  }, [gameState, score, chargeLevel]);
 
   // 遊戲循環
   useEffect(() => {
@@ -437,8 +527,9 @@ const PickleballGame = () => {
 
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
+
         if (gameState === 'ready' || gameState === 'point') {
-          // 重置遊戲狀態
+          // 發球
           gamePhase.current = 'serve';
           bounceCount.current = 0;
           mustBounce.current = true;
@@ -455,12 +546,23 @@ const PickleballGame = () => {
           lastHitter.current = 'player';
           setGameState('playing');
           setMessage('');
+        } else if (gameState === 'playing') {
+          // 遊戲中按住空白鍵開始蓄力
+          if (!isCharging.current) {
+            isCharging.current = true;
+            chargeTime.current = 0;
+          }
         }
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
       keys.current.delete(e.key);
+
+      // 放開空白鍵停止蓄力
+      if (e.key === ' ' && gameState === 'playing') {
+        isCharging.current = false;
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);

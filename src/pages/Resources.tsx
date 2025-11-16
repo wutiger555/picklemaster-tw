@@ -257,78 +257,6 @@ const Resources = () => {
             </div>
           </motion.section>
 
-          {/* 裝備建議 */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-br from-pickleball-100 to-sport-100 rounded-3xl shadow-2xl p-8 md:p-12"
-          >
-            <h2 className="text-3xl font-black text-gray-800 mb-8 text-center flex items-center justify-center">
-              <span className="mr-3 text-4xl">🛒</span>
-              裝備選購建議
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-2xl p-6">
-                <h3 className="font-bold text-xl text-court-700 mb-4 flex items-center">
-                  <span className="mr-2">🏓</span>球拍預算參考
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b pb-3">
-                    <span className="font-semibold text-gray-700">入門級</span>
-                    <span className="text-court-600 font-bold">NT$ 2,000 - 4,000</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b pb-3">
-                    <span className="font-semibold text-gray-700">中階級</span>
-                    <span className="text-sport-600 font-bold">NT$ 4,000 - 8,000</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">高階級</span>
-                    <span className="text-pickleball-600 font-bold">NT$ 8,000+</span>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 mt-4">
-                  💡 提示：新手建議從中階球拍開始，重量 7.5-8.5 oz 較適合
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl p-6">
-                <h3 className="font-bold text-xl text-sport-700 mb-4 flex items-center">
-                  <span className="mr-2">👕</span>其他裝備
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-start">
-                    <span className="text-sport-500 mr-2">•</span>
-                    <div>
-                      <p className="font-semibold text-gray-800">鞋子</p>
-                      <p className="text-sm text-gray-600">室內運動鞋或網球鞋，良好抓地力</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="text-sport-500 mr-2">•</span>
-                    <div>
-                      <p className="font-semibold text-gray-800">服裝</p>
-                      <p className="text-sm text-gray-600">透氣排汗的運動服飾</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="text-sport-500 mr-2">•</span>
-                    <div>
-                      <p className="font-semibold text-gray-800">配件</p>
-                      <p className="text-sm text-gray-600">護腕、頭帶、運動毛巾</p>
-                    </div>
-                  </div>
-                </div>
-                <a
-                  href="/picklemaster-tw/learning#paddle-guide"
-                  className="inline-block mt-4 px-4 py-2 bg-sport-500 text-white rounded-full text-sm font-semibold hover:bg-sport-600 transition-colors"
-                >
-                  查看詳細球拍指南 →
-                </a>
-              </div>
-            </div>
-          </motion.section>
-
           {/* CTA 區塊 */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
@@ -350,10 +278,10 @@ const Resources = () => {
                 🗺️ 尋找球場
               </a>
               <a
-                href="/picklemaster-tw/learning"
+                href="/picklemaster-tw/rules"
                 className="px-8 py-4 bg-white border-2 border-sport-500 text-sport-700 rounded-full font-bold hover:bg-sport-50 hover:scale-105 transition-all duration-300"
               >
-                📚 學習技巧
+                📚 學習規則
               </a>
             </div>
           </motion.section>

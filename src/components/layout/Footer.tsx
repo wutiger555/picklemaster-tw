@@ -6,9 +6,9 @@ const Footer = () => {
 
   const quickLinks = [
     { path: ROUTES.HOME, label: '首頁', icon: '🏠' },
-    { path: ROUTES.LEARNING, label: '技巧教學', icon: '📚' },
+    { path: ROUTES.RULES, label: '規則教學', icon: '📚' },
     { path: ROUTES.COURTS, label: '找球場', icon: '📍' },
-    { path: ROUTES.ABOUT, label: '認識匹克球', icon: '🎾' },
+    { path: ROUTES.ABOUT, label: '關於', icon: 'ℹ️' },
   ];
 
   const resources = [

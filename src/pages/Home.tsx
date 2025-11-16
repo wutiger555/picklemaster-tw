@@ -98,7 +98,7 @@ const Home = () => {
                   <div className="flex flex-col sm:flex-row gap-4">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Link
-                        to={ROUTES.LEARNING}
+                        to={ROUTES.RULES}
                         className="bg-white text-pickleball-600 px-8 py-4 rounded-full font-bold text-lg shadow-2xl hover:shadow-white/50 transition-all duration-300 flex items-center justify-center space-x-2"
                       >
                         <span>開始學習</span>
@@ -263,7 +263,7 @@ const Home = () => {
                   </ul>
 
                   <Link
-                    to={ROUTES.LEARNING}
+                    to={ROUTES.LEARNING_PATHS}
                     className={`block text-center bg-gradient-to-r from-${path.color}-400 to-${path.color}-600 text-white py-3 rounded-full font-bold hover:shadow-lg transition-all duration-300`}
                   >
                     開始學習 →

@@ -24,11 +24,13 @@ export const LEARNING_PATHS = {
 // 頁面路由
 export const ROUTES = {
   HOME: '/',
-  LEARNING: '/learning',
+  RULES: '/rules',
+  EQUIPMENT: '/equipment',
+  LEARNING_PATHS: '/learning-paths',
   COURTS: '/courts',
   GAME: '/game',
-  ABOUT: '/about',
   RESOURCES: '/resources',
+  ABOUT: '/about',
 } as const;
 
 // 球場類型

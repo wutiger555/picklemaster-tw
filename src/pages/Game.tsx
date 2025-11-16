@@ -9,11 +9,11 @@ const Game = () => {
       {/* 返回按鈕 */}
       <div className="container mx-auto px-4 py-4">
         <Link
-          to={ROUTES.LEARNING}
+          to={ROUTES.HOME}
           className="inline-flex items-center space-x-2 text-sport-600 hover:text-sport-700 font-semibold transition-colors"
         >
           <span>←</span>
-          <span>返回教學</span>
+          <span>返回首頁</span>
         </Link>
       </div>
 

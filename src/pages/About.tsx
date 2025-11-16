@@ -206,6 +206,178 @@ const About = () => {
               </a>
             </div>
           </motion.section>
+
+          {/* 關於開發者 */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mt-8"
+          >
+            <div className="flex items-center mb-6">
+              <span className="text-5xl mr-4">👨‍💻</span>
+              <h2 className="text-3xl font-black text-gray-800">關於開發者</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* 個人資訊 */}
+              <div className="md:col-span-1">
+                <div className="bg-gradient-to-br from-sport-50 to-court-50 rounded-2xl p-6">
+                  <div className="text-center mb-4">
+                    <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-sport-500 to-court-500 rounded-full flex items-center justify-center text-white text-4xl font-black">
+                      MW
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-800">Max Wu</h3>
+                    <p className="text-gray-600 font-semibold">吳自回</p>
+                    <p className="text-sm text-gray-500 mt-2">Taipei, Taiwan 🇹🇼</p>
+                  </div>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center text-gray-700">
+                      <span className="mr-2">💼</span>
+                      <span>Technical Consultant</span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <span className="mr-2">🎖️</span>
+                      <span>PMP® Certified</span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <span className="mr-2">🦭</span>
+                      <span>Focusing</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-center space-x-3">
+                    <a
+                      href="https://github.com/wutiger555"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-all text-sm font-semibold"
+                    >
+                      GitHub
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/%E8%87%AA%E5%9B%9E-%E5%90%B3-532109151/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm font-semibold"
+                    >
+                      LinkedIn
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* 專業技能與經歷 */}
+              <div className="md:col-span-2">
+                <div className="space-y-6">
+                  {/* 簡介 */}
+                  <div>
+                    <h4 className="font-bold text-lg text-gray-800 mb-3">💡 關於我</h4>
+                    <p className="text-gray-700 leading-relaxed">
+                      從後端工程師到技術專案經理，目前在全球顧問公司擔任技術顧問，
+                      負責台灣最大核心銀行現代化專案的子系統交付。熱衷於使用 AI 工具提升工作效率，
+                      相信「重複的事情就自動化，複雜的事情就簡化」。
+                    </p>
+                  </div>
+
+                  {/* 技術棧 */}
+                  <div>
+                    <h4 className="font-bold text-lg text-gray-800 mb-3">🛠️ 技術棧</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-600 mb-2">程式語言</p>
+                        <div className="flex flex-wrap gap-2">
+                          {['Python', 'TypeScript', 'Swift', 'Go', 'SQL'].map((tech) => (
+                            <span
+                              key={tech}
+                              className="px-3 py-1 bg-sport-100 text-sport-700 rounded-full text-xs font-semibold"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-600 mb-2">框架/工具</p>
+                        <div className="flex flex-wrap gap-2">
+                          {['React', 'React Native', 'SwiftUI', 'FastAPI'].map((tech) => (
+                            <span
+                              key={tech}
+                              className="px-3 py-1 bg-court-100 text-court-700 rounded-full text-xs font-semibold"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-600 mb-2">雲端服務</p>
+                        <div className="flex flex-wrap gap-2">
+                          {['AWS', 'GCP', 'Firebase', 'Docker'].map((tech) => (
+                            <span
+                              key={tech}
+                              className="px-3 py-1 bg-pickleball-100 text-pickleball-700 rounded-full text-xs font-semibold"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-600 mb-2">AI 工具</p>
+                        <div className="flex flex-wrap gap-2">
+                          {['Claude', 'ChatGPT', 'Cursor', 'Copilot'].map((tech) => (
+                            <span
+                              key={tech}
+                              className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 精選專案 */}
+                  <div>
+                    <h4 className="font-bold text-lg text-gray-800 mb-3">🚀 精選專案</h4>
+                    <div className="space-y-3">
+                      <div className="bg-gradient-to-r from-sport-50 to-white rounded-xl p-4">
+                        <h5 className="font-bold text-gray-800 mb-1">Picklemaster Taiwan</h5>
+                        <p className="text-sm text-gray-600">
+                          台灣匹克球社群平台，提供球場地圖、互動遊戲、學習資源等功能
+                        </p>
+                      </div>
+                      <div className="bg-gradient-to-r from-court-50 to-white rounded-xl p-4">
+                        <h5 className="font-bold text-gray-800 mb-1">Aura - 遠距情侶氛圍分享</h5>
+                        <p className="text-sm text-gray-600">
+                          使用 React Native + TypeScript 開發的即時同步氛圍分享應用
+                        </p>
+                      </div>
+                      <div className="bg-gradient-to-r from-pickleball-50 to-white rounded-xl p-4">
+                        <h5 className="font-bold text-gray-800 mb-1">Meeting Notes AI</h5>
+                        <p className="text-sm text-gray-600">
+                          整合 Claude API 與 Notion 的會議記錄自動化工具
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 座右銘 */}
+                  <div className="bg-gradient-to-r from-sport-100 to-court-100 rounded-2xl p-6">
+                    <p className="text-gray-800 text-center italic font-semibold">
+                      "If it's repetitive, automate it. If it's complex, simplify it."
+                    </p>
+                    <p className="text-gray-600 text-center text-sm mt-2">
+                      — 重複的事情就自動化，複雜的事情就簡化
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.section>
         </div>
       </div>
     </div>

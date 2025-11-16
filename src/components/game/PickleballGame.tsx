@@ -19,17 +19,24 @@ const PLAYER = {
 
 const BALL = {
   RADIUS: 14,
-  GRAVITY: 0.2, // 降低重力，讓球飛得更高更久
-  BOUNCE: 0.85, // 提高彈性，讓球彈得更高
+  GRAVITY: 0.4, // 3D高度的重力加速度
+  BOUNCE: 0.75, // 彈性係數
   INITIAL_VX: 6,
   INITIAL_VY: -8,
+  SHADOW_OFFSET: 0.3, // 陰影偏移比例
 };
 
+// 【重要】3D俯視球物件（加入Z軸高度）
 interface GameObject {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
+  x: number;  // 球場X軸位置（左右）
+  y: number;  // 球場Y軸位置（前後）
+  vx: number; // X軸速度
+  vy: number; // Y軸速度
+}
+
+interface Ball3D extends GameObject {
+  z: number;  // 高度（Z軸，垂直於球場）
+  vz: number; // 垂直速度
 }
 
 type GamePhase = 'serve' | 'return' | 'third-shot' | 'rally';
@@ -87,12 +94,14 @@ const PickleballGame = () => {
     vy: 0,
   });
 
-  // 球
-  const ball = useRef<GameObject>({
+  // 【3D俯視】球（加入Z軸高度）
+  const ball = useRef<Ball3D>({
     x: 50,
     y: COURT.CENTER_Y + 50,
+    z: 0,   // 初始在地面
     vx: 0,
     vy: 0,
+    vz: 0,  // 初始無垂直速度
   });
 
   // 繪製球場（橫向）
@@ -326,10 +335,37 @@ const PickleballGame = () => {
     ctx.restore(); // 恢復變換
   };
 
-  // 繪製球
+  // 【3D俯視】繪製球（含陰影表示高度）
   const drawBall = (ctx: CanvasRenderingContext2D) => {
+    const b = ball.current;
+
+    // 【陰影】表示球在地面的真實位置
+    if (b.z > 5) { // 只有球在空中時才畫陰影
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      // 陰影大小隨高度變化（高度越高，陰影越小）
+      const shadowRadius = BALL.RADIUS * (1 - b.z / 200);
+      ctx.arc(b.x, b.y, Math.max(shadowRadius, 5), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 【球本身】根據高度偏移顯示（模擬3D效果）
+    // 高度越高，視覺上向左上方偏移
+    const visualOffsetX = -b.z * BALL.SHADOW_OFFSET;
+    const visualOffsetY = -b.z * BALL.SHADOW_OFFSET;
+    const ballX = b.x + visualOffsetX;
+    const ballY = b.y + visualOffsetY;
+
+    // 球的大小隨高度略微變化（近大遠小）
+    const sizeScale = 1 + (b.z / 300);
+    const visualRadius = BALL.RADIUS * sizeScale;
+
+    // 球體
     ctx.beginPath();
-    ctx.arc(ball.current.x, ball.current.y, BALL.RADIUS, 0, Math.PI * 2);
+    ctx.arc(ballX, ballY, visualRadius, 0, Math.PI * 2);
     ctx.fillStyle = '#fbbf24';
     ctx.fill();
     ctx.strokeStyle = '#f59e0b';
@@ -339,10 +375,10 @@ const PickleballGame = () => {
     // 球上的孔洞效果
     for (let i = 0; i < 8; i++) {
       const angle = (i * Math.PI * 2) / 8;
-      const holeX = ball.current.x + Math.cos(angle) * 10;
-      const holeY = ball.current.y + Math.sin(angle) * 10;
+      const holeX = ballX + Math.cos(angle) * (10 * sizeScale);
+      const holeY = ballY + Math.sin(angle) * (10 * sizeScale);
       ctx.beginPath();
-      ctx.arc(holeX, holeY, 2.5, 0, Math.PI * 2);
+      ctx.arc(holeX, holeY, 2.5 * sizeScale, 0, Math.PI * 2);
       ctx.fillStyle = '#d97706';
       ctx.fill();
     }
@@ -382,24 +418,31 @@ const PickleballGame = () => {
     setServerSide(side); // 得分方獲得發球權
   }, []);
 
-  // 碰撞檢測：球與球拍（矩形碰撞檢測 + 匹克球規則 + 揮拍機制）
+  // 【3D俯視】碰撞檢測：球與球拍（矩形碰撞 + Z軸判斷 + 匹克球規則 + 揮拍機制）
   const checkPaddleCollision = (paddle: GameObject, isPlayer: boolean) => {
+    const b = ball.current;
+
     // 雙彈跳規則檢查
     if (mustBounce.current && bounceCount.current === 0) {
       return false; // 球還沒彈地，不能擊球
     }
 
-    // 【修正】矩形碰撞檢測（配合新球拍形狀）
+    // 【關鍵】球必須在合適的高度才能擊球（模擬真實匹克球）
+    // Z軸在0-80之間（地面到球拍可達高度）
+    if (b.z < 0 || b.z > 80) {
+      return false;
+    }
+
+    // 矩形碰撞檢測（使用陰影位置，即真實的X,Y位置）
     const paddleLeft = paddle.x - PLAYER.PADDLE_WIDTH / 2;
     const paddleRight = paddle.x + PLAYER.PADDLE_WIDTH / 2;
     const paddleTop = paddle.y - PLAYER.PADDLE_HEIGHT / 2;
     const paddleBottom = paddle.y + PLAYER.PADDLE_HEIGHT / 2;
 
-    // 檢查球是否與球拍矩形重疊
-    const ballLeft = ball.current.x - BALL.RADIUS;
-    const ballRight = ball.current.x + BALL.RADIUS;
-    const ballTop = ball.current.y - BALL.RADIUS;
-    const ballBottom = ball.current.y + BALL.RADIUS;
+    const ballLeft = b.x - BALL.RADIUS;
+    const ballRight = b.x + BALL.RADIUS;
+    const ballTop = b.y - BALL.RADIUS;
+    const ballBottom = b.y + BALL.RADIUS;
 
     const isColliding = !(
       ballRight < paddleLeft ||
@@ -432,39 +475,43 @@ const PickleballGame = () => {
         return true;
       }
 
-      // 擊中球拍 - 反彈
+      // 【3D俯視】擊中球拍 - 設定3D速度
       const direction = isPlayer ? 1 : -1;
-      const baseSpeed = isPlayer ? 5 : 6; // 降低整體速度，讓球更好接
+      const baseSpeed = isPlayer ? 5 : 6;
 
-      ball.current.vx = direction * baseSpeed;
+      // X軸速度（左右方向）
+      b.vx = direction * baseSpeed;
 
-      // 根據擊球位置調整垂直速度
-      const hitPosition = (ball.current.y - paddle.y) / (PLAYER.PADDLE_HEIGHT / 2);
+      // Y軸速度（前後方向）- 根據擊球位置調整
+      const hitPosition = (b.y - paddle.y) / (PLAYER.PADDLE_HEIGHT / 2);
 
-      // 玩家可以使用方向鍵控制擊球角度
+      // 玩家可以使用方向鍵控制擊球方向
       let angleControl = 0;
       if (isPlayer) {
         if (keys.current.has('ArrowUp') || keys.current.has('w') || keys.current.has('W')) {
-          angleControl = -2; // 往上打
+          angleControl = -2; // 往前打
         } else if (keys.current.has('ArrowDown') || keys.current.has('s') || keys.current.has('S')) {
-          angleControl = 2; // 往下打
+          angleControl = 2; // 往後打
         }
       }
 
-      // 對手擊球時給予更大的向上力量，確保球能飛回來
-      const verticalBoost = isPlayer ? 1 : 2.0;
-      ball.current.vy = hitPosition * 2.5 * verticalBoost - 3 + angleControl;
+      const verticalBoost = isPlayer ? 1 : 1.5;
+      b.vy = hitPosition * 2 * verticalBoost + angleControl;
+
+      // 【關鍵】Z軸速度（向上的速度，讓球飛起來）
+      // 基礎向上速度 + 根據當前高度調整
+      b.vz = 8 - (b.z / 20); // 球越低，打出去飛得越高
 
       // 速度限制
       const maxSpeed = 12;
-      ball.current.vx = Math.max(-maxSpeed, Math.min(maxSpeed, ball.current.vx));
-      ball.current.vy = Math.max(-maxSpeed, Math.min(maxSpeed, ball.current.vy));
+      b.vx = Math.max(-maxSpeed, Math.min(maxSpeed, b.vx));
+      b.vy = Math.max(-maxSpeed, Math.min(maxSpeed, b.vy));
 
-      // 【修正】確保球離開球拍（矩形邊緣）
+      // 確保球離開球拍
       if (isPlayer) {
-        ball.current.x = paddleRight + BALL.RADIUS + 5;
+        b.x = paddleRight + BALL.RADIUS + 5;
       } else {
-        ball.current.x = paddleLeft - BALL.RADIUS - 5;
+        b.x = paddleLeft - BALL.RADIUS - 5;
       }
 
       lastHitter.current = isPlayer ? 'player' : 'opponent';
@@ -571,22 +618,28 @@ const PickleballGame = () => {
 
   // 更新遊戲邏輯
   const update = useCallback(() => {
-    // 處理發球掉落階段
+    // 【關鍵】遊戲結束時立即停止所有邏輯
+    if (gameScreen === 'game-over') {
+      return;
+    }
+
+    // 【3D俯視】處理發球掉落階段
     if (gameState === 'serving-drop') {
-      // 球自由落下
-      ball.current.vy += BALL.GRAVITY;
-      ball.current.y += ball.current.vy;
+      const b = ball.current;
+      // 球從高處自由落下（只有Z軸運動）
+      b.vz -= BALL.GRAVITY;
+      b.z += b.vz;
 
       // 當球落地後，立即進入準備擊球階段
-      if (ball.current.y >= COURT.HEIGHT - BALL.RADIUS) {
-        ball.current.y = COURT.HEIGHT - BALL.RADIUS;
-        ball.current.vy = 0; // 停止球的移動
-        ball.current.vx = 0;
+      if (b.z <= 0) {
+        b.z = 0;
+        b.vz = 0;
+        b.vx = 0;
+        b.vy = 0;
         setGameState('serving-ready');
 
         if (serverSide === 'opponent') {
           setMessage('AI準備發球...');
-          // AI自動發球（延遲0.5秒）
           setTimeout(() => {
             performServe(false);
           }, 500);
@@ -608,10 +661,13 @@ const PickleballGame = () => {
           mustBounce.current = true;
           canHit.current = true;
 
-          ball.current.x = opponent.current.x - 30;
-          ball.current.y = opponent.current.y - 100;
-          ball.current.vx = 0;
-          ball.current.vy = 0;
+          const b = ball.current;
+          b.x = opponent.current.x - 30;
+          b.y = opponent.current.y;
+          b.z = 100; // 在高處
+          b.vx = 0;
+          b.vy = 0;
+          b.vz = 0;
           lastHitter.current = 'opponent';
 
           setGameState('serving-drop');
@@ -656,7 +712,7 @@ const PickleballGame = () => {
       }
     }
 
-    // 限制玩家範圍
+    // 【重要】限制玩家範圍
     if (isPlayerServing) {
       // 發球時鎖定在左側底線
       player.current.x = 50;
@@ -665,10 +721,10 @@ const PickleballGame = () => {
         Math.min(COURT.HEIGHT - PLAYER.PADDLE_HEIGHT / 2, player.current.y)
       );
     } else {
-      // 正常遊戲時可以在整個球場移動
+      // 【修正】正常遊戲時只能在左半場移動（不能越過球網）
       player.current.x = Math.max(
         PLAYER.PADDLE_WIDTH / 2,
-        Math.min(COURT.WIDTH - PLAYER.PADDLE_WIDTH / 2, player.current.x)
+        Math.min(COURT.NET_X - PLAYER.PADDLE_WIDTH / 2, player.current.x) // 限制在球網左側
       );
       player.current.y = Math.max(
         PLAYER.PADDLE_HEIGHT / 2,
@@ -681,14 +737,17 @@ const PickleballGame = () => {
       opponent.current.x = COURT.WIDTH - 50;
     }
 
-    // 如果還在發球準備階段，球跟著發球方移動
+    // 【3D俯視】如果還在發球準備階段，球跟著發球方移動
     if (gameState === 'serving-ready') {
+      const b = ball.current;
       if (serverSide === 'player') {
-        ball.current.x = player.current.x + 30;
-        ball.current.y = player.current.y;
+        b.x = player.current.x + 30;
+        b.y = player.current.y;
+        b.z = 0; // 在地面上
       } else {
-        ball.current.x = opponent.current.x - 30;
-        ball.current.y = opponent.current.y;
+        b.x = opponent.current.x - 30;
+        b.y = opponent.current.y;
+        b.z = 0;
       }
       return;
     }
@@ -706,40 +765,64 @@ const PickleballGame = () => {
     // AI 對手
     updateOpponentAI();
 
-    // 球物理
-    ball.current.vy += BALL.GRAVITY; // 重力
-    ball.current.x += ball.current.vx;
-    ball.current.y += ball.current.vy;
+    // 【3D俯視】球物理系統
+    const b = ball.current;
 
-    // 球與地面碰撞（彈地）
-    if (ball.current.y > COURT.HEIGHT - BALL.RADIUS) {
-      ball.current.y = COURT.HEIGHT - BALL.RADIUS;
-      ball.current.vy *= -BALL.BOUNCE;
-      bounceCount.current++;
-      canHit.current = true; // 彈地後可以擊球
+    // 重力只影響Z軸（高度）
+    b.vz -= BALL.GRAVITY;
 
-      // 檢查是否彈地兩次（失分）- 修正邏輯
-      if (bounceCount.current >= 2) {
-        // 球在哪邊彈地兩次，那邊就失分
-        let winner: 'player' | 'opponent';
-        if (ball.current.x < COURT.NET_X) {
-          // 球在左側（玩家側）彈地兩次，玩家失分
-          winner = 'opponent';
-        } else {
-          // 球在右側（對手側）彈地兩次，對手失分
-          winner = 'player';
+    // 更新位置
+    b.x += b.vx;
+    b.y += b.vy;
+    b.z += b.vz;
+
+    // 【關鍵】球觸地判定（Z <= 0，可在任何X,Y位置）
+    if (b.z <= 0) {
+      b.z = 0;
+      b.vz = -b.vz * BALL.BOUNCE; // Z軸反彈
+
+      // 觸地時減速（摩擦力）
+      b.vx *= 0.95;
+      b.vy *= 0.95;
+
+      // 只有明顯的彈跳才計數（避免滾動時重複計數）
+      if (Math.abs(b.vz) > 2) {
+        bounceCount.current++;
+        canHit.current = true; // 彈地後可以擊球
+
+        // 檢查是否彈地兩次（失分）
+        if (bounceCount.current >= 2) {
+          let winner: 'player' | 'opponent';
+          if (b.x < COURT.NET_X) {
+            // 球在左側（玩家側）彈地兩次，玩家失分
+            winner = 'opponent';
+          } else {
+            // 球在右側（對手側）彈地兩次，對手失分
+            winner = 'player';
+          }
+          addPoint(winner);
+          setMessage(`球彈地兩次！${winner === 'player' ? '你' : '對手'}得分`);
+          setGameState('point');
+          return;
         }
-        addPoint(winner);
-        setMessage(`球彈地兩次！${winner === 'player' ? '你' : '對手'}得分，${winner === 'player' ? '你' : '對手'}發球`);
-        setGameState('point');
-        return;
+      }
+
+      // 球停止時（幾乎沒有速度）
+      if (Math.abs(b.vx) < 0.5 && Math.abs(b.vy) < 0.5 && Math.abs(b.vz) < 1) {
+        b.vx = 0;
+        b.vy = 0;
+        b.vz = 0;
       }
     }
 
-    // 球與上邊界碰撞
-    if (ball.current.y < BALL.RADIUS) {
-      ball.current.y = BALL.RADIUS;
-      ball.current.vy *= -BALL.BOUNCE;
+    // 球場邊界限制（防止球飛出球場）
+    if (b.y < 0) {
+      b.y = 0;
+      b.vy = -b.vy * 0.8; // 撞到邊界反彈
+    }
+    if (b.y > COURT.HEIGHT) {
+      b.y = COURT.HEIGHT;
+      b.vy = -b.vy * 0.8;
     }
 
     // 球與球拍碰撞
@@ -770,28 +853,32 @@ const PickleballGame = () => {
       setMessage(`球掛網！${winner === 'player' ? '你' : '對手'}得分，${winner === 'player' ? '你' : '對手'}發球`);
       setGameState('point');
     }
-  }, [gameState, serverSide]);
+  }, [gameState, serverSide, gameScreen, addPoint]);
 
-  // 執行發球的函數
+  // 【3D俯視】執行發球的函數
   const performServe = useCallback((isPlayerServing: boolean) => {
+    const b = ball.current;
+
     if (isPlayerServing) {
       // 玩家發球到對角線
       const targetY = player.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
-      const dx = COURT.WIDTH * 0.85 - ball.current.x;
-      const dy = targetY - ball.current.y;
+      const dx = COURT.WIDTH * 0.85 - b.x;
+      const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      ball.current.vx = (dx / distance) * 8;
-      ball.current.vy = (dy / distance) * 8 - 2;
+      b.vx = (dx / distance) * 7;
+      b.vy = (dy / distance) * 7;
+      b.vz = 6; // 向上的速度，讓球弧線飛行
     } else {
       // AI發球到玩家對角線
       const targetY = opponent.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
-      const dx = COURT.WIDTH * 0.15 - ball.current.x;
-      const dy = targetY - ball.current.y;
+      const dx = COURT.WIDTH * 0.15 - b.x;
+      const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      ball.current.vx = (dx / distance) * 7;
-      ball.current.vy = (dy / distance) * 7 - 2;
+      b.vx = (dx / distance) * 6.5;
+      b.vy = (dy / distance) * 6.5;
+      b.vz = 6;
     }
 
     setGameState('playing');
@@ -838,6 +925,11 @@ const PickleballGame = () => {
 
   // 遊戲循環
   useEffect(() => {
+    // 【關鍵】只在遊戲進行中才運行遊戲循環
+    if (gameScreen !== 'game') {
+      return;
+    }
+
     const loop = () => {
       update();
       render();
@@ -851,7 +943,7 @@ const PickleballGame = () => {
         cancelAnimationFrame(gameLoop.current);
       }
     };
-  }, [update, render]);
+  }, [update, render, gameScreen]);
 
   // 鍵盤控制
   useEffect(() => {
@@ -881,19 +973,23 @@ const PickleballGame = () => {
           mustBounce.current = true;
           canHit.current = true;
 
-          // 球在發球方上方
+          // 【3D俯視】球在發球方手中（高處）
+          const b = ball.current;
           if (serverSide === 'player') {
-            ball.current.x = player.current.x + 30;
-            ball.current.y = player.current.y - 100;
+            b.x = player.current.x + 30;
+            b.y = player.current.y;
+            b.z = 100; // 在高處，準備掉落
             lastHitter.current = 'player';
           } else {
-            ball.current.x = opponent.current.x - 30;
-            ball.current.y = opponent.current.y - 100;
+            b.x = opponent.current.x - 30;
+            b.y = opponent.current.y;
+            b.z = 100;
             lastHitter.current = 'opponent';
           }
 
-          ball.current.vx = 0;
-          ball.current.vy = 0;
+          b.vx = 0;
+          b.vy = 0;
+          b.vz = 0; // 開始時靜止
 
           setGameState('serving-drop');
           setMessage('球正在掉落...');
@@ -973,55 +1069,11 @@ const PickleballGame = () => {
     setWinner(null);
     player.current = { x: 50, y: COURT.CENTER_Y + 100, vx: 0, vy: 0 };
     opponent.current = { x: COURT.WIDTH - 50, y: COURT.CENTER_Y - 100, vx: 0, vy: 0 };
-    ball.current = { x: 50, y: COURT.CENTER_Y + 50, vx: 0, vy: 0 };
+    ball.current = { x: 50, y: COURT.CENTER_Y + 50, z: 0, vx: 0, vy: 0, vz: 0 };
     setServerSide('player');
     setMessage('按空白鍵開始發球（球會先掉落）');
   };
 
-  // 遊戲開始介面
-  if (gameScreen === 'intro') {
-    return (
-      <div className="w-full max-w-6xl mx-auto">
-        <div className="bg-gradient-to-br from-sport-50 to-court-50 rounded-3xl shadow-2xl p-12">
-          <div className="text-center space-y-8">
-            <h1 className="text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-sport-600 via-court-600 to-pickleball-600 animate-pulse">
-              🏓 匹克球小遊戲 🏓
-            </h1>
-            <p className="text-xl text-gray-700">體驗真實的匹克球規則與操作！</p>
-
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">遊戲規則</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                <div className="bg-blue-50 p-4 rounded-xl">
-                  <h3 className="font-bold text-blue-600 mb-2">⚡ 比賽規則</h3>
-                  <ul className="text-sm space-y-1 text-gray-700">
-                    <li>• 11分制，領先2分才能獲勝</li>
-                    <li>• 雙彈跳規則：前兩球必須彈地</li>
-                    <li>• 廚房區（黃色）內不可截擊</li>
-                  </ul>
-                </div>
-                <div className="bg-green-50 p-4 rounded-xl">
-                  <h3 className="font-bold text-green-600 mb-2">🎮 操作方式</h3>
-                  <ul className="text-sm space-y-1 text-gray-700">
-                    <li>• 滑鼠移動控制球拍位置</li>
-                    <li>• 滑鼠左鍵或空白鍵揮拍</li>
-                    <li>• ↑↓←→ 或 WASD 鍵盤移動</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={startGame}
-              className="bg-gradient-to-r from-sport-500 to-court-500 hover:from-sport-600 hover:to-court-600 text-white text-2xl font-bold py-4 px-12 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
-            >
-              開始遊戲
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // 遊戲結束介面
   if (gameScreen === 'game-over') {
@@ -1068,9 +1120,10 @@ const PickleballGame = () => {
     );
   }
 
-  // 遊戲畫面
+  // 遊戲畫面（始終顯示球場，介面層疊在上方）
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto relative">
+      {/* 背景球場（始終可見） */}
       <div className="bg-gradient-to-br from-sport-50 to-court-50 rounded-3xl shadow-2xl p-6">
         <h2 className="text-3xl font-black text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-sport-600 to-court-600">
           匹克球小遊戲
@@ -1086,13 +1139,59 @@ const PickleballGame = () => {
           />
         </div>
 
-        {message && (
-          <div className="bg-gradient-to-r from-pickleball-500 to-sport-500 text-white px-6 py-3 rounded-full text-center font-bold text-lg mb-4">
-            {message}
+        {/* 【Intro 介面】半透明覆蓋層 */}
+        {gameScreen === 'intro' && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-3xl backdrop-blur-sm">
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 max-w-2xl mx-4 border-2 border-pickleball-300">
+              <div className="text-center space-y-6">
+                <h1 className="text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-sport-600 via-court-600 to-pickleball-600">
+                  🏓 匹克球互動遊戲 🏓
+                </h1>
+                <p className="text-lg text-gray-800 font-semibold">體驗真實的匹克球規則與操作！</p>
+
+                <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-6 shadow-inner">
+                  <h2 className="text-xl font-bold text-gray-800 mb-3">遊戲規則 & 操作</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-left text-sm">
+                    <div className="bg-white/80 p-3 rounded-lg">
+                      <h3 className="font-bold text-blue-600 mb-1.5">⚡ 比賽規則</h3>
+                      <ul className="space-y-0.5 text-gray-700">
+                        <li>• 11分制，領先2分獲勝</li>
+                        <li>• 雙彈跳：前兩球須彈地</li>
+                        <li>• 廚房區內禁止截擊</li>
+                      </ul>
+                    </div>
+                    <div className="bg-white/80 p-3 rounded-lg">
+                      <h3 className="font-bold text-green-600 mb-1.5">🎮 操作方式</h3>
+                      <ul className="space-y-0.5 text-gray-700">
+                        <li>• 🖱️ 滑鼠移動控制球拍</li>
+                        <li>• 🖱️ 左鍵或空白鍵揮拍</li>
+                        <li>• ⌨️ WASD / 方向鍵移動</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={startGame}
+                  className="bg-gradient-to-r from-sport-500 to-court-500 hover:from-sport-600 hover:to-court-600 text-white text-xl font-bold py-3 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200 border-2 border-white"
+                >
+                  開始遊戲 🎯
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        {/* 【遊戲介面】只在遊戲進行時顯示 */}
+        {gameScreen === 'game' && (
+          <>
+            {message && (
+              <div className="bg-gradient-to-r from-pickleball-500 to-sport-500 text-white px-6 py-3 rounded-full text-center font-bold text-lg mb-4">
+                {message}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="bg-blue-100 rounded-xl p-4">
             <div className="text-center">
               <div className="text-gray-600 text-sm mb-1">你的分數</div>
@@ -1152,6 +1251,8 @@ const PickleballGame = () => {
             </div>
           </div>
         </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -250,6 +250,33 @@ const Courts = () => {
                           {court.contact}
                         </a>
                       </div>
+
+                      {(court.booking_url || court.website) && (
+                        <div className="flex flex-col space-y-2 pt-2 border-t border-gray-200">
+                          {court.booking_url && (
+                            <a
+                              href={court.booking_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-sport-500 to-court-500 text-white rounded-lg hover:shadow-lg transition-all text-sm font-semibold"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              📅 線上預約
+                            </a>
+                          )}
+                          {court.website && (
+                            <a
+                              href={court.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-semibold"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              🌐 官方網站
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-4 border-t border-gray-200">

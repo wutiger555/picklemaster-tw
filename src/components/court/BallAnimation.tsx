@@ -221,9 +221,9 @@ const BallAnimation = () => {
               className="transition-all duration-300"
             />
 
-            {/* 上半場偶數發球區（右側）*/}
+            {/* 上半場偶數發球區（左側）- 對角發球目標區 */}
             <rect
-              x="120"
+              x="20"
               y="20"
               width="100"
               height="151"
@@ -233,7 +233,7 @@ const BallAnimation = () => {
               className="transition-all duration-300"
             />
             {shouldHighlight('service-target-even') && (
-              <text x="170" y="100" fill="white" fontSize="13" fontWeight="bold" textAnchor="middle">
+              <text x="70" y="100" fill="white" fontSize="13" fontWeight="bold" textAnchor="middle">
                 🎯 目標發球區
               </text>
             )}

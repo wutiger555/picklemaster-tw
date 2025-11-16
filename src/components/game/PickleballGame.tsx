@@ -19,10 +19,10 @@ const PLAYER = {
 
 const BALL = {
   RADIUS: 14,
-  GRAVITY: 0.3,
-  BOUNCE: 0.65,
-  INITIAL_VX: 4,
-  INITIAL_VY: -6,
+  GRAVITY: 0.25,
+  BOUNCE: 0.75,
+  INITIAL_VX: 6,
+  INITIAL_VY: -8,
 };
 
 interface GameObject {
@@ -241,8 +241,8 @@ const PickleballGame = () => {
       const direction = isPlayer ? 1 : -1;
 
       // 計算蓄力加成（玩家專用）
-      const chargePower = isPlayer ? (1 + chargeTime.current * 0.5) : 1;
-      const baseSpeed = isPlayer ? 4 : 5;
+      const chargePower = isPlayer ? (1 + chargeTime.current * 0.8) : 1;
+      const baseSpeed = isPlayer ? 6 : 6.5;
 
       ball.current.vx = direction * baseSpeed * chargePower;
 
@@ -258,7 +258,7 @@ const PickleballGame = () => {
       }
 
       // 速度限制
-      const maxSpeed = 10;
+      const maxSpeed = 12;
       ball.current.vx = Math.max(-maxSpeed, Math.min(maxSpeed, ball.current.vx));
       ball.current.vy = Math.max(-maxSpeed, Math.min(maxSpeed, ball.current.vy));
 
@@ -616,12 +616,16 @@ const PickleballGame = () => {
           <h3 className="font-bold text-gray-800 mb-2">操作說明</h3>
           <div className="space-y-1 text-sm text-gray-700">
             <div className="flex items-center">
-              <span className="font-bold mr-2">↑↓ 或 W/S</span>
-              <span>上下移動球拍</span>
+              <span className="font-bold mr-2">↑↓←→ 或 WASD</span>
+              <span>四方向移動球拍</span>
             </div>
             <div className="flex items-center">
-              <span className="font-bold mr-2">空白鍵</span>
-              <span>開始遊戲</span>
+              <span className="font-bold mr-2">空白鍵（短按）</span>
+              <span>開始遊戲 / 發球</span>
+            </div>
+            <div className="flex items-center">
+              <span className="font-bold mr-2">空白鍵（長按）</span>
+              <span className="text-yellow-600">⚡ 蓄力擊球（最高1.8倍威力）</span>
             </div>
           </div>
         </div>

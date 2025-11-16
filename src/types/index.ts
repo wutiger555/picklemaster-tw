@@ -15,6 +15,8 @@ export interface Court {
   contact: string;
   facilities: string[];
   line_group?: string;
+  booking_url?: string;
+  website?: string;
 }
 
 // 球場資料回應

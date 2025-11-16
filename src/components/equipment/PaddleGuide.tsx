@@ -39,7 +39,10 @@ interface CoreType {
 }
 
 const PaddleGuide = () => {
-  const [selectedTab, setSelectedTab] = useState<'types' | 'materials' | 'cores' | 'specs'>('types');
+  const [selectedTab, setSelectedTab] = useState<'anatomy' | 'types' | 'materials' | 'cores' | 'specs'>('anatomy');
+  const [hoveredPart, setHoveredPart] = useState<string | null>(null);
+  const [selectedGrip, setSelectedGrip] = useState<'eastern' | 'western' | 'continental'>('eastern');
+  const [viewAngle, setViewAngle] = useState<'front' | 'side' | 'back'>('front');
 
   // 資料來源：USA Pickleball Equipment Standards 2024 & Major Paddle Manufacturers
   const paddleTypes: PaddleType[] = [
@@ -257,6 +260,44 @@ const PaddleGuide = () => {
     source: 'USA Pickleball Official Rulebook 2024, Section 2.E',
   };
 
+  // 球拍各部分名稱與說明
+  const paddleParts = [
+    { id: 'face', name: '拍面 (Face)', description: '擊球的主要區域，由表面材料覆蓋', color: '#3b82f6' },
+    { id: 'sweet-spot', name: '甜區 (Sweet Spot)', description: '最佳擊球位置，位於拍面中心偏上', color: '#22c55e' },
+    { id: 'edge-guard', name: '護邊 (Edge Guard)', description: '保護拍面邊緣不受損傷', color: '#ef4444' },
+    { id: 'grip', name: '握把 (Grip)', description: '手部握持的部分，通常有防滑材質', color: '#f59e0b' },
+    { id: 'handle', name: '手柄 (Handle)', description: '連接握把與拍面的結構', color: '#8b5cf6' },
+    { id: 'core', name: '核心 (Core)', description: '拍面內部的蜂窩狀結構', color: '#06b6d4' },
+  ];
+
+  // 握法說明
+  const gripStyles = [
+    {
+      id: 'eastern',
+      name: '東方式握法',
+      nameEn: 'Eastern Grip',
+      description: '最常見的握法，手掌平貼拍面，適合全方位打法',
+      benefits: ['容易上手', '適合正反手切換', '控球精準', '力量適中'],
+      bestFor: ['初學者', '全方位球員', '雙打選手'],
+    },
+    {
+      id: 'western',
+      name: '西方式握法',
+      nameEn: 'Western Grip',
+      description: '手掌位置較低，拍面角度更開放，適合上旋球',
+      benefits: ['產生更多上旋', '正手力量強大', '適合高彈跳球'],
+      bestFor: ['進攻型球員', '喜歡上旋的選手'],
+    },
+    {
+      id: 'continental',
+      name: '大陸式握法',
+      nameEn: 'Continental Grip',
+      description: '手掌側面接觸握把，適合網前截擊和發球',
+      benefits: ['正反手無需換握', '網前反應快', '適合截擊'],
+      bestFor: ['網前選手', '雙打高手', '防守型球員'],
+    },
+  ];
+
   return (
     <div className="w-full max-w-6xl mx-auto">
       <div className="bg-white rounded-3xl shadow-2xl p-4 md:p-8">
@@ -270,6 +311,7 @@ const PaddleGuide = () => {
         {/* 分頁選擇 */}
         <div className="flex flex-wrap justify-center gap-3 mb-8">
           {[
+            { id: 'anatomy' as const, name: '球拍結構', icon: '🔍' },
             { id: 'types' as const, name: '球拍類型', icon: '🏓' },
             { id: 'materials' as const, name: '材質介紹', icon: '🧪' },
             { id: 'cores' as const, name: '核心結構', icon: '⚙️' },
@@ -293,6 +335,327 @@ const PaddleGuide = () => {
         </div>
 
         <AnimatePresence mode="wait">
+          {/* 球拍結構 */}
+          {selectedTab === 'anatomy' && (
+            <motion.div
+              key="anatomy"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* 視角選擇 */}
+              <div className="flex justify-center gap-3 mb-6">
+                {[
+                  { id: 'front' as const, name: '正面視角', icon: '🎯' },
+                  { id: 'side' as const, name: '側面視角', icon: '📐' },
+                  { id: 'back' as const, name: '背面視角', icon: '🔄' },
+                ].map((angle) => (
+                  <button
+                    key={angle.id}
+                    onClick={() => setViewAngle(angle.id)}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      viewAngle === angle.id
+                        ? 'bg-pickleball-500 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {angle.icon} {angle.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* SVG 球拍繪圖 */}
+                <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 shadow-lg">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                    互動式球拍模型
+                  </h3>
+
+                  <svg
+                    viewBox="0 0 300 500"
+                    className="w-full h-auto max-w-md mx-auto"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {viewAngle === 'front' && (
+                      <>
+                        {/* 拍面 */}
+                        <g
+                          onMouseEnter={() => setHoveredPart('face')}
+                          onMouseLeave={() => setHoveredPart(null)}
+                          className="cursor-pointer transition-all"
+                        >
+                          <rect
+                            x="50"
+                            y="30"
+                            width="200"
+                            height="260"
+                            rx="20"
+                            fill={hoveredPart === 'face' ? '#60a5fa' : '#93c5fd'}
+                            stroke="#3b82f6"
+                            strokeWidth="3"
+                          />
+                        </g>
+
+                        {/* 甜區標記 */}
+                        <g
+                          onMouseEnter={() => setHoveredPart('sweet-spot')}
+                          onMouseLeave={() => setHoveredPart(null)}
+                          className="cursor-pointer"
+                        >
+                          <circle
+                            cx="150"
+                            cy="130"
+                            r="40"
+                            fill={hoveredPart === 'sweet-spot' ? '#86efac' : 'rgba(34, 197, 94, 0.3)'}
+                            stroke="#22c55e"
+                            strokeWidth="3"
+                            strokeDasharray="5,5"
+                          />
+                          <text
+                            x="150"
+                            y="135"
+                            fill="#166534"
+                            fontSize="14"
+                            fontWeight="bold"
+                            textAnchor="middle"
+                          >
+                            甜區
+                          </text>
+                        </g>
+
+                        {/* 擊球區域標記 */}
+                        <text x="260" y="100" fill="#059669" fontSize="12" fontWeight="bold">控制區</text>
+                        <line x1="250" y1="95" x2="240" y2="80" stroke="#059669" strokeWidth="2" />
+
+                        <text x="260" y="160" fill="#22c55e" fontSize="12" fontWeight="bold">甜區</text>
+                        <line x1="250" y1="155" x2="190" y2="130" stroke="#22c55e" strokeWidth="2" />
+
+                        <text x="260" y="240" fill="#f59e0b" fontSize="12" fontWeight="bold">力量區</text>
+                        <line x1="250" y1="235" x2="240" y2="250" stroke="#f59e0b" strokeWidth="2" />
+
+                        {/* 護邊 */}
+                        <g
+                          onMouseEnter={() => setHoveredPart('edge-guard')}
+                          onMouseLeave={() => setHoveredPart(null)}
+                          className="cursor-pointer"
+                        >
+                          <rect
+                            x="50"
+                            y="30"
+                            width="200"
+                            height="260"
+                            rx="20"
+                            fill="none"
+                            stroke={hoveredPart === 'edge-guard' ? '#fca5a5' : '#ef4444'}
+                            strokeWidth="6"
+                          />
+                        </g>
+
+                        {/* 手柄 */}
+                        <g
+                          onMouseEnter={() => setHoveredPart('handle')}
+                          onMouseLeave={() => setHoveredPart(null)}
+                          className="cursor-pointer"
+                        >
+                          <rect
+                            x="110"
+                            y="290"
+                            width="80"
+                            height="80"
+                            rx="8"
+                            fill={hoveredPart === 'handle' ? '#c4b5fd' : '#a78bfa'}
+                            stroke="#8b5cf6"
+                            strokeWidth="2"
+                          />
+                        </g>
+
+                        {/* 握把 */}
+                        <g
+                          onMouseEnter={() => setHoveredPart('grip')}
+                          onMouseLeave={() => setHoveredPart(null)}
+                          className="cursor-pointer"
+                        >
+                          <rect
+                            x="110"
+                            y="370"
+                            width="80"
+                            height="100"
+                            rx="10"
+                            fill={hoveredPart === 'grip' ? '#fcd34d' : '#fbbf24'}
+                            stroke="#f59e0b"
+                            strokeWidth="2"
+                          />
+                          {/* 握把紋理 */}
+                          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                            <line
+                              key={i}
+                              x1="115"
+                              y1={380 + i * 14}
+                              x2="185"
+                              y2={380 + i * 14}
+                              stroke="#d97706"
+                              strokeWidth="1.5"
+                              opacity="0.6"
+                            />
+                          ))}
+                        </g>
+                      </>
+                    )}
+
+                    {viewAngle === 'side' && (
+                      <>
+                        {/* 側面視圖 - 顯示厚度 */}
+                        <rect x="120" y="30" width="60" height="260" rx="5" fill="#93c5fd" stroke="#3b82f6" strokeWidth="2" />
+                        <rect x="120" y="290" width="60" height="80" rx="3" fill="#a78bfa" stroke="#8b5cf6" strokeWidth="2" />
+                        <rect x="120" y="370" width="60" height="100" rx="5" fill="#fbbf24" stroke="#f59e0b" strokeWidth="2" />
+
+                        {/* 核心層標記 */}
+                        <g
+                          onMouseEnter={() => setHoveredPart('core')}
+                          onMouseLeave={() => setHoveredPart(null)}
+                          className="cursor-pointer"
+                        >
+                          <rect
+                            x="135"
+                            y="50"
+                            width="30"
+                            height="220"
+                            fill={hoveredPart === 'core' ? '#67e8f9' : 'rgba(6, 182, 212, 0.5)'}
+                            stroke="#06b6d4"
+                            strokeWidth="2"
+                          />
+                          {/* 蜂窩圖案 */}
+                          {[0, 1, 2, 3, 4, 5].map((i) => (
+                            <circle
+                              key={i}
+                              cx="150"
+                              cy={80 + i * 35}
+                              r="8"
+                              fill="none"
+                              stroke="#0891b2"
+                              strokeWidth="1"
+                            />
+                          ))}
+                        </g>
+
+                        {/* 厚度標注 */}
+                        <line x1="90" y1="160" x2="120" y2="160" stroke="#666" strokeWidth="1" />
+                        <line x1="180" y1="160" x2="210" y2="160" stroke="#666" strokeWidth="1" />
+                        <line x1="100" y1="140" x2="100" y2="180" stroke="#666" strokeWidth="1" />
+                        <line x1="200" y1="140" x2="200" y2="180" stroke="#666" strokeWidth="1" />
+                        <text x="150" y="125" fill="#666" fontSize="12" textAnchor="middle" fontWeight="bold">
+                          厚度 13-16mm
+                        </text>
+                      </>
+                    )}
+
+                    {viewAngle === 'back' && (
+                      <>
+                        {/* 背面視圖 - 品牌標誌區 */}
+                        <rect x="50" y="30" width="200" height="260" rx="20" fill="#ddd" stroke="#999" strokeWidth="3" />
+                        <text x="150" y="150" fill="#666" fontSize="24" fontWeight="bold" textAnchor="middle">
+                          BRAND
+                        </text>
+                        <text x="150" y="180" fill="#999" fontSize="14" textAnchor="middle">
+                          Pickleball Paddle
+                        </text>
+                        <rect x="110" y="290" width="80" height="80" rx="8" fill="#a78bfa" stroke="#8b5cf6" strokeWidth="2" />
+                        <rect x="110" y="370" width="80" height="100" rx="10" fill="#fbbf24" stroke="#f59e0b" strokeWidth="2" />
+                      </>
+                    )}
+                  </svg>
+
+                  {/* 懸停資訊顯示 */}
+                  {hoveredPart && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-6 bg-pickleball-50 rounded-xl p-4 border-2 border-pickleball-200"
+                    >
+                      <h4 className="font-bold text-pickleball-700 mb-2">
+                        {paddleParts.find(p => p.id === hoveredPart)?.name}
+                      </h4>
+                      <p className="text-sm text-gray-700">
+                        {paddleParts.find(p => p.id === hoveredPart)?.description}
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* 握法教學 */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">常見握法</h3>
+
+                  {gripStyles.map((grip) => (
+                    <div
+                      key={grip.id}
+                      onClick={() => setSelectedGrip(grip.id as any)}
+                      className={`bg-gradient-to-r from-white to-gray-50 rounded-xl p-5 cursor-pointer transition-all ${
+                        selectedGrip === grip.id
+                          ? 'ring-4 ring-pickleball-400 shadow-xl scale-105'
+                          : 'hover:shadow-lg'
+                      }`}
+                    >
+                      <h4 className="text-lg font-bold text-gray-800 mb-1">{grip.name}</h4>
+                      <p className="text-sm text-gray-500 mb-3">{grip.nameEn}</p>
+                      <p className="text-sm text-gray-700 mb-3">{grip.description}</p>
+
+                      {selectedGrip === grip.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="space-y-3"
+                        >
+                          <div>
+                            <p className="text-xs font-semibold text-pickleball-600 mb-2">✨ 優點：</p>
+                            <ul className="space-y-1">
+                              {grip.benefits.map((benefit, idx) => (
+                                <li key={idx} className="text-xs text-gray-700 flex items-start">
+                                  <span className="mr-1">•</span>
+                                  <span>{benefit}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-sport-600 mb-2">🎯 適合：</p>
+                            <div className="flex flex-wrap gap-2">
+                              {grip.bestFor.map((player, idx) => (
+                                <span
+                                  key={idx}
+                                  className="bg-sport-100 text-sport-700 px-2 py-1 rounded-full text-xs font-medium"
+                                >
+                                  {player}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* 部位圖例 */}
+                  <div className="bg-white rounded-xl p-5 shadow-md">
+                    <h4 className="font-bold text-gray-800 mb-3">球拍部位圖例</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {paddleParts.map((part) => (
+                        <div key={part.id} className="flex items-center space-x-2">
+                          <div
+                            className="w-4 h-4 rounded"
+                            style={{ backgroundColor: part.color }}
+                          />
+                          <span className="text-sm text-gray-700">{part.name.split(' ')[0]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* 球拍類型 */}
           {selectedTab === 'types' && (
             <motion.div

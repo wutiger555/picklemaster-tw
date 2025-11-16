@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProPlayer {
   id: string;
@@ -23,7 +21,6 @@ interface ProPlayer {
 }
 
 const ProPlayerPaddles = () => {
-  const [selectedRegion, setSelectedRegion] = useState<'world' | 'taiwan'>('world');
 
   // 資料來源：Professional Pickleball Players Equipment Data 2024
   const worldPlayers: ProPlayer[] = [
@@ -149,35 +146,6 @@ const ProPlayerPaddles = () => {
     },
   ];
 
-  // 台灣球員資料（範例資料，實際需要更新）
-  const taiwanPlayers: ProPlayer[] = [
-    {
-      id: 'taiwan-player-1',
-      name: 'Taiwan Player Example',
-      nameZh: '台灣選手範例',
-      country: 'Taiwan',
-      ranking: '台灣排名範例',
-      paddle: {
-        brand: 'Various',
-        model: '待補充',
-        type: '平衡型',
-        weight: '7.5 - 8.0 oz',
-        core: 'Polymer Honeycomb',
-        surface: 'Carbon Fiber / Graphite',
-        price: 'NT$ 3,000 - 8,000',
-      },
-      achievements: [
-        '📝 台灣匹克球選手資料待補充',
-        '🏓 如有台灣職業選手資訊，歡迎提供',
-        '🌟 協助建立台灣匹克球資料庫',
-      ],
-      playStyle: '台灣選手打法資料待補充',
-      source: '台灣匹克球協會（資料待補充）',
-    },
-  ];
-
-  const currentPlayers = selectedRegion === 'world' ? worldPlayers : taiwanPlayers;
-
   return (
     <div className="w-full max-w-6xl mx-auto mt-12">
       <div className="bg-white rounded-3xl shadow-2xl p-4 md:p-8">
@@ -188,46 +156,8 @@ const ProPlayerPaddles = () => {
           了解世界級選手使用的球拍 • 學習專業裝備選擇
         </p>
 
-        {/* 區域選擇 */}
-        <div className="flex justify-center space-x-4 mb-8">
-          <button
-            onClick={() => setSelectedRegion('world')}
-            className={`
-              px-8 py-3 rounded-full font-bold transition-all duration-300 flex items-center space-x-2
-              ${selectedRegion === 'world'
-                ? 'bg-gradient-to-r from-sport-500 to-court-500 text-white shadow-lg scale-105'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }
-            `}
-          >
-            <span className="text-xl">🌍</span>
-            <span>世界頂尖選手</span>
-          </button>
-          <button
-            onClick={() => setSelectedRegion('taiwan')}
-            className={`
-              px-8 py-3 rounded-full font-bold transition-all duration-300 flex items-center space-x-2
-              ${selectedRegion === 'taiwan'
-                ? 'bg-gradient-to-r from-sport-500 to-court-500 text-white shadow-lg scale-105'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }
-            `}
-          >
-            <span className="text-xl">🇹🇼</span>
-            <span>台灣選手</span>
-          </button>
-        </div>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedRegion}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-          >
-            {currentPlayers.map((player) => (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {worldPlayers.map((player) => (
               <div
                 key={player.id}
                 className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100"
@@ -312,24 +242,7 @@ const ProPlayerPaddles = () => {
                 <p className="text-xs text-gray-400 italic mt-4">{player.source}</p>
               </div>
             ))}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* 提示訊息 */}
-        {selectedRegion === 'taiwan' && (
-          <div className="mt-8 bg-gradient-to-r from-sport-50 to-court-50 rounded-2xl p-6 border-2 border-sport-200">
-            <div className="flex items-start space-x-3">
-              <span className="text-2xl">📢</span>
-              <div>
-                <h4 className="font-bold text-gray-800 mb-2">協助建立台灣匹克球資料庫</h4>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  如果您知道台灣職業或頂尖匹克球選手的資訊，包括他們使用的裝備、成就和打法風格，
-                  歡迎提供資料協助我們完善台灣匹克球選手資料庫。您的貢獻將幫助更多台灣球友了解專業選手的裝備選擇。
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* 選購建議 */}
         <div className="mt-8 bg-gradient-to-br from-pickleball-50 to-white rounded-2xl p-6">

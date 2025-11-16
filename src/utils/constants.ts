@@ -26,6 +26,7 @@ export const ROUTES = {
   HOME: '/',
   LEARNING: '/learning',
   COURTS: '/courts',
+  GAME: '/game',
   ABOUT: '/about',
   RESOURCES: '/resources',
 } as const;

@@ -19,6 +19,148 @@
     },
     {
       "id": 2,
+      "name": "台北市信義運動中心",
+      "location": {
+        "address": "台北市信義區松勤街100號",
+        "lat": 25.0453,
+        "lng": 121.5783
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "平日離峰 250元/時，尖峰 400元/時",
+      "courts_count": 6,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2723-7131",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣", "球具租借"],
+      "website": "https://xysc.teamxports.com/",
+      "booking_url": "https://booking-tpsc.sporetrofit.com/"
+    },
+    {
+      "id": 3,
+      "name": "台北市華中河濱公園匹克球場",
+      "location": {
+        "address": "台北市萬華區華中河濱公園",
+        "lat": 25.0190,
+        "lng": 121.4985
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 6,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2303-2451",
+      "facilities": ["飲水機", "廁所", "停車場", "夜間照明"],
+      "line_group": ""
+    },
+    {
+      "id": 4,
+      "name": "台北市內湖運動中心",
+      "location": {
+        "address": "台北市內湖區洲子街12號",
+        "lat": 25.0787,
+        "lng": 121.5705
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 200-350 元",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2627-8888",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "website": "https://nhsc.cyc.org.tw/",
+      "booking_url": "https://booking-tpsc.sporetrofit.com/"
+    },
+    {
+      "id": 5,
+      "name": "台北市大安運動中心",
+      "location": {
+        "address": "台北市大安區辛亥路三段55號",
+        "lat": 25.0161,
+        "lng": 121.5435
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 250-400 元",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2377-0300",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "website": "https://www.daansports.com.tw/",
+      "booking_url": "https://booking-tpsc.sporetrofit.com/"
+    },
+    {
+      "id": 6,
+      "name": "台北市松山運動中心",
+      "location": {
+        "address": "台北市松山區敦化北路1號",
+        "lat": 25.0502,
+        "lng": 121.5485
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 250-400 元",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2570-1717",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "website": "https://sssc.com.tw/",
+      "booking_url": "https://booking-tpsc.sporetrofit.com/"
+    },
+    {
+      "id": 7,
+      "name": "台北市中山運動中心",
+      "location": {
+        "address": "台北市中山區中山北路二段44號",
+        "lat": 25.0547,
+        "lng": 121.5225
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 250-400 元",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2542-0008",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "booking_url": "https://booking-tpsc.sporetrofit.com/"
+    },
+    {
+      "id": 8,
+      "name": "台北市北投運動中心",
+      "location": {
+        "address": "台北市北投區石牌路一段39巷100號",
+        "lat": 25.1145,
+        "lng": 121.5163
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 200-350 元",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2820-3232",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣", "溫泉SPA"],
+      "website": "https://www.btsport.org.tw/",
+      "booking_url": "https://booking-tpsc.sporetrofit.com/"
+    },
+    {
+      "id": 9,
+      "name": "台北市萬華運動中心",
+      "location": {
+        "address": "台北市萬華區西藏路125-1號",
+        "lat": 25.0363,
+        "lng": 121.4978
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 200-350 元",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2339-0555",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "website": "http://whsc.com.tw/",
+      "booking_url": "https://booking-tpsc.sporetrofit.com/"
+    },
+    {
+      "id": 10,
       "name": "新北市河濱匹克球中心",
       "location": {
         "address": "新北市板橋區華江一路",
@@ -35,7 +177,7 @@
       "line_group": ""
     },
     {
-      "id": 3,
+      "id": 11,
       "name": "台中市南屯運動中心",
       "location": {
         "address": "台中市南屯區黎明路一段568號",
@@ -52,7 +194,7 @@
       "line_group": ""
     },
     {
-      "id": 4,
+      "id": 12,
       "name": "高雄市鳳山運動園區",
       "location": {
         "address": "高雄市鳳山區體育路50號",

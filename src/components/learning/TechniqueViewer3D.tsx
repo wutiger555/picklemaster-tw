@@ -4,214 +4,489 @@ import { OrbitControls, PerspectiveCamera, Html } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
 
-// 3D 人形模型（使用基礎幾何體）
+// 真實比例的 3D 人形模型
+// 參考：成人平均身高 170cm，使用真實人體比例建模
 function PlayerModel({ technique, step }: { technique: string; step: number }) {
   const groupRef = useRef<THREE.Group>(null);
-  const leftArmRef = useRef<THREE.Group>(null);
-  const rightArmRef = useRef<THREE.Group>(null);
-  const bodyRef = useRef<THREE.Group>(null);
+  const torsoRef = useRef<THREE.Group>(null);
+  const leftShoulderRef = useRef<THREE.Group>(null);
+  const leftElbowRef = useRef<THREE.Group>(null);
+  const rightShoulderRef = useRef<THREE.Group>(null);
+  const rightElbowRef = useRef<THREE.Group>(null);
+  const leftHipRef = useRef<THREE.Group>(null);
+  const leftKneeRef = useRef<THREE.Group>(null);
+  const rightHipRef = useRef<THREE.Group>(null);
+  const rightKneeRef = useRef<THREE.Group>(null);
 
-  // 根據技術和步驟設定詳細姿勢（基於 USA Pickleball 官方規範）
+  // 根據技術和步驟設定詳細姿勢（基於 USA Pickleball 官方規範和真實動作）
   const getPose = () => {
     if (technique === 'serve') {
       switch (step) {
         case 0: // 準備姿勢
           return {
-            armRotation: 0,
-            armSwing: 0,
-            bodyRotation: 0,
-            bodyLean: 0,
-            leftLegBend: 0,
-            rightLegBend: 0,
-            paddleAngle: 0,
+            torsoRotation: { x: 0, y: 0, z: 0 },
+            leftShoulder: { x: 0, y: 0, z: 0.3 },
+            leftElbow: { x: 0, y: 0, z: 1.2 },
+            rightShoulder: { x: 0.2, y: 0, z: -0.4 },
+            rightElbow: { x: 1.0, y: 0, z: 0 },
+            leftHip: { x: 0.1, y: 0, z: 0 },
+            leftKnee: { x: 0.2, y: 0, z: 0 },
+            rightHip: { x: 0.1, y: 0, z: 0 },
+            rightKnee: { x: 0.2, y: 0, z: 0 },
+            paddleRotation: { x: 0, y: 0, z: 0 },
           };
         case 1: // 後擺動作
           return {
-            armRotation: -0.3,
-            armSwing: -Math.PI / 6,
-            bodyRotation: -0.3,
-            bodyLean: 0.1,
-            leftLegBend: 0.1,
-            rightLegBend: -0.1,
-            paddleAngle: -Math.PI / 6,
+            torsoRotation: { x: 0.15, y: -0.4, z: 0 },
+            leftShoulder: { x: -0.3, y: 0, z: 0.5 },
+            leftElbow: { x: 0.8, y: 0, z: 1.5 },
+            rightShoulder: { x: 0.3, y: 0, z: -0.5 },
+            rightElbow: { x: 1.2, y: 0, z: 0 },
+            leftHip: { x: 0.15, y: 0, z: 0.1 },
+            leftKnee: { x: 0.3, y: 0, z: 0 },
+            rightHip: { x: 0.05, y: 0, z: -0.1 },
+            rightKnee: { x: 0.15, y: 0, z: 0 },
+            paddleRotation: { x: -Math.PI / 6, y: 0, z: -Math.PI / 4 },
           };
         case 2: // 擊球瞬間（關鍵：由下往上）
           return {
-            armRotation: 0.2,
-            armSwing: Math.PI / 3,
-            bodyRotation: 0.2,
-            bodyLean: -0.15,
-            leftLegBend: 0.2,
-            rightLegBend: -0.2,
-            paddleAngle: Math.PI / 4,
+            torsoRotation: { x: -0.2, y: 0.3, z: 0 },
+            leftShoulder: { x: 0.4, y: 0, z: 0.2 },
+            leftElbow: { x: -0.3, y: 0, z: 0.8 },
+            rightShoulder: { x: 0.1, y: 0, z: -0.3 },
+            rightElbow: { x: 0.8, y: 0, z: 0 },
+            leftHip: { x: 0.2, y: 0, z: 0.15 },
+            leftKnee: { x: 0.4, y: 0, z: 0 },
+            rightHip: { x: 0.1, y: 0, z: -0.15 },
+            rightKnee: { x: 0.25, y: 0, z: 0 },
+            paddleRotation: { x: Math.PI / 4, y: 0, z: Math.PI / 8 },
           };
         case 3: // 跟進動作
           return {
-            armRotation: 0.4,
-            armSwing: Math.PI / 2,
-            bodyRotation: 0.4,
-            bodyLean: -0.2,
-            leftLegBend: 0.15,
-            rightLegBend: -0.15,
-            paddleAngle: Math.PI / 3,
+            torsoRotation: { x: -0.25, y: 0.5, z: 0 },
+            leftShoulder: { x: 0.6, y: 0, z: 0 },
+            leftElbow: { x: -0.5, y: 0, z: 0.4 },
+            rightShoulder: { x: 0, y: 0, z: -0.2 },
+            rightElbow: { x: 0.6, y: 0, z: 0 },
+            leftHip: { x: 0.2, y: 0, z: 0.2 },
+            leftKnee: { x: 0.35, y: 0, z: 0 },
+            rightHip: { x: 0.15, y: 0, z: -0.1 },
+            rightKnee: { x: 0.3, y: 0, z: 0 },
+            paddleRotation: { x: Math.PI / 3, y: 0, z: Math.PI / 6 },
           };
         default:
           return {
-            armRotation: 0,
-            armSwing: 0,
-            bodyRotation: 0,
-            bodyLean: 0,
-            leftLegBend: 0,
-            rightLegBend: 0,
-            paddleAngle: 0,
+            torsoRotation: { x: 0, y: 0, z: 0 },
+            leftShoulder: { x: 0, y: 0, z: 0.3 },
+            leftElbow: { x: 0, y: 0, z: 1.2 },
+            rightShoulder: { x: 0.2, y: 0, z: -0.4 },
+            rightElbow: { x: 1.0, y: 0, z: 0 },
+            leftHip: { x: 0.1, y: 0, z: 0 },
+            leftKnee: { x: 0.2, y: 0, z: 0 },
+            rightHip: { x: 0.1, y: 0, z: 0 },
+            rightKnee: { x: 0.2, y: 0, z: 0 },
+            paddleRotation: { x: 0, y: 0, z: 0 },
           };
       }
     } else if (technique === 'volley') {
       switch (step) {
         case 0: // 準備站位
           return {
-            armRotation: 0,
-            armSwing: Math.PI / 6,
-            bodyRotation: 0,
-            bodyLean: 0.05,
-            leftLegBend: 0.1,
-            rightLegBend: 0.1,
-            paddleAngle: Math.PI / 6,
+            torsoRotation: { x: 0.1, y: 0, z: 0 },
+            leftShoulder: { x: 0.2, y: 0, z: 0.4 },
+            leftElbow: { x: -0.2, y: 0, z: 1.0 },
+            rightShoulder: { x: 0.2, y: 0, z: -0.4 },
+            rightElbow: { x: 1.0, y: 0, z: 0 },
+            leftHip: { x: 0.15, y: 0, z: 0 },
+            leftKnee: { x: 0.3, y: 0, z: 0 },
+            rightHip: { x: 0.15, y: 0, z: 0 },
+            rightKnee: { x: 0.3, y: 0, z: 0 },
+            paddleRotation: { x: Math.PI / 6, y: 0, z: 0 },
           };
         case 1: // 預判來球
           return {
-            armRotation: -0.2,
-            armSwing: Math.PI / 4,
-            bodyRotation: -0.2,
-            bodyLean: 0.1,
-            leftLegBend: 0.15,
-            rightLegBend: 0.05,
-            paddleAngle: Math.PI / 4,
+            torsoRotation: { x: 0.15, y: -0.3, z: 0 },
+            leftShoulder: { x: 0.1, y: 0, z: 0.5 },
+            leftElbow: { x: -0.1, y: 0, z: 1.1 },
+            rightShoulder: { x: 0.3, y: 0, z: -0.5 },
+            rightElbow: { x: 1.1, y: 0, z: 0 },
+            leftHip: { x: 0.2, y: 0, z: 0.1 },
+            leftKnee: { x: 0.4, y: 0, z: 0 },
+            rightHip: { x: 0.1, y: 0, z: -0.1 },
+            rightKnee: { x: 0.25, y: 0, z: 0 },
+            paddleRotation: { x: Math.PI / 5, y: 0, z: -Math.PI / 8 },
           };
         case 2: // 快速反應擊球
           return {
-            armRotation: 0.3,
-            armSwing: Math.PI / 3,
-            bodyRotation: 0.3,
-            bodyLean: -0.1,
-            leftLegBend: 0.2,
-            rightLegBend: 0.1,
-            paddleAngle: Math.PI / 3,
+            torsoRotation: { x: -0.1, y: 0.4, z: 0 },
+            leftShoulder: { x: 0.5, y: 0, z: 0.2 },
+            leftElbow: { x: -0.4, y: 0, z: 0.7 },
+            rightShoulder: { x: 0.1, y: 0, z: -0.3 },
+            rightElbow: { x: 0.8, y: 0, z: 0 },
+            leftHip: { x: 0.2, y: 0, z: 0.15 },
+            leftKnee: { x: 0.4, y: 0, z: 0 },
+            rightHip: { x: 0.15, y: 0, z: -0.1 },
+            rightKnee: { x: 0.3, y: 0, z: 0 },
+            paddleRotation: { x: Math.PI / 4, y: 0, z: Math.PI / 6 },
           };
         case 3: // 回位
           return {
-            armRotation: 0.1,
-            armSwing: Math.PI / 6,
-            bodyRotation: 0,
-            bodyLean: 0,
-            leftLegBend: 0.1,
-            rightLegBend: 0.1,
-            paddleAngle: Math.PI / 6,
+            torsoRotation: { x: 0.05, y: 0, z: 0 },
+            leftShoulder: { x: 0.2, y: 0, z: 0.3 },
+            leftElbow: { x: -0.2, y: 0, z: 1.0 },
+            rightShoulder: { x: 0.2, y: 0, z: -0.4 },
+            rightElbow: { x: 1.0, y: 0, z: 0 },
+            leftHip: { x: 0.15, y: 0, z: 0 },
+            leftKnee: { x: 0.3, y: 0, z: 0 },
+            rightHip: { x: 0.15, y: 0, z: 0 },
+            rightKnee: { x: 0.3, y: 0, z: 0 },
+            paddleRotation: { x: Math.PI / 6, y: 0, z: 0 },
           };
         default:
           return {
-            armRotation: 0,
-            armSwing: 0,
-            bodyRotation: 0,
-            bodyLean: 0,
-            leftLegBend: 0,
-            rightLegBend: 0,
-            paddleAngle: 0,
+            torsoRotation: { x: 0, y: 0, z: 0 },
+            leftShoulder: { x: 0, y: 0, z: 0.3 },
+            leftElbow: { x: 0, y: 0, z: 1.2 },
+            rightShoulder: { x: 0.2, y: 0, z: -0.4 },
+            rightElbow: { x: 1.0, y: 0, z: 0 },
+            leftHip: { x: 0.1, y: 0, z: 0 },
+            leftKnee: { x: 0.2, y: 0, z: 0 },
+            rightHip: { x: 0.1, y: 0, z: 0 },
+            rightKnee: { x: 0.2, y: 0, z: 0 },
+            paddleRotation: { x: 0, y: 0, z: 0 },
           };
       }
     }
     return {
-      armRotation: 0,
-      armSwing: 0,
-      bodyRotation: 0,
-      bodyLean: 0,
-      leftLegBend: 0,
-      rightLegBend: 0,
-      paddleAngle: 0,
+      torsoRotation: { x: 0, y: 0, z: 0 },
+      leftShoulder: { x: 0, y: 0, z: 0.3 },
+      leftElbow: { x: 0, y: 0, z: 1.2 },
+      rightShoulder: { x: 0.2, y: 0, z: -0.4 },
+      rightElbow: { x: 1.0, y: 0, z: 0 },
+      leftHip: { x: 0.1, y: 0, z: 0 },
+      leftKnee: { x: 0.2, y: 0, z: 0 },
+      rightHip: { x: 0.1, y: 0, z: 0 },
+      rightKnee: { x: 0.2, y: 0, z: 0 },
+      paddleRotation: { x: 0, y: 0, z: 0 },
     };
   };
 
-  const pose = getPose();
+  const targetPose = getPose();
 
   useFrame(() => {
-    if (groupRef.current) {
-      // 平滑過渡身體旋轉
-      groupRef.current.rotation.y += (pose.bodyRotation - groupRef.current.rotation.y) * 0.1;
-      groupRef.current.rotation.x += (pose.bodyLean - groupRef.current.rotation.x) * 0.1;
+    const lerpFactor = 0.08;
+
+    if (torsoRef.current) {
+      torsoRef.current.rotation.x += (targetPose.torsoRotation.x - torsoRef.current.rotation.x) * lerpFactor;
+      torsoRef.current.rotation.y += (targetPose.torsoRotation.y - torsoRef.current.rotation.y) * lerpFactor;
+      torsoRef.current.rotation.z += (targetPose.torsoRotation.z - torsoRef.current.rotation.z) * lerpFactor;
     }
-    if (leftArmRef.current) {
-      // 平滑過渡左手臂動作
-      leftArmRef.current.rotation.z += (pose.armRotation - leftArmRef.current.rotation.z) * 0.1;
-      leftArmRef.current.rotation.x += (pose.armSwing - leftArmRef.current.rotation.x) * 0.1;
+
+    if (leftShoulderRef.current) {
+      leftShoulderRef.current.rotation.x += (targetPose.leftShoulder.x - leftShoulderRef.current.rotation.x) * lerpFactor;
+      leftShoulderRef.current.rotation.y += (targetPose.leftShoulder.y - leftShoulderRef.current.rotation.y) * lerpFactor;
+      leftShoulderRef.current.rotation.z += (targetPose.leftShoulder.z - leftShoulderRef.current.rotation.z) * lerpFactor;
+    }
+
+    if (leftElbowRef.current) {
+      leftElbowRef.current.rotation.x += (targetPose.leftElbow.x - leftElbowRef.current.rotation.x) * lerpFactor;
+      leftElbowRef.current.rotation.z += (targetPose.leftElbow.z - leftElbowRef.current.rotation.z) * lerpFactor;
+    }
+
+    if (rightShoulderRef.current) {
+      rightShoulderRef.current.rotation.x += (targetPose.rightShoulder.x - rightShoulderRef.current.rotation.x) * lerpFactor;
+      rightShoulderRef.current.rotation.z += (targetPose.rightShoulder.z - rightShoulderRef.current.rotation.z) * lerpFactor;
+    }
+
+    if (rightElbowRef.current) {
+      rightElbowRef.current.rotation.x += (targetPose.rightElbow.x - rightElbowRef.current.rotation.x) * lerpFactor;
+    }
+
+    if (leftHipRef.current) {
+      leftHipRef.current.rotation.x += (targetPose.leftHip.x - leftHipRef.current.rotation.x) * lerpFactor;
+      leftHipRef.current.rotation.z += (targetPose.leftHip.z - leftHipRef.current.rotation.z) * lerpFactor;
+    }
+
+    if (leftKneeRef.current) {
+      leftKneeRef.current.rotation.x += (targetPose.leftKnee.x - leftKneeRef.current.rotation.x) * lerpFactor;
+    }
+
+    if (rightHipRef.current) {
+      rightHipRef.current.rotation.x += (targetPose.rightHip.x - rightHipRef.current.rotation.x) * lerpFactor;
+      rightHipRef.current.rotation.z += (targetPose.rightHip.z - rightHipRef.current.rotation.z) * lerpFactor;
+    }
+
+    if (rightKneeRef.current) {
+      rightKneeRef.current.rotation.x += (targetPose.rightKnee.x - rightKneeRef.current.rotation.x) * lerpFactor;
     }
   });
 
   return (
     <group ref={groupRef}>
-      {/* 身體 */}
-      <group ref={bodyRef} position={[0, 1.2, 0]}>
-        <mesh>
-          <boxGeometry args={[0.6, 1.2, 0.4]} />
+      {/* 軀幹 - 使用真實比例 */}
+      <group ref={torsoRef} position={[0, 1.0, 0]}>
+        {/* 胸部/上軀幹 */}
+        <mesh position={[0, 0.25, 0]} castShadow>
+          <capsuleGeometry args={[0.22, 0.4, 16, 32]} />
           <meshStandardMaterial color="#3b82f6" />
         </mesh>
+
+        {/* 腹部/下軀幹 */}
+        <mesh position={[0, -0.15, 0]} castShadow>
+          <capsuleGeometry args={[0.18, 0.3, 16, 32]} />
+          <meshStandardMaterial color="#2563eb" />
+        </mesh>
+
+        {/* 頸部 */}
+        <mesh position={[0, 0.55, 0]} castShadow>
+          <cylinderGeometry args={[0.08, 0.09, 0.12, 16]} />
+          <meshStandardMaterial color="#f59e0b" />
+        </mesh>
+
+        {/* 頭部 - 橢圓形更真實 */}
+        <mesh position={[0, 0.72, 0]} castShadow>
+          <sphereGeometry args={[0.16, 32, 32]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+
+        {/* 臉部特徵（簡化） */}
+        <mesh position={[0, 0.72, 0.15]} castShadow>
+          <sphereGeometry args={[0.03, 16, 16]} />
+          <meshStandardMaterial color="#f59e0b" />
+        </mesh>
+
+        {/* 左肩膀（持拍手）*/}
+        <group ref={leftShoulderRef} position={[-0.28, 0.35, 0]}>
+          {/* 肩關節 */}
+          <mesh castShadow>
+            <sphereGeometry args={[0.09, 16, 16]} />
+            <meshStandardMaterial color="#60a5fa" />
+          </mesh>
+
+          {/* 上臂 */}
+          <mesh position={[0, -0.18, 0]} castShadow>
+            <capsuleGeometry args={[0.06, 0.28, 12, 24]} />
+            <meshStandardMaterial color="#3b82f6" />
+          </mesh>
+
+          {/* 左手肘 */}
+          <group ref={leftElbowRef} position={[0, -0.36, 0]}>
+            {/* 肘關節 */}
+            <mesh castShadow>
+              <sphereGeometry args={[0.065, 16, 16]} />
+              <meshStandardMaterial color="#93c5fd" />
+            </mesh>
+
+            {/* 前臂 */}
+            <mesh position={[0, -0.16, 0]} castShadow>
+              <capsuleGeometry args={[0.055, 0.26, 12, 24]} />
+              <meshStandardMaterial color="#60a5fa" />
+            </mesh>
+
+            {/* 手腕 */}
+            <mesh position={[0, -0.32, 0]} castShadow>
+              <sphereGeometry args={[0.05, 12, 12]} />
+              <meshStandardMaterial color="#93c5fd" />
+            </mesh>
+
+            {/* 手掌 */}
+            <mesh position={[0, -0.4, 0]} rotation={[0, 0, 0]} castShadow>
+              <boxGeometry args={[0.08, 0.12, 0.04]} />
+              <meshStandardMaterial color="#f59e0b" />
+            </mesh>
+
+            {/* 球拍 - 正確的扁平橢圓形（參考 FloatingPickleball.tsx）*/}
+            <group position={[0, -0.52, 0]} rotation={[targetPose.paddleRotation.x, targetPose.paddleRotation.y, targetPose.paddleRotation.z]}>
+              {/* 拍面 - 扁平矩形 */}
+              <mesh castShadow>
+                <boxGeometry args={[0.18, 0.24, 0.015]} />
+                <meshStandardMaterial color="#2563eb" roughness={0.35} metalness={0.15} />
+              </mesh>
+
+              {/* 拍面邊框 */}
+              <mesh position={[0, 0, 0]}>
+                <boxGeometry args={[0.185, 0.245, 0.012]} />
+                <meshStandardMaterial color="#1e3a8a" roughness={0.4} />
+              </mesh>
+
+              {/* 拍面蜂窩紋理（簡化版）*/}
+              {[...Array(5)].map((_, row) => (
+                [...Array(4)].map((_, col) => {
+                  const x = -0.075 + col * 0.05;
+                  const y = -0.1 + row * 0.05;
+                  const offsetX = row % 2 === 0 ? 0 : 0.025;
+
+                  return (
+                    <mesh
+                      key={`hex-${row}-${col}`}
+                      position={[x + offsetX, y, 0.008]}
+                    >
+                      <circleGeometry args={[0.018, 6]} />
+                      <meshStandardMaterial color="#3b82f6" roughness={0.3} />
+                    </mesh>
+                  );
+                })
+              )).flat()}
+
+              {/* 握把 */}
+              <group position={[0, -0.18, 0]}>
+                <mesh rotation={[0, 0, 0]} castShadow>
+                  <cylinderGeometry args={[0.015, 0.018, 0.12, 12]} />
+                  <meshStandardMaterial color="#1f2937" roughness={0.85} />
+                </mesh>
+
+                {/* 握把纏帶紋理 */}
+                {[...Array(6)].map((_, i) => (
+                  <mesh
+                    key={`grip-${i}`}
+                    position={[0, -0.05 + i * 0.02, 0]}
+                    rotation={[0, 0, 0]}
+                  >
+                    <cylinderGeometry args={[0.016, 0.016, 0.008, 12]} />
+                    <meshStandardMaterial color={i % 2 === 0 ? '#374151' : '#1f2937'} roughness={0.9} />
+                  </mesh>
+                ))}
+
+                {/* 握把端蓋 */}
+                <mesh position={[0, -0.065, 0]}>
+                  <cylinderGeometry args={[0.02, 0.018, 0.01, 12]} />
+                  <meshStandardMaterial color="#111827" />
+                </mesh>
+              </group>
+            </group>
+          </group>
+        </group>
+
+        {/* 右肩膀 */}
+        <group ref={rightShoulderRef} position={[0.28, 0.35, 0]}>
+          {/* 肩關節 */}
+          <mesh castShadow>
+            <sphereGeometry args={[0.09, 16, 16]} />
+            <meshStandardMaterial color="#60a5fa" />
+          </mesh>
+
+          {/* 上臂 */}
+          <mesh position={[0, -0.18, 0]} castShadow>
+            <capsuleGeometry args={[0.06, 0.28, 12, 24]} />
+            <meshStandardMaterial color="#3b82f6" />
+          </mesh>
+
+          {/* 右手肘 */}
+          <group ref={rightElbowRef} position={[0, -0.36, 0]}>
+            {/* 肘關節 */}
+            <mesh castShadow>
+              <sphereGeometry args={[0.065, 16, 16]} />
+              <meshStandardMaterial color="#93c5fd" />
+            </mesh>
+
+            {/* 前臂 */}
+            <mesh position={[0, -0.16, 0]} castShadow>
+              <capsuleGeometry args={[0.055, 0.26, 12, 24]} />
+              <meshStandardMaterial color="#60a5fa" />
+            </mesh>
+
+            {/* 手 */}
+            <mesh position={[0, -0.35, 0]} castShadow>
+              <boxGeometry args={[0.08, 0.12, 0.04]} />
+              <meshStandardMaterial color="#f59e0b" />
+            </mesh>
+          </group>
+        </group>
       </group>
 
-      {/* 頭部 */}
-      <mesh position={[0, 2.1, 0]}>
-        <sphereGeometry args={[0.3, 32, 32]} />
-        <meshStandardMaterial color="#f59e0b" />
+      {/* 臀部 */}
+      <mesh position={[0, 0.58, 0]} castShadow>
+        <capsuleGeometry args={[0.16, 0.1, 16, 24]} />
+        <meshStandardMaterial color="#1e40af" />
       </mesh>
 
-      {/* 左手臂（持拍手）*/}
-      <group ref={leftArmRef} position={[-0.5, 1.5, 0]}>
-        {/* 上臂 */}
-        <mesh position={[0, -0.2, 0]}>
-          <cylinderGeometry args={[0.08, 0.08, 0.4]} />
-          <meshStandardMaterial color="#60a5fa" />
+      {/* 左腿 */}
+      <group ref={leftHipRef} position={[-0.12, 0.52, 0]}>
+        {/* 髖關節 */}
+        <mesh castShadow>
+          <sphereGeometry args={[0.08, 16, 16]} />
+          <meshStandardMaterial color="#1e3a8a" />
         </mesh>
-        {/* 前臂 */}
-        <mesh position={[0, -0.5, 0]}>
-          <cylinderGeometry args={[0.07, 0.07, 0.4]} />
-          <meshStandardMaterial color="#93c5fd" />
+
+        {/* 大腿 */}
+        <mesh position={[0, -0.22, 0]} castShadow>
+          <capsuleGeometry args={[0.075, 0.36, 12, 24]} />
+          <meshStandardMaterial color="#1e40af" />
         </mesh>
-        {/* 球拍 */}
-        <group position={[0, -0.8, 0]} rotation={[Math.PI / 2, 0, pose.paddleAngle]}>
-          {/* 拍面 */}
-          <mesh>
-            <cylinderGeometry args={[0.28, 0.28, 0.04]} />
-            <meshStandardMaterial color="#fbbf24" />
+
+        {/* 左膝蓋 */}
+        <group ref={leftKneeRef} position={[0, -0.44, 0]}>
+          {/* 膝關節 */}
+          <mesh castShadow>
+            <sphereGeometry args={[0.07, 16, 16]} />
+            <meshStandardMaterial color="#1e3a8a" />
           </mesh>
-          {/* 拍柄 */}
-          <mesh position={[0, -0.15, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.04, 0.04, 0.25]} />
-            <meshStandardMaterial color="#78350f" />
+
+          {/* 小腿 */}
+          <mesh position={[0, -0.2, 0]} castShadow>
+            <capsuleGeometry args={[0.06, 0.32, 12, 24]} />
+            <meshStandardMaterial color="#2563eb" />
+          </mesh>
+
+          {/* 腳踝 */}
+          <mesh position={[0, -0.38, 0]} castShadow>
+            <sphereGeometry args={[0.055, 12, 12]} />
+            <meshStandardMaterial color="#1e3a8a" />
+          </mesh>
+
+          {/* 腳 */}
+          <mesh position={[0, -0.44, 0.05]} castShadow>
+            <boxGeometry args={[0.08, 0.06, 0.16]} />
+            <meshStandardMaterial color="#111827" />
           </mesh>
         </group>
       </group>
 
-      {/* 右手臂 */}
-      <group ref={rightArmRef} position={[0.5, 1.5, 0]} rotation={[0, 0, -0.3]}>
-        <mesh position={[0, -0.4, 0]}>
-          <cylinderGeometry args={[0.08, 0.08, 0.8]} />
-          <meshStandardMaterial color="#60a5fa" />
-        </mesh>
-      </group>
-
-      {/* 左腿 */}
-      <mesh position={[-0.2, 0.3 + pose.leftLegBend * 0.2, 0]} rotation={[pose.leftLegBend, 0, 0]}>
-        <cylinderGeometry args={[0.12, 0.12, 0.6]} />
-        <meshStandardMaterial color="#1e40af" />
-      </mesh>
-
       {/* 右腿 */}
-      <mesh position={[0.2, 0.3 + pose.rightLegBend * 0.2, 0]} rotation={[pose.rightLegBend, 0, 0]}>
-        <cylinderGeometry args={[0.12, 0.12, 0.6]} />
-        <meshStandardMaterial color="#1e40af" />
-      </mesh>
+      <group ref={rightHipRef} position={[0.12, 0.52, 0]}>
+        {/* 髖關節 */}
+        <mesh castShadow>
+          <sphereGeometry args={[0.08, 16, 16]} />
+          <meshStandardMaterial color="#1e3a8a" />
+        </mesh>
+
+        {/* 大腿 */}
+        <mesh position={[0, -0.22, 0]} castShadow>
+          <capsuleGeometry args={[0.075, 0.36, 12, 24]} />
+          <meshStandardMaterial color="#1e40af" />
+        </mesh>
+
+        {/* 右膝蓋 */}
+        <group ref={rightKneeRef} position={[0, -0.44, 0]}>
+          {/* 膝關節 */}
+          <mesh castShadow>
+            <sphereGeometry args={[0.07, 16, 16]} />
+            <meshStandardMaterial color="#1e3a8a" />
+          </mesh>
+
+          {/* 小腿 */}
+          <mesh position={[0, -0.2, 0]} castShadow>
+            <capsuleGeometry args={[0.06, 0.32, 12, 24]} />
+            <meshStandardMaterial color="#2563eb" />
+          </mesh>
+
+          {/* 腳踝 */}
+          <mesh position={[0, -0.38, 0]} castShadow>
+            <sphereGeometry args={[0.055, 12, 12]} />
+            <meshStandardMaterial color="#1e3a8a" />
+          </mesh>
+
+          {/* 腳 */}
+          <mesh position={[0, -0.44, 0.05]} castShadow>
+            <boxGeometry args={[0.08, 0.06, 0.16]} />
+            <meshStandardMaterial color="#111827" />
+          </mesh>
+        </group>
+      </group>
 
       {/* 腳部位置標記 */}
       {technique === 'serve' && step === 0 && (
-        <Html position={[0, -0.2, 0]} center>
+        <Html position={[0, -0.35, 0]} center>
           <div className="bg-court-500 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
             🦶 雙腳站穩
           </div>
@@ -221,17 +496,17 @@ function PlayerModel({ technique, step }: { technique: string; step: number }) {
       {/* 擊球點標註 */}
       {step === 2 && (
         <>
-          <Html position={[-0.5, 1.0, 0]} center>
+          <Html position={[-0.4, 0.65, 0]} center>
             <div className="bg-pickleball-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
               🏓 擊球點（低於腰部）
             </div>
           </Html>
-          <Html position={[0, 0.5, 0]} center>
+          <Html position={[0, 0.3, 0]} center>
             <div className="bg-sport-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
               ⚖️ 重心前移
             </div>
           </Html>
-          <Html position={[-0.5, 1.6, 0]} center>
+          <Html position={[-0.5, 1.1, 0]} center>
             <div className="bg-court-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
               📐 拍面由下往上
             </div>
@@ -241,7 +516,7 @@ function PlayerModel({ technique, step }: { technique: string; step: number }) {
 
       {/* 後擺標註 */}
       {technique === 'serve' && step === 1 && (
-        <Html position={[-0.5, 1.3, 0]} center>
+        <Html position={[-0.5, 0.9, 0]} center>
           <div className="bg-pickleball-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
             ↙️ 後擺準備
           </div>
@@ -250,7 +525,7 @@ function PlayerModel({ technique, step }: { technique: string; step: number }) {
 
       {/* 跟進標註 */}
       {technique === 'serve' && step === 3 && (
-        <Html position={[-0.5, 1.5, 0]} center>
+        <Html position={[-0.5, 1.2, 0]} center>
           <div className="bg-sport-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
             ↗️ 順勢跟進
           </div>
@@ -260,14 +535,84 @@ function PlayerModel({ technique, step }: { technique: string; step: number }) {
   );
 }
 
-// 球場地板
+// 球場地板 - 正確的匹克球場規格
+// 44英尺長 x 20英尺寬 (13.41m x 6.10m)
+// 比例：44:20 = 2.2:1
 function Court() {
+  // 使用比例尺：1單位 = 1英尺 / 4 = 0.25 (縮小以適應畫面)
+  const scale = 0.22;
+  const courtLength = 44 * scale; // 9.68
+  const courtWidth = 20 * scale; // 4.4
+  const kitchenLength = 7 * scale; // 1.54
+
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-      <planeGeometry args={[10, 10]} />
-      <meshStandardMaterial color="#15803d" />
-      <gridHelper args={[10, 10, '#86efac', '#4ade80']} position={[0, 0.01, 0]} rotation={[Math.PI / 2, 0, 0]} />
-    </mesh>
+    <group rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+      {/* 球場地面 */}
+      <mesh receiveShadow>
+        <planeGeometry args={[courtWidth, courtLength]} />
+        <meshStandardMaterial color="#15803d" />
+      </mesh>
+
+      {/* 球場外框（邊線和底線）- 白色 */}
+      <lineSegments position={[0, 0, 0.01]}>
+        <edgesGeometry
+          attach="geometry"
+          args={[new THREE.PlaneGeometry(courtWidth, courtLength)]}
+        />
+        <lineBasicMaterial color="#ffffff" linewidth={3} />
+      </lineSegments>
+
+      {/* 球網（中線）*/}
+      <mesh position={[0, 0, 0.015]}>
+        <boxGeometry args={[courtWidth + 0.1, 0.08, 0.02]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+
+      {/* 上半場廚房區線 */}
+      <mesh position={[0, kitchenLength, 0.01]}>
+        <boxGeometry args={[courtWidth, 0.04, 0.01]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+
+      {/* 下半場廚房區線 */}
+      <mesh position={[0, -kitchenLength, 0.01]}>
+        <boxGeometry args={[courtWidth, 0.04, 0.01]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+
+      {/* 中線（分隔發球區）- 虛線效果 */}
+      {/* 上半場中線 */}
+      {[...Array(15)].map((_, i) => (
+        <mesh
+          key={`top-${i}`}
+          position={[0, kitchenLength + (courtLength / 2 - kitchenLength) / 15 * (i + 0.5), 0.01]}
+        >
+          <boxGeometry args={[0.04, (courtLength / 2 - kitchenLength) / 30, 0.01]} />
+          <meshStandardMaterial color="#ffffff" />
+        </mesh>
+      ))}
+
+      {/* 下半場中線 */}
+      {[...Array(15)].map((_, i) => (
+        <mesh
+          key={`bottom-${i}`}
+          position={[0, -kitchenLength - (courtLength / 2 - kitchenLength) / 15 * (i + 0.5), 0.01]}
+        >
+          <boxGeometry args={[0.04, (courtLength / 2 - kitchenLength) / 30, 0.01]} />
+          <meshStandardMaterial color="#ffffff" />
+        </mesh>
+      ))}
+
+      {/* 廚房區標記（半透明黃色區域）*/}
+      <mesh position={[0, kitchenLength / 2, 0.005]}>
+        <planeGeometry args={[courtWidth - 0.05, kitchenLength]} />
+        <meshStandardMaterial color="#fbbf24" opacity={0.15} transparent />
+      </mesh>
+      <mesh position={[0, -kitchenLength / 2, 0.005]}>
+        <planeGeometry args={[courtWidth - 0.05, kitchenLength]} />
+        <meshStandardMaterial color="#fbbf24" opacity={0.15} transparent />
+      </mesh>
+    </group>
   );
 }
 

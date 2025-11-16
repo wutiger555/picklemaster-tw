@@ -121,32 +121,29 @@ const InteractiveCourt = () => {
         </p>
 
         <div className="relative">
-          {/* 球場尺寸標註 */}
-          <div className="flex justify-between items-center mb-2 text-xs text-gray-500">
-            <span>← 20 英尺 (6.10 公尺) →</span>
-          </div>
-
-          {/* SVG 球場 */}
+          {/* SVG 球場 - 正確的俯視圖 */}
           <svg
-            viewBox="0 0 440 200"
-            className="w-full h-auto border-2 border-gray-300 rounded-lg"
+            viewBox="0 0 240 480"
+            className="w-full h-auto max-w-md mx-auto border-2 border-gray-300 rounded-lg shadow-lg"
             xmlns="http://www.w3.org/2000/svg"
           >
             {/* 球場背景 */}
-            <rect x="0" y="0" width="440" height="200" fill="#15803d" />
+            <rect x="0" y="0" width="240" height="480" fill="#15803d" />
 
-            {/* 球場外框 */}
+            {/* 球場外框 - 20英尺寬 x 44英尺長 */}
             <rect
               x="20"
               y="20"
-              width="400"
-              height="160"
+              width="200"
+              height="440"
               fill="none"
               stroke="white"
               strokeWidth="3"
             />
 
-            {/* 中線 */}
+            {/* ===== 上半場（近端）===== */}
+
+            {/* 上半場中線 - 從底線到廚房區 */}
             <g
               className="cursor-help transition-all duration-300"
               onMouseEnter={() => setHoveredArea('centerline')}
@@ -154,24 +151,74 @@ const InteractiveCourt = () => {
               onClick={() => setSelectedArea('centerline')}
             >
               <line
-                x1="220"
+                x1="120"
                 y1="20"
-                x2="220"
-                y2="87"
+                x2="120"
+                y2="171"
                 stroke={hoveredArea === 'centerline' ? '#fbbf24' : 'white'}
                 strokeWidth={hoveredArea === 'centerline' ? '3' : '2'}
-              />
-              <line
-                x1="220"
-                y1="113"
-                x2="220"
-                y2="180"
-                stroke={hoveredArea === 'centerline' ? '#fbbf24' : 'white'}
-                strokeWidth={hoveredArea === 'centerline' ? '3' : '2'}
+                strokeDasharray="10,5"
               />
             </g>
 
-            {/* 左側非截擊區 */}
+            {/* 上半場偶數發球區（右側，從底線往球網看） */}
+            <g
+              className="cursor-pointer transition-all duration-300"
+              onClick={() => setSelectedArea('service-even')}
+              onMouseEnter={() => setHoveredArea('service-even')}
+              onMouseLeave={() => setHoveredArea(null)}
+            >
+              <rect
+                x="120"
+                y="20"
+                width="100"
+                height="151"
+                fill={
+                  hoveredArea === 'service-even' || selectedArea === 'service-even'
+                    ? 'rgba(96, 165, 250, 0.5)'
+                    : 'rgba(96, 165, 250, 0.2)'
+                }
+                stroke={hoveredArea === 'service-even' ? '#60a5fa' : 'transparent'}
+                strokeWidth="2"
+              />
+              {hoveredArea === 'service-even' && (
+                <text x="170" y="100" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
+                  偶數
+                </text>
+              )}
+            </g>
+
+            {/* 上半場奇數發球區（左側，從底線往球網看） */}
+            <g
+              className="cursor-pointer transition-all duration-300"
+              onClick={() => setSelectedArea('service-odd')}
+              onMouseEnter={() => setHoveredArea('service-odd')}
+              onMouseLeave={() => setHoveredArea(null)}
+            >
+              <rect
+                x="20"
+                y="20"
+                width="100"
+                height="151"
+                fill={
+                  hoveredArea === 'service-odd' || selectedArea === 'service-odd'
+                    ? 'rgba(74, 222, 128, 0.5)'
+                    : 'rgba(74, 222, 128, 0.2)'
+                }
+                stroke={hoveredArea === 'service-odd' ? '#4ade80' : 'transparent'}
+                strokeWidth="2"
+              />
+              {hoveredArea === 'service-odd' && (
+                <text x="70" y="100" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
+                  奇數
+                </text>
+              )}
+            </g>
+
+            {/* 上半場廚房區線 */}
+            <line x1="20" y1="171" x2="220" y2="171" stroke="white" strokeWidth="2" />
+
+            {/* 上半場廚房區（非截擊區）- 7英尺 */}
             <g
               className="cursor-pointer transition-all duration-300"
               onClick={() => setSelectedArea('kitchen')}
@@ -180,26 +227,38 @@ const InteractiveCourt = () => {
             >
               <rect
                 x="20"
-                y="20"
-                width="70"
-                height="160"
+                y="171"
+                width="200"
+                height="69"
                 fill={
                   hoveredArea === 'kitchen' || selectedArea === 'kitchen'
                     ? 'rgba(251, 191, 36, 0.5)'
-                    : 'rgba(251, 191, 36, 0.2)'
+                    : 'rgba(251, 191, 36, 0.25)'
                 }
-                stroke={hoveredArea === 'kitchen' || selectedArea === 'kitchen' ? '#fbbf24' : 'white'}
+                stroke={hoveredArea === 'kitchen' ? '#fbbf24' : 'transparent'}
                 strokeWidth="2"
               />
-              <line x1="90" y1="20" x2="90" y2="180" stroke="white" strokeWidth="2" />
               {hoveredArea === 'kitchen' && (
-                <text x="55" y="105" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
+                <text x="120" y="210" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
                   廚房區
                 </text>
               )}
             </g>
 
-            {/* 右側非截擊區 */}
+            {/* ===== 球網 - 在正中央 ===== */}
+            <g>
+              <line x1="20" y1="240" x2="220" y2="240" stroke="white" strokeWidth="5" />
+              <line x1="20" y1="238" x2="220" y2="238" stroke="#666" strokeWidth="1" />
+              <line x1="20" y1="242" x2="220" y2="242" stroke="#666" strokeWidth="1" />
+              <circle cx="120" cy="240" r="8" fill="white" stroke="#333" strokeWidth="2" />
+              <text x="120" y="244" textAnchor="middle" fill="#333" fontSize="10" fontWeight="bold">
+                網
+              </text>
+            </g>
+
+            {/* ===== 下半場（遠端）===== */}
+
+            {/* 下半場廚房區（非截擊區）- 7英尺 */}
             <g
               className="cursor-pointer transition-all duration-300"
               onClick={() => setSelectedArea('kitchen')}
@@ -207,27 +266,47 @@ const InteractiveCourt = () => {
               onMouseLeave={() => setHoveredArea(null)}
             >
               <rect
-                x="350"
-                y="20"
-                width="70"
-                height="160"
+                x="20"
+                y="240"
+                width="200"
+                height="69"
                 fill={
                   hoveredArea === 'kitchen' || selectedArea === 'kitchen'
                     ? 'rgba(251, 191, 36, 0.5)'
-                    : 'rgba(251, 191, 36, 0.2)'
+                    : 'rgba(251, 191, 36, 0.25)'
                 }
-                stroke={hoveredArea === 'kitchen' || selectedArea === 'kitchen' ? '#fbbf24' : 'white'}
+                stroke={hoveredArea === 'kitchen' ? '#fbbf24' : 'transparent'}
                 strokeWidth="2"
               />
-              <line x1="350" y1="20" x2="350" y2="180" stroke="white" strokeWidth="2" />
               {hoveredArea === 'kitchen' && (
-                <text x="385" y="105" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
+                <text x="120" y="280" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
                   廚房區
                 </text>
               )}
             </g>
 
-            {/* 左側偶數發球區（右側） */}
+            {/* 下半場廚房區線 */}
+            <line x1="20" y1="309" x2="220" y2="309" stroke="white" strokeWidth="2" />
+
+            {/* 下半場中線 - 從廚房區到底線 */}
+            <g
+              className="cursor-help transition-all duration-300"
+              onMouseEnter={() => setHoveredArea('centerline')}
+              onMouseLeave={() => setHoveredArea(null)}
+              onClick={() => setSelectedArea('centerline')}
+            >
+              <line
+                x1="120"
+                y1="309"
+                x2="120"
+                y2="460"
+                stroke={hoveredArea === 'centerline' ? '#fbbf24' : 'white'}
+                strokeWidth={hoveredArea === 'centerline' ? '3' : '2'}
+                strokeDasharray="10,5"
+              />
+            </g>
+
+            {/* 下半場偶數發球區（右側） */}
             <g
               className="cursor-pointer transition-all duration-300"
               onClick={() => setSelectedArea('service-even')}
@@ -235,24 +314,26 @@ const InteractiveCourt = () => {
               onMouseLeave={() => setHoveredArea(null)}
             >
               <rect
-                x="90"
-                y="20"
-                width="130"
-                height="80"
+                x="120"
+                y="309"
+                width="100"
+                height="151"
                 fill={
                   hoveredArea === 'service-even' || selectedArea === 'service-even'
-                    ? 'rgba(96, 165, 250, 0.4)'
-                    : 'rgba(96, 165, 250, 0.15)'
+                    ? 'rgba(96, 165, 250, 0.5)'
+                    : 'rgba(96, 165, 250, 0.2)'
                 }
+                stroke={hoveredArea === 'service-even' ? '#60a5fa' : 'transparent'}
+                strokeWidth="2"
               />
               {hoveredArea === 'service-even' && (
-                <text x="155" y="65" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
-                  偶數發球區
+                <text x="170" y="385" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
+                  偶數
                 </text>
               )}
             </g>
 
-            {/* 左側奇數發球區（左側） */}
+            {/* 下半場奇數發球區（左側） */}
             <g
               className="cursor-pointer transition-all duration-300"
               onClick={() => setSelectedArea('service-odd')}
@@ -260,103 +341,23 @@ const InteractiveCourt = () => {
               onMouseLeave={() => setHoveredArea(null)}
             >
               <rect
-                x="90"
-                y="100"
-                width="130"
-                height="80"
+                x="20"
+                y="309"
+                width="100"
+                height="151"
                 fill={
                   hoveredArea === 'service-odd' || selectedArea === 'service-odd'
-                    ? 'rgba(74, 222, 128, 0.4)'
-                    : 'rgba(74, 222, 128, 0.15)'
+                    ? 'rgba(74, 222, 128, 0.5)'
+                    : 'rgba(74, 222, 128, 0.2)'
                 }
+                stroke={hoveredArea === 'service-odd' ? '#4ade80' : 'transparent'}
+                strokeWidth="2"
               />
               {hoveredArea === 'service-odd' && (
-                <text x="155" y="145" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
-                  奇數發球區
+                <text x="70" y="385" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
+                  奇數
                 </text>
               )}
-            </g>
-
-            {/* 右側偶數發球區 */}
-            <g
-              className="cursor-pointer transition-all duration-300"
-              onClick={() => setSelectedArea('service-even')}
-              onMouseEnter={() => setHoveredArea('service-even')}
-              onMouseLeave={() => setHoveredArea(null)}
-            >
-              <rect
-                x="220"
-                y="20"
-                width="130"
-                height="80"
-                fill={
-                  hoveredArea === 'service-even' || selectedArea === 'service-even'
-                    ? 'rgba(96, 165, 250, 0.4)'
-                    : 'rgba(96, 165, 250, 0.15)'
-                }
-              />
-              {hoveredArea === 'service-even' && (
-                <text x="285" y="65" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
-                  偶數發球區
-                </text>
-              )}
-            </g>
-
-            {/* 右側奇數發球區 */}
-            <g
-              className="cursor-pointer transition-all duration-300"
-              onClick={() => setSelectedArea('service-odd')}
-              onMouseEnter={() => setHoveredArea('service-odd')}
-              onMouseLeave={() => setHoveredArea(null)}
-            >
-              <rect
-                x="220"
-                y="100"
-                width="130"
-                height="80"
-                fill={
-                  hoveredArea === 'service-odd' || selectedArea === 'service-odd'
-                    ? 'rgba(74, 222, 128, 0.4)'
-                    : 'rgba(74, 222, 128, 0.15)'
-                }
-              />
-              {hoveredArea === 'service-odd' && (
-                <text x="285" y="145" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
-                  奇數發球區
-                </text>
-              )}
-            </g>
-
-            {/* 球網 */}
-            <line x1="20" y1="100" x2="420" y2="100" stroke="white" strokeWidth="4" strokeDasharray="5,5" />
-            <circle cx="220" cy="100" r="6" fill="white" />
-            <text x="220" y="195" textAnchor="middle" fill="white" fontSize="10">
-              球網高度：中央 34"（86cm）｜兩側 36"（91cm）
-            </text>
-
-            {/* 底線標註 */}
-            <g
-              className="cursor-pointer"
-              onClick={() => setSelectedArea('baseline')}
-              onMouseEnter={() => setHoveredArea('baseline')}
-              onMouseLeave={() => setHoveredArea(null)}
-            >
-              <line
-                x1="20"
-                y1="20"
-                x2="20"
-                y2="180"
-                stroke={hoveredArea === 'baseline' ? '#fbbf24' : 'white'}
-                strokeWidth={hoveredArea === 'baseline' ? '5' : '3'}
-              />
-              <line
-                x1="420"
-                y1="20"
-                x2="420"
-                y2="180"
-                stroke={hoveredArea === 'baseline' ? '#fbbf24' : 'white'}
-                strokeWidth={hoveredArea === 'baseline' ? '5' : '3'}
-              />
             </g>
 
             {/* 邊線標註 */}
@@ -369,33 +370,71 @@ const InteractiveCourt = () => {
               <line
                 x1="20"
                 y1="20"
-                x2="420"
-                y2="20"
+                x2="20"
+                y2="460"
                 stroke={hoveredArea === 'sideline' ? '#fbbf24' : 'white'}
                 strokeWidth={hoveredArea === 'sideline' ? '5' : '3'}
               />
               <line
-                x1="20"
-                y1="180"
-                x2="420"
-                y2="180"
+                x1="220"
+                y1="20"
+                x2="220"
+                y2="460"
                 stroke={hoveredArea === 'sideline' ? '#fbbf24' : 'white'}
                 strokeWidth={hoveredArea === 'sideline' ? '5' : '3'}
               />
             </g>
 
+            {/* 底線標註 */}
+            <g
+              className="cursor-pointer"
+              onClick={() => setSelectedArea('baseline')}
+              onMouseEnter={() => setHoveredArea('baseline')}
+              onMouseLeave={() => setHoveredArea(null)}
+            >
+              <line
+                x1="20"
+                y1="20"
+                x2="220"
+                y2="20"
+                stroke={hoveredArea === 'baseline' ? '#fbbf24' : 'white'}
+                strokeWidth={hoveredArea === 'baseline' ? '5' : '3'}
+              />
+              <line
+                x1="20"
+                y1="460"
+                x2="220"
+                y2="460"
+                stroke={hoveredArea === 'baseline' ? '#fbbf24' : 'white'}
+                strokeWidth={hoveredArea === 'baseline' ? '5' : '3'}
+              />
+            </g>
+
             {/* 尺寸標註 */}
-            <text x="10" y="105" fill="white" fontSize="10" transform="rotate(-90 10 105)">
-              44' (13.41m)
+            <text x="230" y="95" fill="white" fontSize="10" fontWeight="bold">
+              15'
             </text>
-            <text x="55" y="15" textAnchor="middle" fill="white" fontSize="10">
+            <text x="230" y="210" fill="white" fontSize="10" fontWeight="bold">
               7'
+            </text>
+            <text x="230" y="280" fill="white" fontSize="10" fontWeight="bold">
+              7'
+            </text>
+            <text x="230" y="385" fill="white" fontSize="10" fontWeight="bold">
+              15'
+            </text>
+            <text x="120" y="15" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
+              20' (6.10m)
+            </text>
+            <text x="10" y="240" fill="white" fontSize="10" fontWeight="bold" transform="rotate(-90 10 240)">
+              44' (13.41m)
             </text>
           </svg>
 
           {/* 尺寸說明 */}
-          <div className="mt-2 text-xs text-gray-500 text-center">
-            球場總長度：44 英尺 (13.41m) ｜ 球場總寬度：20 英尺 (6.10m)
+          <div className="mt-4 text-sm text-gray-600 text-center space-y-1">
+            <p>球場總長度：44 英尺 (13.41m) ｜ 球場總寬度：20 英尺 (6.10m)</p>
+            <p className="text-xs">廚房區：7 英尺 ｜ 發球區：15 英尺 ｜ 球網高度：中央 34"（86cm）、兩側 36"（91cm）</p>
           </div>
 
           {/* Hover Tooltip */}
@@ -472,16 +511,16 @@ const InteractiveCourt = () => {
         {/* 圖例 */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-pickleball-400 rounded"></div>
+            <div className="w-6 h-6 bg-yellow-400 rounded"></div>
             <span className="text-sm text-gray-700">非截擊區（廚房）</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-sport-400 rounded"></div>
-            <span className="text-sm text-gray-700">偶數發球區</span>
+            <div className="w-6 h-6 bg-blue-400 rounded"></div>
+            <span className="text-sm text-gray-700">偶數發球區（右）</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-court-400 rounded"></div>
-            <span className="text-sm text-gray-700">奇數發球區</span>
+            <div className="w-6 h-6 bg-green-400 rounded"></div>
+            <span className="text-sm text-gray-700">奇數發球區（左）</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 bg-white border-2 border-gray-400 rounded"></div>
@@ -500,6 +539,7 @@ const InteractiveCourt = () => {
             <li>• 球觸碰線算界內（包括邊線、底線、中線）</li>
             <li>• 非截擊區線被視為非截擊區的一部分</li>
             <li>• 發球時球觸碰非截擊區線算短球犯規</li>
+            <li>• 偶數區在右側、奇數區在左側（從底線往球網看）</li>
           </ul>
         </div>
       </div>

@@ -34,7 +34,7 @@ const Footer = () => {
           {/* 品牌區 */}
           <div className="md:col-span-2">
             <div className="flex items-center space-x-4 mb-4">
-              <img src="/picklemaster-tw/logo.png" alt="Picklemaster Taiwan Logo" className="w-20 h-20 object-contain" />
+              <img src="/logo.png" alt="Picklemaster Taiwan Logo" className="w-20 h-20 object-contain" />
               <div>
                 <h3 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-pickleball-400 to-sport-400">
                   {BRAND.NAME_ZH}

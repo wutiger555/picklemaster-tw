@@ -17,6 +17,7 @@ export interface Court {
   line_group?: string;
   booking_url?: string;
   website?: string;
+  reviews?: string;
 }
 
 // 球場資料回應

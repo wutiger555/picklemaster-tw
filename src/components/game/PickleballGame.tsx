@@ -20,7 +20,7 @@ const PLAYER = {
 const BALL = {
   RADIUS: 14,
   GRAVITY: 0.25,
-  BOUNCE: 0.75,
+  BOUNCE: 0.78,
   INITIAL_VX: 6,
   INITIAL_VY: -8,
 };
@@ -37,8 +37,8 @@ type GamePhase = 'serve' | 'return' | 'third-shot' | 'rally';
 const PickleballGame = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [score, setScore] = useState({ player: 0, opponent: 0 });
-  const [gameState, setGameState] = useState<'ready' | 'playing' | 'point'>('ready');
-  const [message, setMessage] = useState('按空白鍵發球（必須彈地）');
+  const [gameState, setGameState] = useState<'ready' | 'serving-drop' | 'serving-ready' | 'playing' | 'point'>('ready');
+  const [message, setMessage] = useState('按空白鍵開始發球（球會先掉落）');
 
   // 遊戲狀態
   const gameLoop = useRef<number | undefined>(undefined);
@@ -242,7 +242,7 @@ const PickleballGame = () => {
 
       // 計算蓄力加成（玩家專用）
       const chargePower = isPlayer ? (1 + chargeTime.current * 0.8) : 1;
-      const baseSpeed = isPlayer ? 6 : 6.5;
+      const baseSpeed = isPlayer ? 6 : 7.5; // 提高對手擊球速度
 
       ball.current.vx = direction * baseSpeed * chargePower;
 
@@ -346,9 +346,30 @@ const PickleballGame = () => {
 
   // 更新遊戲邏輯
   const update = useCallback(() => {
-    if (gameState !== 'playing') return;
+    // 處理發球掉落階段
+    if (gameState === 'serving-drop') {
+      // 球自由落下
+      ball.current.vy += BALL.GRAVITY;
+      ball.current.y += ball.current.vy;
 
-    // 玩家移動（上下左右）
+      // 當球彈地後，進入準備擊球階段
+      if (ball.current.y >= COURT.HEIGHT - BALL.RADIUS) {
+        ball.current.y = COURT.HEIGHT - BALL.RADIUS;
+        ball.current.vy *= -BALL.BOUNCE;
+
+        // 彈地一次後，準備擊球
+        if (ball.current.vy > -2) {
+          ball.current.vy = 0;
+          setGameState('serving-ready');
+          setMessage('按空白鍵擊球發球到對角！');
+        }
+      }
+      return;
+    }
+
+    if (gameState !== 'playing' && gameState !== 'serving-ready') return;
+
+    // 玩家移動（上下左右）- 發球準備階段也可以移動
     if (keys.current.has('ArrowUp') || keys.current.has('w') || keys.current.has('W')) {
       player.current.y -= PLAYER.SPEED;
     }
@@ -372,8 +393,15 @@ const PickleballGame = () => {
       Math.min(COURT.HEIGHT - PLAYER.PADDLE_HEIGHT / 2, player.current.y)
     );
 
-    // 蓄力系統更新
-    if (isCharging.current && chargeTime.current < 2) {
+    // 如果還在發球準備階段，球跟著玩家移動
+    if (gameState === 'serving-ready') {
+      ball.current.x = player.current.x + 30;
+      ball.current.y = player.current.y;
+      return;
+    }
+
+    // 蓄力系統更新（只有在 playing 階段才能蓄力）
+    if (isCharging.current && chargeTime.current < 2 && gameState === 'playing') {
       chargeTime.current += 0.05;
       setChargeLevel(Math.min(chargeTime.current / 2, 1));
     }
@@ -465,8 +493,8 @@ const PickleballGame = () => {
     drawPlayer(ctx, player.current, true);
     drawPlayer(ctx, opponent.current, false);
 
-    // 繪製球
-    if (gameState === 'playing' || gameState === 'point') {
+    // 繪製球（在所有狀態下除了 ready）
+    if (gameState !== 'ready') {
       drawBall(ctx);
     }
 
@@ -523,27 +551,47 @@ const PickleballGame = () => {
   // 鍵盤控制
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      keys.current.add(e.key);
+      // 非空白鍵的一般按鍵處理
+      if (e.key !== ' ' && e.key !== 'Enter') {
+        keys.current.add(e.key);
+        return;
+      }
 
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
 
+        // 防止重複觸發
+        if (keys.current.has(e.key)) return;
+        keys.current.add(e.key);
+
         if (gameState === 'ready' || gameState === 'point') {
-          // 發球
+          // 第一階段：開始發球（球掉落）
           gamePhase.current = 'serve';
           bounceCount.current = 0;
           mustBounce.current = true;
           canHit.current = true;
 
-          // 發球位置（左下角）
+          // 球在玩家上方
           ball.current.x = player.current.x + 30;
-          ball.current.y = player.current.y;
-
-          // 發球到對角線（往右上飛）
-          ball.current.vx = BALL.INITIAL_VX;
-          ball.current.vy = BALL.INITIAL_VY;
+          ball.current.y = player.current.y - 100; // 從玩家上方掉落
+          ball.current.vx = 0;
+          ball.current.vy = 0;
 
           lastHitter.current = 'player';
+          setGameState('serving-drop');
+          setMessage('球正在掉落...');
+        } else if (gameState === 'serving-ready') {
+          // 第二階段：擊球發球到對角線
+          // 計算斜對角方向（發到右上或右下的對角）
+          const targetY = player.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
+          const dx = COURT.WIDTH * 0.85 - ball.current.x;
+          const dy = targetY - ball.current.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          // 發球到對角線
+          ball.current.vx = (dx / distance) * 8;
+          ball.current.vy = (dy / distance) * 8 - 2; // 稍微向下以符合拋物線
+
           setGameState('playing');
           setMessage('');
         } else if (gameState === 'playing') {
@@ -620,12 +668,16 @@ const PickleballGame = () => {
               <span>四方向移動球拍</span>
             </div>
             <div className="flex items-center">
-              <span className="font-bold mr-2">空白鍵（短按）</span>
-              <span>開始遊戲 / 發球</span>
+              <span className="font-bold mr-2">空白鍵（第一次）</span>
+              <span>球開始掉落</span>
+            </div>
+            <div className="flex items-center">
+              <span className="font-bold mr-2">空白鍵（第二次）</span>
+              <span>擊球發球到對角線</span>
             </div>
             <div className="flex items-center">
               <span className="font-bold mr-2">空白鍵（長按）</span>
-              <span className="text-yellow-600">⚡ 蓄力擊球（最高1.8倍威力）</span>
+              <span className="text-yellow-600">⚡ 對打時蓄力擊球（最高1.8倍威力）</span>
             </div>
           </div>
         </div>
@@ -636,11 +688,12 @@ const PickleballGame = () => {
             <div className="text-sm text-gray-700">
               <p className="font-bold mb-2">匹克球規則：</p>
               <ul className="space-y-1">
+                <li>• <strong>兩段式發球</strong>：第一次按空白鍵球掉落，第二次按擊球發出</li>
+                <li>• <strong>對角發球</strong>：發球會自動往對角線方向飛行</li>
                 <li>• <strong>雙彈跳規則</strong>：發球和接發球都必須等球彈地後才能擊球</li>
                 <li>• <strong>第三球</strong>：發球方回擊時也必須等球彈地</li>
                 <li>• <strong>廚房區</strong>：黃色區域內不能截擊（球沒彈地直接打）</li>
                 <li>• <strong>單彈跳</strong>：球只能彈地一次，彈兩次失分</li>
-                <li>• <strong>對角發球</strong>：按空白鍵自動發到對角線</li>
                 <li>• 進入對打後可以截擊，但要避開廚房區！</li>
               </ul>
             </div>

@@ -67,10 +67,25 @@ const Courts = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             尋找離你最近的匹克球場，開始你的匹克球之旅 🏓
           </p>
-          <div className="mt-4 flex items-center justify-center space-x-4 text-sm text-gray-500">
-            <span>📍 共 {courtsData?.courts.length} 個球場</span>
-            <span>•</span>
-            <span>🔍 {filteredCourts.length} 個符合篩選</span>
+          <div className="mt-4 flex flex-col items-center justify-center space-y-2">
+            <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <span>📍 共 {courtsData?.courts.length} 個球場</span>
+              <span>•</span>
+              <span>🔍 {filteredCourts.length} 個符合篩選</span>
+            </div>
+            <div className="text-xs text-gray-400 flex items-center space-x-2">
+              <span>📋 資料來源：</span>
+              <a
+                href="https://pickleball.org.tw/stadium/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sport-600 hover:text-sport-700 hover:underline"
+              >
+                中華民國匹克球協會
+              </a>
+              <span>•</span>
+              <span>社群彙整</span>
+            </div>
           </div>
         </motion.div>
 
@@ -292,6 +307,16 @@ const Courts = () => {
                         ))}
                       </div>
                     </div>
+
+                    {court.reviews && (
+                      <div className="pt-3 border-t border-gray-200 mt-3">
+                        <p className="text-xs font-semibold text-gray-600 mb-1 flex items-center">
+                          <span className="mr-1">💬</span>
+                          球場評價
+                        </p>
+                        <p className="text-xs text-gray-600 italic">{court.reviews}</p>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}

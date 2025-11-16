@@ -208,7 +208,154 @@
       "opening_hours": "06:00-22:00",
       "contact": "07-740-5823",
       "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
-      "line_group": ""
+      "line_group": "",
+      "reviews": "高雄地區熱門球場，場地寬敞，夜間照明良好"
+    },
+    {
+      "id": 13,
+      "name": "新北市板橋第二運動場",
+      "location": {
+        "address": "新北市板橋區漢生東路278號",
+        "lat": 25.0142,
+        "lng": 121.4625
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 4,
+      "opening_hours": "06:00-21:00",
+      "contact": "02-2687-1010",
+      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "line_group": "",
+      "reviews": "新北市政府設立的公共球場，交通便利"
+    },
+    {
+      "id": 14,
+      "name": "桃園市蘆竹國民運動中心",
+      "location": {
+        "address": "桃園市蘆竹區中正路1號",
+        "lat": 25.0454,
+        "lng": 121.2915
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 200-300 元",
+      "courts_count": 6,
+      "opening_hours": "06:00-22:00",
+      "contact": "03-352-1188",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "website": "https://www.tyfa.com.tw/",
+      "reviews": "桃園地區優質室內球場，冷氣充足，適合夏季"
+    },
+    {
+      "id": 15,
+      "name": "新竹市體育場",
+      "location": {
+        "address": "新竹市東區體育街2號",
+        "lat": 24.8046,
+        "lng": 120.9962
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 4,
+      "opening_hours": "06:00-21:00",
+      "contact": "03-522-7171",
+      "facilities": ["停車場", "飲水機", "廁所"],
+      "line_group": "",
+      "reviews": "新竹地區球友常聚集的場地"
+    },
+    {
+      "id": 16,
+      "name": "台南市永華運動公園",
+      "location": {
+        "address": "台南市安平區永華路二段",
+        "lat": 22.9908,
+        "lng": 120.1875
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 6,
+      "opening_hours": "06:00-22:00",
+      "contact": "06-299-1111",
+      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "line_group": "",
+      "reviews": "台南地區知名匹克球場，常有球友團體活動"
+    },
+    {
+      "id": 17,
+      "name": "新北市中和運動中心",
+      "location": {
+        "address": "新北市中和區民安街135號",
+        "lat": 24.9982,
+        "lng": 121.4897
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 250-350 元",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2248-8282",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "website": "https://www.zhsc.ntpc.gov.tw/",
+      "booking_url": "https://www.zhsc.ntpc.gov.tw/",
+      "reviews": "新北中和地區便利球場，可線上預約"
+    },
+    {
+      "id": 18,
+      "name": "台中市北區國民運動中心",
+      "location": {
+        "address": "台中市北區崇德路一段55號",
+        "lat": 24.1625,
+        "lng": 120.6844
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 200-300 元",
+      "courts_count": 8,
+      "opening_hours": "06:00-22:00",
+      "contact": "04-2235-1658",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣", "球具租借"],
+      "website": "https://www.tcsc.com.tw/",
+      "reviews": "台中地區場地數量最多，設施完善"
+    },
+    {
+      "id": 19,
+      "name": "宜蘭運動公園",
+      "location": {
+        "address": "宜蘭縣宜蘭市中山路一段755號",
+        "lat": 24.7605,
+        "lng": 121.7536
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 4,
+      "opening_hours": "06:00-21:00",
+      "contact": "03-925-1000",
+      "facilities": ["停車場", "飲水機", "廁所"],
+      "line_group": "",
+      "reviews": "宜蘭地區球友聚會場地，景觀優美"
+    },
+    {
+      "id": 20,
+      "name": "桃園市青埔運動中心",
+      "location": {
+        "address": "桃園市中壢區領航北路一段99號",
+        "lat": 25.0085,
+        "lng": 121.2145
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 250-350 元",
+      "courts_count": 6,
+      "opening_hours": "06:00-22:00",
+      "contact": "03-287-0909",
+      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣", "球具租借"],
+      "website": "https://qpsports.com.tw/",
+      "booking_url": "https://qpsports.com.tw/",
+      "reviews": "青埔地區新建球場，設施新穎，鄰近高鐵站"
     }
   ]
 }

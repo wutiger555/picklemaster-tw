@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import LearningPathTimeline from '../components/learning/LearningPathTimeline';
 import QuizCard from '../components/quiz/QuizCard';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const LearningPaths = () => {
+  usePageTitle('學習路徑');
   const [activeTab, setActiveTab] = useState('paths');
 
   const tabs = [
-    { id: 'paths', label: '學習路徑', icon: '🚀' },
-    { id: 'quiz', label: '互動測驗', icon: '✏️' },
+    { id: 'paths', label: '學習路徑' },
+    { id: 'quiz', label: '互動測驗' },
   ];
 
   return (
@@ -44,13 +46,12 @@ const LearningPaths = () => {
                 onClick={() => setActiveTab(tab.id)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 flex items-center space-x-2 ${
+                className={`px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-pickleball-500 to-sport-500 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
                 }`}
               >
-                <span className="text-2xl">{tab.icon}</span>
                 <span>{tab.label}</span>
               </motion.button>
             ))}

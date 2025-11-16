@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import type { CourtsData, Court } from '../types';
 import CourtMap from '../components/map/CourtMap';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const Courts = () => {
+  usePageTitle('全台匹克球場地圖');
   const [courtsData, setCourtsData] = useState<CourtsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);

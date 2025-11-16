@@ -2,38 +2,34 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 
 const Home = () => {
+  usePageTitle();
   const features = [
     {
-      icon: '🎾',
       title: '互動式球場',
       description: '點擊球場區域即時學習規則，看動畫了解球路徑',
       color: 'from-pickleball-400 to-pickleball-600',
-      emoji: '✨',
     },
     {
-      icon: '🎮',
       title: '3D 球場配置',
       description: '360 度檢視球場結構，學習站位與規則',
       color: 'from-sport-400 to-sport-600',
-      emoji: '🚀',
     },
     {
-      icon: '🗺️',
       title: '全台球場地圖',
       description: '快速找到附近球場，約球友一起打球',
       color: 'from-court-400 to-court-600',
-      emoji: '⚡',
     },
   ];
 
   const stats = [
-    { number: '50+', label: '球場資訊', icon: '📍' },
-    { number: '100+', label: '技巧教學', icon: '📚' },
-    { number: '1000+', label: '活躍玩家', icon: '👥' },
+    { number: '50+', label: '球場資訊' },
+    { number: '100+', label: '技巧教學' },
+    { number: '1000+', label: '活躍玩家' },
   ];
 
   return (
@@ -58,7 +54,7 @@ const Home = () => {
             >
               <Suspense fallback={
                 <div className="w-full h-64 md:h-80 flex items-center justify-center bg-white/10 rounded-2xl">
-                  <div className="text-6xl animate-pulse">🏓</div>
+                  <div className="text-lg animate-pulse text-white">載入中...</div>
                 </div>
               }>
                 <HeroCourtPreview />
@@ -99,20 +95,18 @@ const Home = () => {
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Link
                         to={ROUTES.RULES}
-                        className="bg-white text-pickleball-600 px-8 py-4 rounded-full font-bold text-lg shadow-2xl hover:shadow-white/50 transition-all duration-300 flex items-center justify-center space-x-2"
+                        className="bg-white text-pickleball-600 px-8 py-4 rounded-full font-bold text-lg shadow-2xl hover:shadow-white/50 transition-all duration-300 flex items-center justify-center"
                       >
                         <span>開始學習</span>
-                        <span className="text-2xl">🚀</span>
                       </Link>
                     </motion.div>
 
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Link
                         to={ROUTES.COURTS}
-                        className="backdrop-blur-sm bg-white/20 text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white/50 hover:bg-white/30 transition-all duration-300 flex items-center justify-center space-x-2"
+                        className="backdrop-blur-sm bg-white/20 text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white/50 hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
                       >
                         <span>找球場</span>
-                        <span className="text-2xl">📍</span>
                       </Link>
                     </motion.div>
                   </div>
@@ -146,7 +140,6 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="text-center"
               >
-                <div className="text-4xl mb-2">{stat.icon}</div>
                 <div className="text-4xl md:text-5xl font-black text-pickleball-600 mb-2">
                   {stat.number}
                 </div>
@@ -181,10 +174,6 @@ const Home = () => {
                 className="relative"
               >
                 <div className={`bg-gradient-to-br ${feature.color} p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 text-white h-full`}>
-                  <div className="absolute -top-6 -right-6 text-6xl opacity-20">
-                    {feature.emoji}
-                  </div>
-                  <div className="text-6xl mb-6">{feature.icon}</div>
                   <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
                   <p className="text-white/90 text-lg leading-relaxed">
                     {feature.description}
@@ -215,21 +204,18 @@ const Home = () => {
             {[
               {
                 level: '新手入門',
-                icon: '🌱',
                 color: 'court',
                 description: '從零開始，學習基本規則、握拍方式、發球技巧',
                 features: ['認識球場', '基本規則', '握拍姿勢', '發球練習'],
               },
               {
                 level: '中階進修',
-                icon: '⚡',
                 color: 'sport',
                 description: '進階技巧、戰術策略、雙打配合',
                 features: ['進階技巧', '戰術運用', '雙打配合', '比賽策略'],
               },
               {
                 level: '高手養成',
-                icon: '🏆',
                 color: 'pickleball',
                 description: '專業技術、比賽心理、高階訓練',
                 features: ['專業技術', '心理訓練', '體能強化', '教練培訓'],
@@ -245,9 +231,6 @@ const Home = () => {
                 className="relative group"
               >
                 <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 h-full border-2 border-transparent hover:border-${path.color}-400">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce-slow">
-                    {path.icon}
-                  </div>
                   <h3 className={`text-2xl font-bold mb-3 text-${path.color}-600`}>
                     {path.level}
                   </h3>
@@ -294,7 +277,7 @@ const Home = () => {
                 to={ROUTES.COURTS}
                 className="inline-block bg-white text-pickleball-600 px-10 py-5 rounded-full font-black text-xl shadow-2xl hover:shadow-white/50 transition-all duration-300"
               >
-                立即尋找球場 🏓
+                立即尋找球場
               </Link>
             </motion.div>
           </motion.div>

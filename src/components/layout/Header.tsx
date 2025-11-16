@@ -9,14 +9,14 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const navLinks = [
-    { path: ROUTES.HOME, label: '首頁', icon: '🏠' },
-    { path: ROUTES.RULES, label: '規則教學', icon: '📚' },
-    { path: ROUTES.EQUIPMENT, label: '裝備指南', icon: '🏓' },
-    { path: ROUTES.LEARNING_PATHS, label: '學習路徑', icon: '🚀' },
-    { path: ROUTES.COURTS, label: '找球場', icon: '📍' },
-    { path: ROUTES.GAME, label: '互動遊戲', icon: '🎮' },
-    { path: ROUTES.RESOURCES, label: '資源', icon: '🔗' },
-    { path: ROUTES.ABOUT, label: '關於', icon: 'ℹ️' },
+    { path: ROUTES.HOME, label: '首頁' },
+    { path: ROUTES.RULES, label: '規則教學' },
+    { path: ROUTES.EQUIPMENT, label: '裝備指南' },
+    { path: ROUTES.LEARNING_PATHS, label: '學習路徑' },
+    { path: ROUTES.COURTS, label: '找球場' },
+    { path: ROUTES.GAME, label: '互動遊戲' },
+    { path: ROUTES.RESOURCES, label: '資源' },
+    { path: ROUTES.ABOUT, label: '關於' },
   ];
 
   return (
@@ -28,12 +28,7 @@ const Header = () => {
             to={ROUTES.HOME}
             className="flex items-center space-x-3 group"
           >
-            <div className="relative">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                <span className="text-2xl transform group-hover:rotate-12 transition-transform duration-300">🏓</span>
-              </div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-court-500 rounded-full animate-pulse"></div>
-            </div>
+            <img src="/picklemaster-tw/logo.png" alt="Picklemaster Taiwan Logo" className="w-16 h-16 object-contain" />
             <div className="flex flex-col">
               <span className="text-xl md:text-2xl font-black text-white tracking-tight">
                 {BRAND.NAME_ZH}
@@ -52,14 +47,12 @@ const Header = () => {
                 to={link.path}
                 className={`
                   px-4 py-2 rounded-full font-semibold transition-all duration-300
-                  flex items-center space-x-2
                   ${isActive(link.path)
                     ? 'bg-white text-pickleball-600 shadow-lg scale-105'
                     : 'text-white hover:bg-white/20 hover:scale-105'
                   }
                 `}
               >
-                <span>{link.icon}</span>
                 <span>{link.label}</span>
               </Link>
             ))}
@@ -92,14 +85,12 @@ const Header = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`
                   block px-4 py-3 rounded-lg font-semibold transition-all duration-300
-                  flex items-center space-x-3
                   ${isActive(link.path)
                     ? 'bg-white text-pickleball-600 shadow-lg'
                     : 'text-white hover:bg-white/20'
                   }
                 `}
               >
-                <span className="text-xl">{link.icon}</span>
                 <span>{link.label}</span>
               </Link>
             ))}

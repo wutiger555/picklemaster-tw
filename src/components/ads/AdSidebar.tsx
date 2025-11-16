@@ -11,7 +11,7 @@ interface AdSidebarProps {
  * 側邊欄廣告組件
  * 用於在頁面側邊顯示垂直廣告
  */
-const AdSidebar = ({ testMode = true, adSlot }: AdSidebarProps) => {
+const AdSidebar = ({ testMode = false, adSlot }: AdSidebarProps) => {
   return (
     <aside className="hidden lg:block sticky top-24 h-fit">
       <div className="space-y-6">

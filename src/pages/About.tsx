@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const About = () => {
+  usePageTitle('關於我們');
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-sport-50 to-court-50">
       <div className="container mx-auto px-4 py-12">
@@ -14,7 +16,7 @@ const About = () => {
             關於匹克球
           </h1>
           <p className="text-xl text-gray-600">
-            全球成長最快速的球拍運動 🏓
+            全球成長最快速的球拍運動
           </p>
         </motion.div>
 
@@ -26,8 +28,7 @@ const About = () => {
             viewport={{ once: true }}
             className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mb-8"
           >
-            <div className="flex items-center mb-6">
-              <span className="text-5xl mr-4">🏓</span>
+            <div className="mb-6">
               <h2 className="text-3xl font-black text-gray-800">什麼是匹克球？</h2>
             </div>
             <div className="prose prose-lg max-w-none">
@@ -40,7 +41,7 @@ const About = () => {
               </p>
               <div className="bg-gradient-to-r from-sport-50 to-court-50 rounded-2xl p-6">
                 <p className="text-gray-800 text-base leading-relaxed">
-                  ✨ 匹克球以其<strong>易學性、趣味性和社交性</strong>，成為全球成長最快速的運動之一。
+                  匹克球以其<strong>易學性、趣味性和社交性</strong>，成為全球成長最快速的運動之一。
                   無論年齡或技術水平如何，都能輕鬆上手享受這項運動的樂趣！
                 </p>
               </div>
@@ -74,14 +75,13 @@ const About = () => {
             viewport={{ once: true }}
             className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mb-8"
           >
-            <div className="flex items-center mb-6">
-              <span className="text-5xl mr-4">📏</span>
+            <div className="mb-6">
               <h2 className="text-3xl font-black text-gray-800">球場規格</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-gradient-to-br from-sport-50 to-white rounded-2xl p-6">
-                <h3 className="font-bold text-xl text-sport-700 mb-4 flex items-center">
-                  <span className="mr-2">📐</span>場地尺寸
+                <h3 className="font-bold text-xl text-sport-700 mb-4">
+                  場地尺寸
                 </h3>
                 <ul className="space-y-3">
                   <li className="flex items-start">
@@ -103,8 +103,8 @@ const About = () => {
                 </ul>
               </div>
               <div className="bg-gradient-to-br from-court-50 to-white rounded-2xl p-6">
-                <h3 className="font-bold text-xl text-court-700 mb-4 flex items-center">
-                  <span className="mr-2">🎾</span>裝備規格
+                <h3 className="font-bold text-xl text-court-700 mb-4">
+                  裝備規格
                 </h3>
                 <ul className="space-y-3">
                   <li className="flex items-start">
@@ -136,25 +136,22 @@ const About = () => {
             className="bg-gradient-to-br from-pickleball-100 to-sport-100 rounded-3xl shadow-2xl p-8 md:p-12 mb-8"
           >
             <h2 className="text-3xl font-black text-gray-800 mb-8 text-center">
-              為什麼選擇匹克球？ 🌟
+              為什麼選擇匹克球？
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="text-4xl mb-3">🎯</div>
                 <h3 className="font-bold text-lg mb-2 text-gray-800">易學易上手</h3>
                 <p className="text-gray-600 text-sm">
                   規則簡單明瞭，初學者也能在短時間內掌握基本技巧，快速享受比賽樂趣
                 </p>
               </div>
               <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="text-4xl mb-3">👥</div>
                 <h3 className="font-bold text-lg mb-2 text-gray-800">社交性強</h3>
                 <p className="text-gray-600 text-sm">
                   雙打為主的比賽形式，促進團隊合作與社交互動，結交志同道合的球友
                 </p>
               </div>
               <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="text-4xl mb-3">💪</div>
                 <h3 className="font-bold text-lg mb-2 text-gray-800">老少咸宜</h3>
                 <p className="text-gray-600 text-sm">
                   運動強度適中，從兒童到長者都能參與，是全家大小都適合的運動
@@ -170,8 +167,7 @@ const About = () => {
             viewport={{ once: true }}
             className="bg-white rounded-3xl shadow-2xl p-8 md:p-12"
           >
-            <div className="flex items-center mb-6">
-              <span className="text-5xl mr-4">🇹🇼</span>
+            <div className="mb-6">
               <h2 className="text-3xl font-black text-gray-800">匹克球在台灣</h2>
             </div>
             <div className="prose prose-lg max-w-none">
@@ -185,7 +181,7 @@ const About = () => {
                   從<strong>公園</strong>到<strong>運動中心</strong>，越來越多地方可以打匹克球。
                   無論你是想運動健身、社交交友，或是追求競技挑戰，
                   匹克球都是一個絕佳的選擇！立即在<strong className="text-sport-600">球場地圖</strong>找到離你最近的球場，
-                  開始你的匹克球之旅吧！ 🚀
+                  開始你的匹克球之旅吧！
                 </p>
               </div>
             </div>
@@ -196,13 +192,13 @@ const About = () => {
                 href="/picklemaster-tw/courts"
                 className="px-8 py-4 bg-gradient-to-r from-sport-500 to-court-500 text-white rounded-full font-bold hover:shadow-lg hover:scale-105 transition-all duration-300"
               >
-                🗺️ 尋找附近球場
+                尋找附近球場
               </a>
               <a
                 href="/picklemaster-tw/learning"
                 className="px-8 py-4 bg-white border-2 border-sport-500 text-sport-700 rounded-full font-bold hover:bg-sport-50 hover:scale-105 transition-all duration-300"
               >
-                📚 開始學習技巧
+                開始學習技巧
               </a>
             </div>
           </motion.section>
@@ -214,8 +210,7 @@ const About = () => {
             viewport={{ once: true }}
             className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mt-8"
           >
-            <div className="flex items-center mb-6">
-              <span className="text-5xl mr-4">👨‍💻</span>
+            <div className="mb-6">
               <h2 className="text-3xl font-black text-gray-800">關於開發者</h2>
             </div>
 
@@ -229,20 +224,20 @@ const About = () => {
                     </div>
                     <h3 className="text-2xl font-black text-gray-800">Max Wu</h3>
                     <p className="text-gray-600 font-semibold">@wutiger555</p>
-                    <p className="text-sm text-gray-500 mt-2">Taipei, Taiwan 🇹🇼</p>
+                    <p className="text-sm text-gray-500 mt-2">Taipei, Taiwan</p>
                   </div>
 
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center text-gray-700">
-                      <span className="mr-2">💼</span>
+                      <span className="mr-2">•</span>
                       <span>Technical Consultant</span>
                     </div>
                     <div className="flex items-center text-gray-700">
-                      <span className="mr-2">🎖️</span>
+                      <span className="mr-2">•</span>
                       <span>PMP® Certified</span>
                     </div>
                     <div className="flex items-center text-gray-700">
-                      <span className="mr-2">🦭</span>
+                      <span className="mr-2">•</span>
                       <span>Focusing</span>
                     </div>
                   </div>
@@ -273,7 +268,7 @@ const About = () => {
                 <div className="space-y-6">
                   {/* 簡介 */}
                   <div>
-                    <h4 className="font-bold text-lg text-gray-800 mb-3">💡 關於我</h4>
+                    <h4 className="font-bold text-lg text-gray-800 mb-3">關於我</h4>
                     <p className="text-gray-700 leading-relaxed">
                       從後端工程師到技術專案經理，目前在全球顧問公司擔任技術顧問，
                       負責台灣最大核心銀行現代化專案的子系統交付。熱衷於使用 AI 工具提升工作效率，
@@ -283,7 +278,7 @@ const About = () => {
 
                   {/* 技術棧 */}
                   <div>
-                    <h4 className="font-bold text-lg text-gray-800 mb-3">🛠️ 技術棧</h4>
+                    <h4 className="font-bold text-lg text-gray-800 mb-3">技術棧</h4>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <p className="text-sm font-semibold text-gray-600 mb-2">程式語言</p>
@@ -342,7 +337,7 @@ const About = () => {
 
                   {/* 精選專案 */}
                   <div>
-                    <h4 className="font-bold text-lg text-gray-800 mb-3">🚀 精選專案</h4>
+                    <h4 className="font-bold text-lg text-gray-800 mb-3">精選專案</h4>
                     <div className="space-y-3">
                       <div className="bg-gradient-to-r from-sport-50 to-white rounded-xl p-4">
                         <h5 className="font-bold text-gray-800 mb-1">Picklemaster Taiwan</h5>

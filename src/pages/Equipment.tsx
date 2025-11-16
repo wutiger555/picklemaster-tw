@@ -3,15 +3,17 @@ import { motion } from 'framer-motion';
 import PaddleGuide from '../components/equipment/PaddleGuide';
 import ProPlayerPaddles from '../components/equipment/ProPlayerPaddles';
 import PaddleRecommender from '../components/equipment/PaddleRecommender';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const Equipment = () => {
+  usePageTitle('匹克球裝備指南');
   const [activeTab, setActiveTab] = useState('paddle-guide');
 
   const tabs = [
-    { id: 'paddle-guide', label: '球拍完全指南', icon: '🏓' },
-    { id: 'pro-paddles', label: '職業選手裝備', icon: '🏆' },
-    { id: 'recommender', label: '選購建議工具', icon: '🎯' },
-    { id: 'budget', label: '裝備預算參考', icon: '💰' },
+    { id: 'paddle-guide', label: '球拍完全指南' },
+    { id: 'pro-paddles', label: '職業選手裝備' },
+    { id: 'recommender', label: '選購建議工具' },
+    { id: 'budget', label: '裝備預算參考' },
   ];
 
   return (
@@ -47,13 +49,12 @@ const Equipment = () => {
                 onClick={() => setActiveTab(tab.id)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 flex items-center space-x-2 ${
+                className={`px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-pickleball-500 to-sport-500 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
                 }`}
               >
-                <span className="text-2xl">{tab.icon}</span>
                 <span>{tab.label}</span>
               </motion.button>
             ))}
@@ -138,8 +139,8 @@ const Equipment = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 <div className="bg-white rounded-2xl p-6 shadow-lg">
-                  <h3 className="font-bold text-xl text-court-700 mb-4 flex items-center">
-                    <span className="mr-2">🏓</span>球拍預算參考
+                  <h3 className="font-bold text-xl text-court-700 mb-4">
+                    球拍預算參考
                   </h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center border-b pb-3">
@@ -156,13 +157,13 @@ const Equipment = () => {
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 mt-4">
-                    💡 提示：新手建議從中階球拍開始，重量 7.5-8.5 oz 較適合
+                    提示：新手建議從中階球拍開始，重量 7.5-8.5 oz 較適合
                   </p>
                 </div>
 
                 <div className="bg-white rounded-2xl p-6 shadow-lg">
-                  <h3 className="font-bold text-xl text-sport-700 mb-4 flex items-center">
-                    <span className="mr-2">👕</span>其他裝備
+                  <h3 className="font-bold text-xl text-sport-700 mb-4">
+                    其他裝備
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-start">

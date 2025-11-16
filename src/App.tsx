@@ -10,7 +10,7 @@ import { ROUTES } from './utils/constants';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/picklemaster-tw">
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-grow">

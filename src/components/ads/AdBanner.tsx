@@ -23,7 +23,7 @@ interface AdBannerProps {
 const AdBanner = ({
   adSlot,
   format = 'horizontal',
-  testMode = true, // 預設為測試模式
+  testMode = false, // 預設為生產模式
   className = '',
 }: AdBannerProps) => {
   const adRef = useRef<HTMLDivElement>(null);
@@ -74,7 +74,7 @@ const AdBanner = ({
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
-        data-ad-client="ca-pub-XXXXXXXXXX" // 替換為您的 AdSense ID
+        data-ad-client="ca-pub-7062108661079564"
         data-ad-slot={adSlot}
         data-ad-format={format === 'horizontal' ? 'horizontal' : 'auto'}
         data-full-width-responsive="true"

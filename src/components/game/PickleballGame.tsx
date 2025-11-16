@@ -39,6 +39,7 @@ const PickleballGame = () => {
   const [score, setScore] = useState({ player: 0, opponent: 0 });
   const [gameState, setGameState] = useState<'ready' | 'serving-drop' | 'serving-ready' | 'playing' | 'point'>('ready');
   const [message, setMessage] = useState('按空白鍵開始發球（球會先掉落）');
+  const [serverSide, setServerSide] = useState<'player' | 'opponent'>('player'); // 追蹤發球方
 
   // 遊戲狀態
   const gameLoop = useRef<number | undefined>(undefined);
@@ -248,9 +249,20 @@ const PickleballGame = () => {
 
       // 根據擊球位置調整垂直速度
       const hitPosition = (ball.current.y - paddle.y) / (PLAYER.PADDLE_HEIGHT / 2);
+
+      // 玩家可以使用方向鍵控制擊球角度
+      let angleControl = 0;
+      if (isPlayer) {
+        if (keys.current.has('ArrowUp') || keys.current.has('w') || keys.current.has('W')) {
+          angleControl = -2; // 往上打
+        } else if (keys.current.has('ArrowDown') || keys.current.has('s') || keys.current.has('S')) {
+          angleControl = 2; // 往下打
+        }
+      }
+
       // 對手擊球時給予更大的向上力量，確保球能飛回來
       const verticalBoost = isPlayer ? 1 : 2.0; // 增加到 2.0 倍
-      ball.current.vy = hitPosition * 2.5 * chargePower * verticalBoost - 3; // 增加向上力量
+      ball.current.vy = hitPosition * 2.5 * chargePower * verticalBoost - 3 + angleControl; // 增加向上力量加上角度控制
 
       // 重置蓄力
       if (isPlayer) {
@@ -292,17 +304,20 @@ const PickleballGame = () => {
     return false;
   };
 
-  // AI 對手邏輯（改善版）
+  // AI 對手邏輯（大幅改善版）
   const updateOpponentAI = () => {
     const opp = opponent.current;
     const b = ball.current;
 
     // AI 追蹤球的位置（上下和左右）
-    if (b.vx > 0 && b.x > COURT.NET_X - 100) {
-      // 球往對手方向移動 - 積極追球
-      // AI 會預測球的落點並移動到那個位置
-      const targetY = b.y;
-      // AI 根據球的距離調整位置：遠距離時往後退，近距離時往前衝
+    if (b.vx > 0 && b.x > COURT.NET_X - 150) {
+      // 球往對手方向移動 - 非常積極追球
+
+      // 預測球的未來位置
+      const predictedY = b.y + b.vy * 10; // 預測10幀後的位置
+      const targetY = Math.max(PLAYER.PADDLE_HEIGHT / 2, Math.min(COURT.HEIGHT - PLAYER.PADDLE_HEIGHT / 2, predictedY));
+
+      // AI 根據球的距離調整位置
       const distanceFromNet = b.x - COURT.NET_X;
       let targetX: number;
 
@@ -310,25 +325,25 @@ const PickleballGame = () => {
         // 球靠近球網，AI 往前移動
         targetX = COURT.NET_X + COURT.KITCHEN_WIDTH + 50;
       } else if (distanceFromNet < 300) {
-        // 中距離
-        targetX = COURT.WIDTH - 150;
+        // 中距離 - 最佳擊球位置
+        targetX = COURT.WIDTH - 120;
       } else {
         // 球在後場，AI 往後退
-        targetX = COURT.WIDTH - 80;
+        targetX = COURT.WIDTH - 60;
       }
 
-      // Y 軸追蹤 - 更積極
+      // Y 軸追蹤 - 非常積極，使用預測位置
       const diffY = targetY - opp.y;
-      if (Math.abs(diffY) > 5) {
-        opp.vy = diffY > 0 ? PLAYER.SPEED * 1.0 : -PLAYER.SPEED * 1.0;
+      if (Math.abs(diffY) > 3) {
+        opp.vy = diffY > 0 ? PLAYER.SPEED * 1.2 : -PLAYER.SPEED * 1.2; // 提高到1.2倍速度
       } else {
         opp.vy = 0;
       }
 
       // X 軸追蹤 - 更積極的左右移動
       const diffX = targetX - opp.x;
-      if (Math.abs(diffX) > 15) {
-        opp.vx = diffX > 0 ? PLAYER.SPEED * 0.8 : -PLAYER.SPEED * 0.8;
+      if (Math.abs(diffX) > 10) {
+        opp.vx = diffX > 0 ? PLAYER.SPEED * 1.0 : -PLAYER.SPEED * 1.0; // 提高到1.0倍速度
       } else {
         opp.vx = 0;
       }
@@ -339,14 +354,14 @@ const PickleballGame = () => {
 
       const diffY = defaultY - opp.y;
       if (Math.abs(diffY) > 10) {
-        opp.vy = diffY > 0 ? PLAYER.SPEED * 0.5 : -PLAYER.SPEED * 0.5;
+        opp.vy = diffY > 0 ? PLAYER.SPEED * 0.6 : -PLAYER.SPEED * 0.6;
       } else {
         opp.vy = 0;
       }
 
       const diffX = defaultX - opp.x;
       if (Math.abs(diffX) > 15) {
-        opp.vx = diffX > 0 ? PLAYER.SPEED * 0.5 : -PLAYER.SPEED * 0.5;
+        opp.vx = diffX > 0 ? PLAYER.SPEED * 0.6 : -PLAYER.SPEED * 0.6;
       } else {
         opp.vx = 0;
       }
@@ -374,9 +389,41 @@ const PickleballGame = () => {
         ball.current.vy = 0; // 停止球的移動
         ball.current.vx = 0;
         setGameState('serving-ready');
-        setMessage('按空白鍵擊球發球到對角！');
+
+        if (serverSide === 'opponent') {
+          setMessage('AI準備發球...');
+          // AI自動發球（延遲0.5秒）
+          setTimeout(() => {
+            performServe(false);
+          }, 500);
+        } else {
+          setMessage('按空白鍵擊球發球到對角！');
+        }
       }
       return;
+    }
+
+    // AI發球觸發（在 point 狀態後）
+    if (gameState === 'point' && serverSide === 'opponent') {
+      // AI在得分後延遲1秒自動開始發球
+      setTimeout(() => {
+        if (gameState === 'point' && serverSide === 'opponent') {
+          // 開始AI發球流程
+          gamePhase.current = 'serve';
+          bounceCount.current = 0;
+          mustBounce.current = true;
+          canHit.current = true;
+
+          ball.current.x = opponent.current.x - 30;
+          ball.current.y = opponent.current.y - 100;
+          ball.current.vx = 0;
+          ball.current.vy = 0;
+          lastHitter.current = 'opponent';
+
+          setGameState('serving-drop');
+          setMessage('對手正在發球...');
+        }
+      }, 1000);
     }
 
     if (gameState !== 'playing' && gameState !== 'serving-ready') return;
@@ -405,10 +452,15 @@ const PickleballGame = () => {
       Math.min(COURT.HEIGHT - PLAYER.PADDLE_HEIGHT / 2, player.current.y)
     );
 
-    // 如果還在發球準備階段，球跟著玩家移動
+    // 如果還在發球準備階段，球跟著發球方移動
     if (gameState === 'serving-ready') {
-      ball.current.x = player.current.x + 30;
-      ball.current.y = player.current.y;
+      if (serverSide === 'player') {
+        ball.current.x = player.current.x + 30;
+        ball.current.y = player.current.y;
+      } else {
+        ball.current.x = opponent.current.x - 30;
+        ball.current.y = opponent.current.y;
+      }
       return;
     }
 
@@ -445,7 +497,8 @@ const PickleballGame = () => {
           winner = 'player';
         }
         setScore((s) => ({ ...s, [winner]: s[winner] + 1 }));
-        setMessage(`球彈地兩次！${winner === 'player' ? '你' : '對手'}得分`);
+        setServerSide(winner); // 得分方獲得發球權
+        setMessage(`球彈地兩次！${winner === 'player' ? '你' : '對手'}得分，${winner === 'player' ? '你' : '對手'}發球`);
         setGameState('point');
         return;
       }
@@ -465,12 +518,14 @@ const PickleballGame = () => {
     if (ball.current.x < -BALL.RADIUS) {
       // 對手得分
       setScore((s) => ({ ...s, opponent: s.opponent + 1 }));
-      setMessage('球出界！對手得分');
+      setServerSide('opponent'); // 對手獲得發球權
+      setMessage('球出界！對手得分，對手發球');
       setGameState('point');
     } else if (ball.current.x > COURT.WIDTH + BALL.RADIUS) {
       // 玩家得分
       setScore((s) => ({ ...s, player: s.player + 1 }));
-      setMessage('球出界！你得分');
+      setServerSide('player'); // 玩家獲得發球權
+      setMessage('球出界！你得分，你發球');
       setGameState('point');
     }
 
@@ -482,10 +537,37 @@ const PickleballGame = () => {
     ) {
       const winner = lastHitter.current === 'player' ? 'opponent' : 'player';
       setScore((s) => ({ ...s, [winner]: s[winner] + 1 }));
-      setMessage('球掛網！');
+      setServerSide(winner); // 得分方獲得發球權
+      setMessage(`球掛網！${winner === 'player' ? '你' : '對手'}得分，${winner === 'player' ? '你' : '對手'}發球`);
       setGameState('point');
     }
-  }, [gameState]);
+  }, [gameState, serverSide]);
+
+  // 執行發球的函數
+  const performServe = useCallback((isPlayerServing: boolean) => {
+    if (isPlayerServing) {
+      // 玩家發球到對角線
+      const targetY = player.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
+      const dx = COURT.WIDTH * 0.85 - ball.current.x;
+      const dy = targetY - ball.current.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      ball.current.vx = (dx / distance) * 8;
+      ball.current.vy = (dy / distance) * 8 - 2;
+    } else {
+      // AI發球到玩家對角線
+      const targetY = opponent.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
+      const dx = COURT.WIDTH * 0.15 - ball.current.x;
+      const dy = targetY - ball.current.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      ball.current.vx = (dx / distance) * 7;
+      ball.current.vy = (dy / distance) * 7 - 2;
+    }
+
+    setGameState('playing');
+    setMessage('');
+  }, []);
 
   // 渲染
   const render = useCallback(() => {
@@ -577,35 +659,41 @@ const PickleballGame = () => {
         keys.current.add(e.key);
 
         if (gameState === 'ready' || gameState === 'point') {
+          // 只有輪到玩家發球才能按空白鍵發球
+          if (serverSide !== 'player') {
+            return; // AI發球時，玩家按空白鍵無效
+          }
+
           // 第一階段：開始發球（球掉落）
           gamePhase.current = 'serve';
           bounceCount.current = 0;
           mustBounce.current = true;
           canHit.current = true;
 
-          // 球在玩家上方
-          ball.current.x = player.current.x + 30;
-          ball.current.y = player.current.y - 100; // 從玩家上方掉落
+          // 球在發球方上方
+          if (serverSide === 'player') {
+            ball.current.x = player.current.x + 30;
+            ball.current.y = player.current.y - 100;
+            lastHitter.current = 'player';
+          } else {
+            ball.current.x = opponent.current.x - 30;
+            ball.current.y = opponent.current.y - 100;
+            lastHitter.current = 'opponent';
+          }
+
           ball.current.vx = 0;
           ball.current.vy = 0;
 
-          lastHitter.current = 'player';
           setGameState('serving-drop');
           setMessage('球正在掉落...');
         } else if (gameState === 'serving-ready') {
+          // 只有輪到玩家發球才能按空白鍵擊球
+          if (serverSide !== 'player') {
+            return;
+          }
+
           // 第二階段：擊球發球到對角線
-          // 計算斜對角方向（發到右上或右下的對角）
-          const targetY = player.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
-          const dx = COURT.WIDTH * 0.85 - ball.current.x;
-          const dy = targetY - ball.current.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          // 發球到對角線
-          ball.current.vx = (dx / distance) * 8;
-          ball.current.vy = (dy / distance) * 8 - 2; // 稍微向下以符合拋物線
-
-          setGameState('playing');
-          setMessage('');
+          performServe(true);
         } else if (gameState === 'playing') {
           // 遊戲中按住空白鍵開始蓄力
           if (!isCharging.current) {
@@ -681,7 +769,7 @@ const PickleballGame = () => {
             </div>
             <div className="flex items-center">
               <span className="font-bold mr-2">空白鍵（第一次）</span>
-              <span>球開始掉落</span>
+              <span>球開始掉落（輪到你發球時）</span>
             </div>
             <div className="flex items-center">
               <span className="font-bold mr-2">空白鍵（第二次）</span>
@@ -690,6 +778,14 @@ const PickleballGame = () => {
             <div className="flex items-center">
               <span className="font-bold mr-2">空白鍵（長按）</span>
               <span className="text-yellow-600">⚡ 對打時蓄力擊球（最高1.8倍威力）</span>
+            </div>
+            <div className="flex items-center">
+              <span className="font-bold mr-2">↑ 或 W（擊球時）</span>
+              <span className="text-blue-600">🎯 往上方打高球</span>
+            </div>
+            <div className="flex items-center">
+              <span className="font-bold mr-2">↓ 或 S（擊球時）</span>
+              <span className="text-blue-600">🎯 往下方打低球</span>
             </div>
           </div>
         </div>
@@ -700,13 +796,13 @@ const PickleballGame = () => {
             <div className="text-sm text-gray-700">
               <p className="font-bold mb-2">匹克球規則：</p>
               <ul className="space-y-1">
+                <li>• <strong>得分方發球</strong>：誰得分誰發球，AI也會自動發球</li>
                 <li>• <strong>兩段式發球</strong>：第一次按空白鍵球掉落，第二次按擊球發出</li>
                 <li>• <strong>對角發球</strong>：發球會自動往對角線方向飛行</li>
+                <li>• <strong>方向控制</strong>：擊球時按上下鍵可控制球往上或往下飛</li>
                 <li>• <strong>雙彈跳規則</strong>：發球和接發球都必須等球彈地後才能擊球</li>
-                <li>• <strong>第三球</strong>：發球方回擊時也必須等球彈地</li>
                 <li>• <strong>廚房區</strong>：黃色區域內不能截擊（球沒彈地直接打）</li>
                 <li>• <strong>單彈跳</strong>：球只能彈地一次，彈兩次失分</li>
-                <li>• 進入對打後可以截擊，但要避開廚房區！</li>
               </ul>
             </div>
           </div>

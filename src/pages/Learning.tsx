@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import InteractiveCourt from '../components/court/InteractiveCourt';
 import BallAnimation from '../components/court/BallAnimation';
-import TechniqueViewer3D from '../components/learning/TechniqueViewer3D';
+import CourtViewer3D from '../components/learning/CourtViewer3D';
 import PaddleGuide from '../components/equipment/PaddleGuide';
 import ProPlayerPaddles from '../components/equipment/ProPlayerPaddles';
 import PaddleRecommender from '../components/equipment/PaddleRecommender';
@@ -96,12 +96,12 @@ const Learning = () => {
           >
             <section className="mb-20">
               <h2 className="text-3xl font-black text-center mb-8 text-gray-800">
-                3D 技術動作教學
+                3D 球場配置與站位教學
               </h2>
               <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-                360 度觀看各種擊球動作，掌握每個技術細節
+                360 度檢視球場結構，學習正確的站位與各區域規則
               </p>
-              <TechniqueViewer3D />
+              <CourtViewer3D />
             </section>
 
             <section className="mb-20">

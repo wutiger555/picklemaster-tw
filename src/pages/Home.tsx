@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
-
-const FloatingPickleball = lazy(() => import('../components/hero/FloatingPickleball'));
 
 const Home = () => {
   const features = [
@@ -16,8 +13,8 @@ const Home = () => {
     },
     {
       icon: '🎮',
-      title: '3D 技術教學',
-      description: '360 度觀看動作分解，掌握每個技術細節',
+      title: '3D 球場配置',
+      description: '360 度檢視球場結構，學習站位與規則',
       color: 'from-sport-400 to-sport-600',
       emoji: '🚀',
     },
@@ -49,20 +46,58 @@ const Home = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* 左側：3D 匹克球 */}
+            {/* 左側：視覺裝飾 */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="order-2 lg:order-1"
+              className="order-2 lg:order-1 flex items-center justify-center"
             >
-              <Suspense fallback={
-                <div className="w-full h-64 md:h-80 flex items-center justify-center">
-                  <div className="text-6xl animate-bounce">🏓</div>
+              <div className="relative w-64 h-64 md:w-80 md:h-80">
+                {/* 裝飾圓圈 */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 180, 360],
+                  }}
+                  transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  className="absolute inset-0 rounded-full border-8 border-white/30"
+                />
+                <motion.div
+                  animate={{
+                    scale: [1.2, 1, 1.2],
+                    rotate: [360, 180, 0],
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  className="absolute inset-4 rounded-full border-4 border-white/20"
+                />
+
+                {/* 中央表情符號 */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className="text-9xl"
+                  >
+                    🏓
+                  </motion.div>
                 </div>
-              }>
-                <FloatingPickleball />
-              </Suspense>
+              </div>
             </motion.div>
 
             {/* 右側：Glassmorphism 文字卡片 */}

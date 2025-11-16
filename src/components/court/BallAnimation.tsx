@@ -40,8 +40,8 @@ const BallAnimation = () => {
     },
     {
       name: '發球擊球',
-      description: '由下往上擊球，球必須越過廚房區',
-      position: { x: 170, y: 260 },
+      description: '由下往上擊球，球必須斜對角越過廚房區',
+      position: { x: 120, y: 260 },
       serverPosition: { x: 170, y: 440 },
       highlightZones: ['kitchen-zone', 'service-target-even'],
       regulations: [
@@ -55,8 +55,8 @@ const BallAnimation = () => {
     },
     {
       name: '發球落點',
-      description: '球落在對方偶數發球區內（對角線）',
-      position: { x: 170, y: 90 },
+      description: '球斜對角落在對方左側偶數發球區內',
+      position: { x: 70, y: 90 },
       serverPosition: { x: 170, y: 440 },
       highlightZones: ['service-target-even'],
       regulations: [
@@ -71,7 +71,7 @@ const BallAnimation = () => {
     {
       name: '接發球',
       description: '接發球方必須等球彈地後才能擊球',
-      position: { x: 170, y: 90 },
+      position: { x: 70, y: 90 },
       highlightZones: ['service-target-even'],
       regulations: [
         '⏱️ 必須等球彈地後才能擊球',

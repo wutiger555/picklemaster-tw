@@ -8,6 +8,7 @@ import ProPlayerPaddles from '../components/equipment/ProPlayerPaddles';
 import PaddleRecommender from '../components/equipment/PaddleRecommender';
 import LearningPathTimeline from '../components/learning/LearningPathTimeline';
 import QuizCard from '../components/quiz/QuizCard';
+import PickleballGame from '../components/game/PickleballGame';
 
 const Learning = () => {
   const [activeTab, setActiveTab] = useState('basics');
@@ -16,7 +17,8 @@ const Learning = () => {
     { id: 'basics', label: '基礎規則', icon: '📚' },
     { id: 'techniques', label: '技巧訓練', icon: '🎯' },
     { id: 'equipment', label: '裝備指南', icon: '🏓' },
-    { id: 'quiz', label: '互動測驗', icon: '🎮' },
+    { id: 'game', label: '互動遊戲', icon: '🎮' },
+    { id: 'quiz', label: '互動測驗', icon: '✏️' },
     { id: 'learning-paths', label: '學習路徑', icon: '🚀' },
   ];
 
@@ -152,6 +154,26 @@ const Learning = () => {
                 根據你的打法風格和經驗，為你推薦最適合的球拍
               </p>
               <PaddleRecommender />
+            </section>
+          </motion.div>
+        )}
+
+        {/* 互動遊戲頁籤 */}
+        {activeTab === 'game' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <section className="mb-20">
+              <h2 className="text-3xl font-black text-center mb-8 text-gray-800">
+                匹克球互動遊戲
+              </h2>
+              <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                透過實際操作遊戲，體驗真實的匹克球對戰！使用方向鍵移動，空白鍵揮拍
+              </p>
+              <PickleballGame />
             </section>
           </motion.div>
         )}

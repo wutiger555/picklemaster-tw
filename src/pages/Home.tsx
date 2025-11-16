@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
+
+const FloatingPickleball = lazy(() => import('../components/hero/FloatingPickleball'));
 
 const Home = () => {
   const features = [
@@ -35,68 +38,85 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* 英雄區塊 - 更有活力的設計 */}
+      {/* 英雄區塊 - 3D + Glassmorphism 設計 */}
       <section className="relative bg-gradient-to-br from-pickleball-500 via-sport-500 to-court-500 text-white py-20 md:py-32 overflow-hidden">
-        {/* 背景裝飾 */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 text-9xl animate-bounce-slow">🏓</div>
-          <div className="absolute top-20 right-20 text-7xl animate-float">🎾</div>
-          <div className="absolute bottom-20 left-1/4 text-6xl animate-pulse-slow">⚡</div>
-          <div className="absolute bottom-10 right-1/3 text-8xl animate-bounce-slow">🏆</div>
+        {/* 背景動畫圓圈 */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pickleball-300/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-sport-400/10 rounded-full blur-3xl animate-bounce-slow"></div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* 左側：3D 匹克球 */}
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="inline-block mb-6"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="order-2 lg:order-1"
             >
-              <span className="text-7xl md:text-9xl animate-bounce-slow">🏓</span>
+              <Suspense fallback={
+                <div className="w-full h-64 md:h-80 flex items-center justify-center">
+                  <div className="text-6xl animate-bounce">🏓</div>
+                </div>
+              }>
+                <FloatingPickleball />
+              </Suspense>
             </motion.div>
 
-            <h1 className="text-4xl md:text-7xl font-black mb-6 leading-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-pickleball-100">
-                {BRAND.NAME_ZH}
-              </span>
-            </h1>
-
-            <p className="text-xl md:text-3xl mb-4 font-bold text-pickleball-100">
-              {BRAND.TAGLINE}
-            </p>
-
-            <p className="text-lg md:text-xl mb-10 text-white/90 max-w-2xl mx-auto">
-              {BRAND.DESCRIPTION}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  to={ROUTES.LEARNING}
-                  className="bg-white text-pickleball-600 px-8 py-4 rounded-full font-bold text-lg shadow-2xl hover:shadow-pickleball-300/50 transition-all duration-300 flex items-center space-x-2"
+            {/* 右側：Glassmorphism 文字卡片 */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="order-1 lg:order-2"
+            >
+              <div className="backdrop-blur-md bg-white/10 rounded-3xl p-8 md:p-12 border border-white/20 shadow-2xl">
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
                 >
-                  <span>開始學習</span>
-                  <span className="text-2xl">🚀</span>
-                </Link>
-              </motion.div>
+                  <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-pickleball-100 to-white">
+                      {BRAND.NAME_ZH}
+                    </span>
+                  </h1>
 
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  to={ROUTES.COURTS}
-                  className="bg-transparent text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white hover:bg-white hover:text-pickleball-600 transition-all duration-300 flex items-center space-x-2"
-                >
-                  <span>找球場</span>
-                  <span className="text-2xl">📍</span>
-                </Link>
-              </motion.div>
-            </div>
-          </motion.div>
+                  <p className="text-xl md:text-2xl mb-4 font-bold text-white/90">
+                    {BRAND.TAGLINE}
+                  </p>
+
+                  <p className="text-base md:text-lg mb-8 text-white/80">
+                    {BRAND.DESCRIPTION}
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Link
+                        to={ROUTES.LEARNING}
+                        className="bg-white text-pickleball-600 px-8 py-4 rounded-full font-bold text-lg shadow-2xl hover:shadow-white/50 transition-all duration-300 flex items-center justify-center space-x-2"
+                      >
+                        <span>開始學習</span>
+                        <span className="text-2xl">🚀</span>
+                      </Link>
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Link
+                        to={ROUTES.COURTS}
+                        className="backdrop-blur-sm bg-white/20 text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white/50 hover:bg-white/30 transition-all duration-300 flex items-center justify-center space-x-2"
+                      >
+                        <span>找球場</span>
+                        <span className="text-2xl">📍</span>
+                      </Link>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
         </div>
 
         {/* 波浪裝飾 */}

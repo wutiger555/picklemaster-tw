@@ -28,7 +28,7 @@ const Game = () => {
             匹克球互動遊戲
           </h1>
           <p className="text-gray-600 text-lg">
-            體驗真實的匹克球對戰！使用方向鍵移動，空白鍵發球
+            體驗簡化版的乒乓球式匹克球對戰！使用上下鍵移動球拍接球
           </p>
         </motion.div>
       </div>
@@ -60,19 +60,19 @@ const Game = () => {
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start">
                 <span className="text-sport-500 mr-2">•</span>
-                <span>按空白鍵發球，球會自動發往對角線</span>
+                <span>按空白鍵開始遊戲，球會自動左右移動</span>
               </li>
               <li className="flex items-start">
                 <span className="text-sport-500 mr-2">•</span>
-                <span>使用左右方向鍵移動球拍接球</span>
+                <span>使用上下方向鍵（或 W/S）移動球拍</span>
               </li>
               <li className="flex items-start">
                 <span className="text-sport-500 mr-2">•</span>
-                <span>將球打到對方場地得分</span>
+                <span>用球拍接住球並反彈回對方場地</span>
               </li>
               <li className="flex items-start">
                 <span className="text-sport-500 mr-2">•</span>
-                <span>球彈地一次後可以擊球回擊</span>
+                <span>讓對手接不到球就可以得分</span>
               </li>
             </ul>
           </motion.div>
@@ -90,19 +90,19 @@ const Game = () => {
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start">
                 <span className="text-court-500 mr-2">•</span>
-                <span>發球後立即移動到中場準備接球</span>
+                <span>保持球拍在中間位置，方便上下移動</span>
               </li>
               <li className="flex items-start">
                 <span className="text-court-500 mr-2">•</span>
-                <span>盡量避開黃色廚房區進行截擊</span>
+                <span>預判球的移動方向，提前移動球拍</span>
               </li>
               <li className="flex items-start">
                 <span className="text-court-500 mr-2">•</span>
-                <span>預判球的落點，提前移動球拍</span>
+                <span>在球拍上下不同位置接球會改變角度</span>
               </li>
               <li className="flex items-start">
                 <span className="text-court-500 mr-2">•</span>
-                <span>控制好擊球時機，不要太早或太晚</span>
+                <span>嘗試讓球以刁鑽角度反彈讓對手難接</span>
               </li>
             </ul>
           </motion.div>

@@ -152,7 +152,8 @@ const BallAnimation = () => {
         <div className="relative">
           <svg
             viewBox="0 0 240 480"
-            className="w-full h-auto max-w-md mx-auto bg-court-700 rounded-2xl"
+            className="w-full h-auto max-w-sm mx-auto bg-court-700 rounded-2xl"
+            style={{ maxHeight: '65vh' }}
             xmlns="http://www.w3.org/2000/svg"
           >
             {/* 球場外框 - 正確的俯視圖 (20' x 44') */}

@@ -16,12 +16,18 @@ const BallAnimation = () => {
   const [currentStep, setCurrentStep] = useState(0);
 
   // 資料來源：USA Pickleball Official Rulebook 2024
+  // 球場座標系統：240x480 SVG
+  // - 球場範圍：x=20~220 (寬200), y=20~460 (高440)
+  // - 球網中線：y=240
+  // - 上半場：y=20~240 (頂線y=20, 廚房線y=171)
+  // - 下半場：y=240~460 (廚房線y=309, 底線y=460)
+  // - 左右分界：x=120 (左側x=20~120, 右側x=120~220)
   const steps: AnimationStep[] = [
     {
       name: '發球準備',
       description: '發球方站在底線後，準備對角線發球',
-      position: { x: 50, y: 160 },
-      serverPosition: { x: 50, y: 180 },
+      position: { x: 170, y: 440 },
+      serverPosition: { x: 170, y: 440 },
       highlightZones: ['baseline-server', 'service-target-even'],
       regulations: [
         '🦶 至少一隻腳必須在底線後方',
@@ -35,8 +41,8 @@ const BallAnimation = () => {
     {
       name: '發球擊球',
       description: '由下往上擊球，球必須越過廚房區',
-      position: { x: 120, y: 120 },
-      serverPosition: { x: 50, y: 180 },
+      position: { x: 170, y: 260 },
+      serverPosition: { x: 170, y: 440 },
       highlightZones: ['kitchen-zone', 'service-target-even'],
       regulations: [
         '🏓 擊球點必須低於腰部',
@@ -50,8 +56,8 @@ const BallAnimation = () => {
     {
       name: '發球落點',
       description: '球落在對方偶數發球區內（對角線）',
-      position: { x: 350, y: 40 },
-      serverPosition: { x: 50, y: 180 },
+      position: { x: 170, y: 90 },
+      serverPosition: { x: 170, y: 440 },
       highlightZones: ['service-target-even'],
       regulations: [
         '✅ 球必須落在對方對角發球區內',
@@ -65,7 +71,7 @@ const BallAnimation = () => {
     {
       name: '接發球',
       description: '接發球方必須等球彈地後才能擊球',
-      position: { x: 350, y: 40 },
+      position: { x: 170, y: 90 },
       highlightZones: ['service-target-even'],
       regulations: [
         '⏱️ 必須等球彈地後才能擊球',
@@ -78,7 +84,7 @@ const BallAnimation = () => {
     {
       name: '第三球回擊',
       description: '發球方必須等球彈地後才能擊球（雙彈地規則）',
-      position: { x: 100, y: 60 },
+      position: { x: 70, y: 380 },
       highlightZones: [],
       regulations: [
         '⏱️ 發球方也必須等球彈地後擊球',
@@ -91,7 +97,7 @@ const BallAnimation = () => {
     {
       name: '截擊得分',
       description: '在廚房區外截擊，球落在對方場內得分',
-      position: { x: 80, y: 120 },
+      position: { x: 100, y: 320 },
       highlightZones: ['kitchen-zone'],
       regulations: [
         '✅ 雙彈地規則後可以自由截擊',
@@ -145,86 +151,113 @@ const BallAnimation = () => {
 
         <div className="relative">
           <svg
-            viewBox="0 0 440 200"
-            className="w-full h-auto bg-court-700 rounded-2xl"
+            viewBox="0 0 240 480"
+            className="w-full h-auto max-w-md mx-auto bg-court-700 rounded-2xl"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* 球場外框 */}
-            <rect x="20" y="20" width="400" height="160" fill="none" stroke="white" strokeWidth="2" />
+            {/* 球場外框 - 正確的俯視圖 (20' x 44') */}
+            <rect x="20" y="20" width="200" height="440" fill="none" stroke="white" strokeWidth="3" />
 
-            {/* 中線 */}
-            <line x1="220" y1="20" x2="220" y2="180" stroke="white" strokeWidth="1.5" />
+            {/* 球網（中線）*/}
+            <line x1="20" y1="240" x2="220" y2="240" stroke="white" strokeWidth="4" />
 
-            {/* 球網 */}
-            <line x1="20" y1="100" x2="420" y2="100" stroke="white" strokeWidth="3" strokeDasharray="5,5" />
+            {/* 上半場廚房區線 */}
+            <line x1="20" y1="171" x2="220" y2="171" stroke="white" strokeWidth="2" />
 
-            {/* 非截擊區（廚房區）- 上方 */}
+            {/* 下半場廚房區線 */}
+            <line x1="20" y1="309" x2="220" y2="309" stroke="white" strokeWidth="2" />
+
+            {/* 中線虛線 - 上半場 */}
+            {[...Array(15)].map((_, i) => (
+              <rect
+                key={`top-dash-${i}`}
+                x="118"
+                y={20 + i * 10.1}
+                width="4"
+                height="5"
+                fill="white"
+              />
+            ))}
+
+            {/* 中線虛線 - 下半場 */}
+            {[...Array(15)].map((_, i) => (
+              <rect
+                key={`bottom-dash-${i}`}
+                x="118"
+                y={309 + i * 10.1}
+                width="4"
+                height="5"
+                fill="white"
+              />
+            ))}
+
+            {/* 廚房區（上半場）*/}
             <rect
               x="20"
-              y="20"
+              y="171"
               width="200"
-              height="50"
-              fill={shouldHighlight('kitchen-zone') ? 'rgba(251, 191, 36, 0.4)' : 'rgba(251, 191, 36, 0.15)'}
-              stroke={shouldHighlight('kitchen-zone') ? '#fbbf24' : 'white'}
-              strokeWidth={shouldHighlight('kitchen-zone') ? '2' : '1'}
+              height="69"
+              fill={shouldHighlight('kitchen-zone') ? 'rgba(251, 191, 36, 0.5)' : 'rgba(251, 191, 36, 0.2)'}
+              stroke={shouldHighlight('kitchen-zone') ? '#fbbf24' : 'transparent'}
+              strokeWidth="2"
               className="transition-all duration-300"
             />
             {shouldHighlight('kitchen-zone') && (
-              <text x="120" y="50" fill="white" fontSize="12" fontWeight="bold" textAnchor="middle">
+              <text x="120" y="210" fill="white" fontSize="14" fontWeight="bold" textAnchor="middle">
                 ❌ 廚房區（不可截擊）
               </text>
             )}
 
-            {/* 非截擊區（廚房區）- 下方 */}
+            {/* 廚房區（下半場）*/}
             <rect
-              x="220"
-              y="130"
+              x="20"
+              y="240"
               width="200"
-              height="50"
-              fill={shouldHighlight('kitchen-zone') ? 'rgba(251, 191, 36, 0.4)' : 'rgba(251, 191, 36, 0.15)'}
-              stroke={shouldHighlight('kitchen-zone') ? '#fbbf24' : 'white'}
-              strokeWidth={shouldHighlight('kitchen-zone') ? '2' : '1'}
+              height="69"
+              fill={shouldHighlight('kitchen-zone') ? 'rgba(251, 191, 36, 0.5)' : 'rgba(251, 191, 36, 0.2)'}
+              stroke={shouldHighlight('kitchen-zone') ? '#fbbf24' : 'transparent'}
+              strokeWidth="2"
               className="transition-all duration-300"
             />
 
-            {/* 發球區標記 - 上方偶數區（右側） */}
+            {/* 上半場偶數發球區（右側）*/}
             <rect
-              x="220"
+              x="120"
               y="20"
               width="100"
-              height="50"
-              fill={shouldHighlight('service-target-even') ? 'rgba(96, 165, 250, 0.4)' : 'rgba(96, 165, 250, 0.1)'}
-              stroke={shouldHighlight('service-target-even') ? '#60a5fa' : 'rgba(255, 255, 255, 0.3)'}
-              strokeWidth={shouldHighlight('service-target-even') ? '2' : '1'}
+              height="151"
+              fill={shouldHighlight('service-target-even') ? 'rgba(96, 165, 250, 0.5)' : 'rgba(96, 165, 250, 0.15)'}
+              stroke={shouldHighlight('service-target-even') ? '#60a5fa' : 'transparent'}
+              strokeWidth="2"
               className="transition-all duration-300"
             />
             {shouldHighlight('service-target-even') && (
-              <text x="270" y="50" fill="white" fontSize="11" fontWeight="bold" textAnchor="middle">
-                🎯 目標區
+              <text x="170" y="100" fill="white" fontSize="13" fontWeight="bold" textAnchor="middle">
+                🎯 目標發球區
               </text>
             )}
 
-            {/* 底線發球區標記 - 下方右側 */}
+            {/* 下半場偶數發球區（右側）*/}
             <rect
-              x="20"
-              y="130"
+              x="120"
+              y="309"
               width="100"
-              height="50"
-              fill={shouldHighlight('baseline-server') ? 'rgba(34, 197, 94, 0.4)' : 'rgba(34, 197, 94, 0.1)'}
-              stroke={shouldHighlight('baseline-server') ? '#22c55e' : 'rgba(255, 255, 255, 0.3)'}
-              strokeWidth={shouldHighlight('baseline-server') ? '2' : '1'}
+              height="151"
+              fill={shouldHighlight('baseline-server') ? 'rgba(34, 197, 94, 0.5)' : 'rgba(34, 197, 94, 0.15)'}
+              stroke={shouldHighlight('baseline-server') ? '#22c55e' : 'transparent'}
+              strokeWidth="2"
               className="transition-all duration-300"
             />
             {shouldHighlight('baseline-server') && (
-              <text x="70" y="160" fill="white" fontSize="11" fontWeight="bold" textAnchor="middle">
+              <text x="170" y="385" fill="white" fontSize="13" fontWeight="bold" textAnchor="middle">
                 📍 發球區
               </text>
             )}
 
-            {/* 底線標記 - 下方 */}
-            <line x1="20" y1="180" x2="220" y2="180" stroke="#ef4444" strokeWidth="2" strokeDasharray="3,3" />
+            {/* 底線標記 */}
+            <line x1="20" y1="460" x2="220" y2="460" stroke="#ef4444" strokeWidth="3" strokeDasharray="4,4" />
             {shouldHighlight('baseline-server') && (
-              <text x="120" y="195" fill="#ef4444" fontSize="10" fontWeight="bold" textAnchor="middle">
+              <text x="120" y="475" fill="#ef4444" fontSize="11" fontWeight="bold" textAnchor="middle">
                 ⚠️ 底線（發球時不可越過）
               </text>
             )}

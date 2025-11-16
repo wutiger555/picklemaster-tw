@@ -3,14 +3,16 @@ import { motion } from 'framer-motion';
 import InteractiveCourt from '../components/court/InteractiveCourt';
 import BallAnimation from '../components/court/BallAnimation';
 import CourtViewer3D from '../components/learning/CourtViewer3D';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const Rules = () => {
+  usePageTitle('匹克球規則教學');
   const [activeTab, setActiveTab] = useState('interactive-court');
 
   const tabs = [
-    { id: 'interactive-court', label: '互動式球場', icon: '🎾' },
-    { id: '3d-court', label: '3D 球場配置', icon: '🎯' },
-    { id: 'ball-path', label: '球路徑分析', icon: '⚡' },
+    { id: 'interactive-court', label: '互動式球場' },
+    { id: '3d-court', label: '3D 球場配置' },
+    { id: 'ball-path', label: '球路徑分析' },
   ];
 
   return (
@@ -46,13 +48,12 @@ const Rules = () => {
                 onClick={() => setActiveTab(tab.id)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 flex items-center space-x-2 ${
+                className={`px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-pickleball-500 to-sport-500 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
                 }`}
               >
-                <span className="text-2xl">{tab.icon}</span>
                 <span>{tab.label}</span>
               </motion.button>
             ))}

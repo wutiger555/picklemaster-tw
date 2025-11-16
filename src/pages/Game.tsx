@@ -2,8 +2,10 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PickleballGame from '../components/game/PickleballGame';
 import { ROUTES } from '../utils/constants';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const Game = () => {
+  usePageTitle('互動遊戲');
   return (
     <div className="min-h-screen bg-gradient-to-br from-sport-50 via-court-50 to-pickleball-50">
       {/* 返回按鈕 */}

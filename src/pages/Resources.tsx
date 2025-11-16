@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const Resources = () => {
+  usePageTitle('匹克球資源');
   const organizations = [
     {
       name: '中華民國匹克球協會',
       nameEn: 'Taiwan Pickleball Association',
       url: 'https://pickleball.org.tw',
       description: '台灣官方匹克球組織，提供賽事資訊、教練培訓、球場資訊等',
-      icon: '🇹🇼',
       type: '官方組織',
     },
     {
@@ -15,7 +16,6 @@ const Resources = () => {
       nameEn: 'Official Governing Body',
       url: 'https://usapickleball.org',
       description: '美國匹克球協會，提供官方規則、教學影片、賽事資訊',
-      icon: '🇺🇸',
       type: '國際組織',
     },
     {
@@ -23,7 +23,6 @@ const Resources = () => {
       nameEn: 'IFP',
       url: 'https://ifp pickleball.org',
       description: '國際匹克球聯盟，推動全球匹克球運動發展',
-      icon: '🌍',
       type: '國際組織',
     },
   ];
@@ -33,28 +32,24 @@ const Resources = () => {
       name: 'Pickleball Kitchen',
       description: '詳細的技術分析與戰術教學',
       subscribers: '350K+',
-      icon: '🎬',
       topics: ['技術分析', '戰術教學', '職業賽事'],
     },
     {
       name: 'Third Shot Sports',
       description: '新手友善的基礎教學與技巧分享',
       subscribers: '250K+',
-      icon: '📚',
       topics: ['基礎教學', '技巧分享', '裝備評測'],
     },
     {
       name: 'Pickleball 411',
       description: '進階技巧與策略，適合中高階球員',
       subscribers: '180K+',
-      icon: '🏆',
       topics: ['進階技巧', '比賽策略', 'Drill 練習'],
     },
     {
       name: 'Better Pickleball',
       description: '專注於改善球技的系統化教學',
       subscribers: '200K+',
-      icon: '📈',
       topics: ['系統化教學', '常見錯誤', '技巧提升'],
     },
   ];
@@ -64,28 +59,24 @@ const Resources = () => {
       platform: 'Facebook',
       name: '台灣匹克球社團',
       description: '台灣最大的匹克球社群，分享球場資訊、球友交流、活動公告',
-      icon: '📘',
       members: '5,000+',
     },
     {
       platform: 'LINE',
       name: '各地區匹克球群組',
       description: '按地區加入 LINE 群組，即時約球、球場通知、技術討論',
-      icon: '💬',
       members: '多個群組',
     },
     {
       platform: 'Instagram',
       name: '#台灣匹克球',
       description: '追蹤 #pickleballtaiwan #台灣匹克球，看精彩球技影片',
-      icon: '📷',
       members: '成長中',
     },
     {
       platform: 'Discord',
       name: 'Pickleball Taiwan Server',
       description: '線上即時討論、尋找球友、語音通話約球',
-      icon: '🎮',
       members: '新興社群',
     },
   ];
@@ -95,19 +86,16 @@ const Resources = () => {
       title: 'Pickleball Fundamentals',
       author: 'Mary Littlewood',
       description: '全面性的基礎教學，適合初學者入門',
-      icon: '📖',
     },
     {
       title: 'Championship Pickleball',
       author: 'Prem Carnot',
       description: '進階策略與競賽技巧，適合想參加比賽的球員',
-      icon: '🏅',
     },
     {
       title: 'Smart Pickleball',
       author: 'Prem Carnot & Scott Moore',
       description: '戰術思考與心理素質，提升比賽表現',
-      icon: '🧠',
     },
   ];
 
@@ -124,7 +112,7 @@ const Resources = () => {
             學習資源
           </h1>
           <p className="text-xl text-gray-600">
-            精選優質資源，助你快速成長 📚
+            精選優質資源，助你快速成長
           </p>
         </motion.div>
 
@@ -135,8 +123,7 @@ const Resources = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-black text-gray-800 mb-6 flex items-center">
-              <span className="mr-3 text-4xl">🏛️</span>
+            <h2 className="text-3xl font-black text-gray-800 mb-6">
               官方組織
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -148,7 +135,6 @@ const Resources = () => {
                   rel="noopener noreferrer"
                   className="block bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300"
                 >
-                  <div className="text-5xl mb-3">{org.icon}</div>
                   <span className="inline-block px-3 py-1 bg-sport-100 text-sport-700 rounded-full text-xs font-bold mb-3">
                     {org.type}
                   </span>
@@ -169,8 +155,7 @@ const Resources = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-black text-gray-800 mb-6 flex items-center">
-              <span className="mr-3 text-4xl">🎥</span>
+            <h2 className="text-3xl font-black text-gray-800 mb-6">
               YouTube 教學頻道
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -180,7 +165,6 @@ const Resources = () => {
                   className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <div className="text-4xl">{channel.icon}</div>
                     <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">
                       {channel.subscribers}
                     </span>
@@ -208,8 +192,7 @@ const Resources = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-black text-gray-800 mb-6 flex items-center">
-              <span className="mr-3 text-4xl">👥</span>
+            <h2 className="text-3xl font-black text-gray-800 mb-6">
               社群與活動
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -219,7 +202,6 @@ const Resources = () => {
                   className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <div className="text-4xl">{community.icon}</div>
                     <span className="px-3 py-1 bg-pickleball-100 text-pickleball-700 rounded-full text-xs font-bold">
                       {community.members}
                     </span>
@@ -238,8 +220,7 @@ const Resources = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-black text-gray-800 mb-6 flex items-center">
-              <span className="mr-3 text-4xl">📚</span>
+            <h2 className="text-3xl font-black text-gray-800 mb-6">
               推薦書籍
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -248,7 +229,6 @@ const Resources = () => {
                   key={index}
                   className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
                 >
-                  <div className="text-5xl mb-3">{book.icon}</div>
                   <h3 className="font-bold text-lg mb-1 text-gray-800">{book.title}</h3>
                   <p className="text-sm text-sport-600 mb-3">by {book.author}</p>
                   <p className="text-sm text-gray-600 leading-relaxed">{book.description}</p>
@@ -275,13 +255,13 @@ const Resources = () => {
                 href="/picklemaster-tw/courts"
                 className="px-8 py-4 bg-gradient-to-r from-sport-500 to-court-500 text-white rounded-full font-bold hover:shadow-lg hover:scale-105 transition-all duration-300"
               >
-                🗺️ 尋找球場
+                尋找球場
               </a>
               <a
                 href="/picklemaster-tw/rules"
                 className="px-8 py-4 bg-white border-2 border-sport-500 text-sport-700 rounded-full font-bold hover:bg-sport-50 hover:scale-105 transition-all duration-300"
               >
-                📚 學習規則
+                學習規則
               </a>
             </div>
           </motion.section>

@@ -47,22 +47,22 @@ const About = () => {
             </div>
 
             {/* 統計數據 */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              <div className="bg-gradient-to-br from-sport-100 to-sport-200 rounded-xl p-4 text-center">
-                <div className="text-3xl font-black text-sport-700">8.9M+</div>
-                <div className="text-sm text-gray-700 mt-1">美國球員數</div>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4 mt-8">
+              <div className="bg-gradient-to-br from-sport-100 to-sport-200 rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl font-black text-sport-700">8.9M+</div>
+                <div className="text-xs md:text-sm text-gray-700 mt-1">美國球員數</div>
               </div>
-              <div className="bg-gradient-to-br from-court-100 to-court-200 rounded-xl p-4 text-center">
-                <div className="text-3xl font-black text-court-700">70+</div>
-                <div className="text-sm text-gray-700 mt-1">國家普及</div>
+              <div className="bg-gradient-to-br from-court-100 to-court-200 rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl font-black text-court-700">70+</div>
+                <div className="text-xs md:text-sm text-gray-700 mt-1">國家普及</div>
               </div>
-              <div className="bg-gradient-to-br from-pickleball-100 to-pickleball-200 rounded-xl p-4 text-center">
-                <div className="text-3xl font-black text-pickleball-700">158.6%</div>
-                <div className="text-sm text-gray-700 mt-1">三年成長率</div>
+              <div className="bg-gradient-to-br from-pickleball-100 to-pickleball-200 rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl font-black text-pickleball-700">158.6%</div>
+                <div className="text-xs md:text-sm text-gray-700 mt-1">三年成長率</div>
               </div>
-              <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-4 text-center">
-                <div className="text-3xl font-black text-gray-700">1965</div>
-                <div className="text-sm text-gray-700 mt-1">運動誕生年</div>
+              <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl font-black text-gray-700">1965</div>
+                <div className="text-xs md:text-sm text-gray-700 mt-1">運動誕生年</div>
               </div>
             </div>
           </motion.section>
@@ -228,7 +228,7 @@ const About = () => {
                       MW
                     </div>
                     <h3 className="text-2xl font-black text-gray-800">Max Wu</h3>
-                    <p className="text-gray-600 font-semibold">吳自回</p>
+                    <p className="text-gray-600 font-semibold">@wutiger555</p>
                     <p className="text-sm text-gray-500 mt-2">Taipei, Taiwan 🇹🇼</p>
                   </div>
 
@@ -257,7 +257,7 @@ const About = () => {
                       GitHub
                     </a>
                     <a
-                      href="https://www.linkedin.com/in/%E8%87%AA%E5%9B%9E-%E5%90%B3-532109151/"
+                      href="https://linkedin.com/in/wutiger555"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm font-semibold"

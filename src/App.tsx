@@ -4,6 +4,7 @@ import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import Learning from './pages/Learning';
 import Courts from './pages/Courts';
+import Game from './pages/Game';
 import About from './pages/About';
 import Resources from './pages/Resources';
 import { ROUTES } from './utils/constants';
@@ -18,6 +19,7 @@ function App() {
             <Route path={ROUTES.HOME} element={<Home />} />
             <Route path={ROUTES.LEARNING} element={<Learning />} />
             <Route path={ROUTES.COURTS} element={<Courts />} />
+            <Route path={ROUTES.GAME} element={<Game />} />
             <Route path={ROUTES.ABOUT} element={<About />} />
             <Route path={ROUTES.RESOURCES} element={<Resources />} />
           </Routes>

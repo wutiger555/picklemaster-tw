@@ -12,6 +12,7 @@ const Header = () => {
     { path: ROUTES.HOME, label: '首頁', icon: '🏠' },
     { path: ROUTES.LEARNING, label: '技巧教學', icon: '📚' },
     { path: ROUTES.COURTS, label: '找球場', icon: '📍' },
+    { path: ROUTES.GAME, label: '互動遊戲', icon: '🎮' },
     { path: ROUTES.ABOUT, label: '認識匹克球', icon: '🎾' },
     { path: ROUTES.RESOURCES, label: '資源', icon: '🔗' },
   ];

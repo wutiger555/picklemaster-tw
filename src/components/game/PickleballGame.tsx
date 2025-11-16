@@ -14,18 +14,16 @@ const COURT = {
 
 // 遊戲物件配置
 const PLAYER = {
-  WIDTH: 40,
-  HEIGHT: 60,
-  SPEED: 8,
-  PADDLE_WIDTH: 60,
-  PADDLE_HEIGHT: 80,
+  PADDLE_WIDTH: 80,
+  PADDLE_HEIGHT: 100,
+  SPEED: 10,
 };
 
 const BALL = {
-  RADIUS: 12,
-  GRAVITY: 0.5,
-  BOUNCE: 0.7,
-  MAX_SPEED: 15,
+  RADIUS: 14,
+  GRAVITY: 0.3,
+  BOUNCE: 0.8,
+  MAX_SPEED: 12,
 };
 
 interface GameObject {
@@ -132,36 +130,39 @@ const PickleballGame = () => {
     ctx.setLineDash([]);
   };
 
-  // 繪製玩家
+  // 繪製球拍（簡化版，只顯示球拍）
   const drawPlayer = (ctx: CanvasRenderingContext2D, obj: GameObject, isPlayer: boolean, swingAngle: number) => {
     const paddleColor = isPlayer ? '#3b82f6' : '#ef4444';
-    const bodyColor = isPlayer ? '#60a5fa' : '#f87171';
-
-    // 身體
-    ctx.fillStyle = bodyColor;
-    ctx.fillRect(obj.x - PLAYER.WIDTH / 2, obj.y - PLAYER.HEIGHT / 2, PLAYER.WIDTH, PLAYER.HEIGHT);
-
-    // 頭
-    ctx.beginPath();
-    ctx.arc(obj.x, obj.y - PLAYER.HEIGHT / 2 - 15, 15, 0, Math.PI * 2);
-    ctx.fillStyle = '#fbbf24';
-    ctx.fill();
-
-    // 球拍
-    const paddleX = obj.x + Math.cos(swingAngle) * 50;
-    const paddleY = obj.y + Math.sin(swingAngle) * 50;
+    const paddleAccent = isPlayer ? '#2563eb' : '#dc2626';
 
     ctx.save();
-    ctx.translate(paddleX, paddleY);
+    ctx.translate(obj.x, obj.y);
     ctx.rotate(swingAngle);
 
-    // 拍面
-    ctx.fillStyle = paddleColor;
-    ctx.fillRect(-PLAYER.PADDLE_WIDTH / 2, -PLAYER.PADDLE_HEIGHT / 2, PLAYER.PADDLE_WIDTH, PLAYER.PADDLE_HEIGHT);
+    // 球拍外框
+    ctx.fillStyle = paddleAccent;
+    ctx.roundRect(-PLAYER.PADDLE_WIDTH / 2 - 3, -PLAYER.PADDLE_HEIGHT / 2 - 3, PLAYER.PADDLE_WIDTH + 6, PLAYER.PADDLE_HEIGHT + 6, 8);
+    ctx.fill();
 
-    // 握把
+    // 球拍主體
+    ctx.fillStyle = paddleColor;
+    ctx.roundRect(-PLAYER.PADDLE_WIDTH / 2, -PLAYER.PADDLE_HEIGHT / 2, PLAYER.PADDLE_WIDTH, PLAYER.PADDLE_HEIGHT, 6);
+    ctx.fill();
+
+    // 球拍握把
     ctx.fillStyle = '#1f2937';
-    ctx.fillRect(-5, PLAYER.PADDLE_HEIGHT / 2, 10, 30);
+    ctx.roundRect(-8, PLAYER.PADDLE_HEIGHT / 2, 16, 40, 4);
+    ctx.fill();
+
+    // 握把細節
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 4; i++) {
+      ctx.beginPath();
+      ctx.moveTo(-8, PLAYER.PADDLE_HEIGHT / 2 + 10 + i * 8);
+      ctx.lineTo(8, PLAYER.PADDLE_HEIGHT / 2 + 10 + i * 8);
+      ctx.stroke();
+    }
 
     ctx.restore();
   };
@@ -188,24 +189,24 @@ const PickleballGame = () => {
     }
   };
 
-  // 碰撞檢測：球與球拍
+  // 碰撞檢測：球與球拍（簡化並增大碰撞範圍）
   const checkPaddleCollision = (paddle: GameObject, isPlayer: boolean) => {
-    const swingAngle = isPlayer ? playerSwing.current : opponentSwing.current;
-    const paddleX = paddle.x + Math.cos(swingAngle) * 50;
-    const paddleY = paddle.y + Math.sin(swingAngle) * 50;
+    // 簡化碰撞檢測：使用矩形範圍
+    const paddleLeft = paddle.x - PLAYER.PADDLE_WIDTH / 2;
+    const paddleRight = paddle.x + PLAYER.PADDLE_WIDTH / 2;
+    const paddleTop = paddle.y - PLAYER.PADDLE_HEIGHT / 2 - 20; // 增加碰撞範圍
+    const paddleBottom = paddle.y + PLAYER.PADDLE_HEIGHT / 2 + 20;
 
-    const dx = ball.current.x - paddleX;
-    const dy = ball.current.y - paddleY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const ballInPaddleX = ball.current.x > paddleLeft && ball.current.x < paddleRight;
+    const ballInPaddleY = ball.current.y > paddleTop && ball.current.y < paddleBottom;
 
-    if (distance < BALL.RADIUS + PLAYER.PADDLE_WIDTH / 2) {
+    if (ballInPaddleX && ballInPaddleY) {
       // 擊中球拍
-      const angle = Math.atan2(dy, dx);
-      const speed = Math.sqrt(ball.current.vx ** 2 + ball.current.vy ** 2);
-      const newSpeed = Math.min(speed * 1.2 + 2, BALL.MAX_SPEED);
+      const angle = isPlayer ? -Math.PI / 3 : Math.PI / 3; // 固定角度讓球往對方場地
+      const speed = 8; // 固定速度，更容易控制
 
-      ball.current.vx = Math.cos(angle) * newSpeed;
-      ball.current.vy = Math.sin(angle) * newSpeed;
+      ball.current.vx = Math.cos(angle) * speed * (isPlayer ? 0.3 : -0.3);
+      ball.current.vy = Math.sin(angle) * speed * (isPlayer ? -1 : 1);
 
       lastHitter.current = isPlayer ? 'player' : 'opponent';
 
@@ -249,7 +250,7 @@ const PickleballGame = () => {
     }
 
     opp.x += opp.vx;
-    opp.x = Math.max(PLAYER.WIDTH / 2, Math.min(COURT.WIDTH - PLAYER.WIDTH / 2, opp.x));
+    opp.x = Math.max(PLAYER.PADDLE_WIDTH / 2, Math.min(COURT.WIDTH - PLAYER.PADDLE_WIDTH / 2, opp.x));
 
     // 揮拍動畫復原
     if (opponentSwing.current > 0) {
@@ -272,7 +273,7 @@ const PickleballGame = () => {
       playerSwing.current = -Math.PI / 4;
     }
 
-    player.current.x = Math.max(PLAYER.WIDTH / 2, Math.min(COURT.WIDTH - PLAYER.WIDTH / 2, player.current.x));
+    player.current.x = Math.max(PLAYER.PADDLE_WIDTH / 2, Math.min(COURT.WIDTH - PLAYER.PADDLE_WIDTH / 2, player.current.x));
 
     // 揮拍動畫復原
     if (playerSwing.current < 0) {
@@ -394,11 +395,12 @@ const PickleballGame = () => {
       if (e.key === ' ') {
         e.preventDefault();
         if (gameState === 'ready') {
-          // 開始發球
+          // 簡化發球：自動往對角線發球
           ball.current.x = player.current.x;
-          ball.current.y = player.current.y - 100;
-          ball.current.vx = (Math.random() - 0.5) * 4;
-          ball.current.vy = -12;
+          ball.current.y = player.current.y - 80;
+          // 自動發到對角線（往左上）
+          ball.current.vx = -3;
+          ball.current.vy = -10;
           lastHitter.current = 'player';
           bounceCount.current = 0;
           setGameState('playing');

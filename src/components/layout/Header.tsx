@@ -109,7 +109,7 @@ const Header = () => {
 
                     {/* Dropdown Menu */}
                     {activeDropdown === item.label && (
-                      <div className="absolute top-full left-0 pt-2 w-80">
+                      <div className={`absolute top-full pt-2 w-80 ${item.label === '更多' ? 'right-0' : 'left-0'}`}>
                         <div className="bg-white rounded-xl shadow-2xl overflow-hidden animate-slide-down border border-gray-100">
                           {item.items?.map((subItem, subIndex) => (
                             <Link

@@ -86,54 +86,129 @@ const Home = () => {
               </p>
             </motion.div>
 
-            {/* 右側：Glassmorphism 文字卡片 */}
+            {/* 右側：專業品牌呈現 */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="order-1 lg:order-2"
             >
-              <div className="backdrop-blur-md bg-white/10 rounded-3xl p-8 md:p-12 border border-white/20 shadow-2xl">
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                >
-                  <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-pickleball-100 to-white">
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="space-y-8"
+              >
+                {/* 品牌標識區 */}
+                <div className="relative">
+                  {/* 裝飾性徽章 */}
+                  <div className="absolute -top-4 -left-4 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30 shadow-lg">
+                    <span className="text-white/90 text-sm font-bold">🏆 台灣第一</span>
+                  </div>
+
+                  <div className="mt-8">
+                    <h1 className="text-5xl md:text-7xl font-black mb-4 leading-tight text-white drop-shadow-2xl">
                       {BRAND.NAME_ZH}
+                    </h1>
+
+                    {/* 英文副標 */}
+                    <div className="flex items-center space-x-3 mb-6">
+                      <div className="h-1 w-12 bg-white/60 rounded-full"></div>
+                      <p className="text-lg md:text-xl font-semibold text-white/90 tracking-wide">
+                        {BRAND.NAME}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 主要描述卡片 */}
+                <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 md:p-8 shadow-2xl border border-white/50">
+                  <div className="flex items-start space-x-4 mb-6">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 bg-gradient-to-br from-pickleball-500 to-sport-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
+                        {BRAND.TAGLINE}
+                      </h2>
+                      <p className="text-base md:text-lg text-gray-600 leading-relaxed">
+                        {BRAND.DESCRIPTION}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 特色標籤 */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    <span className="bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm font-semibold border border-blue-200">
+                      📍 55+ 球場
                     </span>
-                  </h1>
+                    <span className="bg-gradient-to-r from-green-50 to-green-100 text-green-700 px-4 py-2 rounded-lg text-sm font-semibold border border-green-200">
+                      🎓 互動教學
+                    </span>
+                    <span className="bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 px-4 py-2 rounded-lg text-sm font-semibold border border-purple-200">
+                      🎾 裝備指南
+                    </span>
+                  </div>
 
-                  <p className="text-xl md:text-2xl mb-4 font-bold text-white/90">
-                    {BRAND.TAGLINE}
-                  </p>
+                  <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-6"></div>
 
-                  <p className="text-base md:text-lg mb-8 text-white/80">
-                    {BRAND.DESCRIPTION}
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  {/* CTA 按鈕組 */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Link
                         to={ROUTES.RULES}
-                        className="bg-white text-pickleball-600 px-8 py-4 rounded-full font-bold text-lg shadow-2xl hover:shadow-white/50 transition-all duration-300 flex items-center justify-center"
+                        className="group relative bg-gradient-to-r from-pickleball-500 to-sport-500 text-white px-6 py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center overflow-hidden"
                       >
-                        <span>開始學習</span>
+                        <span className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+                        <span className="relative flex items-center">
+                          <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                          </svg>
+                          開始學習
+                        </span>
                       </Link>
                     </motion.div>
 
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Link
                         to={ROUTES.COURTS}
-                        className="backdrop-blur-sm bg-white/20 text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white/50 hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
+                        className="group bg-white text-gray-800 px-6 py-4 rounded-xl font-bold text-base border-2 border-gray-300 hover:border-pickleball-500 hover:text-pickleball-600 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
                       >
-                        <span>找球場</span>
+                        <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        找球場
                       </Link>
                     </motion.div>
                   </div>
-                </motion.div>
-              </div>
+                </div>
+
+                {/* 底部統計快速預覽 */}
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { icon: '🏟️', number: '55+', label: '球場' },
+                    { icon: '📚', number: '100+', label: '教學' },
+                    { icon: '👥', number: '1000+', label: '玩家' },
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 + index * 0.1 }}
+                      className="bg-white/90 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg border border-white/50 hover:scale-105 transition-transform duration-300"
+                    >
+                      <div className="text-2xl mb-1">{item.icon}</div>
+                      <div className="text-xl font-black text-gray-800">{item.number}</div>
+                      <div className="text-xs text-gray-600 font-semibold">{item.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
             </motion.div>
           </div>
         </div>

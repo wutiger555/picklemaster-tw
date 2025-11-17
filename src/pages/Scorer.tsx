@@ -24,7 +24,18 @@ const Scorer = () => {
   usePageTitle('匹克球計分器');
 
   // 音效系統
-  const { playScoreSound, playSwitchServeSound, playWinSound, playSubtractSound, toggleMute, isMuted } = useScorerSounds();
+  const {
+    playScoreSound,
+    playSwitchServeSound,
+    playGameStartSound,
+    playGamePointSound,
+    playDeuceSound,
+    playWinSound,
+    playSubtractSound,
+    toggleMute,
+    isMuted,
+    initAudioContext
+  } = useScorerSounds();
 
   const [gameState, setGameState] = useState<GameState>({
     team1Score: 0,
@@ -135,8 +146,8 @@ const Scorer = () => {
   const addScore = (team: 'team1' | 'team2') => {
     if (gameState.servingSide !== team) return;
 
-    // 播放得分音效
-    playScoreSound();
+    // 初始化音效系統（確保在用戶互動時啟動）
+    initAudioContext();
 
     const newState = { ...gameState };
     const teamName = team === 'team1' ? gameState.team1Name : gameState.team2Name;
@@ -145,6 +156,7 @@ const Scorer = () => {
       newState.team1Score += 1;
       addHistory(`${teamName} 得分 (${newState.team1Score}-${newState.team2Score})`);
 
+      // 檢查是否獲勝
       if (checkWin(newState.team1Score, newState.team2Score)) {
         newState.team1Sets += 1;
         addHistory(`${teamName} 贏得第 ${gameState.currentSet} 局！`);
@@ -157,11 +169,28 @@ const Scorer = () => {
           newState.servingSide = 'team1';
           newState.server = 1;
         }
+      } else {
+        // 檢查是否是 Deuce（雙方都達到目標分數-1 或以上且打平）
+        if (newState.team1Score === newState.team2Score &&
+            newState.team1Score >= gameState.targetScore - 1) {
+          playDeuceSound();
+          addHistory('Deuce!');
+        }
+        // 檢查是否是 Game Point（下一分就贏）
+        else if (newState.team1Score >= gameState.targetScore - 1 &&
+                 newState.team1Score - newState.team2Score === 1) {
+          playGamePointSound();
+          addHistory(`Game Point - ${teamName}!`);
+        } else {
+          // 一般得分音效
+          playScoreSound();
+        }
       }
     } else {
       newState.team2Score += 1;
       addHistory(`${teamName} 得分 (${newState.team1Score}-${newState.team2Score})`);
 
+      // 檢查是否獲勝
       if (checkWin(newState.team2Score, newState.team1Score)) {
         newState.team2Sets += 1;
         addHistory(`${teamName} 贏得第 ${gameState.currentSet} 局！`);
@@ -174,6 +203,22 @@ const Scorer = () => {
           newState.servingSide = 'team1';
           newState.server = 1;
         }
+      } else {
+        // 檢查是否是 Deuce
+        if (newState.team1Score === newState.team2Score &&
+            newState.team2Score >= gameState.targetScore - 1) {
+          playDeuceSound();
+          addHistory('Deuce!');
+        }
+        // 檢查是否是 Game Point
+        else if (newState.team2Score >= gameState.targetScore - 1 &&
+                 newState.team2Score - newState.team1Score === 1) {
+          playGamePointSound();
+          addHistory(`Game Point - ${teamName}!`);
+        } else {
+          // 一般得分音效
+          playScoreSound();
+        }
       }
     }
 
@@ -182,6 +227,8 @@ const Scorer = () => {
 
   // 減分
   const subtractScore = (team: 'team1' | 'team2') => {
+    // 初始化音效系統
+    initAudioContext();
     // 播放扣分音效
     playSubtractSound();
 
@@ -196,6 +243,8 @@ const Scorer = () => {
 
   // 換發球
   const switchServe = () => {
+    // 初始化音效系統
+    initAudioContext();
     // 播放換發球音效
     playSwitchServeSound();
 
@@ -225,6 +274,9 @@ const Scorer = () => {
   // 重置比賽
   const resetGame = () => {
     if (confirm('確定要重置整個比賽嗎？')) {
+      // 初始化音效系統
+      initAudioContext();
+
       setGameState({
         team1Score: 0,
         team2Score: 0,
@@ -242,6 +294,9 @@ const Scorer = () => {
       setIsTimerRunning(false);
       setHistory([]);
       addHistory('比賽開始');
+
+      // 播放開始比賽音效
+      setTimeout(() => playGameStartSound(), 300);
     }
   };
 

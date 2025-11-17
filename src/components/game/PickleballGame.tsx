@@ -70,6 +70,7 @@ const PickleballGame = () => {
     playFaultSound,
     playNetSound,
     playWinSound,
+    playServeSound,
     playGameStartSound,
     toggleMute,
     isMuted,

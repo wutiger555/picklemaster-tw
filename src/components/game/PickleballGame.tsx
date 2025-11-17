@@ -21,10 +21,10 @@ const PLAYER = {
 
 const BALL = {
   RADIUS: 14,
-  GRAVITY: 0.18, // 3D高度的重力加速度（平衡值）
-  BOUNCE: 0.88, // 彈性係數（適中，讓球能彈到對方場地）
-  INITIAL_VX: 6,
-  INITIAL_VY: -8,
+  GRAVITY: 0.25, // 3D高度的重力加速度（增加，讓球更快落地，更像真實匹克球）
+  BOUNCE: 0.65, // 彈性係數（大幅降低，匹克球彈跳較低，鼓勵落地後回擊）
+  INITIAL_VX: 4,
+  INITIAL_VY: -5,
   SHADOW_OFFSET: 0.3, // 陰影偏移比例
   SPIN_EFFECT: 0.3, // 旋球效果強度
 };
@@ -603,8 +603,8 @@ const PickleballGame = () => {
 
       // 【新增】力度控制：根據球拍移動速度調整擊球力道
       const paddleSpeed = Math.sqrt(paddle.vx * paddle.vx + paddle.vy * paddle.vy);
-      const powerMultiplier = 1 + Math.min(paddleSpeed / 20, 0.4); // 最多增加40%力道（從50%降低）
-      const baseSpeed = (isPlayer ? 5 : 5.2) * powerMultiplier; // AI速度從6降到5.2，避免球飛太遠
+      const powerMultiplier = 1 + Math.min(paddleSpeed / 20, 0.3); // 最多增加30%力道
+      const baseSpeed = (isPlayer ? 4 : 4.2) * powerMultiplier; // 降低速度，讓球更快落地、飛行距離更短
 
       // X軸速度（左右方向）
       b.vx = direction * baseSpeed;
@@ -622,8 +622,8 @@ const PickleballGame = () => {
         }
       }
 
-      const verticalBoost = isPlayer ? 1 : 1.2; // AI垂直加成從1.5降到1.2，減少出界機率
-      b.vy = hitPosition * 2 * verticalBoost + angleControl;
+      const verticalBoost = isPlayer ? 0.8 : 1; // 降低垂直速度，讓球更快落地不飛太遠
+      b.vy = hitPosition * 1.5 * verticalBoost + angleControl; // 降低前後速度（從2降到1.5）
 
       // 【新增】旋球機制：根據擊球位置產生旋轉（球拍上緣=下旋，下緣=上旋）
       // hitPosition > 0 表示球在球拍下方 -> 上旋（球會下墜）
@@ -631,16 +631,16 @@ const PickleballGame = () => {
       b.spin = hitPosition * BALL.SPIN_EFFECT;
 
       // 【關鍵】Z軸速度（向上的速度，讓球飛起來）
-      // 【平衡】調整向上速度，確保球能飛過網但不會太高
-      let upwardSpeed = 8.5 - (b.z / 25); // 適中速度（從9降到8.5，讓球的弧線更平穩）
+      // 【匹克球特性】降低向上速度，讓球更快落地，鼓勵落地後回擊
+      let upwardSpeed = 7 - (b.z / 25); // 大幅降低（從8.5降到7，球快速落地）
       // 下旋會增加向上速度（球飄），上旋會減少向上速度（球快速下墜）
-      upwardSpeed += b.spin * -7; // 降低旋球影響（從-8降到-7）
-      // 確保合理的向上速度範圍
-      upwardSpeed = Math.max(Math.min(upwardSpeed, 10.5), 6); // 範圍6-10.5（從11降到10.5）
+      upwardSpeed += b.spin * -6; // 降低旋球影響
+      // 確保合理的向上速度範圍（匹克球的低弧線特性）
+      upwardSpeed = Math.max(Math.min(upwardSpeed, 8.5), 5); // 範圍5-8.5（大幅降低）
       b.vz = upwardSpeed;
 
-      // 速度限制
-      const maxSpeed = 12;
+      // 速度限制（匹克球特性：降低整體速度）
+      const maxSpeed = 8; // 從12降到8，讓球更快落地
       b.vx = Math.max(-maxSpeed, Math.min(maxSpeed, b.vx));
       b.vy = Math.max(-maxSpeed, Math.min(maxSpeed, b.vy));
 
@@ -1062,25 +1062,25 @@ const PickleballGame = () => {
     playServeSound();
 
     if (isPlayerServing) {
-      // 玩家發球到對角線
+      // 玩家發球到對角線（匹克球特性：更慢、更低的發球）
       const targetY = player.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
       const dx = COURT.WIDTH * 0.85 - b.x;
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      b.vx = (dx / distance) * 6.5; // 適中速度，確保落在場內
-      b.vy = (dy / distance) * 6.5;
-      b.vz = 8; // 適中的向上速度
+      b.vx = (dx / distance) * 4.5; // 降低發球速度（從6.5降到4.5）
+      b.vy = (dy / distance) * 4.5;
+      b.vz = 6.5; // 降低向上速度（從8降到6.5）
     } else {
-      // AI發球到玩家對角線
+      // AI發球到玩家對角線（匹克球特性：更慢、更低的發球）
       const targetY = opponent.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
       const dx = COURT.WIDTH * 0.15 - b.x;
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      b.vx = (dx / distance) * 6;
-      b.vy = (dy / distance) * 6;
-      b.vz = 8;
+      b.vx = (dx / distance) * 4.2; // 降低發球速度（從6降到4.2）
+      b.vy = (dy / distance) * 4.2;
+      b.vz = 6.5; // 降低向上速度（從8降到6.5）
     }
 
     setGameState('playing');

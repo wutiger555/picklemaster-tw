@@ -20,8 +20,8 @@ const PLAYER = {
 
 const BALL = {
   RADIUS: 14,
-  GRAVITY: 0.22, // 3D高度的重力加速度（大幅降低讓球飛更遠、慢一點）
-  BOUNCE: 0.92, // 彈性係數（大幅提高讓球彈更遠）
+  GRAVITY: 0.12, // 3D高度的重力加速度（極低讓球飛得超遠、超慢）
+  BOUNCE: 0.96, // 彈性係數（接近無損失，讓球彈超高）
   INITIAL_VX: 6,
   INITIAL_VY: -8,
   SHADOW_OFFSET: 0.3, // 陰影偏移比例
@@ -558,8 +558,8 @@ const PickleballGame = () => {
       b.vy = hitPosition * 2 * verticalBoost + angleControl;
 
       // 【關鍵】Z軸速度（向上的速度，讓球飛起來）
-      // 基礎向上速度 + 根據當前高度調整
-      b.vz = 8 - (b.z / 20); // 球越低，打出去飛得越高
+      // 大幅提高向上速度讓球飛得更高更遠
+      b.vz = 12 - (b.z / 20); // 提高基礎速度從8到12
 
       // 速度限制
       const maxSpeed = 12;
@@ -577,16 +577,19 @@ const PickleballGame = () => {
       bounceCount.current = 0; // 重置彈跳計數
       canHit.current = false; // 防止重複擊球
 
-      // 更新遊戲階段
+      // 【匹克球雙彈跳規則】更新遊戲階段
       if (gamePhase.current === 'serve') {
+        // 發球階段 -> 接發球階段（接發球方必須等球彈地）
         gamePhase.current = 'return';
-        mustBounce.current = true; // 接發球必須彈地
+        mustBounce.current = true;
       } else if (gamePhase.current === 'return') {
+        // 接發球階段 -> 第三拍階段（發球方也必須等球彈地）
         gamePhase.current = 'third-shot';
-        mustBounce.current = true; // 第三球必須彈地
+        mustBounce.current = true;
       } else if (gamePhase.current === 'third-shot') {
+        // 第三拍階段 -> 對打階段（可以截擊了，除非在廚房區）
         gamePhase.current = 'rally';
-        mustBounce.current = false; // 進入對打階段，可以截擊
+        mustBounce.current = false;
       }
 
       return true;
@@ -840,9 +843,9 @@ const PickleballGame = () => {
       b.z = 0;
       b.vz = -b.vz * BALL.BOUNCE; // Z軸反彈
 
-      // 觸地時減速（摩擦力）- 降低摩擦力讓球保持速度更久
-      b.vx *= 0.98;
-      b.vy *= 0.98;
+      // 觸地時減速（摩擦力）- 極低摩擦力讓球幾乎不減速
+      b.vx *= 0.99;
+      b.vy *= 0.99;
 
       // 只有明顯的彈跳才計數（避免滾動時重複計數）
       if (Math.abs(b.vz) > 2) {
@@ -931,9 +934,9 @@ const PickleballGame = () => {
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      b.vx = (dx / distance) * 7;
-      b.vy = (dy / distance) * 7;
-      b.vz = 6; // 向上的速度，讓球弧線飛行
+      b.vx = (dx / distance) * 8; // 提高速度從7到8
+      b.vy = (dy / distance) * 8;
+      b.vz = 10; // 大幅提高向上速度從6到10
     } else {
       // AI發球到玩家對角線
       const targetY = opponent.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
@@ -941,9 +944,9 @@ const PickleballGame = () => {
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      b.vx = (dx / distance) * 6.5;
-      b.vy = (dy / distance) * 6.5;
-      b.vz = 6;
+      b.vx = (dx / distance) * 7.5; // 提高速度從6.5到7.5
+      b.vy = (dy / distance) * 7.5;
+      b.vz = 10; // 大幅提高向上速度從6到10
     }
 
     setGameState('playing');
@@ -1285,7 +1288,8 @@ const PickleballGame = () => {
                       <ul className="space-y-0.5 text-gray-700">
                         <li>• 11分制，領先2分獲勝</li>
                         <li>• 雙彈跳：前兩球須彈地</li>
-                        <li>• 廚房區內禁止截擊</li>
+                        <li>• 第三球後可截擊對打</li>
+                        <li>• 廚房區內永遠禁止截擊</li>
                       </ul>
                     </div>
                     <div className="bg-white/80 p-3 rounded-lg">
@@ -1380,9 +1384,10 @@ const PickleballGame = () => {
                 <li>• <strong>兩段式發球</strong>：第一次點擊球掉落，第二次點擊擊球發出</li>
                 <li>• <strong>對角發球</strong>：發球會自動往對角線方向飛行</li>
                 <li>• <strong>方向控制</strong>：擊球時按上下鍵可控制球往上或往下飛</li>
-                <li>• <strong>雙彈跳規則</strong>：發球和接發球都必須等球彈地後才能擊球</li>
-                <li>• <strong>廚房區</strong>：黃色區域內不能截擊（球沒彈地直接打）</li>
-                <li>• <strong>單彈跳</strong>：球只能彈地一次，彈兩次失分</li>
+                <li>• <strong>雙彈跳規則</strong>：前兩球（發球、接發球）必須等球彈地後才能打</li>
+                <li>• <strong>對打階段截擊</strong>：第三球之後可以直接截擊，不用等彈地</li>
+                <li>• <strong>廚房區限制</strong>：黃色區域內永遠不能截擊（球沒彈地直接打）</li>
+                <li>• <strong>單彈跳規則</strong>：球只能彈地一次，彈兩次失分</li>
               </ul>
             </div>
           </div>

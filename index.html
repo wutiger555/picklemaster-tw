@@ -103,6 +103,17 @@
     <title>匹克大師台灣 | Picklemaster Taiwan - 台灣匹克球玩家社群與資源平台</title>
   </head>
   <body>
+    <!-- GitHub Pages SPA 路由恢復腳本 -->
+    <script>
+      // 檢查是否有從 404.html 重定向過來的路徑
+      (function() {
+        var redirect = sessionStorage.getItem('redirect');
+        if (redirect) {
+          sessionStorage.removeItem('redirect');
+          history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -105,6 +105,17 @@
     <link rel="stylesheet" crossorigin href="/assets/index-Cj8-UEe6.css">
   </head>
   <body>
+    <!-- GitHub Pages SPA 路由恢復腳本 -->
+    <script>
+      // 檢查是否有從 404.html 重定向過來的路徑
+      (function() {
+        var redirect = sessionStorage.getItem('redirect');
+        if (redirect) {
+          sessionStorage.removeItem('redirect');
+          history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
     <div id="root"></div>
   </body>
 </html>

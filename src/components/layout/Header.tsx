@@ -109,32 +109,34 @@ const Header = () => {
 
                     {/* Dropdown Menu */}
                     {activeDropdown === item.label && (
-                      <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-xl shadow-2xl overflow-hidden animate-slide-down border border-gray-100">
-                        {item.items?.map((subItem, subIndex) => (
-                          <Link
-                            key={subIndex}
-                            to={subItem.path}
-                            className="block px-6 py-4 hover:bg-gradient-to-r hover:from-pickleball-50 hover:to-sport-50 transition-all duration-200 border-b border-gray-100 last:border-b-0"
-                            onClick={() => setActiveDropdown(null)}
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="font-bold text-gray-800 mb-1 flex items-center space-x-2">
-                                  <span>{subItem.label}</span>
-                                  {subItem.badge && (
-                                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                                      {subItem.badge}
-                                    </span>
-                                  )}
+                      <div className="absolute top-full left-0 pt-2 w-80">
+                        <div className="bg-white rounded-xl shadow-2xl overflow-hidden animate-slide-down border border-gray-100">
+                          {item.items?.map((subItem, subIndex) => (
+                            <Link
+                              key={subIndex}
+                              to={subItem.path}
+                              className="block px-6 py-4 hover:bg-gradient-to-r hover:from-pickleball-50 hover:to-sport-50 transition-all duration-200 border-b border-gray-100 last:border-b-0"
+                              onClick={() => setActiveDropdown(null)}
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="font-bold text-gray-800 mb-1 flex items-center space-x-2">
+                                    <span>{subItem.label}</span>
+                                    {subItem.badge && (
+                                      <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                                        {subItem.badge}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-sm text-gray-600">{subItem.description}</div>
                                 </div>
-                                <div className="text-sm text-gray-600">{subItem.description}</div>
+                                <svg className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
                               </div>
-                              <svg className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            </div>
-                          </Link>
-                        ))}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </>

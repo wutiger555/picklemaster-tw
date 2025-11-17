@@ -101,23 +101,16 @@ const Home = () => {
               >
                 {/* 品牌標識區 */}
                 <div className="relative">
-                  {/* 裝飾性徽章 */}
-                  <div className="absolute -top-4 -left-4 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30 shadow-lg">
-                    <span className="text-white/90 text-sm font-bold">🏆 台灣第一</span>
-                  </div>
+                  <h1 className="text-5xl md:text-7xl font-black mb-4 leading-tight text-white drop-shadow-2xl">
+                    {BRAND.NAME_ZH}
+                  </h1>
 
-                  <div className="mt-8">
-                    <h1 className="text-5xl md:text-7xl font-black mb-4 leading-tight text-white drop-shadow-2xl">
-                      {BRAND.NAME_ZH}
-                    </h1>
-
-                    {/* 英文副標 */}
-                    <div className="flex items-center space-x-3 mb-6">
-                      <div className="h-1 w-12 bg-white/60 rounded-full"></div>
-                      <p className="text-lg md:text-xl font-semibold text-white/90 tracking-wide">
-                        {BRAND.NAME}
-                      </p>
-                    </div>
+                  {/* 英文副標 */}
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="h-1 w-12 bg-white/60 rounded-full"></div>
+                    <p className="text-lg md:text-xl font-semibold text-white/90 tracking-wide">
+                      {BRAND.NAME}
+                    </p>
                   </div>
                 </div>
 

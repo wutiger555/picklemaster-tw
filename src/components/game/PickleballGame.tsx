@@ -84,6 +84,10 @@ const PickleballGame = () => {
   // 【新增】擊球視覺反饋
   const hitEffect = useRef<{ x: number; y: number; progress: number } | null>(null);
 
+  // 【新增】連擊系統
+  const [combo, setCombo] = useState(0);
+  const comboTimer = useRef<number | null>(null);
+
   // 玩家（左側）- 初始位置在底線發球區
   const player = useRef<GameObject>({
     x: 50, // 底線附近
@@ -535,6 +539,14 @@ const PickleballGame = () => {
       // 【新增】觸發擊球視覺特效
       hitEffect.current = { x: b.x, y: b.y, progress: 1 };
 
+      // 【新增】更新連擊數（只計算玩家的擊球）
+      if (isPlayer) {
+        setCombo(prev => prev + 1);
+        // 重置連擊計時器
+        if (comboTimer.current) clearTimeout(comboTimer.current);
+        comboTimer.current = window.setTimeout(() => setCombo(0), 3000); // 3秒後重置
+      }
+
       // 檢查廚房區規則：如果球沒有彈地（截擊），且在廚房區內，則犯規
       if (bounceCount.current === 0 && isInKitchen(paddle.x)) {
         // 廚房區截擊犯規
@@ -578,12 +590,12 @@ const PickleballGame = () => {
       b.spin = hitPosition * BALL.SPIN_EFFECT;
 
       // 【關鍵】Z軸速度（向上的速度，讓球飛起來）
-      // 【修正】增加向上速度，確保球能飛過網到對方場地
-      let upwardSpeed = 12 - (b.z / 20); // 提高基礎速度（從10增加到12）
+      // 【平衡】調整向上速度，確保球能飛過網但不會太高
+      let upwardSpeed = 9 - (b.z / 25); // 適中速度（從12降到9，讓球更容易接）
       // 下旋會增加向上速度（球飄），上旋會減少向上速度（球快速下墜）
-      upwardSpeed += b.spin * -10;
-      // 確保最低向上速度，避免球飛不過網
-      upwardSpeed = Math.max(upwardSpeed, 8);
+      upwardSpeed += b.spin * -8; // 降低旋球影響（從-10降到-8）
+      // 確保合理的向上速度範圍
+      upwardSpeed = Math.max(Math.min(upwardSpeed, 11), 6); // 範圍6-11
       b.vz = upwardSpeed;
 
       // 速度限制
@@ -1090,16 +1102,81 @@ const PickleballGame = () => {
       ctx.restore();
     }
 
-    // 繪製計分板
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(COURT.WIDTH / 2 - 100, 10, 200, 50);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 28px sans-serif';
+    // 【改進】繪製專業計分板
+    const scoreboardY = 15;
+    const scoreboardHeight = 60;
+
+    // 計分板背景（漸層）
+    const scoreBgGradient = ctx.createLinearGradient(
+      COURT.WIDTH / 2 - 120, scoreboardY,
+      COURT.WIDTH / 2 + 120, scoreboardY + scoreboardHeight
+    );
+    scoreBgGradient.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
+    scoreBgGradient.addColorStop(1, 'rgba(30, 30, 30, 0.85)');
+    ctx.fillStyle = scoreBgGradient;
+    ctx.roundRect(COURT.WIDTH / 2 - 120, scoreboardY, 240, scoreboardHeight, 12);
+    ctx.fill();
+
+    // 計分板邊框
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.roundRect(COURT.WIDTH / 2 - 120, scoreboardY, 240, scoreboardHeight, 12);
+    ctx.stroke();
+
+    // 分數（玩家）
+    ctx.fillStyle = '#3b82f6';
+    ctx.font = 'bold 32px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${score.player}`, COURT.WIDTH / 2 - 20, scoreboardY + 42);
+
+    // 分隔符
+    ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
-    ctx.fillText(`${score.player} - ${score.opponent}`, COURT.WIDTH / 2, 45);
+    ctx.font = 'bold 24px sans-serif';
+    ctx.fillText(':', COURT.WIDTH / 2, scoreboardY + 40);
+
+    // 分數（對手）
+    ctx.fillStyle = '#ef4444';
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 32px sans-serif';
+    ctx.fillText(`${score.opponent}`, COURT.WIDTH / 2 + 20, scoreboardY + 42);
+
+    // 發球方指示器
+    const serverIndicatorY = scoreboardY + scoreboardHeight - 15;
+    if (serverSide === 'player') {
+      ctx.fillStyle = '#3b82f6';
+      ctx.beginPath();
+      ctx.arc(COURT.WIDTH / 2 - 80, serverIndicatorY, 5, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(COURT.WIDTH / 2 + 80, serverIndicatorY, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 【新增】連擊顯示
+    if (combo > 2) {
+      ctx.save();
+      const comboScale = 1 + (combo / 20);
+      ctx.translate(COURT.WIDTH / 2, scoreboardY + scoreboardHeight + 30);
+      ctx.scale(comboScale, comboScale);
+
+      // 連擊背景
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.2)';
+      ctx.roundRect(-50, -15, 100, 30, 15);
+      ctx.fill();
+
+      // 連擊文字
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${combo} COMBO!`, 0, 5);
+      ctx.restore();
+    }
 
     ctx.restore(); // 恢復縮放
-  }, [gameState, score]);
+  }, [gameState, score, combo, serverSide]);
 
   // 遊戲循環
   useEffect(() => {
@@ -1430,8 +1507,11 @@ const PickleballGame = () => {
         {gameScreen === 'game' && (
           <>
             {message && (
-              <div className="bg-gradient-to-r from-pickleball-500 to-sport-500 text-white px-6 py-3 rounded-full text-center font-bold text-lg mb-4">
-                {message}
+              <div className="bg-gradient-to-r from-pickleball-500 to-sport-500 text-white px-6 py-3 rounded-full text-center font-bold text-lg mb-4 shadow-lg animate-pulse">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-xl">📢</span>
+                  <span>{message}</span>
+                </div>
               </div>
             )}
 
@@ -1448,65 +1528,110 @@ const PickleballGame = () => {
             )}
 
             <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-blue-100 rounded-xl p-4">
+          <div className={`rounded-xl p-4 transition-all duration-300 ${serverSide === 'player' ? 'bg-gradient-to-br from-blue-100 to-blue-200 ring-2 ring-blue-400' : 'bg-blue-50'}`}>
             <div className="text-center">
-              <div className="text-gray-600 text-sm mb-1">你的分數</div>
-              <div className="text-4xl font-black text-blue-600">{score.player}</div>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <span className="text-gray-600 text-sm font-semibold">你的分數</span>
+                {serverSide === 'player' && <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">發球</span>}
+              </div>
+              <div className="text-5xl font-black text-blue-600 drop-shadow-sm">{score.player}</div>
+              {combo > 2 && (
+                <div className="mt-2 text-xs font-bold text-yellow-600 animate-bounce">
+                  🔥 {combo} 連擊！
+                </div>
+              )}
             </div>
           </div>
-          <div className="bg-red-100 rounded-xl p-4">
+          <div className={`rounded-xl p-4 transition-all duration-300 ${serverSide === 'opponent' ? 'bg-gradient-to-br from-red-100 to-red-200 ring-2 ring-red-400' : 'bg-red-50'}`}>
             <div className="text-center">
-              <div className="text-gray-600 text-sm mb-1">對手分數</div>
-              <div className="text-4xl font-black text-red-600">{score.opponent}</div>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <span className="text-gray-600 text-sm font-semibold">對手分數</span>
+                {serverSide === 'opponent' && <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">發球</span>}
+              </div>
+              <div className="text-5xl font-black text-red-600 drop-shadow-sm">{score.opponent}</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-gray-100 rounded-xl p-4">
-          <h3 className="font-bold text-gray-800 mb-2">⚡ 操作說明</h3>
-          <div className="space-y-2 text-sm text-gray-700">
-            <div className="bg-green-50 p-2 rounded-lg">
-              <div className="flex items-center">
-                <span className="font-bold mr-2">🖱️ 滑鼠移動</span>
-                <span className="text-green-600">在球場上移動滑鼠控制球拍位置（推薦）</span>
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-2xl">🎮</span>
+            <h3 className="font-bold text-gray-800">遊戲控制</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div className="bg-white p-3 rounded-lg shadow-sm border border-green-200">
+              <div className="font-bold text-green-700 mb-2 flex items-center gap-1">
+                <span>🖱️</span>
+                <span>滑鼠控制（推薦）</span>
               </div>
-              <div className="flex items-center mt-1">
-                <span className="font-bold mr-2">🖱️ 點擊畫面</span>
-                <span className="text-green-600">發球、揮拍擊球（主要操作）</span>
+              <div className="text-gray-600 space-y-1">
+                <div>• 移動滑鼠：控制球拍</div>
+                <div>• 點擊畫面：揮拍/發球</div>
               </div>
             </div>
-            <div className="flex items-center">
-              <span className="font-bold mr-2">↑↓←→ 或 WASD</span>
-              <span>鍵盤四方向移動球拍（可在整個球場移動）</span>
-            </div>
-            <div className="flex items-center">
-              <span className="font-bold mr-2">↑↓（擊球時）</span>
-              <span className="text-blue-600">🎯 控制擊球角度（高球/低球）</span>
-            </div>
-            <div className="bg-yellow-50 p-2 rounded-lg mt-2">
-              <div className="flex items-center">
-                <span className="font-bold mr-2 text-yellow-700">⭐ 進階技巧</span>
-                <span className="text-yellow-700">快速移動增加擊球力道！用球拍上/下緣擊球可產生旋轉效果！</span>
+            <div className="bg-white p-3 rounded-lg shadow-sm border border-blue-200">
+              <div className="font-bold text-blue-700 mb-2 flex items-center gap-1">
+                <span>⌨️</span>
+                <span>鍵盤控制</span>
               </div>
+              <div className="text-gray-600 space-y-1">
+                <div>• WASD/方向鍵：移動</div>
+                <div>• 空白鍵：揮拍/發球</div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-lg border border-yellow-300">
+            <div className="font-bold text-yellow-800 mb-1 flex items-center gap-1">
+              <span>⚡</span>
+              <span>進階技巧</span>
+            </div>
+            <div className="text-yellow-700 text-xs space-y-1">
+              <div>• 快速移動球拍 → 增加擊球力道（最多+50%）</div>
+              <div>• 球拍上緣擊球 → 下旋（球會飄）</div>
+              <div>• 球拍下緣擊球 → 上旋（球快速下墜）</div>
             </div>
           </div>
         </div>
 
-        <div className="mt-4 bg-pickleball-50 rounded-xl p-4 border-2 border-pickleball-200">
-          <div className="flex items-start space-x-2">
+        <div className="mt-4 bg-gradient-to-br from-pickleball-50 to-sport-50 rounded-xl p-4 border-2 border-pickleball-300 shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">📖</span>
-            <div className="text-sm text-gray-700">
-              <p className="font-bold mb-2">匹克球規則：</p>
-              <ul className="space-y-1">
-                <li>• <strong>得分方發球</strong>：誰得分誰發球，AI也會自動發球</li>
-                <li>• <strong>兩段式發球</strong>：第一次點擊球掉落，第二次點擊擊球發出</li>
-                <li>• <strong>對角發球</strong>：發球會自動往對角線方向飛行</li>
-                <li>• <strong>方向控制</strong>：擊球時按上下鍵可控制球往上或往下飛</li>
-                <li>• <strong>雙彈跳規則</strong>：前兩球（發球、接發球）必須等球彈地後才能打</li>
-                <li>• <strong>對打階段截擊</strong>：第三球之後可以直接截擊，不用等彈地</li>
-                <li>• <strong>廚房區限制</strong>：黃色區域內永遠不能截擊（球沒彈地直接打）</li>
-                <li>• <strong>單彈跳規則</strong>：球只能彈地一次，彈兩次失分</li>
-              </ul>
+            <h3 className="font-bold text-gray-800">匹克球規則</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-700">
+            <div className="space-y-2">
+              <div className="bg-white p-2 rounded-lg border border-pickleball-200">
+                <span className="font-bold text-pickleball-600">🏓 發球規則</span>
+                <div className="mt-1 space-y-0.5 text-gray-600">
+                  <div>• 得分方發球</div>
+                  <div>• 兩段式發球（掉落→擊球）</div>
+                  <div>• 自動對角發球</div>
+                </div>
+              </div>
+              <div className="bg-white p-2 rounded-lg border border-blue-200">
+                <span className="font-bold text-blue-600">⚡ 雙彈跳規則</span>
+                <div className="mt-1 space-y-0.5 text-gray-600">
+                  <div>• 發球、接發球必須等球彈地</div>
+                  <div>• 第三球後可直接截擊</div>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="bg-white p-2 rounded-lg border border-yellow-200">
+                <span className="font-bold text-yellow-600">🚫 廚房區限制</span>
+                <div className="mt-1 space-y-0.5 text-gray-600">
+                  <div>• 黃色區域內禁止截擊</div>
+                  <div>• 必須等球彈地才能打</div>
+                </div>
+              </div>
+              <div className="bg-white p-2 rounded-lg border border-red-200">
+                <span className="font-bold text-red-600">❌ 失分條件</span>
+                <div className="mt-1 space-y-0.5 text-gray-600">
+                  <div>• 球未過網到對方場地</div>
+                  <div>• 球在對方場地彈兩次</div>
+                  <div>• 球出界或掛網</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

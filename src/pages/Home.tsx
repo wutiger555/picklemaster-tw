@@ -1,13 +1,24 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
+// Uncomment when using these imports:
+// import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
+// import { useInViewOnce } from '../hooks/useInView';
+// import GlassCard from '../components/common/GlassCard';
 
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 
 const Home = () => {
   usePageTitle();
+
+  // 視差滾動效果
+  const { scrollY } = useScroll();
+  const parallaxY1 = useTransform(scrollY, [0, 500], [0, -50]);
+  const parallaxY2 = useTransform(scrollY, [0, 500], [0, -100]);
+  const parallaxY3 = useTransform(scrollY, [0, 500], [0, -150]);
+
   const features = [
     {
       title: '互動式規則教學',
@@ -56,13 +67,22 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* 英雄區塊 - 3D + Glassmorphism 設計 */}
-      <section className="relative bg-gradient-to-br from-pickleball-500 via-sport-500 to-court-500 text-white py-20 md:py-32 overflow-hidden">
-        {/* 背景動畫圓圈 */}
+      {/* 英雄區塊 - 3D + Glassmorphism + 視差滾動設計 */}
+      <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-600 text-white py-20 md:py-32 overflow-hidden">
+        {/* 視差背景動畫圓圈 */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pickleball-300/20 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-sport-400/10 rounded-full blur-3xl animate-bounce-slow"></div>
+          <motion.div
+            style={{ y: parallaxY1 }}
+            className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse-slow"
+          />
+          <motion.div
+            style={{ y: parallaxY2 }}
+            className="absolute bottom-20 right-10 w-96 h-96 bg-primary-300/20 rounded-full blur-3xl animate-float"
+          />
+          <motion.div
+            style={{ y: parallaxY3 }}
+            className="absolute top-1/2 left-1/2 w-80 h-80 bg-secondary-400/10 rounded-full blur-3xl animate-bounce-slow"
+          />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
@@ -149,14 +169,17 @@ const Home = () => {
 
                   <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-6"></div>
 
-                  {/* CTA 按鈕組 */}
+                  {/* CTA 按鈕組 - 霓虹發光效果 */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
                       <Link
                         to={ROUTES.RULES}
-                        className="group relative bg-gradient-to-r from-pickleball-500 to-sport-500 text-white px-6 py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center overflow-hidden"
+                        className="group relative bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-6 py-4 rounded-xl font-extrabold text-base shadow-neon-primary hover:shadow-[0_0_30px_rgba(16,185,129,0.6),0_0_50px_rgba(16,185,129,0.4)] transition-all duration-300 flex items-center justify-center overflow-hidden animate-glow-pulse"
                       >
-                        <span className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+                        <span className="absolute inset-0 bg-shimmer-gradient animate-shimmer"></span>
                         <span className="relative flex items-center">
                           <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -166,10 +189,13 @@ const Home = () => {
                       </Link>
                     </motion.div>
 
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
                       <Link
                         to={ROUTES.COURTS}
-                        className="group bg-white text-gray-800 px-6 py-4 rounded-xl font-bold text-base border-2 border-gray-300 hover:border-pickleball-500 hover:text-pickleball-600 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
+                        className="group bg-white/95 backdrop-blur-sm text-gray-900 px-6 py-4 rounded-xl font-bold text-base border-2 border-neutral-200 hover:border-primary-500 hover:text-primary-600 hover:shadow-elevated-md transition-all duration-300 flex items-center justify-center"
                       >
                         <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

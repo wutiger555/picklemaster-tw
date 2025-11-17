@@ -108,7 +108,7 @@ const InteractiveCourt = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       <div className="bg-white rounded-3xl shadow-2xl p-4 md:p-8">
         <h2 className="text-3xl md:text-4xl font-black text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pickleball-600 to-sport-600">
           互動式匹克球場
@@ -117,10 +117,12 @@ const InteractiveCourt = () => {
           資料來源：USA Pickleball Official Rulebook 2024
         </p>
         <p className="text-center text-gray-600 mb-8">
-          點擊球場區域了解詳細規則 • Hover 查看區域名稱
+          Hover 球場區域即時查看規則 • 點擊展開完整資訊
         </p>
 
-        <div className="relative">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* 球場SVG */}
+          <div className="lg:col-span-2 relative">
           {/* SVG 球場 - 正確的俯視圖 */}
           <svg
             viewBox="0 0 240 480"
@@ -306,34 +308,7 @@ const InteractiveCourt = () => {
               />
             </g>
 
-            {/* 下半場偶數發球區（右側） */}
-            <g
-              className="cursor-pointer transition-all duration-300"
-              onClick={() => setSelectedArea('service-even')}
-              onMouseEnter={() => setHoveredArea('service-even')}
-              onMouseLeave={() => setHoveredArea(null)}
-            >
-              <rect
-                x="120"
-                y="309"
-                width="100"
-                height="151"
-                fill={
-                  hoveredArea === 'service-even' || selectedArea === 'service-even'
-                    ? 'rgba(96, 165, 250, 0.5)'
-                    : 'rgba(96, 165, 250, 0.2)'
-                }
-                stroke={hoveredArea === 'service-even' ? '#60a5fa' : 'transparent'}
-                strokeWidth="2"
-              />
-              {hoveredArea === 'service-even' && (
-                <text x="170" y="385" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
-                  偶數
-                </text>
-              )}
-            </g>
-
-            {/* 下半場奇數發球區（左側） */}
+            {/* 下半場奇數發球區（左側 - 鏡像後變成右側） */}
             <g
               className="cursor-pointer transition-all duration-300"
               onClick={() => setSelectedArea('service-odd')}
@@ -341,7 +316,7 @@ const InteractiveCourt = () => {
               onMouseLeave={() => setHoveredArea(null)}
             >
               <rect
-                x="20"
+                x="120"
                 y="309"
                 width="100"
                 height="151"
@@ -354,8 +329,35 @@ const InteractiveCourt = () => {
                 strokeWidth="2"
               />
               {hoveredArea === 'service-odd' && (
-                <text x="70" y="385" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
+                <text x="170" y="385" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
                   奇數
+                </text>
+              )}
+            </g>
+
+            {/* 下半場偶數發球區（右側 - 鏡像後變成左側） */}
+            <g
+              className="cursor-pointer transition-all duration-300"
+              onClick={() => setSelectedArea('service-even')}
+              onMouseEnter={() => setHoveredArea('service-even')}
+              onMouseLeave={() => setHoveredArea(null)}
+            >
+              <rect
+                x="20"
+                y="309"
+                width="100"
+                height="151"
+                fill={
+                  hoveredArea === 'service-even' || selectedArea === 'service-even'
+                    ? 'rgba(96, 165, 250, 0.5)'
+                    : 'rgba(96, 165, 250, 0.2)'
+                }
+                stroke={hoveredArea === 'service-even' ? '#60a5fa' : 'transparent'}
+                strokeWidth="2"
+              />
+              {hoveredArea === 'service-even' && (
+                <text x="70" y="385" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">
+                  偶數
                 </text>
               )}
             </g>
@@ -431,82 +433,88 @@ const InteractiveCourt = () => {
             </text>
           </svg>
 
-          {/* 尺寸說明 */}
-          <div className="mt-4 text-sm text-gray-600 text-center space-y-1">
-            <p>球場總長度：44 英尺 (13.41m) ｜ 球場總寬度：20 英尺 (6.10m)</p>
-            <p className="text-xs">廚房區：7 英尺 ｜ 發球區：15 英尺 ｜ 球網高度：中央 34"（86cm）、兩側 36"（91cm）</p>
+            {/* 尺寸說明 */}
+            <div className="mt-4 text-sm text-gray-600 text-center space-y-1">
+              <p>球場總長度：44 英尺 (13.41m) ｜ 球場總寬度：20 英尺 (6.10m)</p>
+              <p className="text-xs">廚房區：7 英尺 ｜ 發球區：15 英尺 ｜ 球網高度：中央 34"（86cm）、兩側 36"（91cm）</p>
+            </div>
           </div>
 
-          {/* Hover Tooltip */}
-          <AnimatePresence>
-            {hoveredArea && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-4 max-w-xs z-10"
-              >
-                <p className="text-sm font-semibold text-gray-800">
-                  {getAreaInfo(hoveredArea)?.name}
-                </p>
-                <p className="text-xs text-gray-600 mt-1">點擊查看詳細規則</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+          {/* 側邊即時資訊面板 */}
+          <div className="lg:col-span-1">
+            <AnimatePresence mode="wait">
+              {hoveredArea || selectedArea ? (
+                <motion.div
+                  key={hoveredArea || selectedArea}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="bg-gradient-to-br from-pickleball-50 to-sport-50 rounded-2xl p-6 border-2 border-pickleball-200 sticky top-24 max-h-[600px] overflow-y-auto"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-bold text-gray-800">
+                      {getAreaInfo(hoveredArea || selectedArea!)?.name}
+                    </h3>
+                    {selectedArea && (
+                      <button
+                        onClick={() => setSelectedArea(null)}
+                        className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
 
-        {/* 選中區域的詳細資訊 */}
-        <AnimatePresence>
-          {selectedArea && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-6 bg-gradient-to-br from-pickleball-50 to-sport-50 rounded-2xl p-6 border-2 border-pickleball-200"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {getAreaInfo(selectedArea)?.name}
-                  </h3>
-                  <p className="text-gray-600 mt-1">{getAreaInfo(selectedArea)?.description}</p>
-                  {getAreaInfo(selectedArea)?.measurements && (
-                    <p className="text-sm text-sport-600 font-semibold mt-2">
-                      📏 {getAreaInfo(selectedArea)?.measurements}
+                  <p className="text-gray-600 text-sm mb-3">
+                    {getAreaInfo(hoveredArea || selectedArea!)?.description}
+                  </p>
+
+                  {getAreaInfo(hoveredArea || selectedArea!)?.measurements && (
+                    <p className="text-sm text-sport-600 font-semibold mb-3 bg-white rounded-lg p-2">
+                      📏 {getAreaInfo(hoveredArea || selectedArea!)?.measurements}
                     </p>
                   )}
-                  <p className="text-xs text-gray-500 mt-2">
-                    📚 資料來源：{getAreaInfo(selectedArea)?.source}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSelectedArea(null)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors p-2"
-                >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
 
-              <div className="space-y-2">
-                <h4 className="font-semibold text-gray-700 mb-2">官方規則說明：</h4>
-                {getAreaInfo(selectedArea)?.rules.map((rule, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-start space-x-3 bg-white rounded-lg p-3 shadow-sm"
-                  >
-                    <span className="text-lg flex-shrink-0">{rule.split(' ')[0]}</span>
-                    <span className="text-gray-700">{rule.substring(rule.indexOf(' ') + 1)}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  <div className="space-y-2 mb-4">
+                    <h4 className="font-semibold text-gray-700 text-sm">官方規則說明：</h4>
+                    {getAreaInfo(hoveredArea || selectedArea!)?.rules.map((rule, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex items-start space-x-2 bg-white rounded-lg p-2 shadow-sm text-sm"
+                      >
+                        <span className="text-base flex-shrink-0">{rule.split(' ')[0]}</span>
+                        <span className="text-gray-700">{rule.substring(rule.indexOf(' ') + 1)}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-300">
+                    📚 資料來源：{getAreaInfo(hoveredArea || selectedArea!)?.source}
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-gray-50 rounded-2xl p-6 border-2 border-dashed border-gray-300 h-64 flex items-center justify-center"
+                >
+                  <div className="text-center text-gray-500">
+                    <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm font-medium">將滑鼠移到球場區域</p>
+                    <p className="text-xs mt-1">即時查看規則說明</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
 
         {/* 圖例 */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">

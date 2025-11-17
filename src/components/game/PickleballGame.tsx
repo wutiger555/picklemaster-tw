@@ -19,8 +19,8 @@ const PLAYER = {
 
 const BALL = {
   RADIUS: 14,
-  GRAVITY: 0.4, // 3D高度的重力加速度
-  BOUNCE: 0.75, // 彈性係數
+  GRAVITY: 0.35, // 3D高度的重力加速度（降低讓球飛更遠）
+  BOUNCE: 0.85, // 彈性係數（提高讓球彈更遠）
   INITIAL_VX: 6,
   INITIAL_VY: -8,
   SHADOW_OFFSET: 0.3, // 陰影偏移比例
@@ -53,7 +53,7 @@ const PickleballGame = () => {
   const [score, setScore] = useState({ player: 0, opponent: 0 });
   const [gameScreen, setGameScreen] = useState<GameScreen>('intro');
   const [gameState, setGameState] = useState<'ready' | 'serving-drop' | 'serving-ready' | 'playing' | 'point'>('ready');
-  const [message, setMessage] = useState('按空白鍵開始發球（球會先掉落）');
+  const [message, setMessage] = useState('點擊「發球」按鈕或按空白鍵開始發球');
   const [serverSide, setServerSide] = useState<'player' | 'opponent'>('player');
   // const [servePower, setServePower] = useState<'short' | 'long'>('long'); // 發球力度（未來功能）
   const [winner, setWinner] = useState<'player' | 'opponent' | null>(null);
@@ -1058,7 +1058,40 @@ const PickleballGame = () => {
     setGameScreen('game');
     setGameState('ready');
     setScore({ player: 0, opponent: 0 });
-    setMessage('按空白鍵開始發球（球會先掉落）');
+    setMessage('點擊「發球」按鈕或按空白鍵開始發球');
+  };
+
+  // 處理發球按鈕點擊（供手機使用）
+  const handleServeButton = () => {
+    if (gameState === 'ready' || gameState === 'point') {
+      // 只有輪到玩家發球才能點擊
+      if (serverSide !== 'player') {
+        return;
+      }
+
+      // 開始發球流程
+      gamePhase.current = 'serve';
+      bounceCount.current = 0;
+      mustBounce.current = true;
+      canHit.current = true;
+
+      const b = ball.current;
+      b.x = player.current.x + 30;
+      b.y = player.current.y;
+      b.z = 100;
+      lastHitter.current = 'player';
+      b.vx = 0;
+      b.vy = 0;
+      b.vz = 0;
+
+      setGameState('serving-drop');
+      setMessage('球正在掉落...');
+    } else if (gameState === 'serving-ready') {
+      if (serverSide !== 'player') {
+        return;
+      }
+      performServe(true);
+    }
   };
 
   // 重新開始遊戲
@@ -1071,7 +1104,7 @@ const PickleballGame = () => {
     opponent.current = { x: COURT.WIDTH - 50, y: COURT.CENTER_Y - 100, vx: 0, vy: 0 };
     ball.current = { x: 50, y: COURT.CENTER_Y + 50, z: 0, vx: 0, vy: 0, vz: 0 };
     setServerSide('player');
-    setMessage('按空白鍵開始發球（球會先掉落）');
+    setMessage('點擊「發球」按鈕或按空白鍵開始發球');
   };
 
 
@@ -1188,6 +1221,18 @@ const PickleballGame = () => {
             {message && (
               <div className="bg-gradient-to-r from-pickleball-500 to-sport-500 text-white px-6 py-3 rounded-full text-center font-bold text-lg mb-4">
                 {message}
+              </div>
+            )}
+
+            {/* 手機版發球按鈕 */}
+            {serverSide === 'player' && (gameState === 'ready' || gameState === 'point' || gameState === 'serving-ready') && (
+              <div className="mb-4">
+                <button
+                  onClick={handleServeButton}
+                  className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white text-xl font-black py-4 px-8 rounded-xl shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 border-2 border-white"
+                >
+                  {gameState === 'serving-ready' ? '🎾 擊球發出！' : '🏓 開始發球'}
+                </button>
               </div>
             )}
 

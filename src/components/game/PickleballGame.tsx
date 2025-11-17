@@ -586,8 +586,8 @@ const PickleballGame = () => {
 
       // 【新增】力度控制：根據球拍移動速度調整擊球力道
       const paddleSpeed = Math.sqrt(paddle.vx * paddle.vx + paddle.vy * paddle.vy);
-      const powerMultiplier = 1 + Math.min(paddleSpeed / 20, 0.5); // 最多增加50%力道
-      const baseSpeed = (isPlayer ? 5 : 6) * powerMultiplier;
+      const powerMultiplier = 1 + Math.min(paddleSpeed / 20, 0.4); // 最多增加40%力道（從50%降低）
+      const baseSpeed = (isPlayer ? 5 : 5.2) * powerMultiplier; // AI速度從6降到5.2，避免球飛太遠
 
       // X軸速度（左右方向）
       b.vx = direction * baseSpeed;
@@ -605,7 +605,7 @@ const PickleballGame = () => {
         }
       }
 
-      const verticalBoost = isPlayer ? 1 : 1.5;
+      const verticalBoost = isPlayer ? 1 : 1.2; // AI垂直加成從1.5降到1.2，減少出界機率
       b.vy = hitPosition * 2 * verticalBoost + angleControl;
 
       // 【新增】旋球機制：根據擊球位置產生旋轉（球拍上緣=下旋，下緣=上旋）
@@ -615,11 +615,11 @@ const PickleballGame = () => {
 
       // 【關鍵】Z軸速度（向上的速度，讓球飛起來）
       // 【平衡】調整向上速度，確保球能飛過網但不會太高
-      let upwardSpeed = 9 - (b.z / 25); // 適中速度（從12降到9，讓球更容易接）
+      let upwardSpeed = 8.5 - (b.z / 25); // 適中速度（從9降到8.5，讓球的弧線更平穩）
       // 下旋會增加向上速度（球飄），上旋會減少向上速度（球快速下墜）
-      upwardSpeed += b.spin * -8; // 降低旋球影響（從-10降到-8）
+      upwardSpeed += b.spin * -7; // 降低旋球影響（從-8降到-7）
       // 確保合理的向上速度範圍
-      upwardSpeed = Math.max(Math.min(upwardSpeed, 11), 6); // 範圍6-11
+      upwardSpeed = Math.max(Math.min(upwardSpeed, 10.5), 6); // 範圍6-10.5（從11降到10.5）
       b.vz = upwardSpeed;
 
       // 速度限制

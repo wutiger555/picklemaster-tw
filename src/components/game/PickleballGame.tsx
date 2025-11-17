@@ -22,7 +22,7 @@ const PLAYER = {
 const BALL = {
   RADIUS: 14,
   GRAVITY: 0.25, // 3D高度的重力加速度（增加，讓球更快落地，更像真實匹克球）
-  BOUNCE: 0.65, // 彈性係數（大幅降低，匹克球彈跳較低，鼓勵落地後回擊）
+  BOUNCE: 0.75, // 彈性係數（適中，匹克球彈跳較低但仍可過網）
   INITIAL_VX: 4,
   INITIAL_VY: -5,
   SHADOW_OFFSET: 0.3, // 陰影偏移比例
@@ -96,6 +96,10 @@ const PickleballGame = () => {
   const isSwinging = useRef(false); // 是否正在揮拍
   const swingProgress = useRef(0); // 揮拍進度 0-1
   const opponentSwingProgress = useRef(0); // 對手揮拍進度
+
+  // 【新增】長按蓄力機制
+  const chargeStartTime = useRef<number | null>(null); // 開始蓄力時間
+  const [chargePower, setChargePower] = useState(0); // 當前蓄力程度 0-1
 
   // 【新增】擊球視覺反饋
   const hitEffect = useRef<{ x: number; y: number; progress: number } | null>(null);
@@ -601,10 +605,20 @@ const PickleballGame = () => {
       // 【3D俯視】擊中球拍 - 設定3D速度（改進版：加入旋球和力度控制）
       const direction = isPlayer ? 1 : -1;
 
+      // 【長按蓄力】計算蓄力倍數（僅對玩家生效）
+      let chargePowerMultiplier = 1;
+      if (isPlayer && chargeStartTime.current !== null) {
+        const chargeTime = Date.now() - chargeStartTime.current;
+        const chargePower = Math.min(chargeTime / 1000, 1.5); // 最多1.5秒
+        chargePowerMultiplier = 1 + chargePower; // 1-2.5倍
+        chargeStartTime.current = null;
+        setChargePower(0);
+      }
+
       // 【新增】力度控制：根據球拍移動速度調整擊球力道
       const paddleSpeed = Math.sqrt(paddle.vx * paddle.vx + paddle.vy * paddle.vy);
       const powerMultiplier = 1 + Math.min(paddleSpeed / 20, 0.3); // 最多增加30%力道
-      const baseSpeed = (isPlayer ? 4 : 4.2) * powerMultiplier; // 降低速度，讓球更快落地、飛行距離更短
+      const baseSpeed = (isPlayer ? 4 : 4.2) * powerMultiplier * chargePowerMultiplier; // 應用蓄力倍數
 
       // X軸速度（左右方向）
       b.vx = direction * baseSpeed;
@@ -764,6 +778,13 @@ const PickleballGame = () => {
     // 【關鍵】遊戲結束時立即停止所有邏輯
     if (gameScreen === 'game-over') {
       return;
+    }
+
+    // 【長按蓄力】更新蓄力進度視覺反饋
+    if (chargeStartTime.current !== null) {
+      const chargeTime = Date.now() - chargeStartTime.current;
+      const power = Math.min(chargeTime / 1000, 1.5);
+      setChargePower(power);
     }
 
     // 【3D俯視】處理發球掉落階段
@@ -1055,22 +1076,26 @@ const PickleballGame = () => {
   }, [gameState, serverSide, gameScreen, addPoint]);
 
   // 【3D俯視】執行發球的函數
-  const performServe = useCallback((isPlayerServing: boolean) => {
+  const performServe = useCallback((isPlayerServing: boolean, power: number = 1) => {
     const b = ball.current;
 
     // 播放發球音效
     playServeSound();
 
+    // 【長按蓄力】力度倍數：1-2.5倍（0秒=1倍，1.5秒=2.5倍）
+    const powerMultiplier = 1 + power; // power範圍0-1.5
+
     if (isPlayerServing) {
-      // 玩家發球到對角線（匹克球特性：更慢、更低的發球）
+      // 玩家發球到對角線（匹克球特性+蓄力機制）
       const targetY = player.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
       const dx = COURT.WIDTH * 0.85 - b.x;
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      b.vx = (dx / distance) * 4.5; // 降低發球速度（從6.5降到4.5）
-      b.vy = (dy / distance) * 4.5;
-      b.vz = 6.5; // 降低向上速度（從8降到6.5）
+      const baseSpeed = 4.5 * powerMultiplier; // 應用蓄力倍數
+      b.vx = (dx / distance) * baseSpeed;
+      b.vy = (dy / distance) * baseSpeed;
+      b.vz = 6.5 + power * 2; // 蓄力也影響向上速度
     } else {
       // AI發球到玩家對角線（匹克球特性：更慢、更低的發球）
       const targetY = opponent.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
@@ -1078,9 +1103,9 @@ const PickleballGame = () => {
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      b.vx = (dx / distance) * 4.2; // 降低發球速度（從6降到4.2）
+      b.vx = (dx / distance) * 4.2;
       b.vy = (dy / distance) * 4.2;
-      b.vz = 6.5; // 降低向上速度（從8降到6.5）
+      b.vz = 6.5;
     }
 
     setGameState('playing');
@@ -1153,6 +1178,42 @@ const PickleballGame = () => {
       }
 
       ctx.restore();
+    }
+
+    // 【長按蓄力】繪製蓄力條
+    if (chargePower > 0) {
+      const barWidth = 200;
+      const barHeight = 20;
+      const barX = COURT.WIDTH / 2 - barWidth / 2;
+      const barY = COURT.HEIGHT - 80;
+
+      // 背景
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.roundRect(barX, barY, barWidth, barHeight, 10);
+      ctx.fill();
+
+      // 蓄力進度（漸層色）
+      const powerPercent = chargePower / 1.5; // 0-1
+      const gradient = ctx.createLinearGradient(barX, barY, barX + barWidth * powerPercent, barY);
+      gradient.addColorStop(0, '#22c55e'); // 綠色（正常）
+      gradient.addColorStop(0.6, '#eab308'); // 黃色（中等）
+      gradient.addColorStop(1, '#ef4444'); // 紅色（滿力）
+      ctx.fillStyle = gradient;
+      ctx.roundRect(barX, barY, barWidth * powerPercent, barHeight, 10);
+      ctx.fill();
+
+      // 邊框
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.roundRect(barX, barY, barWidth, barHeight, 10);
+      ctx.stroke();
+
+      // 文字提示
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      const powerText = `力度: ${Math.round(powerPercent * 100)}%`;
+      ctx.fillText(powerText, COURT.WIDTH / 2, barY - 8);
     }
 
     // 【改進】繪製專業計分板
@@ -1269,6 +1330,12 @@ const PickleballGame = () => {
         if (keys.current.has(e.key)) return;
         keys.current.add(e.key);
 
+        // 【長按蓄力】記錄開始蓄力時間
+        if (gameState === 'serving-ready' || gameState === 'playing') {
+          chargeStartTime.current = Date.now();
+          return; // 不立即執行，等待keyup
+        }
+
         if (gameState === 'ready' || gameState === 'point') {
           // 只有輪到玩家發球才能按空白鍵發球
           if (serverSide !== 'player') {
@@ -1301,19 +1368,27 @@ const PickleballGame = () => {
 
           setGameState('serving-drop');
           setMessage('球正在掉落...');
-        } else if (gameState === 'serving-ready') {
-          // 只有輪到玩家發球才能按空白鍵擊球
-          if (serverSide !== 'player') {
-            return;
-          }
-
-          // 第二階段：擊球發球到對角線
-          performServe(true);
         }
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      // 【長按蓄力】計算力度並執行動作
+      if ((e.key === ' ' || e.key === 'Enter') && chargeStartTime.current !== null) {
+        const chargeTime = Date.now() - chargeStartTime.current;
+        const power = Math.min(chargeTime / 1000, 1.5); // 最多1.5秒，力度1-2.5倍
+        chargeStartTime.current = null;
+        setChargePower(0);
+
+        // 執行發球或擊球
+        if (gameState === 'serving-ready' && serverSide === 'player') {
+          performServe(true, power);
+        } else if (gameState === 'playing') {
+          isSwinging.current = true;
+          swingProgress.current = 0.1;
+        }
+      }
+
       keys.current.delete(e.key);
     };
 
@@ -1333,15 +1408,13 @@ const PickleballGame = () => {
       mouseY.current = null;
     };
 
-    const handleMouseClick = () => {
-      // 滑鼠點擊處理（發球 + 揮拍）
-      if (gameState === 'ready' || gameState === 'point') {
-        // 只有輪到玩家發球才能點擊發球
-        if (serverSide !== 'player') {
-          return;
-        }
+    const handleMouseDown = (e: MouseEvent | TouchEvent) => {
+      e.preventDefault();
 
-        // 開始發球流程
+      // 開始發球流程（掉落階段）
+      if (gameState === 'ready' || gameState === 'point') {
+        if (serverSide !== 'player') return;
+
         gamePhase.current = 'serve';
         bounceCount.current = 0;
         mustBounce.current = true;
@@ -1358,16 +1431,29 @@ const PickleballGame = () => {
 
         setGameState('serving-drop');
         setMessage('球正在掉落...');
-      } else if (gameState === 'serving-ready') {
-        // 擊球發球
-        if (serverSide !== 'player') {
-          return;
+        return;
+      }
+
+      // 【長按蓄力】開始蓄力
+      if (gameState === 'serving-ready' || gameState === 'playing') {
+        chargeStartTime.current = Date.now();
+      }
+    };
+
+    const handleMouseUp = () => {
+      // 【長按蓄力】計算力度並執行動作
+      if (chargeStartTime.current !== null) {
+        const chargeTime = Date.now() - chargeStartTime.current;
+        const power = Math.min(chargeTime / 1000, 1.5); // 最多1.5秒
+        chargeStartTime.current = null;
+        setChargePower(0);
+
+        if (gameState === 'serving-ready' && serverSide === 'player') {
+          performServe(true, power);
+        } else if (gameState === 'playing') {
+          isSwinging.current = true;
+          swingProgress.current = 0.1;
         }
-        performServe(true);
-      } else if (gameState === 'playing') {
-        // 正常遊戲時揮拍
-        isSwinging.current = true;
-        swingProgress.current = 1;
       }
     };
 
@@ -1377,7 +1463,10 @@ const PickleballGame = () => {
     if (canvas) {
       canvas.addEventListener('mousemove', handleMouseMove);
       canvas.addEventListener('mouseleave', handleMouseLeave);
-      canvas.addEventListener('click', handleMouseClick);
+      canvas.addEventListener('mousedown', handleMouseDown);
+      canvas.addEventListener('mouseup', handleMouseUp);
+      canvas.addEventListener('touchstart', handleMouseDown as any);
+      canvas.addEventListener('touchend', handleMouseUp);
     }
 
     return () => {
@@ -1386,7 +1475,10 @@ const PickleballGame = () => {
       if (canvas) {
         canvas.removeEventListener('mousemove', handleMouseMove);
         canvas.removeEventListener('mouseleave', handleMouseLeave);
-        canvas.removeEventListener('click', handleMouseClick);
+        canvas.removeEventListener('mousedown', handleMouseDown);
+        canvas.removeEventListener('mouseup', handleMouseUp);
+        canvas.removeEventListener('touchstart', handleMouseDown as any);
+        canvas.removeEventListener('touchend', handleMouseUp);
       }
     };
   }, [gameState]);

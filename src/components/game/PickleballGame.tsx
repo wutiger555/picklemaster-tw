@@ -20,8 +20,8 @@ const PLAYER = {
 
 const BALL = {
   RADIUS: 14,
-  GRAVITY: 0.12, // 3D高度的重力加速度（極低讓球飛得超遠、超慢）
-  BOUNCE: 0.96, // 彈性係數（接近無損失，讓球彈超高）
+  GRAVITY: 0.18, // 3D高度的重力加速度（平衡值）
+  BOUNCE: 0.88, // 彈性係數（適中，讓球能彈到對方場地）
   INITIAL_VX: 6,
   INITIAL_VY: -8,
   SHADOW_OFFSET: 0.3, // 陰影偏移比例
@@ -558,8 +558,8 @@ const PickleballGame = () => {
       b.vy = hitPosition * 2 * verticalBoost + angleControl;
 
       // 【關鍵】Z軸速度（向上的速度，讓球飛起來）
-      // 大幅提高向上速度讓球飛得更高更遠
-      b.vz = 12 - (b.z / 20); // 提高基礎速度從8到12
+      // 適中的向上速度
+      b.vz = 10 - (b.z / 20); // 平衡的基礎速度
 
       // 速度限制
       const maxSpeed = 12;
@@ -843,9 +843,9 @@ const PickleballGame = () => {
       b.z = 0;
       b.vz = -b.vz * BALL.BOUNCE; // Z軸反彈
 
-      // 觸地時減速（摩擦力）- 極低摩擦力讓球幾乎不減速
-      b.vx *= 0.99;
-      b.vy *= 0.99;
+      // 觸地時減速（摩擦力）- 適中摩擦力
+      b.vx *= 0.97;
+      b.vy *= 0.97;
 
       // 只有明顯的彈跳才計數（避免滾動時重複計數）
       if (Math.abs(b.vz) > 2) {
@@ -891,16 +891,12 @@ const PickleballGame = () => {
     checkPaddleCollision(player.current, true);
     checkPaddleCollision(opponent.current, false);
 
-    // 球出界判定（左右）
-    if (ball.current.x < -BALL.RADIUS) {
-      // 對手得分
-      addPoint('opponent');
-      setMessage('球出界！對手得分，對手發球');
-      setGameState('point');
-    } else if (ball.current.x > COURT.WIDTH + BALL.RADIUS) {
-      // 玩家得分
-      addPoint('player');
-      setMessage('球出界！你得分，你發球');
+    // 球出界判定（左右）- 誰打出界，對方得分
+    if (ball.current.x < -BALL.RADIUS || ball.current.x > COURT.WIDTH + BALL.RADIUS) {
+      // 根據最後擊球者判定
+      const winner = lastHitter.current === 'player' ? 'opponent' : 'player';
+      addPoint(winner);
+      setMessage(`球出界！${winner === 'player' ? '你' : '對手'}得分`);
       setGameState('point');
     }
 
@@ -934,9 +930,9 @@ const PickleballGame = () => {
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      b.vx = (dx / distance) * 8; // 提高速度從7到8
-      b.vy = (dy / distance) * 8;
-      b.vz = 10; // 大幅提高向上速度從6到10
+      b.vx = (dx / distance) * 6.5; // 適中速度，確保落在場內
+      b.vy = (dy / distance) * 6.5;
+      b.vz = 8; // 適中的向上速度
     } else {
       // AI發球到玩家對角線
       const targetY = opponent.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
@@ -944,9 +940,9 @@ const PickleballGame = () => {
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      b.vx = (dx / distance) * 7.5; // 提高速度從6.5到7.5
-      b.vy = (dy / distance) * 7.5;
-      b.vz = 10; // 大幅提高向上速度從6到10
+      b.vx = (dx / distance) * 6;
+      b.vy = (dy / distance) * 6;
+      b.vz = 8;
     }
 
     setGameState('playing');

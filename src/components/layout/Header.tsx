@@ -28,7 +28,7 @@ const Header = () => {
             to={ROUTES.HOME}
             className="flex items-center space-x-3 group"
           >
-            <img src="/picklemaster-tw/logo.png" alt="Picklemaster Taiwan Logo" className="w-16 h-16 object-contain" />
+            <img src="/logo.png" alt="Picklemaster Taiwan Logo" className="w-16 h-16 object-contain" />
             <div className="flex flex-col">
               <span className="text-xl md:text-2xl font-black text-white tracking-tight">
                 {BRAND.NAME_ZH}

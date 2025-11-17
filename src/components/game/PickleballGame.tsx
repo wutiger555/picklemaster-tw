@@ -517,16 +517,16 @@ const PickleballGame = () => {
       return false; // 球還沒彈地，不能擊球
     }
 
-    // 【改進】球必須在合適的高度才能擊球（大幅擴大範圍讓截擊更容易）
-    // Z軸在0-200之間（地面到球拍可達高度，從120增加到200，讓高球也能輕鬆擊中）
-    if (b.z < 0 || b.z > 200) {
+    // 【改進】球必須在合適的高度才能擊球（極度擴大範圍讓截擊變得自然流暢）
+    // Z軸在0-400之間（地面到極高球，完全放寬限制讓任何高度都能擊中）
+    if (b.z < 0 || b.z > 400) {
       return false;
     }
 
-    // 【改進】矩形碰撞檢測（增加碰撞範圍padding，讓擊球更容易）
-    const collisionPadding = 20; // 增加碰撞檢測的寬容度（從15增加到20）
-    // 垂直方向額外增加容差，讓高球更容易擊中
-    const verticalPadding = 30; // 垂直方向特別寬鬆
+    // 【改進】矩形碰撞檢測（大幅增加碰撞範圍padding，讓擊球非常容易）
+    const collisionPadding = 50; // 大幅增加碰撞檢測的寬容度（從20增加到50）
+    // 垂直方向額外增加容差，讓高球超級容易擊中
+    const verticalPadding = 60; // 垂直方向極度寬鬆
     const paddleLeft = paddle.x - PLAYER.PADDLE_WIDTH / 2 - collisionPadding;
     const paddleRight = paddle.x + PLAYER.PADDLE_WIDTH / 2 + collisionPadding;
     const paddleTop = paddle.y - PLAYER.PADDLE_HEIGHT / 2 - verticalPadding;
@@ -544,11 +544,11 @@ const PickleballGame = () => {
       ballTop > paddleBottom
     );
 
-    // 【改進】大幅降低揮拍要求（從0.5降到0.15，讓擊球更容易）
+    // 【改進】極度降低揮拍要求（從0.15降到0.05，讓擊球極其容易）
     const currentSwing = isPlayer ? swingProgress.current : opponentSwingProgress.current;
     const canSwing = isPlayer ? isSwinging.current : true; // AI 自動揮拍
 
-    if (isColliding && canHit.current && canSwing && currentSwing > 0.15) {
+    if (isColliding && canHit.current && canSwing && currentSwing > 0.05) {
       // 觸發對手揮拍動畫（如果是AI擊球）
       if (!isPlayer) {
         opponentSwingProgress.current = 1;

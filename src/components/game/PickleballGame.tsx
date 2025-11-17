@@ -25,6 +25,7 @@ const BALL = {
   INITIAL_VX: 6,
   INITIAL_VY: -8,
   SHADOW_OFFSET: 0.3, // 陰影偏移比例
+  SPIN_EFFECT: 0.3, // 旋球效果強度
 };
 
 // 【重要】3D俯視球物件（加入Z軸高度）
@@ -38,6 +39,7 @@ interface GameObject {
 interface Ball3D extends GameObject {
   z: number;  // 高度（Z軸，垂直於球場）
   vz: number; // 垂直速度
+  spin: number; // 旋轉（正值=上旋，負值=下旋）
 }
 
 type GamePhase = 'serve' | 'return' | 'third-shot' | 'rally';
@@ -79,6 +81,9 @@ const PickleballGame = () => {
   const swingProgress = useRef(0); // 揮拍進度 0-1
   const opponentSwingProgress = useRef(0); // 對手揮拍進度
 
+  // 【新增】擊球視覺反饋
+  const hitEffect = useRef<{ x: number; y: number; progress: number } | null>(null);
+
   // 玩家（左側）- 初始位置在底線發球區
   const player = useRef<GameObject>({
     x: 50, // 底線附近
@@ -103,6 +108,7 @@ const PickleballGame = () => {
     vx: 0,
     vy: 0,
     vz: 0,  // 初始無垂直速度
+    spin: 0, // 初始無旋轉
   });
 
   // 繪製球場（橫向）
@@ -486,17 +492,18 @@ const PickleballGame = () => {
       return false; // 球還沒彈地，不能擊球
     }
 
-    // 【關鍵】球必須在合適的高度才能擊球（模擬真實匹克球）
-    // Z軸在0-80之間（地面到球拍可達高度）
-    if (b.z < 0 || b.z > 80) {
+    // 【改進】球必須在合適的高度才能擊球（擴大範圍讓遊戲更容易）
+    // Z軸在0-120之間（地面到球拍可達高度，從80增加到120）
+    if (b.z < 0 || b.z > 120) {
       return false;
     }
 
-    // 矩形碰撞檢測（使用陰影位置，即真實的X,Y位置）
-    const paddleLeft = paddle.x - PLAYER.PADDLE_WIDTH / 2;
-    const paddleRight = paddle.x + PLAYER.PADDLE_WIDTH / 2;
-    const paddleTop = paddle.y - PLAYER.PADDLE_HEIGHT / 2;
-    const paddleBottom = paddle.y + PLAYER.PADDLE_HEIGHT / 2;
+    // 【改進】矩形碰撞檢測（增加碰撞範圍padding，讓擊球更容易）
+    const collisionPadding = 15; // 增加碰撞檢測的寬容度
+    const paddleLeft = paddle.x - PLAYER.PADDLE_WIDTH / 2 - collisionPadding;
+    const paddleRight = paddle.x + PLAYER.PADDLE_WIDTH / 2 + collisionPadding;
+    const paddleTop = paddle.y - PLAYER.PADDLE_HEIGHT / 2 - collisionPadding;
+    const paddleBottom = paddle.y + PLAYER.PADDLE_HEIGHT / 2 + collisionPadding;
 
     const ballLeft = b.x - BALL.RADIUS;
     const ballRight = b.x + BALL.RADIUS;
@@ -510,11 +517,11 @@ const PickleballGame = () => {
       ballTop > paddleBottom
     );
 
-    // 需要揮拍才能擊球
+    // 【改進】大幅降低揮拍要求（從0.5降到0.15，讓擊球更容易）
     const currentSwing = isPlayer ? swingProgress.current : opponentSwingProgress.current;
     const canSwing = isPlayer ? isSwinging.current : true; // AI 自動揮拍
 
-    if (isColliding && canHit.current && canSwing && currentSwing > 0.5) {
+    if (isColliding && canHit.current && canSwing && currentSwing > 0.15) {
       // 觸發對手揮拍動畫（如果是AI擊球）
       if (!isPlayer) {
         opponentSwingProgress.current = 1;
@@ -524,6 +531,10 @@ const PickleballGame = () => {
       if (isPlayer) {
         isSwinging.current = false;
       }
+
+      // 【新增】觸發擊球視覺特效
+      hitEffect.current = { x: b.x, y: b.y, progress: 1 };
+
       // 檢查廚房區規則：如果球沒有彈地（截擊），且在廚房區內，則犯規
       if (bounceCount.current === 0 && isInKitchen(paddle.x)) {
         // 廚房區截擊犯規
@@ -534,9 +545,13 @@ const PickleballGame = () => {
         return true;
       }
 
-      // 【3D俯視】擊中球拍 - 設定3D速度
+      // 【3D俯視】擊中球拍 - 設定3D速度（改進版：加入旋球和力度控制）
       const direction = isPlayer ? 1 : -1;
-      const baseSpeed = isPlayer ? 5 : 6;
+
+      // 【新增】力度控制：根據球拍移動速度調整擊球力道
+      const paddleSpeed = Math.sqrt(paddle.vx * paddle.vx + paddle.vy * paddle.vy);
+      const powerMultiplier = 1 + Math.min(paddleSpeed / 20, 0.5); // 最多增加50%力道
+      const baseSpeed = (isPlayer ? 5 : 6) * powerMultiplier;
 
       // X軸速度（左右方向）
       b.vx = direction * baseSpeed;
@@ -557,9 +572,17 @@ const PickleballGame = () => {
       const verticalBoost = isPlayer ? 1 : 1.5;
       b.vy = hitPosition * 2 * verticalBoost + angleControl;
 
+      // 【新增】旋球機制：根據擊球位置產生旋轉（球拍上緣=下旋，下緣=上旋）
+      // hitPosition > 0 表示球在球拍下方 -> 上旋（球會下墜）
+      // hitPosition < 0 表示球在球拍上方 -> 下旋（球會飄浮）
+      b.spin = hitPosition * BALL.SPIN_EFFECT;
+
       // 【關鍵】Z軸速度（向上的速度，讓球飛起來）
-      // 適中的向上速度
-      b.vz = 10 - (b.z / 20); // 平衡的基礎速度
+      // 適中的向上速度，考慮旋球效果
+      let upwardSpeed = 10 - (b.z / 20); // 平衡的基礎速度
+      // 下旋會增加向上速度（球飄），上旋會減少向上速度（球快速下墜）
+      upwardSpeed += b.spin * -10;
+      b.vz = upwardSpeed;
 
       // 速度限制
       const maxSpeed = 12;
@@ -814,14 +837,22 @@ const PickleballGame = () => {
       return;
     }
 
-    // 更新揮拍動畫
+    // 【改進】更新揮拍動畫（加快速度讓擊球更靈敏）
     if (swingProgress.current > 0) {
-      swingProgress.current -= 0.15; // 揮拍動畫衰減
+      swingProgress.current -= 0.08; // 揮拍動畫衰減（從0.15降到0.08，動畫更持久）
       if (swingProgress.current < 0) swingProgress.current = 0;
     }
     if (opponentSwingProgress.current > 0) {
-      opponentSwingProgress.current -= 0.15;
+      opponentSwingProgress.current -= 0.08;
       if (opponentSwingProgress.current < 0) opponentSwingProgress.current = 0;
+    }
+
+    // 【新增】更新擊球視覺特效
+    if (hitEffect.current) {
+      hitEffect.current.progress -= 0.05;
+      if (hitEffect.current.progress <= 0) {
+        hitEffect.current = null;
+      }
     }
 
     // AI 對手
@@ -830,8 +861,18 @@ const PickleballGame = () => {
     // 【3D俯視】球物理系統
     const b = ball.current;
 
-    // 重力只影響Z軸（高度）
-    b.vz -= BALL.GRAVITY;
+    // 重力只影響Z軸（高度），但旋球會影響下墜速度
+    // 上旋（spin > 0）會加速下墜，下旋（spin < 0）會減緩下墜
+    const gravityEffect = BALL.GRAVITY + (b.spin * 0.05);
+    b.vz -= gravityEffect;
+
+    // 【新增】旋球對水平速度的影響（模擬馬格努斯效應）
+    // 旋球會讓球在空中產生弧線
+    if (Math.abs(b.spin) > 0.01) {
+      b.vy += b.spin * 0.1; // 旋轉影響垂直方向的軌跡
+      // 旋轉逐漸衰減
+      b.spin *= 0.98;
+    }
 
     // 更新位置
     b.x += b.vx;
@@ -974,6 +1015,47 @@ const PickleballGame = () => {
     // 繪製球（在所有狀態下除了 ready）
     if (gameState !== 'ready') {
       drawBall(ctx);
+    }
+
+    // 【新增】繪製擊球視覺特效
+    if (hitEffect.current) {
+      const effect = hitEffect.current;
+      const alpha = effect.progress;
+      const radius = (1 - effect.progress) * 40; // 擴散效果
+
+      // 擊球閃光（放射狀）
+      ctx.save();
+      ctx.globalAlpha = alpha * 0.6;
+      const gradient = ctx.createRadialGradient(effect.x, effect.y, 0, effect.x, effect.y, radius);
+      gradient.addColorStop(0, '#ffffff');
+      gradient.addColorStop(0.3, '#fbbf24');
+      gradient.addColorStop(1, 'rgba(251, 191, 36, 0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 擊球火花（圓圈）
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(effect.x, effect.y, radius * 0.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 擊球粒子（小點）
+      for (let i = 0; i < 8; i++) {
+        const angle = (i * Math.PI * 2) / 8;
+        const particleRadius = radius * 0.8;
+        const px = effect.x + Math.cos(angle) * particleRadius;
+        const py = effect.y + Math.sin(angle) * particleRadius;
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(px, py, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
     }
 
     // 繪製計分板
@@ -1196,7 +1278,7 @@ const PickleballGame = () => {
     setWinner(null);
     player.current = { x: 50, y: COURT.CENTER_Y + 100, vx: 0, vy: 0 };
     opponent.current = { x: COURT.WIDTH - 50, y: COURT.CENTER_Y - 100, vx: 0, vy: 0 };
-    ball.current = { x: 50, y: COURT.CENTER_Y + 50, z: 0, vx: 0, vy: 0, vz: 0 };
+    ball.current = { x: 50, y: COURT.CENTER_Y + 50, z: 0, vx: 0, vy: 0, vz: 0, spin: 0 };
     setServerSide('player');
     setMessage('點擊「發球」按鈕或點擊畫面開始發球');
   };
@@ -1294,6 +1376,8 @@ const PickleballGame = () => {
                         <li>• 🖱️ 滑鼠移動控制球拍</li>
                         <li>• 🖱️ 點擊發球與揮拍</li>
                         <li>• ⌨️ WASD / 方向鍵移動</li>
+                        <li>• 🎯 擊球位置影響旋轉</li>
+                        <li>• ⚡ 移動速度影響力道</li>
                       </ul>
                     </div>
                   </div>
@@ -1366,6 +1450,12 @@ const PickleballGame = () => {
             <div className="flex items-center">
               <span className="font-bold mr-2">↑↓（擊球時）</span>
               <span className="text-blue-600">🎯 控制擊球角度（高球/低球）</span>
+            </div>
+            <div className="bg-yellow-50 p-2 rounded-lg mt-2">
+              <div className="flex items-center">
+                <span className="font-bold mr-2 text-yellow-700">⭐ 進階技巧</span>
+                <span className="text-yellow-700">快速移動增加擊球力道！用球拍上/下緣擊球可產生旋轉效果！</span>
+              </div>
             </div>
           </div>
         </div>

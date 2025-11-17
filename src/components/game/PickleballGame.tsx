@@ -6,7 +6,7 @@ const COURT = {
   WIDTH: 1000, // 44英尺（橫向）
   HEIGHT: 450, // 20英尺（縱向）
   NET_X: 500, // 中線（左右分界）
-  KITCHEN_WIDTH: 160, // 7英尺廚房區
+  KITCHEN_WIDTH: 130, // 7英尺廚房區（稍微縮小，讓網前截擊更容易）
   LINE_WIDTH: 4,
   CENTER_Y: 225,
   NET_HEIGHT: 35, // 球網高度（匹克球網中央高度為34英寸）
@@ -210,6 +210,23 @@ const PickleballGame = () => {
     ctx.fillStyle = 'rgba(251, 191, 36, 0.15)';
     ctx.fillRect(COURT.NET_X - COURT.KITCHEN_WIDTH, 0, COURT.KITCHEN_WIDTH, COURT.HEIGHT);
     ctx.fillRect(COURT.NET_X, 0, COURT.KITCHEN_WIDTH, COURT.HEIGHT);
+
+    // 【新增】理想截擊位置標記（綠色虛線，在廚房區線外側）
+    const volleyLineOffset = 40; // 距離廚房區線40單位（理想截擊位置）
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)'; // 綠色半透明
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 8]);
+    // 左側理想截擊線
+    ctx.beginPath();
+    ctx.moveTo(kitchenLeftX - volleyLineOffset, 0);
+    ctx.lineTo(kitchenLeftX - volleyLineOffset, COURT.HEIGHT);
+    ctx.stroke();
+    // 右側理想截擊線
+    ctx.beginPath();
+    ctx.moveTo(kitchenRightX + volleyLineOffset, 0);
+    ctx.lineTo(kitchenRightX + volleyLineOffset, COURT.HEIGHT);
+    ctx.stroke();
+    ctx.setLineDash([]);
 
     // 中線（虛線）- 上半場
     ctx.strokeStyle = '#ffffff';

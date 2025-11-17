@@ -29,6 +29,7 @@ export const ROUTES = {
   LEARNING_PATHS: '/learning-paths',
   COURTS: '/courts',
   GAME: '/game',
+  SCORER: '/scorer',
   RESOURCES: '/resources',
   ABOUT: '/about',
 } as const;

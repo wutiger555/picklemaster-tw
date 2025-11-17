@@ -10,28 +10,40 @@ const Home = () => {
   usePageTitle();
   const features = [
     {
-      title: '互動式球場',
-      description: '點擊球場區域即時學習規則，看動畫了解球路徑',
-      color: 'from-pickleball-400 to-pickleball-600',
+      title: '互動式規則教學',
+      description: '點擊球場區域即時學習規則，動畫演示讓學習更直觀',
+      icon: '🎯',
+      color: 'bg-gradient-to-br from-blue-50 to-blue-100',
+      iconBg: 'bg-blue-500',
+      textColor: 'text-blue-600',
       link: ROUTES.RULES,
     },
     {
       title: '3D 球場配置',
-      description: '360 度檢視球場結構，學習站位與規則',
-      color: 'from-sport-400 to-sport-600',
+      description: '360° 旋轉檢視球場結構，深入理解站位與戰術',
+      icon: '🏟️',
+      color: 'bg-gradient-to-br from-green-50 to-green-100',
+      iconBg: 'bg-green-500',
+      textColor: 'text-green-600',
       link: ROUTES.LEARNING_PATHS,
     },
     {
       title: '專業計分器',
       description: '手機適配、支援橫豎屏、螢幕常亮，比賽計分必備工具',
-      color: 'from-yellow-400 to-orange-600',
+      icon: '📊',
+      color: 'bg-gradient-to-br from-orange-50 to-orange-100',
+      iconBg: 'bg-orange-500',
+      textColor: 'text-orange-600',
       link: ROUTES.SCORER,
       highlight: true,
     },
     {
       title: '全台球場地圖',
-      description: '快速找到附近球場，約球友一起打球',
-      color: 'from-court-400 to-court-600',
+      description: '55+ 球場詳細資訊，快速找到離你最近的球場',
+      icon: '📍',
+      color: 'bg-gradient-to-br from-purple-50 to-purple-100',
+      iconBg: 'bg-purple-500',
+      textColor: 'text-purple-600',
       link: ROUTES.COURTS,
     },
   ];
@@ -137,10 +149,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 統計數據 */}
-      <section className="py-12 bg-white">
+      {/* 統計數據 - 專業視覺化 */}
+      <section className="py-16 bg-white border-y border-gray-200">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -148,31 +160,38 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="text-center"
+                className="text-center group"
               >
-                <div className="text-4xl md:text-5xl font-black text-pickleball-600 mb-2">
-                  {stat.number}
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow duration-300">
+                  <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pickleball-500 to-sport-500 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
+                    {stat.number}
+                  </div>
+                  <div className="text-gray-700 font-bold text-lg">{stat.label}</div>
                 </div>
-                <div className="text-gray-600 font-semibold">{stat.label}</div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 核心功能 - 更有活力的卡片設計 */}
+      {/* 核心功能 - 專業資源平台設計 */}
       <section className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
-          <motion.h2
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-black text-center mb-16 text-gray-800"
+            className="text-center mb-16"
           >
-            為什麼選擇我們？
-          </motion.h2>
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-800">
+              台灣匹克球資源中心
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+              從規則學習、球場查詢到裝備指南，一站式平台滿足初學者到進階玩家的所有需求
+            </p>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -180,22 +199,36 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.02 }}
+                whileHover={{ y: -8, scale: 1.02 }}
                 className="relative"
               >
-                <Link to={feature.link} className="block h-full">
-                  <div className={`bg-gradient-to-br ${feature.color} p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 text-white h-full relative overflow-hidden`}>
+                <Link to={feature.link} className="block h-full group">
+                  <div className={`${feature.color} p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 h-full relative border border-gray-200`}>
                     {feature.highlight && (
                       <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
-                        NEW!
+                        NEW
                       </div>
                     )}
-                    <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
-                    <p className="text-white/90 text-lg leading-relaxed mb-4">
+
+                    {/* Icon */}
+                    <div className={`${feature.iconBg} w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                      <span className="text-3xl">{feature.icon}</span>
+                    </div>
+
+                    {/* Content */}
+                    <h3 className={`text-xl font-bold mb-3 ${feature.textColor}`}>
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-700 text-base leading-relaxed mb-4">
                       {feature.description}
                     </p>
-                    <div className="text-white/80 font-semibold">
-                      前往使用 →
+
+                    {/* Arrow */}
+                    <div className={`flex items-center ${feature.textColor} font-semibold text-sm group-hover:translate-x-1 transition-transform duration-300`}>
+                      <span>了解更多</span>
+                      <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
                   </div>
                 </Link>
@@ -205,40 +238,54 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 學習路徑 - 更有互動感的設計 */}
-      <section className="py-20 bg-gray-50">
+      {/* 學習路徑 - 專業分級系統 */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <motion.h2
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-black text-center mb-4 text-gray-800"
+            className="text-center mb-16"
           >
-            開始你的匹克球之旅
-          </motion.h2>
-          <p className="text-center text-gray-600 text-lg mb-16 max-w-2xl mx-auto">
-            不管你是完全新手還是想精進技巧，我們都有適合你的學習路徑
-          </p>
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-800">
+              系統化學習路徑
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+              無論新手或進階玩家，都能找到適合的學習內容與訓練方法
+            </p>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
               {
                 level: '新手入門',
-                color: 'court',
-                description: '從零開始，學習基本規則、握拍方式、發球技巧',
-                features: ['認識球場', '基本規則', '握拍姿勢', '發球練習'],
+                icon: '🌱',
+                bgColor: 'bg-gradient-to-br from-emerald-50 to-emerald-100',
+                iconBg: 'bg-emerald-500',
+                textColor: 'text-emerald-600',
+                borderColor: 'hover:border-emerald-400',
+                description: '從零開始，建立紮實基礎',
+                features: ['認識球場配置', '基本規則理解', '握拍姿勢矯正', '發球動作練習'],
               },
               {
                 level: '中階進修',
-                color: 'sport',
-                description: '進階技巧、戰術策略、雙打配合',
-                features: ['進階技巧', '戰術運用', '雙打配合', '比賽策略'],
+                icon: '⚡',
+                bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100',
+                iconBg: 'bg-blue-500',
+                textColor: 'text-blue-600',
+                borderColor: 'hover:border-blue-400',
+                description: '提升技術，掌握戰術策略',
+                features: ['進階技巧訓練', '戰術策略運用', '雙打默契配合', '比賽節奏掌控'],
               },
               {
                 level: '高手養成',
-                color: 'pickleball',
-                description: '專業技術、比賽心理、高階訓練',
-                features: ['專業技術', '心理訓練', '體能強化', '教練培訓'],
+                icon: '🏆',
+                bgColor: 'bg-gradient-to-br from-amber-50 to-amber-100',
+                iconBg: 'bg-amber-500',
+                textColor: 'text-amber-600',
+                borderColor: 'hover:border-amber-400',
+                description: '精進專業，追求卓越表現',
+                features: ['專業技術精進', '比賽心理建設', '體能強化訓練', '教練認證課程'],
               },
             ].map((path, index) => (
               <motion.div
@@ -247,29 +294,41 @@ const Home = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ y: -8 }}
                 className="relative group"
               >
-                <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 h-full border-2 border-transparent hover:border-${path.color}-400">
-                  <h3 className={`text-2xl font-bold mb-3 text-${path.color}-600`}>
+                <div className={`${path.bgColor} rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 h-full border-2 border-gray-200 ${path.borderColor}`}>
+                  {/* Icon Badge */}
+                  <div className={`${path.iconBg} w-16 h-16 rounded-xl flex items-center justify-center mb-6 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                    <span className="text-4xl">{path.icon}</span>
+                  </div>
+
+                  <h3 className={`text-2xl font-bold mb-3 ${path.textColor}`}>
                     {path.level}
                   </h3>
-                  <p className="text-gray-600 mb-6">{path.description}</p>
+                  <p className="text-gray-700 font-medium mb-6">{path.description}</p>
 
-                  <ul className="space-y-2 mb-6">
+                  <ul className="space-y-3 mb-8">
                     {path.features.map((feature, i) => (
-                      <li key={i} className="flex items-center text-gray-700">
-                        <span className={`text-${path.color}-500 mr-2`}>✓</span>
-                        {feature}
+                      <li key={i} className="flex items-start text-gray-700">
+                        <svg className={`w-5 h-5 ${path.textColor} mr-2 mt-0.5 flex-shrink-0`} fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   <Link
                     to={ROUTES.LEARNING_PATHS}
-                    className={`block text-center bg-gradient-to-r from-${path.color}-400 to-${path.color}-600 text-white py-3 rounded-full font-bold hover:shadow-lg transition-all duration-300`}
+                    className={`block text-center ${path.iconBg} text-white py-3 px-6 rounded-xl font-bold hover:shadow-lg transition-all duration-300 group-hover:translate-x-1`}
                   >
-                    開始學習 →
+                    <span className="flex items-center justify-center">
+                      開始學習
+                      <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
                   </Link>
                 </div>
               </motion.div>
@@ -278,28 +337,60 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA 區塊 */}
-      <section className="py-20 bg-gradient-to-r from-pickleball-500 via-sport-500 to-court-500 text-white">
-        <div className="container mx-auto px-4 text-center">
+      {/* CTA 區塊 - 資源導向 */}
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+        {/* 背景裝飾 */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-64 h-64 bg-pickleball-400 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-80 h-80 bg-sport-400 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            className="text-center max-w-4xl mx-auto"
           >
-            <h2 className="text-4xl md:text-5xl font-black mb-6">
-              準備好開始打球了嗎？
+            <h2 className="text-3xl md:text-5xl font-black mb-6">
+              立即探索台灣匹克球資源
             </h2>
-            <p className="text-xl mb-10 text-white/90 max-w-2xl mx-auto">
-              加入台灣匹克球社群，找球友、找球場、學技巧，一起享受這項有趣的運動！
+            <p className="text-lg md:text-xl mb-12 text-gray-300 leading-relaxed">
+              全台 55+ 球場地圖、完整規則教學、裝備選購指南、互動學習工具<br />
+              一個平台滿足你所有匹克球需求
             </p>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                to={ROUTES.COURTS}
-                className="inline-block bg-white text-pickleball-600 px-10 py-5 rounded-full font-black text-xl shadow-2xl hover:shadow-white/50 transition-all duration-300"
-              >
-                立即尋找球場
-              </Link>
-            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  to={ROUTES.COURTS}
+                  className="block bg-white text-gray-900 px-6 py-4 rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300"
+                >
+                  <div className="text-3xl mb-2">📍</div>
+                  <div>找球場</div>
+                </Link>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  to={ROUTES.RULES}
+                  className="block bg-pickleball-500 text-white px-6 py-4 rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300"
+                >
+                  <div className="text-3xl mb-2">🎯</div>
+                  <div>學規則</div>
+                </Link>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  to={ROUTES.EQUIPMENT}
+                  className="block bg-sport-500 text-white px-6 py-4 rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300"
+                >
+                  <div className="text-3xl mb-2">🎾</div>
+                  <div>看裝備</div>
+                </Link>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
       </section>

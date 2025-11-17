@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <title>台灣匹克球學習平台</title>
+  <script>
+    // GitHub Pages SPA 路由解決方案
+    // 將當前路徑保存到 sessionStorage，然後重定向到 index.html
+    sessionStorage.setItem('redirect', location.pathname + location.search + location.hash);
+    location.replace('/');
+  </script>
+</head>
+<body>
+  <!-- 這個頁面會立即重定向，所以不會被看到 -->
+</body>
+</html>

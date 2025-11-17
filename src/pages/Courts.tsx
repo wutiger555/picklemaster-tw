@@ -14,7 +14,7 @@ const Courts = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('/picklemaster-tw/data/courts.json')
+    fetch('/data/courts.json')
       .then(res => res.json())
       .then(data => {
         setCourtsData(data);

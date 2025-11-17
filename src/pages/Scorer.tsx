@@ -59,6 +59,7 @@ const Scorer = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
+  const [hasPlayedOpeningSound, setHasPlayedOpeningSound] = useState(false);
 
   // 檢測螢幕方向
   useEffect(() => {
@@ -148,6 +149,12 @@ const Scorer = () => {
 
     // 初始化音效系統（確保在用戶互動時啟動）
     initAudioContext();
+
+    // 第一次互動時播放開場音效
+    if (!hasPlayedOpeningSound) {
+      playGameStartSound();
+      setHasPlayedOpeningSound(true);
+    }
 
     const newState = { ...gameState };
     const teamName = team === 'team1' ? gameState.team1Name : gameState.team2Name;

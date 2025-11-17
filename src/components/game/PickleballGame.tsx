@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useGameSounds } from '../../hooks/useGameSounds';
 
 // 球場配置（橫向顯示，符合標準匹克球場規格比例）
 const COURT = {
@@ -60,6 +61,20 @@ const PickleballGame = () => {
   const [serverSide, setServerSide] = useState<'player' | 'opponent'>('player');
   // const [servePower, setServePower] = useState<'short' | 'long'>('long'); // 發球力度（未來功能）
   const [winner, setWinner] = useState<'player' | 'opponent' | null>(null);
+
+  // 音效系統
+  const {
+    playPaddleHitSound,
+    playBounceSound,
+    playScoreSound,
+    playFaultSound,
+    playNetSound,
+    playWinSound,
+    playGameStartSound,
+    toggleMute,
+    isMuted,
+    initAudioContext,
+  } = useGameSounds();
 
   // 遊戲狀態
   const gameLoop = useRef<number | undefined>(undefined);
@@ -463,6 +478,9 @@ const PickleballGame = () => {
 
   // 加分並檢查遊戲是否結束
   const addPoint = useCallback((side: 'player' | 'opponent') => {
+    // 播放得分音效
+    playScoreSound();
+
     setScore((s) => {
       const newScore = { ...s, [side]: s[side] + 1 };
 
@@ -479,13 +497,15 @@ const PickleballGame = () => {
         const gameWinner = playerScore > opponentScore ? 'player' : 'opponent';
         setWinner(gameWinner);
         setGameScreen('game-over');
+        // 播放獲勝音效
+        playWinSound();
       }
 
       return newScore;
     });
 
     setServerSide(side); // 得分方獲得發球權
-  }, []);
+  }, [playScoreSound, playWinSound]);
 
   // 【3D俯視】碰撞檢測：球與球拍（矩形碰撞 + Z軸判斷 + 匹克球規則 + 揮拍機制）
   const checkPaddleCollision = (paddle: GameObject, isPlayer: boolean) => {
@@ -550,6 +570,7 @@ const PickleballGame = () => {
       // 檢查廚房區規則：如果球沒有彈地（截擊），且在廚房區內，則犯規
       if (bounceCount.current === 0 && isInKitchen(paddle.x)) {
         // 廚房區截擊犯規
+        playFaultSound();
         const winner = isPlayer ? 'opponent' : 'player';
         addPoint(winner);
         setMessage(`廚房區截擊犯規！${isPlayer ? '對手' : '你'}得分`);
@@ -609,6 +630,9 @@ const PickleballGame = () => {
       } else {
         b.x = paddleLeft - BALL.RADIUS - 5;
       }
+
+      // 播放擊球音效
+      playPaddleHitSound();
 
       lastHitter.current = isPlayer ? 'player' : 'opponent';
       bounceCount.current = 0; // 重置彈跳計數
@@ -904,6 +928,8 @@ const PickleballGame = () => {
 
       // 只有明顯的彈跳才計數（避免滾動時重複計數）
       if (Math.abs(b.vz) > 2) {
+        // 播放彈地音效
+        playBounceSound();
         bounceCount.current++;
         canHit.current = true; // 彈地後可以擊球
 
@@ -930,6 +956,7 @@ const PickleballGame = () => {
           }
 
           if (wrongSide) {
+            playFaultSound();
             addPoint(winner);
             setMessage(`球未過網！${winner === 'player' ? '你' : '對手'}得分`);
             setGameState('point');
@@ -947,6 +974,7 @@ const PickleballGame = () => {
             // 球在右側（對手側）彈地兩次，對手失分
             winner = 'player';
           }
+          playFaultSound();
           addPoint(winner);
           setMessage(`球彈地兩次！${winner === 'player' ? '你' : '對手'}得分`);
           setGameState('point');
@@ -979,6 +1007,7 @@ const PickleballGame = () => {
     // 球出界判定（左右）- 誰打出界，對方得分
     if (ball.current.x < -BALL.RADIUS || ball.current.x > COURT.WIDTH + BALL.RADIUS) {
       // 根據最後擊球者判定
+      playFaultSound();
       const winner = lastHitter.current === 'player' ? 'opponent' : 'player';
       addPoint(winner);
       setMessage(`球出界！${winner === 'player' ? '你' : '對手'}得分`);
@@ -996,6 +1025,7 @@ const PickleballGame = () => {
 
       // 如果速度太低，判定為掛網
       if (Math.abs(ball.current.vx) < 2) {
+        playNetSound();
         const winner = lastHitter.current === 'player' ? 'opponent' : 'player';
         addPoint(winner);
         setMessage(`球掛網！${winner === 'player' ? '你' : '對手'}得分`);
@@ -1340,6 +1370,10 @@ const PickleballGame = () => {
 
   // 遊戲開始按鈕
   const startGame = () => {
+    // 初始化音效系統並播放開場音效
+    initAudioContext();
+    playGameStartSound();
+
     setGameScreen('game');
     setGameState('ready');
     setScore({ player: 0, opponent: 0 });
@@ -1381,6 +1415,9 @@ const PickleballGame = () => {
 
   // 重新開始遊戲
   const restartGame = () => {
+    // 播放開場音效
+    playGameStartSound();
+
     setGameScreen('game');
     setGameState('ready');
     setScore({ player: 0, opponent: 0 });
@@ -1514,6 +1551,32 @@ const PickleballGame = () => {
                 </div>
               </div>
             )}
+
+            {/* 音效控制按鈕 */}
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={toggleMute}
+                className="px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border-2 border-gray-200 hover:border-gray-300 flex items-center gap-2"
+                title={isMuted ? "開啟音效" : "靜音"}
+              >
+                {isMuted ? (
+                  <>
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                    </svg>
+                    <span className="text-sm font-semibold text-gray-600">靜音</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    </svg>
+                    <span className="text-sm font-semibold text-green-600">音效</span>
+                  </>
+                )}
+              </button>
+            </div>
 
             {/* 手機版發球按鈕 */}
             {serverSide === 'player' && (gameState === 'ready' || gameState === 'point' || gameState === 'serving-ready') && (

@@ -15,6 +15,7 @@ const Header = () => {
     { path: ROUTES.LEARNING_PATHS, label: '學習路徑' },
     { path: ROUTES.COURTS, label: '找球場' },
     { path: ROUTES.GAME, label: '互動遊戲' },
+    { path: ROUTES.SCORER, label: '計分器' },
     { path: ROUTES.RESOURCES, label: '資源' },
     { path: ROUTES.ABOUT, label: '關於' },
   ];

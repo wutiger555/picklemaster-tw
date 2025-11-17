@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useScorerSounds } from '../hooks/useScorerSounds';
 
 type ServingSide = 'team1' | 'team2';
 type Server = 1 | 2;
@@ -21,6 +22,20 @@ interface GameState {
 
 const Scorer = () => {
   usePageTitle('匹克球計分器');
+
+  // 音效系統
+  const {
+    playScoreSound,
+    playSwitchServeSound,
+    playGameStartSound,
+    playGamePointSound,
+    playDeuceSound,
+    playWinSound,
+    playSubtractSound,
+    toggleMute,
+    isMuted,
+    initAudioContext
+  } = useScorerSounds();
 
   const [gameState, setGameState] = useState<GameState>({
     team1Score: 0,
@@ -44,6 +59,7 @@ const Scorer = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
+  const [hasPlayedOpeningSound, setHasPlayedOpeningSound] = useState(false);
 
   // 檢測螢幕方向
   useEffect(() => {
@@ -131,6 +147,15 @@ const Scorer = () => {
   const addScore = (team: 'team1' | 'team2') => {
     if (gameState.servingSide !== team) return;
 
+    // 初始化音效系統（確保在用戶互動時啟動）
+    initAudioContext();
+
+    // 第一次互動時播放開場音效
+    if (!hasPlayedOpeningSound) {
+      playGameStartSound();
+      setHasPlayedOpeningSound(true);
+    }
+
     const newState = { ...gameState };
     const teamName = team === 'team1' ? gameState.team1Name : gameState.team2Name;
 
@@ -138,9 +163,12 @@ const Scorer = () => {
       newState.team1Score += 1;
       addHistory(`${teamName} 得分 (${newState.team1Score}-${newState.team2Score})`);
 
+      // 檢查是否獲勝
       if (checkWin(newState.team1Score, newState.team2Score)) {
         newState.team1Sets += 1;
         addHistory(`${teamName} 贏得第 ${gameState.currentSet} 局！`);
+        // 播放獲勝音效
+        playWinSound();
         if (confirm(`${teamName} 贏得本局！開始下一局？`)) {
           newState.team1Score = 0;
           newState.team2Score = 0;
@@ -148,20 +176,55 @@ const Scorer = () => {
           newState.servingSide = 'team1';
           newState.server = 1;
         }
+      } else {
+        // 檢查是否是 Deuce（雙方都達到目標分數-1 或以上且打平）
+        if (newState.team1Score === newState.team2Score &&
+            newState.team1Score >= gameState.targetScore - 1) {
+          playDeuceSound();
+          addHistory('Deuce!');
+        }
+        // 檢查是否是 Game Point（下一分就贏）
+        else if (newState.team1Score >= gameState.targetScore - 1 &&
+                 newState.team1Score - newState.team2Score === 1) {
+          playGamePointSound();
+          addHistory(`Game Point - ${teamName}!`);
+        } else {
+          // 一般得分音效
+          playScoreSound();
+        }
       }
     } else {
       newState.team2Score += 1;
       addHistory(`${teamName} 得分 (${newState.team1Score}-${newState.team2Score})`);
 
+      // 檢查是否獲勝
       if (checkWin(newState.team2Score, newState.team1Score)) {
         newState.team2Sets += 1;
         addHistory(`${teamName} 贏得第 ${gameState.currentSet} 局！`);
+        // 播放獲勝音效
+        playWinSound();
         if (confirm(`${teamName} 贏得本局！開始下一局？`)) {
           newState.team1Score = 0;
           newState.team2Score = 0;
           newState.currentSet += 1;
           newState.servingSide = 'team1';
           newState.server = 1;
+        }
+      } else {
+        // 檢查是否是 Deuce
+        if (newState.team1Score === newState.team2Score &&
+            newState.team2Score >= gameState.targetScore - 1) {
+          playDeuceSound();
+          addHistory('Deuce!');
+        }
+        // 檢查是否是 Game Point
+        else if (newState.team2Score >= gameState.targetScore - 1 &&
+                 newState.team2Score - newState.team1Score === 1) {
+          playGamePointSound();
+          addHistory(`Game Point - ${teamName}!`);
+        } else {
+          // 一般得分音效
+          playScoreSound();
         }
       }
     }
@@ -171,6 +234,11 @@ const Scorer = () => {
 
   // 減分
   const subtractScore = (team: 'team1' | 'team2') => {
+    // 初始化音效系統
+    initAudioContext();
+    // 播放扣分音效
+    playSubtractSound();
+
     const teamName = team === 'team1' ? gameState.team1Name : gameState.team2Name;
     setGameState(prev => ({
       ...prev,
@@ -182,6 +250,11 @@ const Scorer = () => {
 
   // 換發球
   const switchServe = () => {
+    // 初始化音效系統
+    initAudioContext();
+    // 播放換發球音效
+    playSwitchServeSound();
+
     setGameState(prev => {
       const newState = { ...prev };
 
@@ -208,6 +281,9 @@ const Scorer = () => {
   // 重置比賽
   const resetGame = () => {
     if (confirm('確定要重置整個比賽嗎？')) {
+      // 初始化音效系統
+      initAudioContext();
+
       setGameState({
         team1Score: 0,
         team2Score: 0,
@@ -225,6 +301,9 @@ const Scorer = () => {
       setIsTimerRunning(false);
       setHistory([]);
       addHistory('比賽開始');
+
+      // 播放開始比賽音效
+      setTimeout(() => playGameStartSound(), 300);
     }
   };
 
@@ -350,6 +429,24 @@ const Scorer = () => {
 
         {/* 底部控制 */}
         <div className="flex flex-col gap-4">
+          {/* 靜音切換 */}
+          <button
+            onClick={toggleMute}
+            className="w-16 h-16 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
+            title={isMuted ? "開啟音效" : "靜音"}
+          >
+            {isMuted ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+            )}
+          </button>
+
           {/* 全螢幕 */}
           <button
             onClick={toggleFullscreen}
@@ -557,6 +654,24 @@ const Scorer = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
+          </button>
+
+          {/* 靜音切換 */}
+          <button
+            onClick={toggleMute}
+            className="w-14 h-14 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
+            title={isMuted ? "開啟音效" : "靜音"}
+          >
+            {isMuted ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+            )}
           </button>
 
           {/* 全螢幕 */}

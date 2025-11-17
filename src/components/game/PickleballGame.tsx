@@ -578,10 +578,12 @@ const PickleballGame = () => {
       b.spin = hitPosition * BALL.SPIN_EFFECT;
 
       // 【關鍵】Z軸速度（向上的速度，讓球飛起來）
-      // 適中的向上速度，考慮旋球效果
-      let upwardSpeed = 10 - (b.z / 20); // 平衡的基礎速度
+      // 【修正】增加向上速度，確保球能飛過網到對方場地
+      let upwardSpeed = 12 - (b.z / 20); // 提高基礎速度（從10增加到12）
       // 下旋會增加向上速度（球飄），上旋會減少向上速度（球快速下墜）
       upwardSpeed += b.spin * -10;
+      // 確保最低向上速度，避免球飛不過網
+      upwardSpeed = Math.max(upwardSpeed, 8);
       b.vz = upwardSpeed;
 
       // 速度限制
@@ -893,7 +895,37 @@ const PickleballGame = () => {
         bounceCount.current++;
         canHit.current = true; // 彈地後可以擊球
 
-        // 檢查是否彈地兩次（失分）
+        // 【修正】檢查球是否在錯誤的一側落地（匹克球規則：擊球後球必須直接飛過網）
+        if (bounceCount.current === 1) {
+          // 第一次落地時檢查位置（加入小緩衝區避免球網邊緣誤判）
+          const netBuffer = 20; // 球網附近20像素的緩衝區
+          const ballOnLeftSide = b.x < (COURT.NET_X - netBuffer);
+          const ballOnRightSide = b.x > (COURT.NET_X + netBuffer);
+
+          // 如果最後擊球者是玩家（左側），球應該在右側落地
+          // 如果最後擊球者是對手（右側），球應該在左側落地
+          let wrongSide = false;
+          let winner: 'player' | 'opponent' = 'player';
+
+          if (lastHitter.current === 'player' && ballOnLeftSide) {
+            // 玩家擊球，但球在自己這邊落地 - 玩家失分
+            wrongSide = true;
+            winner = 'opponent';
+          } else if (lastHitter.current === 'opponent' && ballOnRightSide) {
+            // 對手擊球，但球在自己那邊落地 - 對手失分
+            wrongSide = true;
+            winner = 'player';
+          }
+
+          if (wrongSide) {
+            addPoint(winner);
+            setMessage(`球未過網！${winner === 'player' ? '你' : '對手'}得分`);
+            setGameState('point');
+            return;
+          }
+        }
+
+        // 檢查是否在對方場地彈地兩次（失分）
         if (bounceCount.current >= 2) {
           let winner: 'player' | 'opponent';
           if (b.x < COURT.NET_X) {

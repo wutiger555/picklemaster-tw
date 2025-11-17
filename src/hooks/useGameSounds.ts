@@ -230,6 +230,63 @@ export const useGameSounds = () => {
     });
   }, [isMuted, initAudioContext]);
 
+  // 發球專屬音效（類似網球發球的"嗖"聲）
+  const playServeSound = useCallback(() => {
+    if (isMuted) return;
+    initAudioContext();
+    if (!audioContextRef.current) return;
+
+    const ctx = audioContextRef.current;
+    const now = ctx.currentTime;
+
+    // 模擬發球的"嗖"聲 - 使用白噪音和濾波器
+    const bufferSize = ctx.sampleRate * 0.3;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = buffer.getChannelData(0);
+
+    // 生成白噪音
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(2000, now);
+    filter.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+    filter.Q.setValueAtTime(5, now);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    noise.start(now);
+    noise.stop(now + 0.3);
+
+    // 加入低頻的"咚"聲
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+
+    osc.connect(oscGain);
+    oscGain.connect(ctx.destination);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(120, now);
+    osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+
+    oscGain.gain.setValueAtTime(0.3, now);
+    oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }, [isMuted, initAudioContext]);
+
   // 遊戲開始音效
   const playGameStartSound = useCallback(() => {
     if (isMuted) return;
@@ -274,6 +331,7 @@ export const useGameSounds = () => {
     playFaultSound,
     playNetSound,
     playWinSound,
+    playServeSound,
     playGameStartSound,
     toggleMute,
     isMuted,

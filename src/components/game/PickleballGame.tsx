@@ -516,18 +516,20 @@ const PickleballGame = () => {
       return false; // 球還沒彈地，不能擊球
     }
 
-    // 【改進】球必須在合適的高度才能擊球（擴大範圍讓遊戲更容易）
-    // Z軸在0-120之間（地面到球拍可達高度，從80增加到120）
-    if (b.z < 0 || b.z > 120) {
+    // 【改進】球必須在合適的高度才能擊球（大幅擴大範圍讓截擊更容易）
+    // Z軸在0-200之間（地面到球拍可達高度，從120增加到200，讓高球也能輕鬆擊中）
+    if (b.z < 0 || b.z > 200) {
       return false;
     }
 
     // 【改進】矩形碰撞檢測（增加碰撞範圍padding，讓擊球更容易）
-    const collisionPadding = 15; // 增加碰撞檢測的寬容度
+    const collisionPadding = 20; // 增加碰撞檢測的寬容度（從15增加到20）
+    // 垂直方向額外增加容差，讓高球更容易擊中
+    const verticalPadding = 30; // 垂直方向特別寬鬆
     const paddleLeft = paddle.x - PLAYER.PADDLE_WIDTH / 2 - collisionPadding;
     const paddleRight = paddle.x + PLAYER.PADDLE_WIDTH / 2 + collisionPadding;
-    const paddleTop = paddle.y - PLAYER.PADDLE_HEIGHT / 2 - collisionPadding;
-    const paddleBottom = paddle.y + PLAYER.PADDLE_HEIGHT / 2 + collisionPadding;
+    const paddleTop = paddle.y - PLAYER.PADDLE_HEIGHT / 2 - verticalPadding;
+    const paddleBottom = paddle.y + PLAYER.PADDLE_HEIGHT / 2 + verticalPadding;
 
     const ballLeft = b.x - BALL.RADIUS;
     const ballRight = b.x + BALL.RADIUS;
@@ -1038,6 +1040,9 @@ const PickleballGame = () => {
   const performServe = useCallback((isPlayerServing: boolean) => {
     const b = ball.current;
 
+    // 播放發球音效
+    playServeSound();
+
     if (isPlayerServing) {
       // 玩家發球到對角線
       const targetY = player.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;
@@ -1062,7 +1067,7 @@ const PickleballGame = () => {
 
     setGameState('playing');
     setMessage('');
-  }, []);
+  }, [playServeSound]);
 
   // 渲染
   const render = useCallback(() => {

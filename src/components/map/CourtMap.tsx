@@ -198,7 +198,7 @@ const CourtMap = ({ courts, selectedCourt, onCourtSelect }: CourtMapProps) => {
       />
 
       {/* 地圖圖例 */}
-      <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 z-[1000]">
+      <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 z-10">
         <h4 className="font-bold text-gray-800 mb-3 text-sm">圖例</h4>
         <div className="space-y-2 text-xs">
           <div className="flex items-center space-x-2">

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { staggerContainer, staggerItem } from '../utils/animations';
@@ -11,6 +11,7 @@ const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'
 
 const Home = () => {
   usePageTitle();
+  const [expandedPath, setExpandedPath] = useState<number | null>(null);
 
   // 視差滾動效果
   const { scrollY } = useScroll();
@@ -67,8 +68,8 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       <SEOHead page="home" />
-      {/* 英雄區塊 - 3D + Glassmorphism + 視差滾動設計 */}
-      <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-600 text-white py-20 md:py-32 overflow-hidden">
+      {/* 英雄區塊 - Above the Fold 黃金區優化 */}
+      <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-600 text-white min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden">
         {/* 視差背景動畫圓圈 */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
@@ -243,29 +244,41 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 統計數據 - Glassmorphism 設計 */}
-      <section className="py-16 bg-gradient-to-b from-neutral-50 to-white">
+      {/* 統計數據 - 視覺層次優化 */}
+      <section className="py-24 md:py-32 bg-gradient-to-b from-neutral-50 to-white">
         <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="font-display text-display-sm md:text-display-md font-black mb-4 text-neutral-900">
+              台灣最完整的匹克球平台
+            </h2>
+            <p className="text-body-lg text-neutral-600">持續成長的社群與資源</p>
+          </motion.div>
+
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto"
           >
             {stats.map((stat, index) => (
               <motion.div key={index} variants={staggerItem}>
                 <GlassCard
                   variant="light"
-                  size="lg"
+                  size="xl"
                   hoverable
                   magnetic
-                  className="text-center"
+                  className="text-center py-8"
                 >
-                  <div className="font-display text-display-lg font-black bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent mb-3">
+                  <div className="font-display text-6xl md:text-7xl font-black bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent mb-4">
                     {stat.number}
                   </div>
-                  <div className="text-neutral-700 font-bold text-heading-md">{stat.label}</div>
+                  <div className="text-neutral-700 font-bold text-heading-lg">{stat.label}</div>
                 </GlassCard>
               </motion.div>
             ))}
@@ -273,8 +286,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 核心功能 - Glassmorphism 卡片設計 */}
-      <section className="py-20 bg-gradient-to-b from-white to-neutral-50 relative overflow-hidden">
+      {/* 核心功能 - Bento Grid 不對稱佈局 */}
+      <section className="py-24 md:py-32 bg-gradient-to-b from-white to-neutral-50 relative overflow-hidden">
         {/* 背景裝飾 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 right-20 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl"></div>
@@ -296,60 +309,180 @@ const Home = () => {
             </p>
           </motion.div>
 
+          {/* Bento Grid 不對稱佈局 */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto"
           >
-            {features.map((feature, index) => (
-              <motion.div key={index} variants={staggerItem}>
-                <Link to={feature.link} className="block h-full">
-                  <GlassCard
-                    variant={index === 0 ? 'primary' : index === 1 ? 'secondary' : index === 2 ? 'accent' : 'light'}
-                    size="md"
-                    hoverable
-                    magnetic
-                    clickable
-                    className="h-full relative"
-                  >
-                    {feature.highlight && (
-                      <div className="absolute top-4 right-4 bg-accent-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-neon-accent animate-pulse">
-                        NEW
+            {/* 1. 互動式規則教學 - 中等卡片 */}
+            <motion.div variants={staggerItem} className="lg:col-span-2">
+              <Link to={features[0].link} className="block h-full">
+                <GlassCard
+                  variant="primary"
+                  size="lg"
+                  hoverable
+                  magnetic
+                  clickable
+                  className="h-full relative min-h-[280px]"
+                >
+                  <div className="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 shadow-elevated-sm">
+                    <span className="text-4xl">{features[0].icon}</span>
+                  </div>
+                  <h3 className="font-display text-heading-xl font-bold mb-4 text-neutral-900">
+                    {features[0].title}
+                  </h3>
+                  <p className="text-body-lg text-neutral-700 leading-relaxed mb-6">
+                    {features[0].description}
+                  </p>
+                  <div className="flex items-center text-neutral-900 font-semibold text-body-md group-hover:translate-x-1 transition-transform duration-300">
+                    <span>立即體驗</span>
+                    <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
+                </GlassCard>
+              </Link>
+            </motion.div>
+
+            {/* 2. 3D 球場配置 - 中等卡片 */}
+            <motion.div variants={staggerItem} className="lg:col-span-2">
+              <Link to={features[1].link} className="block h-full">
+                <GlassCard
+                  variant="secondary"
+                  size="lg"
+                  hoverable
+                  magnetic
+                  clickable
+                  className="h-full relative min-h-[280px]"
+                >
+                  <div className="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 shadow-elevated-sm">
+                    <span className="text-4xl">{features[1].icon}</span>
+                  </div>
+                  <h3 className="font-display text-heading-xl font-bold mb-4 text-neutral-900">
+                    {features[1].title}
+                  </h3>
+                  <p className="text-body-lg text-neutral-700 leading-relaxed mb-6">
+                    {features[1].description}
+                  </p>
+                  <div className="flex items-center text-neutral-900 font-semibold text-body-md group-hover:translate-x-1 transition-transform duration-300">
+                    <span>開始探索</span>
+                    <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
+                </GlassCard>
+              </Link>
+            </motion.div>
+
+            {/* 3. 專業計分器 - 超大強調卡片（2x2） */}
+            <motion.div variants={staggerItem} className="lg:col-span-2 lg:row-span-2">
+              <Link to={features[2].link} className="block h-full">
+                <GlassCard
+                  variant="accent"
+                  size="xl"
+                  hoverable
+                  magnetic
+                  clickable
+                  className="h-full relative min-h-[400px] lg:min-h-[580px]"
+                >
+                  <div className="absolute top-6 right-6 bg-accent-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-neon-accent animate-pulse">
+                    🔥 熱門工具
+                  </div>
+
+                  <div className="h-full flex flex-col justify-between">
+                    <div>
+                      <div className="w-20 h-20 bg-white/95 backdrop-blur-sm rounded-3xl flex items-center justify-center mb-8 shadow-elevated-md">
+                        <span className="text-5xl">{features[2].icon}</span>
                       </div>
-                    )}
+                      <h3 className="font-display text-display-sm md:text-display-md font-black mb-6 text-neutral-900 leading-tight">
+                        {features[2].title}
+                      </h3>
+                      <p className="text-body-xl text-neutral-700 leading-relaxed mb-8">
+                        {features[2].description}
+                      </p>
 
-                    {/* Icon */}
-                    <div className="w-14 h-14 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center mb-5 shadow-elevated-sm">
-                      <span className="text-3xl">{feature.icon}</span>
+                      {/* 特色亮點 */}
+                      <div className="space-y-4 mb-8">
+                        {['支援橫豎屏切換', '螢幕常亮不熄滅', '音效與震動提示', '比賽記錄追蹤'].map((point, i) => (
+                          <div key={i} className="flex items-center text-neutral-800">
+                            <div className="w-6 h-6 rounded-full bg-accent-500/20 flex items-center justify-center mr-3 flex-shrink-0">
+                              <svg className="w-4 h-4 text-accent-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <span className="text-body-md font-medium">{point}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Content */}
-                    <h3 className="font-display text-heading-lg font-bold mb-3 text-neutral-900">
-                      {feature.title}
-                    </h3>
-                    <p className="text-body-md text-neutral-700 leading-relaxed mb-4">
-                      {feature.description}
-                    </p>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      className="bg-gradient-to-r from-accent-500 to-accent-600 text-white py-5 px-8 rounded-2xl font-bold text-lg shadow-elevated-lg hover:shadow-elevated-xl transition-all duration-300 text-center"
+                    >
+                      <span className="flex items-center justify-center">
+                        <svg className="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                        立即使用計分器
+                      </span>
+                    </motion.div>
+                  </div>
+                </GlassCard>
+              </Link>
+            </motion.div>
 
-                    {/* Arrow */}
-                    <div className="flex items-center text-neutral-900 font-semibold text-body-sm group-hover:translate-x-1 transition-transform duration-300">
-                      <span>了解更多</span>
-                      <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+            {/* 4. 全台球場地圖 - 大卡片 */}
+            <motion.div variants={staggerItem} className="lg:col-span-2">
+              <Link to={features[3].link} className="block h-full">
+                <GlassCard
+                  variant="light"
+                  size="lg"
+                  hoverable
+                  magnetic
+                  clickable
+                  className="h-full relative min-h-[280px]"
+                >
+                  <div className="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 shadow-elevated-sm">
+                    <span className="text-4xl">{features[3].icon}</span>
+                  </div>
+                  <h3 className="font-display text-heading-xl font-bold mb-4 text-neutral-900">
+                    {features[3].title}
+                  </h3>
+                  <p className="text-body-lg text-neutral-700 leading-relaxed mb-6">
+                    {features[3].description}
+                  </p>
+
+                  {/* 快速統計 */}
+                  <div className="flex gap-4 mb-6">
+                    <div className="flex-1 bg-white/80 rounded-xl p-3 text-center border border-neutral-200">
+                      <div className="text-2xl font-black text-primary-600">55+</div>
+                      <div className="text-xs text-neutral-600 font-medium">球場數</div>
                     </div>
-                  </GlassCard>
-                </Link>
-              </motion.div>
-            ))}
+                    <div className="flex-1 bg-white/80 rounded-xl p-3 text-center border border-neutral-200">
+                      <div className="text-2xl font-black text-secondary-600">22</div>
+                      <div className="text-xs text-neutral-600 font-medium">縣市</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center text-neutral-900 font-semibold text-body-md group-hover:translate-x-1 transition-transform duration-300">
+                    <span>查看地圖</span>
+                    <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
+                </GlassCard>
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* 學習路徑 - Glassmorphism 分級系統 */}
-      <section className="py-20 bg-gradient-to-b from-neutral-50 to-white relative overflow-hidden">
+      {/* 學習路徑 - 互動式 Accordion 設計 */}
+      <section className="py-24 md:py-32 bg-gradient-to-b from-neutral-50 to-white relative overflow-hidden">
         {/* 背景裝飾 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-40 left-10 w-80 h-80 bg-primary-200/20 rounded-full blur-3xl"></div>
@@ -376,7 +509,7 @@ const Home = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+            className="max-w-5xl mx-auto space-y-6"
           >
             {[
               {
@@ -385,6 +518,12 @@ const Home = () => {
                 variant: 'primary' as const,
                 description: '從零開始，建立紮實基礎',
                 features: ['認識球場配置', '基本規則理解', '握拍姿勢矯正', '發球動作練習'],
+                details: [
+                  { title: '球場認識', content: '了解標準球場尺寸、禁區規則與場地標線意義' },
+                  { title: '規則入門', content: '掌握計分方式、發球規則、雙跳規則等基本規範' },
+                  { title: '握拍技巧', content: '學習正確握拍方式，避免運動傷害' },
+                  { title: '發球練習', content: '從基礎發球動作開始，逐步提升穩定度' },
+                ],
               },
               {
                 level: '中階進修',
@@ -392,6 +531,12 @@ const Home = () => {
                 variant: 'secondary' as const,
                 description: '提升技術，掌握戰術策略',
                 features: ['進階技巧訓練', '戰術策略運用', '雙打默契配合', '比賽節奏掌控'],
+                details: [
+                  { title: '進階技巧', content: '學習截擊、高吊球、切球等進階技術' },
+                  { title: '戰術運用', content: '理解攻防轉換、位置移動與戰術選擇' },
+                  { title: '雙打配合', content: '培養與隊友的默契，掌握雙打站位' },
+                  { title: '節奏掌控', content: '學會控制比賽節奏，適時調整策略' },
+                ],
               },
               {
                 level: '高手養成',
@@ -399,6 +544,12 @@ const Home = () => {
                 variant: 'accent' as const,
                 description: '精進專業，追求卓越表現',
                 features: ['專業技術精進', '比賽心理建設', '體能強化訓練', '教練認證課程'],
+                details: [
+                  { title: '技術精進', content: '深入研究專業技術細節，追求完美表現' },
+                  { title: '心理素質', content: '建立強大心理素質，應對比賽壓力' },
+                  { title: '體能訓練', content: '針對性體能訓練，提升爆發力與耐力' },
+                  { title: '教練認證', content: '學習教學方法，取得專業教練資格' },
+                ],
               },
             ].map((path, index) => (
               <motion.div key={index} variants={staggerItem}>
@@ -407,40 +558,90 @@ const Home = () => {
                   size="lg"
                   hoverable
                   magnetic
-                  className="h-full"
+                  className="cursor-pointer"
+                  onClick={() => setExpandedPath(expandedPath === index ? null : index)}
                 >
-                  {/* Icon Badge */}
-                  <div className="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center mb-6 shadow-elevated-sm">
-                    <span className="text-4xl">{path.icon}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6 flex-1">
+                      {/* Icon Badge */}
+                      <div className="w-16 h-16 md:w-20 md:h-20 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-elevated-sm flex-shrink-0">
+                        <span className="text-4xl md:text-5xl">{path.icon}</span>
+                      </div>
+
+                      <div className="flex-1">
+                        <h3 className="font-display text-heading-xl md:text-display-sm font-black mb-2 text-neutral-900">
+                          {path.level}
+                        </h3>
+                        <p className="text-body-md md:text-body-lg text-neutral-700 font-medium">{path.description}</p>
+                      </div>
+                    </div>
+
+                    {/* 展開圖示 */}
+                    <motion.div
+                      animate={{ rotate: expandedPath === index ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex-shrink-0 ml-4"
+                    >
+                      <svg className="w-6 h-6 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </motion.div>
                   </div>
 
-                  <h3 className="font-display text-heading-xl font-black mb-3 text-neutral-900">
-                    {path.level}
-                  </h3>
-                  <p className="text-body-md text-neutral-700 font-medium mb-6">{path.description}</p>
-
-                  <ul className="space-y-3 mb-8">
-                    {path.features.map((feature, i) => (
-                      <li key={i} className="flex items-start text-body-md text-neutral-700">
-                        <svg className="w-5 h-5 text-neutral-900 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    to={ROUTES.LEARNING_PATHS}
-                    className="block text-center bg-neutral-900 text-white py-3 px-6 rounded-xl font-bold hover:shadow-elevated-lg transition-all duration-300"
+                  {/* Accordion 內容 */}
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: expandedPath === index ? 'auto' : 0,
+                      opacity: expandedPath === index ? 1 : 0,
+                    }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="overflow-hidden"
                   >
-                    <span className="flex items-center justify-center">
-                      開始學習
-                      <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </span>
-                  </Link>
+                    <div className="pt-8 mt-6 border-t border-neutral-300/50">
+                      {/* 快速功能列表 */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                        {path.features.map((feature, i) => (
+                          <div key={i} className="bg-white/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/80 hover:scale-105 transition-transform">
+                            <div className="text-neutral-900 text-body-sm font-semibold">{feature}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* 詳細內容 */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        {path.details.map((detail, i) => (
+                          <div key={i} className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/60">
+                            <div className="flex items-start">
+                              <div className="w-8 h-8 rounded-lg bg-neutral-900 flex items-center justify-center mr-3 flex-shrink-0">
+                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-neutral-900 mb-1 text-body-md">{detail.title}</h4>
+                                <p className="text-neutral-700 text-body-sm">{detail.content}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* CTA 按鈕 */}
+                      <Link
+                        to={ROUTES.LEARNING_PATHS}
+                        className="block text-center bg-neutral-900 text-white py-4 px-8 rounded-xl font-bold hover:shadow-elevated-lg transition-all duration-300 group"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span className="flex items-center justify-center">
+                          開始 {path.level}
+                          <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                          </svg>
+                        </span>
+                      </Link>
+                    </div>
+                  </motion.div>
                 </GlassCard>
               </motion.div>
             ))}
@@ -449,7 +650,7 @@ const Home = () => {
       </section>
 
       {/* CTA 區塊 - 資源導向 */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
         {/* 背景裝飾 */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-64 h-64 bg-pickleball-400 rounded-full blur-3xl"></div>

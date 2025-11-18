@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import LearningPathTimeline from '../components/learning/LearningPathTimeline';
 import QuizCard from '../components/quiz/QuizCard';
 import GlassCard from '../components/common/GlassCard';
+import GripVisualization from '../components/equipment/GripVisualization';
 import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
 import { usePageTitle } from '../hooks/usePageTitle';
 import SEOHead from '../components/common/SEOHead';
@@ -13,6 +14,7 @@ const LearningPaths = () => {
 
   const tabs = [
     { id: 'paths', label: '學習路徑', icon: '🎯' },
+    { id: 'grips', label: '握拍技巧', icon: '🤝' },
     { id: 'quiz', label: '互動測驗', icon: '📝' },
   ];
 
@@ -114,6 +116,28 @@ const LearningPaths = () => {
               </GlassCard>
 
               <LearningPathTimeline />
+            </section>
+          </motion.div>
+        )}
+
+        {/* 握拍技巧 */}
+        {activeTab === 'grips' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <section>
+              <GlassCard variant="light" size="lg" className="mb-12">
+                <h2 className="font-display text-display-md font-black text-center mb-4 text-neutral-900">
+                  正確握拍是成功的第一步
+                </h2>
+                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
+                  學習三種基本握法：東方式、西方式、大陸式，掌握正確的握拍方式能提升控球與擊球品質
+                </p>
+              </GlassCard>
+              <GripVisualization />
             </section>
           </motion.div>
         )}

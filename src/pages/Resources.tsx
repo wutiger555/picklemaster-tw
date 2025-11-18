@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { usePageTitle } from '../hooks/usePageTitle';
 import GlassCard from '../components/common/GlassCard';
 import { staggerContainer, staggerItem } from '../utils/animations';
+import SEOHead from '../components/common/SEOHead';
 
 const Resources = () => {
   usePageTitle('匹克球資源');
@@ -122,6 +123,7 @@ const Resources = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-primary-50 to-secondary-50">
+      <SEOHead page="resources" />
       {/* Header Section */}
       <section className="relative bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500 text-white py-20 overflow-hidden">
         {/* Decorative wave */}

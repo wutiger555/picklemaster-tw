@@ -5,12 +5,14 @@ import { ROUTES } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
 import GlassCard from '../components/common/GlassCard';
 import { staggerContainer, staggerItem } from '../utils/animations';
+import SEOHead from '../components/common/SEOHead';
 
 const Game = () => {
   usePageTitle('互動遊戲');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-primary-50 to-secondary-50">
+      <SEOHead page="game" />
       {/* 返回按鈕 */}
       <div className="container mx-auto px-4 py-4">
         <Link

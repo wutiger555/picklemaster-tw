@@ -5,6 +5,7 @@ import QuizCard from '../components/quiz/QuizCard';
 import GlassCard from '../components/common/GlassCard';
 import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
 import { usePageTitle } from '../hooks/usePageTitle';
+import SEOHead from '../components/common/SEOHead';
 
 const LearningPaths = () => {
   usePageTitle('學習路徑');
@@ -17,6 +18,7 @@ const LearningPaths = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-white">
+      <SEOHead page="learningPaths" />
       {/* 標題區 - 升級設計 */}
       <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-accent-500 text-white py-20 md:py-24 overflow-hidden">
         {/* 背景裝飾 */}

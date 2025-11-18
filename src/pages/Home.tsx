@@ -5,6 +5,7 @@ import { ROUTES, BRAND } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import GlassCard from '../components/common/GlassCard';
+import SEOHead from '../components/common/SEOHead';
 
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 
@@ -65,6 +66,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      <SEOHead page="home" />
       {/* 英雄區塊 - 3D + Glassmorphism + 視差滾動設計 */}
       <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-600 text-white py-20 md:py-32 overflow-hidden">
         {/* 視差背景動畫圓圈 */}

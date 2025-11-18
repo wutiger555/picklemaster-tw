@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useScorerSounds } from '../hooks/useScorerSounds';
 import GlassCard from '../components/common/GlassCard';
+import SEOHead from '../components/common/SEOHead';
 
 type ServingSide = 'team1' | 'team2';
 type Server = 1 | 2;
@@ -690,6 +691,7 @@ const Scorer = () => {
 
   return (
     <>
+      <SEOHead page="scorer" />
       {orientation === 'landscape' ? <LandscapeLayout /> : <PortraitLayout />}
 
       {/* 設定面板 - 使用 GlassCard */}

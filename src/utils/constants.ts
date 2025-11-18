@@ -27,11 +27,13 @@ export const ROUTES = {
   RULES: '/rules',
   EQUIPMENT: '/equipment',
   LEARNING_PATHS: '/learning-paths',
+  LEARNING: '/learning',
   COURTS: '/courts',
   GAME: '/game',
   SCORER: '/scorer',
   RESOURCES: '/resources',
   ABOUT: '/about',
+  FAQ: '/faq',
 } as const;
 
 // 球場類型

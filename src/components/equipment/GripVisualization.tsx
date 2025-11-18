@@ -246,21 +246,182 @@ const GripVisualization = () => {
             </div>
           </div>
 
-          {/* 簡化示意圖 */}
+          {/* 視覺示意圖 - 多角度展示 */}
           <div className="bg-white rounded-xl p-6 shadow-md mb-8">
-            <h5 className="text-lg font-bold text-gray-800 mb-4 text-center">
-              握把示意圖
+            <h5 className="text-lg font-bold text-gray-800 mb-6 text-center">
+              握拍示意圖 - 多角度展示
             </h5>
 
-            <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-              {/* 握把頂視圖 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* 側視圖 - 展示手掌握持姿勢 */}
               <div className="text-center">
-                <p className="text-sm font-semibold text-gray-600 mb-3">握把頂視圖</p>
-                <svg width="200" height="200" viewBox="0 0 200 200" className="mx-auto">
-                  {/* 握把圓形 */}
-                  <circle cx="100" cy="100" r="60" fill="#fbbf24" stroke="#d97706" strokeWidth="3" />
+                <p className="text-sm font-semibold text-gray-600 mb-4">側視圖（手掌握持）</p>
+                <svg width="280" height="320" viewBox="0 0 280 320" className="mx-auto">
+                  {/* 球拍握把 */}
+                  <g id="paddle-handle">
+                    <rect x="110" y="50" width="60" height="220" rx="8" fill="#fbbf24" stroke="#d97706" strokeWidth="3" />
+                    {/* 握把紋理 */}
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <line
+                        key={i}
+                        x1="115"
+                        y1={60 + i * 20}
+                        x2="165"
+                        y2={60 + i * 20}
+                        stroke="#d97706"
+                        strokeWidth="1.5"
+                        opacity="0.4"
+                      />
+                    ))}
+                  </g>
 
-                  {/* "V" 字位置標記 - 根據不同握法調整 */}
+                  {/* 手掌輪廓 - 簡化幾何形狀 */}
+                  <g id="hand-side-view" transform={`rotate(${currentGrip.id === 'eastern' ? 0 : currentGrip.id === 'western' ? 15 : -15} 140 160)`}>
+                    {/* 手掌主體 */}
+                    <ellipse
+                      cx="85"
+                      cy="160"
+                      rx="45"
+                      ry="75"
+                      fill="#ffd6a5"
+                      stroke="#d4a574"
+                      strokeWidth="2"
+                      opacity="0.85"
+                    />
+
+                    {/* 拇指 - 根據握法調整位置 */}
+                    <ellipse
+                      cx={currentGrip.id === 'eastern' ? '50' : currentGrip.id === 'western' ? '55' : '45'}
+                      cy={currentGrip.id === 'eastern' ? '120' : currentGrip.id === 'western' ? '110' : '130'}
+                      rx="18"
+                      ry="55"
+                      fill="#ffd6a5"
+                      stroke="#d4a574"
+                      strokeWidth="2"
+                      transform={`rotate(${currentGrip.id === 'eastern' ? -30 : currentGrip.id === 'western' ? -45 : -15} ${currentGrip.id === 'eastern' ? '50' : currentGrip.id === 'western' ? '55' : '45'} ${currentGrip.id === 'eastern' ? '120' : currentGrip.id === 'western' ? '110' : '130'})`}
+                    />
+
+                    {/* 食指 */}
+                    <ellipse
+                      cx="195"
+                      cy="180"
+                      rx="15"
+                      ry="60"
+                      fill="#ffd6a5"
+                      stroke="#d4a574"
+                      strokeWidth="2"
+                      transform="rotate(15 195 180)"
+                    />
+
+                    {/* 中指 */}
+                    <ellipse
+                      cx="200"
+                      cy="190"
+                      rx="14"
+                      ry="58"
+                      fill="#ffd6a5"
+                      stroke="#d4a574"
+                      strokeWidth="2"
+                      transform="rotate(10 200 190)"
+                    />
+
+                    {/* 無名指 */}
+                    <ellipse
+                      cx="203"
+                      cy="200"
+                      rx="13"
+                      ry="55"
+                      fill="#ffd6a5"
+                      stroke="#d4a574"
+                      strokeWidth="2"
+                      transform="rotate(5 203 200)"
+                    />
+
+                    {/* 小指 */}
+                    <ellipse
+                      cx="205"
+                      cy="208"
+                      rx="11"
+                      ry="48"
+                      fill="#ffd6a5"
+                      stroke="#d4a574"
+                      strokeWidth="2"
+                    />
+
+                    {/* 手腕 */}
+                    <rect
+                      x="60"
+                      y="220"
+                      width="55"
+                      height="40"
+                      rx="10"
+                      fill="#ffd6a5"
+                      stroke="#d4a574"
+                      strokeWidth="2"
+                      opacity="0.7"
+                    />
+                  </g>
+
+                  {/* 關鍵標註 */}
+                  <g>
+                    {/* 拇指標註 */}
+                    <circle cx="35" cy="120" r="4" fill="#ef4444" />
+                    <line x1="35" y1="120" x2="15" y2="100" stroke="#ef4444" strokeWidth="2" />
+                    <text x="5" y="95" fill="#dc2626" fontSize="11" fontWeight="bold">拇指</text>
+
+                    {/* 食指標註 */}
+                    <circle cx="210" cy="180" r="4" fill="#ef4444" />
+                    <line x1="210" y1="180" x2="235" y2="165" stroke="#ef4444" strokeWidth="2" />
+                    <text x="240" y="165" fill="#dc2626" fontSize="11" fontWeight="bold">食指</text>
+
+                    {/* V字位置 */}
+                    <circle cx="110" cy="75" r="4" fill="#22c55e" />
+                    <line x1="110" y1="75" x2="90" y2="55" stroke="#22c55e" strokeWidth="2" />
+                    <text x="50" y="50" fill="#16a34a" fontSize="11" fontWeight="bold">V字頂點</text>
+
+                    {/* 手掌接觸區 */}
+                    <circle cx="85" cy="160" r="4" fill="#3b82f6" />
+                    <line x1="85" y1="160" x2="50" y2="180" stroke="#3b82f6" strokeWidth="2" />
+                    <text x="5" y="185" fill="#2563eb" fontSize="11" fontWeight="bold">手掌接觸</text>
+                  </g>
+
+                  {/* 旋轉角度提示 */}
+                  <text x="140" y="305" fill="#666" fontSize="12" textAnchor="middle" fontWeight="bold">
+                    {currentGrip.id === 'eastern' ? '手掌自然平行' : currentGrip.id === 'western' ? '手掌向下 15°' : '手掌向上 15°'}
+                  </text>
+                </svg>
+                <p className="text-xs text-gray-500 mt-2">清楚看到手指如何環繞握把</p>
+              </div>
+
+              {/* 握把頂視圖 - V字方向 */}
+              <div className="text-center">
+                <p className="text-sm font-semibold text-gray-600 mb-4">頂視圖（V字方向）</p>
+                <svg width="280" height="320" viewBox="0 0 280 320" className="mx-auto">
+                  {/* 握把圓形截面 */}
+                  <circle cx="140" cy="140" r="70" fill="#fbbf24" stroke="#d97706" strokeWidth="4" />
+
+                  {/* 握把紋理（放射狀） */}
+                  {Array.from({ length: 8 }).map((_, i) => {
+                    const angle = (i * 45 * Math.PI) / 180;
+                    const x1 = 140 + 50 * Math.cos(angle);
+                    const y1 = 140 + 50 * Math.sin(angle);
+                    const x2 = 140 + 70 * Math.cos(angle);
+                    const y2 = 140 + 70 * Math.sin(angle);
+                    return (
+                      <line
+                        key={i}
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke="#d97706"
+                        strokeWidth="2"
+                        opacity="0.3"
+                      />
+                    );
+                  })}
+
+                  {/* "V" 字方向箭頭 - 根據握法調整 */}
                   <g>
                     {(() => {
                       let angle = 0;
@@ -269,45 +430,112 @@ const GripVisualization = () => {
                       else angle = -45;
 
                       const angleRad = (angle * Math.PI) / 180;
-                      const x = 100 + 75 * Math.cos(angleRad);
-                      const y = 100 + 75 * Math.sin(angleRad);
+                      const x = 140 + 95 * Math.cos(angleRad);
+                      const y = 140 + 95 * Math.sin(angleRad);
 
                       return (
                         <>
-                          <line x1="100" y1="100" x2={x} y2={y} stroke="#ef4444" strokeWidth="4" markerEnd="url(#arrow)" />
-                          <text x={x + 10} y={y + 5} fill="#dc2626" fontSize="20" fontWeight="bold">V</text>
+                          {/* 箭頭線 */}
+                          <line
+                            x1="140"
+                            y1="140"
+                            x2={x}
+                            y2={y}
+                            stroke="#ef4444"
+                            strokeWidth="5"
+                            markerEnd="url(#arrowhead2)"
+                          />
+                          {/* V字標記 */}
+                          <text
+                            x={140 + 110 * Math.cos(angleRad)}
+                            y={140 + 110 * Math.sin(angleRad) + 5}
+                            fill="#dc2626"
+                            fontSize="24"
+                            fontWeight="bold"
+                            textAnchor="middle"
+                          >
+                            V
+                          </text>
                         </>
                       );
                     })()}
                   </g>
 
-                  {/* 箭頭定義 */}
+                  {/* 手指位置標記（圓圈表示） */}
+                  <g>
+                    {/* 根據握法顯示拇指和食指位置 */}
+                    {(() => {
+                      let thumbAngle = 0;
+                      let indexAngle = 0;
+
+                      if (selectedGrip === 'eastern') {
+                        thumbAngle = -90;
+                        indexAngle = 90;
+                      } else if (selectedGrip === 'western') {
+                        thumbAngle = -135;
+                        indexAngle = 45;
+                      } else {
+                        thumbAngle = -45;
+                        indexAngle = 135;
+                      }
+
+                      const thumbRad = (thumbAngle * Math.PI) / 180;
+                      const indexRad = (indexAngle * Math.PI) / 180;
+
+                      const thumbX = 140 + 85 * Math.cos(thumbRad);
+                      const thumbY = 140 + 85 * Math.sin(thumbRad);
+                      const indexX = 140 + 85 * Math.cos(indexRad);
+                      const indexY = 140 + 85 * Math.sin(indexRad);
+
+                      return (
+                        <>
+                          <circle cx={thumbX} cy={thumbY} r="20" fill="#ffd6a5" stroke="#d4a574" strokeWidth="2" opacity="0.8" />
+                          <text x={thumbX} y={thumbY + 5} fill="#666" fontSize="11" fontWeight="bold" textAnchor="middle">拇</text>
+
+                          <circle cx={indexX} cy={indexY} r="18" fill="#ffd6a5" stroke="#d4a574" strokeWidth="2" opacity="0.8" />
+                          <text x={indexX} y={indexY + 5} fill="#666" fontSize="11" fontWeight="bold" textAnchor="middle">食</text>
+                        </>
+                      );
+                    })()}
+                  </g>
+
+                  {/* 箭頭標記定義 */}
                   <defs>
-                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-                      <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+                    <marker id="arrowhead2" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                      <polygon points="0 0, 12 6, 0 12" fill="#ef4444" />
                     </marker>
                   </defs>
 
-                  {/* 角度文字 */}
-                  <text x="100" y="30" fill="#666" fontSize="12" textAnchor="middle" fontWeight="bold">
-                    {selectedGrip === 'eastern' ? '頂部中心' : selectedGrip === 'western' ? '向右 45°' : '向左 45°'}
+                  {/* 說明文字 */}
+                  <rect x="30" y="240" width="220" height="65" rx="10" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="2" />
+                  <text x="140" y="262" fill="#1f2937" fontSize="13" fontWeight="bold" textAnchor="middle">
+                    {selectedGrip === 'eastern' ? '頂部中心對準' : selectedGrip === 'western' ? '向右旋轉 45°' : '向左旋轉 45°'}
+                  </text>
+                  <text x="140" y="282" fill="#4b5563" fontSize="11" textAnchor="middle">
+                    拇指與食指形成的 V 字
+                  </text>
+                  <text x="140" y="298" fill="#4b5563" fontSize="11" textAnchor="middle">
+                    應該對準紅色箭頭方向
                   </text>
                 </svg>
-                <p className="text-xs text-gray-500 mt-2">紅色箭頭指向 "V" 字對準位置</p>
+                <p className="text-xs text-gray-500 mt-2">從上方俯視的握把與手指位置</p>
               </div>
+            </div>
+          </div>
 
-              {/* 視覺提示 */}
-              <div className="flex-1 max-w-md">
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-5 border-2 border-amber-200">
-                  <div className="flex items-start gap-3">
-                    <span className="text-3xl">💡</span>
-                    <div>
-                      <h6 className="font-bold text-amber-900 mb-2">記憶訣竅</h6>
-                      <p className="text-sm text-amber-800 leading-relaxed">
-                        {currentGrip.visualTip}
-                      </p>
-                    </div>
-                  </div>
+          {/* 視覺記憶訣竅 */}
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 border-2 border-amber-200 mb-8">
+            <div className="flex items-start gap-4">
+              <span className="text-4xl flex-shrink-0">💡</span>
+              <div className="flex-1">
+                <h6 className="font-bold text-amber-900 mb-3 text-lg">記憶訣竅</h6>
+                <p className="text-sm text-amber-800 leading-relaxed mb-3">
+                  {currentGrip.visualTip}
+                </p>
+                <div className="bg-white/60 rounded-lg p-3 mt-3">
+                  <p className="text-xs text-amber-900 font-semibold">
+                    💪 快速檢查法：握好後，看看拇指與食指形成的 V 字是否對準正確位置
+                  </p>
                 </div>
               </div>
             </div>

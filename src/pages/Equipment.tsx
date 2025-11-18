@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import PaddleGuide from '../components/equipment/PaddleGuide';
 import ProPlayerPaddles from '../components/equipment/ProPlayerPaddles';
 import PaddleRecommender from '../components/equipment/PaddleRecommender';
+import PaddleComparison from '../components/equipment/PaddleComparison';
 import { usePageTitle } from '../hooks/usePageTitle';
+import SEOHead from '../components/common/SEOHead';
 
 const Equipment = () => {
   usePageTitle('匹克球裝備指南');
@@ -11,6 +13,7 @@ const Equipment = () => {
 
   const tabs = [
     { id: 'paddle-guide', label: '球拍完全指南' },
+    { id: 'comparison', label: '球拍對比' },
     { id: 'pro-paddles', label: '職業選手裝備' },
     { id: 'recommender', label: '選購建議工具' },
     { id: 'budget', label: '裝備預算參考' },
@@ -18,6 +21,7 @@ const Equipment = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <SEOHead page="equipment" />
       {/* 標題區 */}
       <section className="bg-gradient-to-r from-pickleball-500 via-sport-500 to-court-500 text-white py-16">
         <div className="container mx-auto px-4 text-center">
@@ -78,6 +82,18 @@ const Equipment = () => {
               </p>
               <PaddleGuide />
             </section>
+          </motion.div>
+        )}
+
+        {/* 球拍對比 */}
+        {activeTab === 'comparison' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <PaddleComparison />
           </motion.div>
         )}
 

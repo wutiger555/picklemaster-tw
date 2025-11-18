@@ -1,51 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://wutiger555.github.io/picklemaster-tw/</loc>
-    <lastmod>2025-11-17</lastmod>
+    <loc>https://picklemastertw.site/</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://wutiger555.github.io/picklemaster-tw/courts</loc>
-    <lastmod>2025-11-17</lastmod>
+    <loc>https://picklemastertw.site/courts</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://wutiger555.github.io/picklemaster-tw/rules</loc>
-    <lastmod>2025-11-17</lastmod>
+    <loc>https://picklemastertw.site/rules</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://wutiger555.github.io/picklemaster-tw/equipment</loc>
-    <lastmod>2025-11-17</lastmod>
+    <loc>https://picklemastertw.site/equipment</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://wutiger555.github.io/picklemaster-tw/learning-paths</loc>
-    <lastmod>2025-11-17</lastmod>
+    <loc>https://picklemastertw.site/learning-paths</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://wutiger555.github.io/picklemaster-tw/game</loc>
-    <lastmod>2025-11-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://wutiger555.github.io/picklemaster-tw/resources</loc>
-    <lastmod>2025-11-17</lastmod>
+    <loc>https://picklemastertw.site/learning</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://wutiger555.github.io/picklemaster-tw/about</loc>
-    <lastmod>2025-11-17</lastmod>
+    <loc>https://picklemastertw.site/game</loc>
+    <lastmod>2025-11-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://picklemastertw.site/scorer</loc>
+    <lastmod>2025-11-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://picklemastertw.site/resources</loc>
+    <lastmod>2025-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://picklemastertw.site/about</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://picklemastertw.site/faq</loc>
+    <lastmod>2025-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 </urlset>

@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useScorerSounds } from '../hooks/useScorerSounds';
+import GlassCard from '../components/common/GlassCard';
+import SEOHead from '../components/common/SEOHead';
 
 type ServingSide = 'team1' | 'team2';
 type Server = 1 | 2;
@@ -60,6 +62,7 @@ const Scorer = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [hasPlayedOpeningSound, setHasPlayedOpeningSound] = useState(false);
+  const [compactMode, setCompactMode] = useState(false); // 新增：精簡模式
 
   // 檢測螢幕方向
   useEffect(() => {
@@ -132,6 +135,13 @@ const Scorer = () => {
     }
   }, [requestWakeLock, releaseWakeLock]);
 
+  // 觸覺反饋
+  const vibrate = (pattern: number | number[]) => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(pattern);
+    }
+  };
+
   // 檢查是否獲勝
   const checkWin = (score: number, opponentScore: number) => {
     return score >= gameState.targetScore && score - opponentScore >= 2;
@@ -146,6 +156,9 @@ const Scorer = () => {
   // 加分邏輯
   const addScore = (team: 'team1' | 'team2') => {
     if (gameState.servingSide !== team) return;
+
+    // 觸覺反饋
+    vibrate(50);
 
     // 初始化音效系統（確保在用戶互動時啟動）
     initAudioContext();
@@ -167,7 +180,7 @@ const Scorer = () => {
       if (checkWin(newState.team1Score, newState.team2Score)) {
         newState.team1Sets += 1;
         addHistory(`${teamName} 贏得第 ${gameState.currentSet} 局！`);
-        // 播放獲勝音效
+        vibrate([100, 50, 100, 50, 100]);
         playWinSound();
         if (confirm(`${teamName} 贏得本局！開始下一局？`)) {
           newState.team1Score = 0;
@@ -177,19 +190,16 @@ const Scorer = () => {
           newState.server = 1;
         }
       } else {
-        // 檢查是否是 Deuce（雙方都達到目標分數-1 或以上且打平）
         if (newState.team1Score === newState.team2Score &&
             newState.team1Score >= gameState.targetScore - 1) {
           playDeuceSound();
           addHistory('Deuce!');
         }
-        // 檢查是否是 Game Point（下一分就贏）
         else if (newState.team1Score >= gameState.targetScore - 1 &&
                  newState.team1Score - newState.team2Score === 1) {
           playGamePointSound();
           addHistory(`Game Point - ${teamName}!`);
         } else {
-          // 一般得分音效
           playScoreSound();
         }
       }
@@ -197,11 +207,10 @@ const Scorer = () => {
       newState.team2Score += 1;
       addHistory(`${teamName} 得分 (${newState.team1Score}-${newState.team2Score})`);
 
-      // 檢查是否獲勝
       if (checkWin(newState.team2Score, newState.team1Score)) {
         newState.team2Sets += 1;
         addHistory(`${teamName} 贏得第 ${gameState.currentSet} 局！`);
-        // 播放獲勝音效
+        vibrate([100, 50, 100, 50, 100]);
         playWinSound();
         if (confirm(`${teamName} 贏得本局！開始下一局？`)) {
           newState.team1Score = 0;
@@ -211,19 +220,16 @@ const Scorer = () => {
           newState.server = 1;
         }
       } else {
-        // 檢查是否是 Deuce
         if (newState.team1Score === newState.team2Score &&
             newState.team2Score >= gameState.targetScore - 1) {
           playDeuceSound();
           addHistory('Deuce!');
         }
-        // 檢查是否是 Game Point
         else if (newState.team2Score >= gameState.targetScore - 1 &&
                  newState.team2Score - newState.team1Score === 1) {
           playGamePointSound();
           addHistory(`Game Point - ${teamName}!`);
         } else {
-          // 一般得分音效
           playScoreSound();
         }
       }
@@ -232,27 +238,29 @@ const Scorer = () => {
     setGameState(newState);
   };
 
-  // 減分
+  // 減分邏輯
   const subtractScore = (team: 'team1' | 'team2') => {
-    // 初始化音效系統
+    vibrate(30);
     initAudioContext();
-    // 播放扣分音效
     playSubtractSound();
 
-    const teamName = team === 'team1' ? gameState.team1Name : gameState.team2Name;
-    setGameState(prev => ({
-      ...prev,
-      [team === 'team1' ? 'team1Score' : 'team2Score']:
-        Math.max(0, team === 'team1' ? prev.team1Score - 1 : prev.team2Score - 1),
-    }));
-    addHistory(`${teamName} 分數修正`);
+    setGameState(prev => {
+      const newState = { ...prev };
+      if (team === 'team1' && prev.team1Score > 0) {
+        newState.team1Score -= 1;
+        addHistory(`${prev.team1Name} 分數修正 (${newState.team1Score}-${newState.team2Score})`);
+      } else if (team === 'team2' && prev.team2Score > 0) {
+        newState.team2Score -= 1;
+        addHistory(`${prev.team2Name} 分數修正 (${newState.team1Score}-${newState.team2Score})`);
+      }
+      return newState;
+    });
   };
 
   // 換發球
   const switchServe = () => {
-    // 初始化音效系統
+    vibrate([50, 50, 50]);
     initAudioContext();
-    // 播放換發球音效
     playSwitchServeSound();
 
     setGameState(prev => {
@@ -281,7 +289,6 @@ const Scorer = () => {
   // 重置比賽
   const resetGame = () => {
     if (confirm('確定要重置整個比賽嗎？')) {
-      // 初始化音效系統
       initAudioContext();
 
       setGameState({
@@ -302,62 +309,64 @@ const Scorer = () => {
       setHistory([]);
       addHistory('比賽開始');
 
-      // 播放開始比賽音效
       setTimeout(() => playGameStartSound(), 300);
     }
   };
 
-  // 橫屏佈局
+  // 橫屏佈局（桌機或手機橫放）
   const LandscapeLayout = () => (
-    <div className="flex h-screen w-screen bg-gray-900">
+    <div className="flex h-screen w-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
       {/* Team 1 (Left) */}
-      <div className={`flex-1 flex flex-col items-center justify-center p-6 transition-all ${
-        gameState.servingSide === 'team1' ? 'bg-gradient-to-br from-blue-600 to-blue-800' : 'bg-gray-800'
+      <div className={`flex-1 flex flex-col items-center justify-center p-4 md:p-6 transition-all duration-300 ${
+        gameState.servingSide === 'team1'
+          ? 'bg-gradient-to-br from-secondary-600 to-secondary-800'
+          : 'bg-neutral-800/50'
       }`}>
         <div className="text-center w-full">
           {/* 隊伍名稱 */}
-          <div className="text-white/80 text-2xl font-bold mb-2 tracking-wide uppercase">
+          <div className="text-white/90 text-xl md:text-2xl font-display font-black mb-2 uppercase tracking-wide">
             {gameState.team1Name}
           </div>
 
-          {/* 局數 */}
-          <div className="text-white/60 text-lg mb-4">
-            局數: {gameState.team1Sets}
-          </div>
+          {!compactMode && (
+            <div className="text-white/60 text-sm md:text-lg mb-3">
+              局數: {gameState.team1Sets}
+            </div>
+          )}
 
           {/* 發球指示 */}
           {gameState.servingSide === 'team1' && (
-            <div className="mb-6">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-lg">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-white text-xl font-semibold">
-                  發球方 {gameState.isDoubles && `· 第 ${gameState.server} 位`}
+            <div className="mb-4 md:mb-6">
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 md:px-6 py-2 md:py-3 rounded-xl">
+                <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-primary-400 rounded-full animate-pulse"></div>
+                <span className="text-white text-sm md:text-xl font-bold">
+                  發球 {gameState.isDoubles && `· ${gameState.server}`}
                 </span>
               </div>
             </div>
           )}
 
-          {/* 分數 - 移除跳動動畫 */}
-          <div className="text-white text-[18rem] font-black leading-none mb-10 tracking-tighter font-mono">
+          {/* 分數 */}
+          <div className="text-white text-[12rem] md:text-[18rem] font-black leading-none mb-6 md:mb-10 tracking-tighter font-mono">
             {gameState.team1Score}
           </div>
 
           {/* 控制按鈕 */}
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <button
               onClick={() => addScore('team1')}
               disabled={gameState.servingSide !== 'team1'}
-              className={`w-56 h-28 text-4xl font-bold rounded-xl transition-all shadow-2xl
+              className={`w-48 md:w-56 h-20 md:h-28 text-2xl md:text-4xl font-black rounded-2xl transition-all shadow-2xl
                 ${gameState.servingSide === 'team1'
-                  ? 'bg-green-500 hover:bg-green-600 text-white active:scale-98'
-                  : 'bg-gray-600 opacity-40 cursor-not-allowed text-gray-400'
+                  ? 'bg-primary-500 hover:bg-primary-600 text-white active:scale-95 shadow-primary-500/50'
+                  : 'bg-neutral-600 opacity-30 cursor-not-allowed text-neutral-400'
                 }`}
             >
               +1 得分
             </button>
             <button
               onClick={() => subtractScore('team1')}
-              className="w-56 h-20 text-xl font-semibold bg-gray-700 hover:bg-gray-600 text-white rounded-xl transition-all active:scale-98 shadow-lg"
+              className="w-48 md:w-56 h-14 md:h-20 text-lg md:text-xl font-bold bg-neutral-700 hover:bg-neutral-600 text-white rounded-2xl transition-all active:scale-95 shadow-lg"
             >
               -1 修正
             </button>
@@ -366,165 +375,146 @@ const Scorer = () => {
       </div>
 
       {/* 中間控制區 */}
-      <div className="w-24 flex flex-col items-center justify-between py-6 bg-black/80 backdrop-blur-md border-l border-r border-white/10">
+      <div className="w-20 md:w-24 flex flex-col items-center justify-between py-4 md:py-6 bg-black/90 backdrop-blur-md border-l border-r border-white/10">
         {/* 頂部資訊 */}
-        <div className="text-center">
-          <div className="text-white/60 text-xs mb-1 uppercase tracking-wider">局</div>
-          <div className="text-white text-2xl font-bold mb-4">{gameState.currentSet}</div>
+        {!compactMode && (
+          <div className="text-center space-y-4">
+            <div>
+              <div className="text-white/60 text-xs uppercase tracking-wider">局</div>
+              <div className="text-white text-xl md:text-2xl font-bold">{gameState.currentSet}</div>
+            </div>
 
-          <div className="text-white/60 text-xs mb-1 uppercase tracking-wider">時間</div>
-          <div className="text-white text-xl font-mono mb-2">{formatTime(gameTime)}</div>
-          <button
-            onClick={() => setIsTimerRunning(!isTimerRunning)}
-            className="w-14 h-14 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center text-white transition-all"
-          >
-            {isTimerRunning ? (
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              </svg>
-            )}
-          </button>
-        </div>
+            <div>
+              <div className="text-white/60 text-xs uppercase tracking-wider">時間</div>
+              <div className="text-white text-base md:text-xl font-mono">{formatTime(gameTime)}</div>
+              <button
+                onClick={() => setIsTimerRunning(!isTimerRunning)}
+                className="mt-2 w-12 md:w-14 h-12 md:h-14 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center text-white transition-all active:scale-95"
+              >
+                {isTimerRunning ? '⏸' : '▶'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 中間控制 */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 md:gap-4">
           {/* 換發球 */}
           <button
             onClick={switchServe}
-            className="w-16 h-16 bg-yellow-500 hover:bg-yellow-600 rounded-lg text-white font-bold transition-all active:scale-95 shadow-lg flex items-center justify-center"
+            className="w-14 md:w-16 h-14 md:h-16 bg-accent-500 hover:bg-accent-600 rounded-xl text-white font-bold transition-all active:scale-95 shadow-lg shadow-accent-500/50 flex items-center justify-center text-2xl"
             title="換發球"
           >
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-            </svg>
+            ⇅
           </button>
 
-          {/* 歷史記錄 */}
+          {/* 精簡模式切換 */}
           <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="w-16 h-16 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
-            title="歷史記錄"
+            onClick={() => setCompactMode(!compactMode)}
+            className="w-14 md:w-16 h-14 md:h-16 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all active:scale-95 flex items-center justify-center text-xl"
+            title={compactMode ? "完整模式" : "精簡模式"}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            {compactMode ? '📋' : '⚡'}
           </button>
 
-          {/* 設定 */}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="w-16 h-16 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
-            title="設定"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </button>
+          {!compactMode && (
+            <>
+              {/* 歷史記錄 */}
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="w-14 md:w-16 h-14 md:h-16 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all active:scale-95 flex items-center justify-center text-xl"
+                title="歷史記錄"
+              >
+                📜
+              </button>
+
+              {/* 設定 */}
+              <button
+                onClick={() => setShowSettings(true)}
+                className="w-14 md:w-16 h-14 md:h-16 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all active:scale-95 flex items-center justify-center text-xl"
+                title="設定"
+              >
+                ⚙️
+              </button>
+            </>
+          )}
         </div>
 
         {/* 底部控制 */}
-        <div className="flex flex-col gap-4">
-          {/* 靜音切換 */}
+        <div className="flex flex-col gap-3 md:gap-4">
           <button
             onClick={toggleMute}
-            className="w-16 h-16 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
+            className="w-14 md:w-16 h-14 md:h-16 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all active:scale-95 flex items-center justify-center text-xl"
             title={isMuted ? "開啟音效" : "靜音"}
           >
-            {isMuted ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
-            )}
+            {isMuted ? '🔇' : '🔊'}
           </button>
 
-          {/* 全螢幕 */}
           <button
             onClick={toggleFullscreen}
-            className="w-16 h-16 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
+            className="w-14 md:w-16 h-14 md:h-16 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all active:scale-95 flex items-center justify-center text-xl"
             title="全螢幕"
           >
-            {isFullscreen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-            )}
+            {isFullscreen ? '⊡' : '⊞'}
           </button>
 
-          {/* 重置 */}
           <button
             onClick={resetGame}
-            className="w-16 h-16 bg-red-600 hover:bg-red-700 rounded-lg text-white font-bold transition-all active:scale-95 shadow-lg flex items-center justify-center"
+            className="w-14 md:w-16 h-14 md:h-16 bg-red-600 hover:bg-red-700 rounded-xl text-white font-bold transition-all active:scale-95 shadow-lg shadow-red-600/50 flex items-center justify-center text-xl"
             title="重置"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+            ↻
           </button>
         </div>
       </div>
 
       {/* Team 2 (Right) */}
-      <div className={`flex-1 flex flex-col items-center justify-center p-6 transition-all ${
-        gameState.servingSide === 'team2' ? 'bg-gradient-to-br from-red-600 to-red-800' : 'bg-gray-800'
+      <div className={`flex-1 flex flex-col items-center justify-center p-4 md:p-6 transition-all duration-300 ${
+        gameState.servingSide === 'team2'
+          ? 'bg-gradient-to-br from-accent-600 to-accent-800'
+          : 'bg-neutral-800/50'
       }`}>
         <div className="text-center w-full">
-          {/* 隊伍名稱 */}
-          <div className="text-white/80 text-2xl font-bold mb-2 tracking-wide uppercase">
+          <div className="text-white/90 text-xl md:text-2xl font-display font-black mb-2 uppercase tracking-wide">
             {gameState.team2Name}
           </div>
 
-          {/* 局數 */}
-          <div className="text-white/60 text-lg mb-4">
-            局數: {gameState.team2Sets}
-          </div>
+          {!compactMode && (
+            <div className="text-white/60 text-sm md:text-lg mb-3">
+              局數: {gameState.team2Sets}
+            </div>
+          )}
 
-          {/* 發球指示 */}
           {gameState.servingSide === 'team2' && (
-            <div className="mb-6">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-lg">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-white text-xl font-semibold">
-                  發球方 {gameState.isDoubles && `· 第 ${gameState.server} 位`}
+            <div className="mb-4 md:mb-6">
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 md:px-6 py-2 md:py-3 rounded-xl">
+                <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-primary-400 rounded-full animate-pulse"></div>
+                <span className="text-white text-sm md:text-xl font-bold">
+                  發球 {gameState.isDoubles && `· ${gameState.server}`}
                 </span>
               </div>
             </div>
           )}
 
-          {/* 分數 - 移除跳動動畫 */}
-          <div className="text-white text-[18rem] font-black leading-none mb-10 tracking-tighter font-mono">
+          <div className="text-white text-[12rem] md:text-[18rem] font-black leading-none mb-6 md:mb-10 tracking-tighter font-mono">
             {gameState.team2Score}
           </div>
 
-          {/* 控制按鈕 */}
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <button
               onClick={() => addScore('team2')}
               disabled={gameState.servingSide !== 'team2'}
-              className={`w-56 h-28 text-4xl font-bold rounded-xl transition-all shadow-2xl
+              className={`w-48 md:w-56 h-20 md:h-28 text-2xl md:text-4xl font-black rounded-2xl transition-all shadow-2xl
                 ${gameState.servingSide === 'team2'
-                  ? 'bg-green-500 hover:bg-green-600 text-white active:scale-98'
-                  : 'bg-gray-600 opacity-40 cursor-not-allowed text-gray-400'
+                  ? 'bg-primary-500 hover:bg-primary-600 text-white active:scale-95 shadow-primary-500/50'
+                  : 'bg-neutral-600 opacity-30 cursor-not-allowed text-neutral-400'
                 }`}
             >
               +1 得分
             </button>
             <button
               onClick={() => subtractScore('team2')}
-              className="w-56 h-20 text-xl font-semibold bg-gray-700 hover:bg-gray-600 text-white rounded-xl transition-all active:scale-98 shadow-lg"
+              className="w-48 md:w-56 h-14 md:h-20 text-lg md:text-xl font-bold bg-neutral-700 hover:bg-neutral-600 text-white rounded-2xl transition-all active:scale-95 shadow-lg"
             >
               -1 修正
             </button>
@@ -534,57 +524,52 @@ const Scorer = () => {
     </div>
   );
 
-  // 直屏佈局
+  // 直屏佈局（手機直立）- 優化版
   const PortraitLayout = () => (
-    <div className="flex flex-col min-h-screen w-screen bg-gray-900">
+    <div className="flex flex-col h-screen w-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 overflow-hidden">
       {/* Team 1 (Top) */}
-      <div className={`flex-1 flex flex-col items-center justify-center p-6 transition-all ${
-        gameState.servingSide === 'team1' ? 'bg-gradient-to-br from-blue-600 to-blue-800' : 'bg-gray-800'
+      <div className={`flex-1 flex flex-col items-center justify-center px-4 py-3 transition-all duration-300 ${
+        gameState.servingSide === 'team1'
+          ? 'bg-gradient-to-br from-secondary-600 to-secondary-800'
+          : 'bg-neutral-800/50'
       }`}>
         <div className="text-center w-full">
-          {/* 隊伍名稱 */}
-          <div className="text-white/80 text-xl font-bold mb-2 tracking-wide uppercase">
+          <div className="text-white/90 text-lg font-display font-black mb-1 uppercase tracking-wide">
             {gameState.team1Name}
           </div>
 
-          {/* 局數 */}
-          <div className="text-white/60 text-base mb-3">
-            局數: {gameState.team1Sets}
-          </div>
-
-          {/* 發球指示 */}
           {gameState.servingSide === 'team1' && (
-            <div className="mb-4">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2 rounded-lg">
-                <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-white text-base font-semibold">
-                  發球方 {gameState.isDoubles && `· 第 ${gameState.server} 位`}
+            <div className="mb-2">
+              <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                <div className="w-2 h-2 bg-primary-400 rounded-full animate-pulse"></div>
+                <span className="text-white text-xs font-bold">
+                  發球 {gameState.isDoubles && `· ${gameState.server}`}
                 </span>
               </div>
             </div>
           )}
 
-          {/* 分數 - 移除跳動動畫 */}
-          <div className="text-white text-[10rem] sm:text-[13rem] font-black leading-none mb-6 tracking-tighter font-mono">
+          {/* 分數 - 針對小螢幕優化 */}
+          <div className="text-white text-[6.5rem] xs:text-[7.5rem] sm:text-[9rem] font-black leading-none mb-3 tracking-tighter font-mono">
             {gameState.team1Score}
           </div>
 
-          {/* 控制按鈕 */}
-          <div className="flex gap-3 justify-center">
+          {/* 按鈕 - 更大更易點擊 */}
+          <div className="flex gap-2 justify-center">
             <button
               onClick={() => addScore('team1')}
               disabled={gameState.servingSide !== 'team1'}
-              className={`w-36 h-24 text-2xl font-bold rounded-xl transition-all shadow-2xl
+              className={`flex-1 max-w-[160px] h-20 text-2xl font-black rounded-2xl transition-all shadow-xl
                 ${gameState.servingSide === 'team1'
-                  ? 'bg-green-500 hover:bg-green-600 text-white active:scale-98'
-                  : 'bg-gray-600 opacity-40 cursor-not-allowed text-gray-400'
+                  ? 'bg-primary-500 active:bg-primary-600 text-white shadow-primary-500/50'
+                  : 'bg-neutral-600 opacity-30 cursor-not-allowed text-neutral-400'
                 }`}
             >
               +1
             </button>
             <button
               onClick={() => subtractScore('team1')}
-              className="w-28 h-24 text-lg font-semibold bg-gray-700 hover:bg-gray-600 text-white rounded-xl transition-all active:scale-98 shadow-lg"
+              className="w-20 h-20 text-lg font-bold bg-neutral-700 active:bg-neutral-600 text-white rounded-2xl transition-all shadow-lg"
             >
               -1
             </button>
@@ -592,169 +577,112 @@ const Scorer = () => {
         </div>
       </div>
 
-      {/* 中間控制區 */}
-      <div className="h-24 flex items-center justify-between px-6 bg-black/80 backdrop-blur-md border-t border-b border-white/10">
-        {/* 左側資訊 */}
-        <div className="flex items-center gap-4">
-          <div className="text-center">
-            <div className="text-white/60 text-xs uppercase tracking-wider">局</div>
-            <div className="text-white text-xl font-bold">{gameState.currentSet}</div>
+      {/* 中間控制區 - 精簡化 */}
+      <div className="h-16 flex items-center justify-between px-4 bg-black/90 backdrop-blur-md border-t border-b border-white/10">
+        {!compactMode ? (
+          <>
+            {/* 左側資訊 */}
+            <div className="flex items-center gap-3">
+              <div className="text-center">
+                <div className="text-white/60 text-[10px] uppercase">局</div>
+                <div className="text-white text-base font-bold">{gameState.currentSet}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-white/60 text-[10px] uppercase">時間</div>
+                <div className="text-white text-sm font-mono">{formatTime(gameTime)}</div>
+              </div>
+            </div>
+
+            {/* 右側控制 */}
+            <div className="flex gap-2">
+              <button
+                onClick={switchServe}
+                className="w-12 h-12 bg-accent-500 active:bg-accent-600 rounded-lg text-white font-bold transition-all shadow-lg shadow-accent-500/50 flex items-center justify-center text-xl"
+              >
+                ⇅
+              </button>
+              <button
+                onClick={() => setCompactMode(true)}
+                className="w-12 h-12 bg-white/10 active:bg-white/20 rounded-lg text-white flex items-center justify-center text-lg"
+                title="精簡模式"
+              >
+                ⚡
+              </button>
+              <button
+                onClick={() => setShowSettings(true)}
+                className="w-12 h-12 bg-white/10 active:bg-white/20 rounded-lg text-white flex items-center justify-center text-lg"
+              >
+                ⚙️
+              </button>
+            </div>
+          </>
+        ) : (
+          /* 精簡模式：只顯示換發球和退出精簡模式 */
+          <div className="flex items-center justify-between w-full">
+            <div className="text-white/80 text-sm font-bold">第 {gameState.currentSet} 局 · {formatTime(gameTime)}</div>
+            <div className="flex gap-2">
+              <button
+                onClick={switchServe}
+                className="w-14 h-12 bg-accent-500 active:bg-accent-600 rounded-lg text-white font-black transition-all shadow-lg shadow-accent-500/50 flex items-center justify-center text-xl"
+              >
+                ⇅
+              </button>
+              <button
+                onClick={() => setCompactMode(false)}
+                className="w-12 h-12 bg-white/10 active:bg-white/20 rounded-lg text-white flex items-center justify-center text-lg"
+                title="完整模式"
+              >
+                📋
+              </button>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-white/60 text-xs uppercase tracking-wider">時間</div>
-            <div className="text-white text-lg font-mono">{formatTime(gameTime)}</div>
-          </div>
-          <button
-            onClick={() => setIsTimerRunning(!isTimerRunning)}
-            className="w-12 h-12 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center text-white transition-all"
-          >
-            {isTimerRunning ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              </svg>
-            )}
-          </button>
-        </div>
-
-        {/* 右側控制 */}
-        <div className="flex gap-3">
-          {/* 換發球 */}
-          <button
-            onClick={switchServe}
-            className="w-14 h-14 bg-yellow-500 hover:bg-yellow-600 rounded-lg text-white font-bold transition-all active:scale-95 shadow-lg flex items-center justify-center"
-            title="換發球"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-            </svg>
-          </button>
-
-          {/* 歷史 */}
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="w-14 h-14 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
-            title="歷史"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
-
-          {/* 設定 */}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="w-14 h-14 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
-            title="設定"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </button>
-
-          {/* 靜音切換 */}
-          <button
-            onClick={toggleMute}
-            className="w-14 h-14 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
-            title={isMuted ? "開啟音效" : "靜音"}
-          >
-            {isMuted ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
-            )}
-          </button>
-
-          {/* 全螢幕 */}
-          <button
-            onClick={toggleFullscreen}
-            className="w-14 h-14 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 flex items-center justify-center"
-            title="全螢幕"
-          >
-            {isFullscreen ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-            )}
-          </button>
-
-          {/* 重置 */}
-          <button
-            onClick={resetGame}
-            className="w-14 h-14 bg-red-600 hover:bg-red-700 rounded-lg text-white font-bold transition-all active:scale-95 shadow-lg flex items-center justify-center"
-            title="重置"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </button>
-        </div>
+        )}
       </div>
 
       {/* Team 2 (Bottom) */}
-      <div className={`flex-1 flex flex-col items-center justify-center p-6 transition-all ${
-        gameState.servingSide === 'team2' ? 'bg-gradient-to-br from-red-600 to-red-800' : 'bg-gray-800'
+      <div className={`flex-1 flex flex-col items-center justify-center px-4 py-3 transition-all duration-300 ${
+        gameState.servingSide === 'team2'
+          ? 'bg-gradient-to-br from-accent-600 to-accent-800'
+          : 'bg-neutral-800/50'
       }`}>
         <div className="text-center w-full">
-          {/* 控制按鈕 */}
-          <div className="flex gap-3 justify-center mb-6">
+          <div className="text-white/90 text-lg font-display font-black mb-1 uppercase tracking-wide">
+            {gameState.team2Name}
+          </div>
+
+          {gameState.servingSide === 'team2' && (
+            <div className="mb-2">
+              <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                <div className="w-2 h-2 bg-primary-400 rounded-full animate-pulse"></div>
+                <span className="text-white text-xs font-bold">
+                  發球 {gameState.isDoubles && `· ${gameState.server}`}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="text-white text-[6.5rem] xs:text-[7.5rem] sm:text-[9rem] font-black leading-none mb-3 tracking-tighter font-mono">
+            {gameState.team2Score}
+          </div>
+
+          <div className="flex gap-2 justify-center">
             <button
               onClick={() => addScore('team2')}
               disabled={gameState.servingSide !== 'team2'}
-              className={`w-36 h-24 text-2xl font-bold rounded-xl transition-all shadow-2xl
+              className={`flex-1 max-w-[160px] h-20 text-2xl font-black rounded-2xl transition-all shadow-xl
                 ${gameState.servingSide === 'team2'
-                  ? 'bg-green-500 hover:bg-green-600 text-white active:scale-98'
-                  : 'bg-gray-600 opacity-40 cursor-not-allowed text-gray-400'
+                  ? 'bg-primary-500 active:bg-primary-600 text-white shadow-primary-500/50'
+                  : 'bg-neutral-600 opacity-30 cursor-not-allowed text-neutral-400'
                 }`}
             >
               +1
             </button>
             <button
               onClick={() => subtractScore('team2')}
-              className="w-28 h-24 text-lg font-semibold bg-gray-700 hover:bg-gray-600 text-white rounded-xl transition-all active:scale-98 shadow-lg"
+              className="w-20 h-20 text-lg font-bold bg-neutral-700 active:bg-neutral-600 text-white rounded-2xl transition-all shadow-lg"
             >
               -1
             </button>
-          </div>
-
-          {/* 分數 - 移除跳動動畫 */}
-          <div className="text-white text-[10rem] sm:text-[13rem] font-black leading-none mb-4 tracking-tighter font-mono">
-            {gameState.team2Score}
-          </div>
-
-          {/* 發球指示 */}
-          {gameState.servingSide === 'team2' && (
-            <div className="mb-3">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2 rounded-lg">
-                <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-white text-base font-semibold">
-                  發球方 {gameState.isDoubles && `· 第 ${gameState.server} 位`}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* 局數 */}
-          <div className="text-white/60 text-base mb-2">
-            局數: {gameState.team2Sets}
-          </div>
-
-          {/* 隊伍名稱 */}
-          <div className="text-white/80 text-xl font-bold tracking-wide uppercase">
-            {gameState.team2Name}
           </div>
         </div>
       </div>
@@ -763,7 +691,129 @@ const Scorer = () => {
 
   return (
     <>
+      <SEOHead page="scorer" />
       {orientation === 'landscape' ? <LandscapeLayout /> : <PortraitLayout />}
+
+      {/* 設定面板 - 使用 GlassCard */}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setShowSettings(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md max-h-[90vh] overflow-y-auto"
+            >
+              <GlassCard variant="dark" size="xl">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="font-display text-heading-xl font-black text-white">設定</h2>
+                    <button
+                      onClick={() => setShowSettings(false)}
+                      className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center justify-center transition-all"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* 隊伍名稱 */}
+                  <div>
+                    <label className="block text-base font-bold text-white/80 mb-3">隊伍名稱</label>
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        value={gameState.team1Name}
+                        onChange={(e) => setGameState(prev => ({ ...prev, team1Name: e.target.value }))}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-secondary-500"
+                        placeholder="Team 1"
+                      />
+                      <input
+                        type="text"
+                        value={gameState.team2Name}
+                        onChange={(e) => setGameState(prev => ({ ...prev, team2Name: e.target.value }))}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        placeholder="Team 2"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 比賽類型 */}
+                  <div>
+                    <label className="block text-base font-bold text-white/80 mb-3">比賽類型</label>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setGameState(prev => ({ ...prev, isDoubles: true }))}
+                        className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all ${
+                          gameState.isDoubles
+                            ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/50'
+                            : 'bg-white/10 text-white/60 hover:bg-white/20'
+                        }`}
+                      >
+                        雙打
+                      </button>
+                      <button
+                        onClick={() => setGameState(prev => ({ ...prev, isDoubles: false, server: 1 }))}
+                        className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all ${
+                          !gameState.isDoubles
+                            ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/50'
+                            : 'bg-white/10 text-white/60 hover:bg-white/20'
+                        }`}
+                      >
+                        單打
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 目標分數 */}
+                  <div>
+                    <label className="block text-base font-bold text-white/80 mb-3">目標分數</label>
+                    <div className="flex gap-3">
+                      {[11, 15, 21].map(score => (
+                        <button
+                          key={score}
+                          onClick={() => setGameState(prev => ({ ...prev, targetScore: score }))}
+                          className={`flex-1 py-3 px-6 rounded-xl font-bold text-lg transition-all ${
+                            gameState.targetScore === score
+                              ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/50'
+                              : 'bg-white/10 text-white/60 hover:bg-white/20'
+                          }`}
+                        >
+                          {score}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 說明 */}
+                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <h3 className="font-bold text-white mb-2">💡 使用提示</h3>
+                    <ul className="text-sm text-white/70 space-y-1.5 leading-relaxed">
+                      <li>• 點擊「⚡」進入精簡模式（隱藏次要資訊）</li>
+                      <li>• 點擊「⊞」進入全螢幕（推薦比賽時使用）</li>
+                      <li>• 按鈕會有震動反饋（需手機支援）</li>
+                      <li>• 橫放手機獲得更大的分數顯示</li>
+                    </ul>
+                  </div>
+
+                  <button
+                    onClick={() => setShowSettings(false)}
+                    className="w-full py-4 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary-500/50"
+                  >
+                    完成
+                  </button>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 歷史記錄面板 */}
       <AnimatePresence>
@@ -772,145 +822,44 @@ const Scorer = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             onClick={() => setShowHistory(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-gray-800 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col shadow-2xl border border-white/10"
+              className="w-full max-w-md max-h-[90vh] overflow-y-auto"
             >
-              <h2 className="text-2xl font-bold mb-4 text-white">比賽記錄</h2>
-              <div className="flex-1 overflow-y-auto space-y-2">
-                {history.length === 0 ? (
-                  <div className="text-gray-400 text-center py-8">尚無記錄</div>
-                ) : (
-                  history.map((record, index) => (
-                    <div key={index} className="bg-gray-700/50 rounded-lg px-4 py-2 text-white/90 text-sm font-mono">
-                      {record}
-                    </div>
-                  ))
-                )}
-              </div>
-              <button
-                onClick={() => setShowHistory(false)}
-                className="w-full mt-4 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-semibold transition-all"
-              >
-                關閉
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* 設定彈窗 */}
-      <AnimatePresence>
-        {showSettings && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            onClick={() => setShowSettings(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-gray-800 rounded-2xl p-8 max-w-md w-full shadow-2xl border border-white/10"
-            >
-              <h2 className="text-3xl font-black mb-6 text-white">比賽設定</h2>
-
-              <div className="space-y-6">
-                {/* 隊伍名稱 */}
-                <div>
-                  <label className="block text-base font-semibold text-white/80 mb-2">隊伍名稱</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      value={gameState.team1Name}
-                      onChange={(e) => setGameState(prev => ({ ...prev, team1Name: e.target.value }))}
-                      className="bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Team 1"
-                    />
-                    <input
-                      type="text"
-                      value={gameState.team2Name}
-                      onChange={(e) => setGameState(prev => ({ ...prev, team2Name: e.target.value }))}
-                      className="bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      placeholder="Team 2"
-                    />
-                  </div>
-                </div>
-
-                {/* 比賽類型 */}
-                <div>
-                  <label className="block text-base font-semibold text-white/80 mb-3">比賽類型</label>
-                  <div className="flex gap-3">
+              <GlassCard variant="dark" size="xl">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="font-display text-heading-xl font-black text-white">比賽記錄</h2>
                     <button
-                      onClick={() => setGameState(prev => ({ ...prev, isDoubles: true }))}
-                      className={`flex-1 py-4 px-6 rounded-xl font-bold text-base transition-all ${
-                        gameState.isDoubles
-                          ? 'bg-pickleball-500 text-white shadow-lg'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                      }`}
+                      onClick={() => setShowHistory(false)}
+                      className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center justify-center transition-all"
                     >
-                      雙打
-                    </button>
-                    <button
-                      onClick={() => setGameState(prev => ({ ...prev, isDoubles: false, server: 1 }))}
-                      className={`flex-1 py-4 px-6 rounded-xl font-bold text-base transition-all ${
-                        !gameState.isDoubles
-                          ? 'bg-pickleball-500 text-white shadow-lg'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                      }`}
-                    >
-                      單打
+                      ✕
                     </button>
                   </div>
-                </div>
 
-                {/* 目標分數 */}
-                <div>
-                  <label className="block text-base font-semibold text-white/80 mb-3">目標分數</label>
-                  <div className="flex gap-3">
-                    {[11, 15, 21].map(score => (
-                      <button
-                        key={score}
-                        onClick={() => setGameState(prev => ({ ...prev, targetScore: score }))}
-                        className={`flex-1 py-4 px-6 rounded-xl font-bold text-lg transition-all ${
-                          gameState.targetScore === score
-                            ? 'bg-pickleball-500 text-white shadow-lg'
-                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                        }`}
-                      >
-                        {score}
-                      </button>
-                    ))}
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {history.length === 0 ? (
+                      <p className="text-white/50 text-center py-8">尚無記錄</p>
+                    ) : (
+                      history.map((entry, index) => (
+                        <div
+                          key={index}
+                          className="bg-white/5 rounded-lg p-3 text-sm text-white/80 font-mono border border-white/10"
+                        >
+                          {entry}
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
-
-                {/* 說明 */}
-                <div className="bg-gray-700/50 rounded-xl p-4 border border-white/10">
-                  <h3 className="font-bold text-white mb-2">計分規則</h3>
-                  <ul className="text-sm text-white/70 space-y-1.5 leading-relaxed">
-                    <li>• 只有發球方可以得分</li>
-                    <li>• 必須贏對手至少 2 分才算獲勝</li>
-                    <li>• 雙打時每方有兩次發球機會</li>
-                    <li>• 使用「換發球」按鈕切換發球權</li>
-                  </ul>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setShowSettings(false)}
-                className="w-full mt-8 bg-gradient-to-r from-pickleball-500 to-sport-500 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg transition-all"
-              >
-                確定
-              </button>
+              </GlassCard>
             </motion.div>
           </motion.div>
         )}

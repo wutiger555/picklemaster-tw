@@ -69,21 +69,117 @@ const Home = () => {
     <div className="min-h-screen">
       <SEOHead page="home" />
       {/* 英雄區塊 - Above the Fold 黃金區優化 */}
-      <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-600 text-white min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden">
-        {/* 視差背景動畫圓圈 */}
+      <section className="relative bg-gradient-to-br from-green-800 via-emerald-700 to-green-900 text-white min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden">
+        {/* 球場主題背景 */}
         <div className="absolute inset-0 overflow-hidden">
+          {/* 球場紋理底層 */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '60px 60px'
+            }} />
+          </div>
+
+          {/* 球場線條裝飾 */}
+          <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 1000 800">
+            {/* 水平線 */}
+            <line x1="0" y1="200" x2="1000" y2="200" stroke="white" strokeWidth="3" strokeDasharray="20,15" />
+            <line x1="0" y1="400" x2="1000" y2="400" stroke="white" strokeWidth="4" />
+            <line x1="0" y1="600" x2="1000" y2="600" stroke="white" strokeWidth="3" strokeDasharray="20,15" />
+
+            {/* 垂直線 */}
+            <line x1="250" y1="0" x2="250" y2="800" stroke="white" strokeWidth="2" opacity="0.5" />
+            <line x1="500" y1="0" x2="500" y2="800" stroke="white" strokeWidth="3" strokeDasharray="15,10" />
+            <line x1="750" y1="0" x2="750" y2="800" stroke="white" strokeWidth="2" opacity="0.5" />
+
+            {/* 廚房區域矩形 */}
+            <rect x="100" y="250" width="300" height="140" fill="none" stroke="white" strokeWidth="2" opacity="0.6" />
+            <rect x="600" y="410" width="300" height="140" fill="none" stroke="white" strokeWidth="2" opacity="0.6" />
+          </svg>
+
+          {/* 匹克球裝飾元素（帶洞的球） */}
           <motion.div
             style={{ y: parallaxY1 }}
-            className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse-slow"
-          />
+            className="absolute top-20 right-20 w-32 h-32 opacity-20"
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full animate-float">
+              <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.8)" strokeWidth="3" />
+              <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.3)" />
+              {/* 球上的洞 */}
+              {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+                const x = 50 + 25 * Math.cos((angle * Math.PI) / 180);
+                const y = 50 + 25 * Math.sin((angle * Math.PI) / 180);
+                return <circle key={i} cx={x} cy={y} r="4" fill="rgba(0,0,0,0.6)" />;
+              })}
+              <circle cx="50" cy="50" r="4" fill="rgba(0,0,0,0.6)" />
+            </svg>
+          </motion.div>
+
           <motion.div
             style={{ y: parallaxY2 }}
-            className="absolute bottom-20 right-10 w-96 h-96 bg-primary-300/20 rounded-full blur-3xl animate-float"
-          />
+            className="absolute bottom-32 left-16 w-24 h-24 opacity-15"
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full animate-bounce-slow">
+              <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.9)" strokeWidth="3" />
+              <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.4)" />
+              {[30, 90, 150, 210, 270, 330].map((angle, i) => {
+                const x = 50 + 25 * Math.cos((angle * Math.PI) / 180);
+                const y = 50 + 25 * Math.sin((angle * Math.PI) / 180);
+                return <circle key={i} cx={x} cy={y} r="4" fill="rgba(0,0,0,0.6)" />;
+              })}
+              <circle cx="50" cy="50" r="4" fill="rgba(0,0,0,0.6)" />
+            </svg>
+          </motion.div>
+
           <motion.div
             style={{ y: parallaxY3 }}
-            className="absolute top-1/2 left-1/2 w-80 h-80 bg-secondary-400/10 rounded-full blur-3xl animate-bounce-slow"
-          />
+            className="absolute top-1/3 left-1/4 w-20 h-20 opacity-10"
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse-slow">
+              <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 1)" strokeWidth="3" />
+              <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.5)" />
+              {[0, 72, 144, 216, 288].map((angle, i) => {
+                const x = 50 + 20 * Math.cos((angle * Math.PI) / 180);
+                const y = 50 + 20 * Math.sin((angle * Math.PI) / 180);
+                return <circle key={i} cx={x} cy={y} r="3" fill="rgba(0,0,0,0.7)" />;
+              })}
+            </svg>
+          </motion.div>
+
+          {/* 球拍輪廓裝飾 */}
+          <motion.div
+            animate={{
+              rotate: [0, 5, 0, -5, 0],
+              opacity: [0.05, 0.08, 0.05]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute bottom-20 right-1/4 w-40 h-52"
+          >
+            <svg viewBox="0 0 100 140" className="w-full h-full">
+              {/* 球拍拍面 */}
+              <ellipse cx="50" cy="40" rx="35" ry="38" fill="none" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="3" />
+              <ellipse cx="50" cy="40" rx="30" ry="33" fill="rgba(251, 191, 36, 0.1)" />
+              {/* 網格 */}
+              {[...Array(6)].map((_, i) => (
+                <line key={`h${i}`} x1="20" y1={10 + i * 10} x2="80" y2={10 + i * 10} stroke="rgba(251, 191, 36, 0.3)" strokeWidth="1" />
+              ))}
+              {[...Array(6)].map((_, i) => (
+                <line key={`v${i}`} x1={25 + i * 10} y1="10" x2={25 + i * 10} y2="70" stroke="rgba(251, 191, 36, 0.3)" strokeWidth="1" />
+              ))}
+              {/* 握把 */}
+              <rect x="43" y="78" width="14" height="50" rx="7" fill="rgba(251, 191, 36, 0.4)" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="2" />
+            </svg>
+          </motion.div>
+
+          {/* 光暈效果 */}
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-transparent to-green-950/40" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">

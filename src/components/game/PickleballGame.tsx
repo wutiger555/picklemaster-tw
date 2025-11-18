@@ -1082,8 +1082,9 @@ const PickleballGame = () => {
     // 播放發球音效
     playServeSound();
 
-    // 【長按蓄力】力度倍數：1-2.5倍（0秒=1倍，1.5秒=2.5倍）
-    const powerMultiplier = 1 + power; // power範圍0-1.5
+    // 【長按蓄力】力度倍數：確保最小力道足夠（1.5-2.5倍）
+    // power 範圍 0-1.5，轉換為 1.5-3.0 倍數
+    const powerMultiplier = 1.5 + power; // 最小1.5倍，最大3.0倍
 
     if (isPlayerServing) {
       // 玩家發球到對角線（匹克球特性+蓄力機制）
@@ -1092,10 +1093,10 @@ const PickleballGame = () => {
       const dy = targetY - b.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      const baseSpeed = 4.5 * powerMultiplier; // 應用蓄力倍數
+      const baseSpeed = 4.5 * powerMultiplier; // 應用蓄力倍數（最小6.75）
       b.vx = (dx / distance) * baseSpeed;
       b.vy = (dy / distance) * baseSpeed;
-      b.vz = 6.5 + power * 2; // 蓄力也影響向上速度
+      b.vz = 7.0 + power * 2; // 提高初始高度，蓄力也影響向上速度
     } else {
       // AI發球到玩家對角線（匹克球特性：更慢、更低的發球）
       const targetY = opponent.current.y < COURT.CENTER_Y ? COURT.HEIGHT * 0.75 : COURT.HEIGHT * 0.25;

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import PaddleGuide from '../components/equipment/PaddleGuide';
 import ProPlayerPaddles from '../components/equipment/ProPlayerPaddles';
 import PaddleRecommender from '../components/equipment/PaddleRecommender';
+import PaddleComparison from '../components/equipment/PaddleComparison';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const Equipment = () => {
@@ -11,6 +12,7 @@ const Equipment = () => {
 
   const tabs = [
     { id: 'paddle-guide', label: '球拍完全指南' },
+    { id: 'comparison', label: '球拍對比' },
     { id: 'pro-paddles', label: '職業選手裝備' },
     { id: 'recommender', label: '選購建議工具' },
     { id: 'budget', label: '裝備預算參考' },
@@ -78,6 +80,18 @@ const Equipment = () => {
               </p>
               <PaddleGuide />
             </section>
+          </motion.div>
+        )}
+
+        {/* 球拍對比 */}
+        {activeTab === 'comparison' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <PaddleComparison />
           </motion.div>
         )}
 

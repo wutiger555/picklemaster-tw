@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import GripVisualization from './GripVisualization';
 
 interface PaddleType {
   id: string;
@@ -39,7 +40,7 @@ interface CoreType {
 }
 
 const PaddleGuide = () => {
-  const [selectedTab, setSelectedTab] = useState<'anatomy' | 'types' | 'materials' | 'cores' | 'specs'>('anatomy');
+  const [selectedTab, setSelectedTab] = useState<'anatomy' | 'types' | 'materials' | 'cores' | 'specs' | 'grips'>('anatomy');
   const [hoveredPart, setHoveredPart] = useState<string | null>(null);
   const [selectedGrip, setSelectedGrip] = useState<'eastern' | 'western' | 'continental'>('eastern');
   const [viewAngle, setViewAngle] = useState<'front' | 'side' | 'back'>('front');
@@ -312,6 +313,7 @@ const PaddleGuide = () => {
         <div className="flex flex-wrap justify-center gap-3 mb-8">
           {[
             { id: 'anatomy' as const, name: '球拍結構', icon: '🔍' },
+            { id: 'grips' as const, name: '握法教學', icon: '🤝' },
             { id: 'types' as const, name: '球拍類型', icon: '🏓' },
             { id: 'materials' as const, name: '材質介紹', icon: '🧪' },
             { id: 'cores' as const, name: '核心結構', icon: '⚙️' },
@@ -653,6 +655,19 @@ const PaddleGuide = () => {
                   </div>
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {/* 握法教學 */}
+          {selectedTab === 'grips' && (
+            <motion.div
+              key="grips"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <GripVisualization />
             </motion.div>
           )}
 

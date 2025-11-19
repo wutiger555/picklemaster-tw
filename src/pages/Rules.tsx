@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import InteractiveCourt from '../components/court/InteractiveCourt';
 import BallAnimation from '../components/court/BallAnimation';
 import CourtViewer3D from '../components/learning/CourtViewer3D';
+import SportComparison from '../components/rules/SportComparison';
 import GlassCard from '../components/common/GlassCard';
 import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -10,9 +11,10 @@ import SEOHead from '../components/common/SEOHead';
 
 const Rules = () => {
   usePageTitle('匹克球規則教學');
-  const [activeTab, setActiveTab] = useState('interactive-court');
+  const [activeTab, setActiveTab] = useState('sport-comparison');
 
   const tabs = [
+    { id: 'sport-comparison', label: '運動對比', icon: '⚖️' },
     { id: 'interactive-court', label: '互動式球場', icon: '🎯' },
     { id: '3d-court', label: '3D 球場配置', icon: '🏟️' },
     { id: 'ball-path', label: '球路徑分析', icon: '⚡' },
@@ -91,6 +93,28 @@ const Rules = () => {
             ))}
           </motion.div>
         </div>
+
+        {/* 運動對比 */}
+        {activeTab === 'sport-comparison' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <section className="mb-20">
+              <GlassCard variant="light" size="lg" className="mb-12">
+                <h2 className="font-display text-display-md font-black text-center mb-4 text-neutral-900">
+                  匹克球 vs 網球 vs 羽球
+                </h2>
+                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
+                  透過視覺化對比，了解匹克球與其他球拍運動的差異與優勢
+                </p>
+              </GlassCard>
+              <SportComparison />
+            </section>
+          </motion.div>
+        )}
 
         {/* 互動式球場 */}
         {activeTab === 'interactive-court' && (

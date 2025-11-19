@@ -191,14 +191,14 @@ const CourtMap = ({ courts, selectedCourt, onCourtSelect }: CourtMapProps) => {
   }, [selectedCourt]);
 
   return (
-    <div className="relative">
+    <div className="relative z-0">
       <div
         ref={mapContainerRef}
         className="w-full h-[500px] rounded-2xl shadow-2xl overflow-hidden border-4 border-white"
       />
 
       {/* 地圖圖例 */}
-      <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 z-10">
+      <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 z-[5]">
         <h4 className="font-bold text-gray-800 mb-3 text-sm">圖例</h4>
         <div className="space-y-2 text-xs">
           <div className="flex items-center space-x-2">
@@ -237,6 +237,25 @@ const CourtMap = ({ courts, selectedCourt, onCourtSelect }: CourtMapProps) => {
         .custom-marker {
           background: transparent;
           border: none;
+        }
+
+        /* Override Leaflet's default z-index */
+        .leaflet-pane,
+        .leaflet-tile-pane,
+        .leaflet-overlay-pane,
+        .leaflet-shadow-pane,
+        .leaflet-marker-pane,
+        .leaflet-tooltip-pane,
+        .leaflet-popup-pane {
+          z-index: 1 !important;
+        }
+
+        .leaflet-map-pane {
+          z-index: 1 !important;
+        }
+
+        .leaflet-control {
+          z-index: 2 !important;
         }
       `}</style>
     </div>

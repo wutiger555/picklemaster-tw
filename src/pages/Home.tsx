@@ -8,6 +8,7 @@ import GlassCard from '../components/common/GlassCard';
 import SEOHead from '../components/common/SEOHead';
 
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
+import NewsSection from '../components/news/NewsSection';
 
 const Home = () => {
   usePageTitle();
@@ -576,6 +577,9 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* News Section */}
+      <NewsSection />
 
       {/* 學習路徑 - 互動式 Accordion 設計 */}
       <section className="py-24 md:py-32 bg-gradient-to-b from-neutral-50 to-white relative overflow-hidden">

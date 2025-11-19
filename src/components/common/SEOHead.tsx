@@ -6,9 +6,12 @@ interface SEOHeadProps {
   page?: string;
   customTitle?: string;
   customDescription?: string;
+  title?: string;
+  description?: string;
+  image?: string;
 }
 
-const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription }) => {
+const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription, title: propTitle, description: propDescription, image }) => {
   const location = useLocation();
 
   // 根據路徑自動判斷頁面
@@ -20,8 +23,8 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription 
   const currentPage = page || getPageFromPath(location.pathname);
   const seoConfig = pageSEO[currentPage] || pageSEO.home;
 
-  const title = customTitle || seoConfig.title;
-  const description = customDescription || seoConfig.description;
+  const title = propTitle || customTitle || seoConfig.title;
+  const description = propDescription || customDescription || seoConfig.description;
   const keywords = seoConfig.keywords;
 
   useEffect(() => {
@@ -62,6 +65,9 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription 
     updateOGTag('og:title', title);
     updateOGTag('og:description', description);
     updateOGTag('og:url', `https://picklemastertw.site${location.pathname}`);
+    if (image) {
+      updateOGTag('og:image', image);
+    }
 
     // 更新 Twitter tags
     const updateTwitterTag = (name: string, content: string) => {
@@ -110,9 +116,9 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription 
 };
 
 // 生成麵包屑項目
-const getBreadcrumbItems = (page: string): Array<{name: string, url: string}> => {
+const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> => {
   const baseUrl = 'https://picklemastertw.site';
-  const breadcrumbs: Array<{name: string, url: string}> = [
+  const breadcrumbs: Array<{ name: string, url: string }> = [
     { name: '首頁', url: baseUrl }
   ];
 

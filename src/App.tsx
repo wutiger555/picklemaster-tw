@@ -13,6 +13,7 @@ import Scorer from './pages/Scorer';
 import About from './pages/About';
 import Resources from './pages/Resources';
 import FAQ from './pages/FAQ';
+import NewsDetail from './pages/NewsDetail';
 import { ROUTES } from './utils/constants';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
             <Route path={ROUTES.RESOURCES} element={<Resources />} />
             <Route path={ROUTES.ABOUT} element={<About />} />
             <Route path={ROUTES.FAQ} element={<FAQ />} />
+            <Route path={ROUTES.NEWS} element={<NewsDetail />} />
           </Routes>
         </main>
         <Footer />

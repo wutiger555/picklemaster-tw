@@ -6,7 +6,7 @@
   "description": "台灣匹克球互動式學習平台 - 包含 3D 教學、球場地圖與學習路徑",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/generate-static-pages.cjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy": "npm run build && git add docs && git commit -m 'Deploy to GitHub Pages' && git push"

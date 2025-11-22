@@ -1,171 +1,80 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import LearningPathTimeline from '../components/learning/LearningPathTimeline';
-import QuizCard from '../components/quiz/QuizCard';
-import GlassCard from '../components/common/GlassCard';
-import GripVisualization from '../components/equipment/GripVisualization';
-import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
-import { usePageTitle } from '../hooks/usePageTitle';
 import SEOHead from '../components/common/SEOHead';
+import VisualSkillGrid from '../components/learning/VisualSkillGrid';
 
-const LearningPaths = () => {
-  usePageTitle('學習路徑');
-  const [activeTab, setActiveTab] = useState('paths');
-
-  const tabs = [
-    { id: 'paths', label: '學習路徑', icon: '🎯' },
-    { id: 'grips', label: '握拍技巧', icon: '🤝' },
-    { id: 'quiz', label: '互動測驗', icon: '📝' },
-  ];
-
+export default function LearningPaths() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-white">
-      <SEOHead page="learningPaths" />
-      {/* 標題區 - 升級設計 */}
-      <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-accent-500 text-white py-20 md:py-24 overflow-hidden">
-        {/* 背景裝飾 */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
-          <div className="absolute bottom-10 right-10 w-80 h-80 bg-primary-300/20 rounded-full blur-3xl animate-float"></div>
-        </div>
+    <>
+      <SEOHead page="learning-paths" />
 
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.h1
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            className="font-display text-display-lg md:text-display-xl font-black mb-4 drop-shadow-lg"
-          >
-            學習路徑
-          </motion.h1>
-          <motion.p
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.1 }}
-            className="text-body-lg md:text-body-xl text-white/90 max-w-2xl mx-auto"
-          >
-            根據你的程度，選擇最適合的學習路徑，並透過測驗檢驗學習成果
-          </motion.p>
-        </div>
+      <div className="min-h-screen bg-gray-50 pt-24 pb-20">
+        <div className="container mx-auto px-4">
+          {/* Header Section */}
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-block bg-blue-100 text-blue-600 px-4 py-2 rounded-full font-bold text-sm mb-6"
+            >
+              ✨ 全新視覺化學習體驗
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-6xl font-black text-gray-900 mb-6 leading-tight"
+            >
+              不只是閱讀，<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
+                親眼看見你的進步
+              </span>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-xl text-gray-600 leading-relaxed"
+            >
+              我們將複雜的匹克球理論轉化為直觀的互動圖表。
+              <br className="hidden md:block" />
+              針對你的具體問題，提供最直接的視覺化解答。
+            </motion.p>
+          </div>
 
-        {/* 波浪裝飾 */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-auto">
-            <path
-              fill="#fafafa"
-              d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-            />
-          </svg>
-        </div>
-      </section>
+          {/* Main Content Grid */}
+          <VisualSkillGrid />
 
-      <div className="container mx-auto px-4 py-12">
-        {/* 頁籤導航 - Glassmorphism 設計 */}
-        <div className="mb-16">
+          {/* Call to Action */}
           <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="flex flex-wrap justify-center gap-4"
+            className="mt-24 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-12 text-center text-white overflow-hidden relative"
           >
-            {tabs.map((tab) => (
-              <motion.div key={tab.id} variants={staggerItem}>
-                <GlassCard
-                  variant={activeTab === tab.id ? 'primary' : 'light'}
-                  size="sm"
-                  hoverable
-                  clickable
-                  onClick={() => setActiveTab(tab.id)}
-                  className="cursor-pointer transition-all duration-300"
-                >
-                  <div className="flex items-center gap-3 px-4 py-2">
-                    <span className="text-2xl">{tab.icon}</span>
-                    <span className="font-display text-heading-md font-bold text-neutral-900">
-                      {tab.label}
-                    </span>
-                  </div>
-                </GlassCard>
-              </motion.div>
-            ))}
+            <div className="relative z-10">
+              <h2 className="text-3xl md:text-4xl font-black mb-6">
+                準備好上場實戰了嗎？
+              </h2>
+              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                掌握了這些觀念後，最好的練習就是直接上場打球。
+                立即搜尋離你最近的球場，開始你的匹克球之旅！
+              </p>
+              <motion.a
+                href="/courts"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-block bg-white text-gray-900 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+              >
+                搜尋附近球場 ➜
+              </motion.a>
+            </div>
+
+            {/* Decorative Background Elements */}
+            <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
           </motion.div>
         </div>
-
-        {/* 學習路徑時間軸 */}
-        {activeTab === 'paths' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section>
-              <GlassCard variant="light" size="lg" className="mb-12">
-                <motion.h2
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="font-display text-display-md font-black text-center mb-4 text-neutral-900"
-                >
-                  選擇你的學習路徑
-                </motion.h2>
-                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
-                  點選路徑卡片查看詳細課程，追蹤你的學習進度
-                </p>
-              </GlassCard>
-
-              <LearningPathTimeline />
-            </section>
-          </motion.div>
-        )}
-
-        {/* 握拍技巧 */}
-        {activeTab === 'grips' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section>
-              <GlassCard variant="light" size="lg" className="mb-12">
-                <h2 className="font-display text-display-md font-black text-center mb-4 text-neutral-900">
-                  正確握拍是成功的第一步
-                </h2>
-                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
-                  學習三種基本握法：東方式、西方式、大陸式，掌握正確的握拍方式能提升控球與擊球品質
-                </p>
-              </GlassCard>
-              <GripVisualization />
-            </section>
-          </motion.div>
-        )}
-
-        {/* 互動測驗 */}
-        {activeTab === 'quiz' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section>
-              <GlassCard variant="light" size="lg" className="mb-12">
-                <h2 className="font-display text-display-md font-black text-center mb-4 text-neutral-900">
-                  匹克球規則測驗
-                </h2>
-                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
-                  透過互動測驗檢驗你對匹克球規則的理解，答對會有綠色提示，答錯會有微小晃動提醒
-                </p>
-              </GlassCard>
-              <QuizCard />
-            </section>
-          </motion.div>
-        )}
       </div>
-    </div>
+    </>
   );
-};
-
-export default LearningPaths;
+}

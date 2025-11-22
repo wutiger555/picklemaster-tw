@@ -70,12 +70,12 @@ const Header = () => {
             {/* Border */}
             <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
 
-            <nav className="container mx-auto px-6 py-5 relative">
+            <nav className="container mx-auto px-6 py-3 relative">
                 <div className="flex items-center justify-between">
                     {/* Modern Sports Brand Logo */}
                     <Link
                         to={ROUTES.HOME}
-                        className="flex items-center space-x-4 group relative"
+                        className="flex items-center space-x-3 group relative"
                     >
                         {/* Logo with dynamic glow */}
                         <div className="relative">
@@ -83,28 +83,28 @@ const Header = () => {
                             <img
                                 src="/logo.png"
                                 alt="Picklemaster Taiwan"
-                                className="w-16 h-16 object-contain relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
+                                className="w-10 h-10 object-contain relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
                             />
                         </div>
 
                         {/* Modern Athletic Brand Name */}
                         <div className="flex flex-col">
                             {/* Main Brand - Bold & Modern */}
-                            <div className="flex items-baseline space-x-2.5">
-                                <h1 className="text-2xl font-black tracking-tight leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            <div className="flex items-baseline space-x-2">
+                                <h1 className="text-xl font-black tracking-tight leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
                                         PICKLEMASTER
                                     </span>
                                 </h1>
                                 {/* Dynamic accent bar */}
                                 <div className="flex flex-col space-y-0.5 hidden sm:flex">
-                                    <div className="h-0.5 w-12 bg-gradient-to-r from-emerald-500 to-transparent rounded-full" />
-                                    <div className="h-0.5 w-8 bg-gradient-to-r from-teal-500 to-transparent rounded-full" />
+                                    <div className="h-0.5 w-8 bg-gradient-to-r from-emerald-500 to-transparent rounded-full" />
+                                    <div className="h-0.5 w-5 bg-gradient-to-r from-teal-500 to-transparent rounded-full" />
                                 </div>
                             </div>
                             {/* Subtitle - Sleek & International */}
                             <div className="flex items-center space-x-2 mt-0.5">
-                                <p className="text-[10px] font-bold text-emerald-600/80 uppercase tracking-[0.15em]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                                <p className="text-[9px] font-bold text-emerald-600/80 uppercase tracking-[0.15em]" style={{ fontFamily: "'Inter', sans-serif" }}>
                                     Taiwan Pickleball
                                 </p>
                             </div>

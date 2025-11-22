@@ -16,6 +16,7 @@ export interface Court {
   facilities: string[];
   line_group?: string;
   booking_url?: string;
+  booking_method?: string; // 預約方式說明
   website?: string;
   reviews?: string;
 }

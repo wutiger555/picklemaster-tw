@@ -14,7 +14,11 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "02-2700-3830",
-      "facilities": ["飲水機", "廁所", "遮陽棚"],
+      "facilities": [
+        "飲水機",
+        "廁所",
+        "遮陽棚"
+      ],
       "line_group": "",
       "reviews": "台北市中心知名免費球場，環境優美"
     },
@@ -32,9 +36,17 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "02-2723-7131",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣", "球具租借"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣",
+        "球具租借"
+      ],
       "website": "https://xysc.teamxports.com/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "booking_method": "現場或電話預約（02-8786-1911），僅開放三日內（含當日）場地預約，不提供線上預約服務",
       "reviews": "台北市設施最完善的匹克球場之一"
     },
     {
@@ -51,7 +63,12 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "02-2303-2451",
-      "facilities": ["飲水機", "廁所", "停車場", "夜間照明"],
+      "facilities": [
+        "飲水機",
+        "廁所",
+        "停車場",
+        "夜間照明"
+      ],
       "line_group": "",
       "reviews": "河濱公園球場，夜間照明佳，球友眾多"
     },
@@ -69,9 +86,16 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2627-8888",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://nhsc.cyc.org.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "booking_method": "線上預約或現場預約，建議透過預約系統查詢場地狀況",
       "reviews": "內湖科技園區周邊，上班族下班運動好選擇"
     },
     {
@@ -88,7 +112,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2377-0300",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://www.daansports.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "reviews": "大安區優質運動中心，設施新穎"
@@ -107,7 +137,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2570-1717",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://sssc.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "reviews": "松山區交通便利，捷運可達"
@@ -126,7 +162,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2542-0008",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "reviews": "中山區中心位置，近捷運雙連站"
     },
@@ -144,7 +186,14 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2820-3232",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣", "溫泉SPA"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣",
+        "溫泉SPA"
+      ],
       "website": "https://www.btsport.org.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "reviews": "運動後可泡溫泉，北投特色球場"
@@ -163,7 +212,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2339-0555",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "http://whsc.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "reviews": "萬華區運動中心，社區球友活躍"
@@ -182,7 +237,12 @@
       "courts_count": 8,
       "opening_hours": "06:00-22:00",
       "contact": "02-2960-3456",
-      "facilities": ["更衣室", "停車場", "飲水機", "廁所"],
+      "facilities": [
+        "更衣室",
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
       "line_group": "",
       "reviews": "新北市最大戶外免費球場"
     },
@@ -200,7 +260,13 @@
       "courts_count": 6,
       "opening_hours": "08:00-22:00",
       "contact": "04-2389-2211",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "line_group": "",
       "reviews": "台中南屯區熱門球場"
     },
@@ -218,7 +284,12 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "07-740-5823",
-      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
       "line_group": "",
       "reviews": "高雄地區熱門球場，場地寬敞，夜間照明良好"
     },
@@ -236,7 +307,12 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "02-2687-1010",
-      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
       "line_group": "",
       "reviews": "新北市政府設立的公共球場，交通便利"
     },
@@ -254,7 +330,13 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "03-352-1188",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://www.tyfa.com.tw/",
       "reviews": "桃園地區優質室內球場，冷氣充足，適合夏季"
     },
@@ -272,7 +354,11 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "03-522-7171",
-      "facilities": ["停車場", "飲水機", "廁所"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
       "line_group": "",
       "reviews": "新竹地區球友常聚集的場地"
     },
@@ -290,7 +376,12 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "06-299-1111",
-      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
       "line_group": "",
       "reviews": "台南地區知名匹克球場，常有球友團體活動"
     },
@@ -308,7 +399,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2248-8282",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://www.zhsc.ntpc.gov.tw/",
       "booking_url": "https://www.zhsc.ntpc.gov.tw/",
       "reviews": "新北中和地區便利球場，可線上預約"
@@ -327,7 +424,14 @@
       "courts_count": 8,
       "opening_hours": "06:00-22:00",
       "contact": "04-2235-1658",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣", "球具租借"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣",
+        "球具租借"
+      ],
       "website": "https://www.tcsc.com.tw/",
       "reviews": "台中地區場地數量最多，設施完善"
     },
@@ -345,7 +449,11 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "03-925-1000",
-      "facilities": ["停車場", "飲水機", "廁所"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
       "line_group": "",
       "reviews": "宜蘭地區球友聚會場地，景觀優美"
     },
@@ -363,7 +471,14 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "03-287-0909",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣", "球具租借"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣",
+        "球具租借"
+      ],
       "website": "https://qpsports.com.tw/",
       "booking_url": "https://qpsports.com.tw/",
       "reviews": "青埔地區新建球場，設施新穎，鄰近高鐵站"
@@ -382,7 +497,13 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "02-2994-6800",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://www.xzsports.com.tw/",
       "reviews": "新莊區大型運動中心，球場數量充足"
     },
@@ -400,7 +521,12 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "02-2211-3426",
-      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
       "reviews": "新店區河濱球場，空氣清新，景色宜人"
     },
     {
@@ -417,7 +543,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2651-8899",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "reviews": "南港軟體園區附近，科技業球友眾多"
     },
@@ -435,7 +567,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2930-0658",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "reviews": "文山區社區型運動中心"
     },
@@ -453,7 +591,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2923-1999",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://www.yhsports.com.tw/",
       "reviews": "永和區優質球場，近捷運頂溪站"
     },
@@ -471,7 +615,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-8648-3998",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "汐止區運動中心，設施新穎"
     },
     {
@@ -488,7 +638,13 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "02-2287-8787",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "三重區大型運動中心"
     },
     {
@@ -505,7 +661,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2268-0818",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "土城區便利球場"
     },
     {
@@ -522,7 +684,13 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "03-339-2567",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "桃園市區主要運動中心"
     },
     {
@@ -539,7 +707,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "03-463-7388",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "中壢區運動中心"
     },
     {
@@ -556,7 +730,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "03-469-0909",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "平鎮區運動中心，設施優良"
     },
     {
@@ -573,7 +753,11 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "03-537-6821",
-      "facilities": ["停車場", "飲水機", "廁所"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
       "reviews": "新竹香山區戶外球場"
     },
     {
@@ -590,7 +774,13 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "03-658-0928",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "竹北地區新穎運動中心"
     },
     {
@@ -607,7 +797,13 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "04-2462-1500",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "台中西屯區大型運動中心"
     },
     {
@@ -624,7 +820,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "04-2406-0999",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "大里區運動中心"
     },
     {
@@ -641,7 +843,12 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "04-2524-0362",
-      "facilities": ["更衣室", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "豐原區體育館，價格實惠"
     },
     {
@@ -658,7 +865,11 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "04-2534-8280",
-      "facilities": ["停車場", "飲水機", "廁所"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
       "reviews": "潭子區戶外免費球場"
     },
     {
@@ -675,7 +886,12 @@
       "courts_count": 4,
       "opening_hours": "08:00-22:00",
       "contact": "04-726-1831",
-      "facilities": ["更衣室", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "彰化縣主要室內球場"
     },
     {
@@ -692,7 +908,11 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "04-832-2410",
-      "facilities": ["停車場", "飲水機", "廁所"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
       "reviews": "員林地區戶外球場"
     },
     {
@@ -709,7 +929,12 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "06-262-2331",
-      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
       "reviews": "台南市大型體育園區，設施完善"
     },
     {
@@ -726,7 +951,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "06-209-0800",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "台南東區運動中心"
     },
     {
@@ -743,7 +974,12 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "06-201-6351",
-      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
       "reviews": "永康區戶外球場"
     },
     {
@@ -760,7 +996,13 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "07-556-0855",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://www.kysports.com.tw/",
       "reviews": "高雄左營區大型運動中心，近高鐵站"
     },
@@ -778,7 +1020,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "07-221-5999",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "高雄苓雅區運動中心"
     },
     {
@@ -795,7 +1043,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "07-342-8882",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "三民區運動中心"
     },
     {
@@ -812,7 +1066,12 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "07-746-2508",
-      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
       "reviews": "高雄市區大型運動公園"
     },
     {
@@ -829,7 +1088,12 @@
       "courts_count": 4,
       "opening_hours": "08:00-22:00",
       "contact": "08-732-7084",
-      "facilities": ["更衣室", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "屏東縣主要室內球場"
     },
     {
@@ -846,7 +1110,12 @@
       "courts_count": 4,
       "opening_hours": "08:00-22:00",
       "contact": "03-842-3100",
-      "facilities": ["更衣室", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "花蓮縣主要室內球場"
     },
     {
@@ -863,7 +1132,11 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "089-362-067",
-      "facilities": ["停車場", "飲水機", "廁所"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
       "reviews": "台東地區戶外球場，環境優美"
     },
     {
@@ -880,7 +1153,13 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2465-1900",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "基隆市主要運動中心"
     },
     {
@@ -897,7 +1176,12 @@
       "courts_count": 4,
       "opening_hours": "06:00-22:00",
       "contact": "02-2456-7890",
-      "facilities": ["停車場", "飲水機", "廁所", "夜間照明"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
       "reviews": "基隆河濱球場，空氣清新"
     },
     {
@@ -914,7 +1198,13 @@
       "courts_count": 6,
       "opening_hours": "06:00-22:00",
       "contact": "05-275-5122",
-      "facilities": ["更衣室", "淋浴間", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "website": "https://www.tmcysports.com.tw/",
       "reviews": "嘉義市主要運動中心，設施優良"
     },
@@ -932,7 +1222,12 @@
       "courts_count": 4,
       "opening_hours": "08:00-22:00",
       "contact": "05-553-2393",
-      "facilities": ["更衣室", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "雲林斗六地區主要球場"
     },
     {
@@ -949,7 +1244,12 @@
       "courts_count": 4,
       "opening_hours": "08:00-22:00",
       "contact": "037-332-700",
-      "facilities": ["更衣室", "停車場", "飲水機", "冷氣"],
+      "facilities": [
+        "更衣室",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
       "reviews": "苗栗縣主要室內球場"
     },
     {
@@ -966,7 +1266,11 @@
       "courts_count": 4,
       "opening_hours": "06:00-21:00",
       "contact": "049-222-4153",
-      "facilities": ["停車場", "飲水機", "廁所"],
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
       "reviews": "南投縣主要戶外球場"
     }
   ]

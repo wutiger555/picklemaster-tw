@@ -39,7 +39,7 @@ const Courts = () => {
 
     // 搜尋篩選
     if (searchQuery && !court.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !court.location.address.toLowerCase().includes(searchQuery.toLowerCase())) {
+      !court.location.address.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
 
@@ -297,22 +297,20 @@ const Courts = () => {
                     <div className="space-y-2 text-body-sm mb-4">
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-neutral-700">類型</span>
-                        <span className={`px-3 py-1 rounded-full text-caption-lg font-bold ${
-                          court.type === 'indoor'
+                        <span className={`px-3 py-1 rounded-full text-caption-lg font-bold ${court.type === 'indoor'
                             ? 'bg-secondary-100 text-secondary-700'
                             : 'bg-primary-100 text-primary-700'
-                        }`}>
+                          }`}>
                           {court.type === 'indoor' ? '🏢 室內' : '🌳 戶外'}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-neutral-700">收費</span>
-                        <span className={`px-3 py-1 rounded-full text-caption-lg font-bold ${
-                          court.fee === 'free'
+                        <span className={`px-3 py-1 rounded-full text-caption-lg font-bold ${court.fee === 'free'
                             ? 'bg-primary-100 text-primary-700'
                             : 'bg-accent-100 text-accent-700'
-                        }`}>
+                          }`}>
                           {court.price}
                         </span>
                       </div>
@@ -337,6 +335,18 @@ const Courts = () => {
                           {court.contact}
                         </a>
                       </div>
+
+                      {court.booking_method && (
+                        <div className="pt-3 border-t border-neutral-200">
+                          <p className="text-caption-lg font-semibold text-neutral-700 mb-2 flex items-center">
+                            <span className="mr-1">📅</span>
+                            預約方式
+                          </p>
+                          <p className="text-caption-md text-neutral-600 leading-relaxed bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                            {court.booking_method}
+                          </p>
+                        </div>
+                      )}
 
                       {(court.booking_url || court.website) && (
                         <div className="flex flex-col space-y-2 pt-2 border-t border-neutral-200">

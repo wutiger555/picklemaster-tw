@@ -167,25 +167,5 @@ export const NEWS_DATA: NewsItem[] = [
     source: 'Potenza Pickleball',
     link: 'https://potenzapickleball.com/',
     tags: ['Tech', 'Smart']
-  },
-  {
-    id: 'eq-3',
-    title: 'Honolulu Sword & Shield J2NF 獲評年度最佳',
-    summary: '憑藉其創新的泡沫技術與親民價格，在 2025 年眾多評測中脫穎而出，被譽為全能型球拍的首選。',
-    content: `
-      <p>在知名評測網站 Pickleball Effect 公布的「2025 年度最佳球拍」名單中，來自夏威夷的新興品牌 Honolulu Pickleball Company 憑藉其型號 "Sword & Shield J2NF" 奪下了年度最佳全能球拍的殊榮。</p>
-
-      <p>評審團指出，J2NF 成功地將頂級的 Thermoformed（熱成型）技術與泡沫邊框結合，卻維持了極具競爭力的價格。它在力量、控制與旋轉三個維度上都取得了極高的評分，幾乎沒有明顯的短板。</p>
-
-      <p>「這是市面上性價比最高的選擇，」評測報告寫道，「無論你是剛入門的新手，還是正在尋求突破的進階玩家，這支球拍都能給你帶來驚喜。」</p>
-      
-      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://pickleballeffect.com/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Pickleball Effect</a></p>
-    `,
-    date: '2025-02-20',
-    category: 'Equipment',
-    image: 'https://images.unsplash.com/photo-1627627692313-4f78182b9483?q=80&w=2074&auto=format&fit=crop', // Paddle review
-    source: 'Pickleball Effect',
-    link: 'https://pickleballeffect.com/',
-    tags: ['Review', 'Paddle']
   }
 ];

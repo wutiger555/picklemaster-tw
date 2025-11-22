@@ -21,7 +21,7 @@ const NewsSection: React.FC = () => {
     ];
 
     return (
-        <section className="py-24 md:py-32 bg-gradient-to-b from-white to-neutral-50 relative overflow-hidden">
+        <section className="py-28 md:py-32 bg-gradient-to-b from-white to-neutral-50 relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 left-0 w-96 h-96 bg-blue-100/40 rounded-full blur-3xl -translate-x-1/2"></div>
@@ -34,12 +34,12 @@ const NewsSection: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-12"
+                    className="text-center mb-16"
                 >
-                    <h2 className="font-display text-display-md md:text-display-lg font-black mb-4 text-neutral-900">
+                    <h2 className="font-display text-4xl md:text-5xl font-bold mb-5 text-neutral-900 tracking-tight">
                         匹克球新知
                     </h2>
-                    <p className="text-body-lg md:text-body-xl text-neutral-600 max-w-3xl mx-auto">
+                    <p className="text-lg md:text-xl text-neutral-600 max-w-3xl mx-auto leading-relaxed">
                         掌握最新賽事資訊、裝備趨勢與國內外動態
                     </p>
                 </motion.div>
@@ -49,15 +49,15 @@ const NewsSection: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="flex flex-wrap justify-center gap-3 mb-12"
+                    className="flex flex-wrap justify-center gap-3 mb-16"
                 >
                     {categories.map((cat) => (
                         <button
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
-                            className={`px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 ${activeCategory === cat.id
-                                ? 'bg-neutral-900 text-white shadow-lg scale-105'
-                                : 'bg-white text-neutral-600 hover:bg-gray-100 border border-gray-200'
+                            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeCategory === cat.id
+                                    ? 'bg-neutral-900 text-white shadow-lg scale-105'
+                                    : 'bg-white text-neutral-600 hover:bg-gray-50 border-2 border-gray-200 hover:border-gray-300'
                                 }`}
                         >
                             {cat.label}

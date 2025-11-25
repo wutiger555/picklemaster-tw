@@ -24,9 +24,9 @@ picklemaster-tw/
 │   │   ├── court/                 # 球場相關組件
 │   │   ├── equipment/             # 裝備相關組件
 │   │   ├── game/                  # 遊戲組件
-│   │   ├── home/                  # 首頁組件
+│   │   ├── home/                  # 首頁組件 (VideoSpotlight)
 │   │   ├── layout/                # 佈局組件
-│   │   ├── learning/              # 學習路徑組件
+│   │   ├── learning/              # 學習路徑組件 (VideoTutorials)
 │   │   ├── map/                   # 地圖組件
 │   │   ├── news/                  # 新聞組件
 │   │   ├── quiz/                  # 測驗組件
@@ -123,6 +123,7 @@ picklemaster-tw/
 - **Organization** - 組織資訊
 - **SportsActivityLocation** - 球場位置
 - **Course** - 學習課程
+- **VideoObject** - 影片教學
 - **FAQPage** - 常見問題
 - **HowTo** - 教學指南
 - **BreadcrumbList** - 麵包屑導航
@@ -234,7 +235,7 @@ npm run preview   # 預覽建置結果
 ### 短期目標
 - [ ] SEO 排名優化至前 3 名
 - [ ] 新增更多球場數據
-- [ ] 影片教學整合
+- [x] 影片教學整合
 
 ### 中期目標
 - [ ] 用戶帳號系統

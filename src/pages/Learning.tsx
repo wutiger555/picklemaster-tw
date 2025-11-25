@@ -7,6 +7,7 @@ import PaddleGuide from '../components/equipment/PaddleGuide';
 import ProPlayerPaddles from '../components/equipment/ProPlayerPaddles';
 import PaddleRecommender from '../components/equipment/PaddleRecommender';
 import LearningPathTimeline from '../components/learning/LearningPathTimeline';
+import VideoTutorials from '../components/learning/VideoTutorials';
 import QuizCard from '../components/quiz/QuizCard';
 import GlassCard from '../components/common/GlassCard';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -149,6 +150,8 @@ const Learning = () => {
               </GlassCard>
               <BallAnimation />
             </section>
+
+            <VideoTutorials />
           </motion.div>
         )}
 

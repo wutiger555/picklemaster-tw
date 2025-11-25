@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🎥 Video Integration
+- **New `VideoTutorials` component**: Grid layout with hover effects, duration/level badges
+- **New `VideoSpotlight` component**: Cinematic home page section with video preview
+- **3 New Tutorials**: Continental Grip, Forehand Drive, Punch Volley
+- **Video Modal**: Full-screen playback with backdrop blur
+- **SEO Optimization**: Added `VideoObject` Schema, poster images, and lazy loading
+
 #### 🏓 Sport Comparison Feature
 - **New component**: `SportComparison.tsx` - Visual comparison between Pickleball, Tennis, and Badminton
 - **Interactive FAQ section**: 4 detailed Q&A about transitioning from Tennis/Badminton to Pickleball

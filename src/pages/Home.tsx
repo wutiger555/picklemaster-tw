@@ -9,6 +9,7 @@ import SEOHead from '../components/common/SEOHead';
 
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 import NewsSection from '../components/news/NewsSection';
+import VideoSpotlight from '../components/home/VideoSpotlight';
 
 const Home = () => {
   usePageTitle();
@@ -328,6 +329,9 @@ const Home = () => {
           </svg>
         </div>
       </section>
+
+      {/* Video Spotlight Section */}
+      <VideoSpotlight />
 
 
 

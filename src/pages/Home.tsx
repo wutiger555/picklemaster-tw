@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -14,11 +14,6 @@ const Home = () => {
   usePageTitle();
 
 
-  // 視差滾動效果
-  const { scrollY } = useScroll();
-  const parallaxY1 = useTransform(scrollY, [0, 500], [0, -50]);
-  const parallaxY2 = useTransform(scrollY, [0, 500], [0, -100]);
-  const parallaxY3 = useTransform(scrollY, [0, 500], [0, -150]);
 
   const features = [
     {
@@ -99,7 +94,6 @@ const Home = () => {
 
           {/* 匹克球裝飾元素（帶洞的球） */}
           <motion.div
-            style={{ y: parallaxY1 }}
             className="absolute top-20 right-20 w-32 h-32 opacity-20"
           >
             <svg viewBox="0 0 100 100" className="w-full h-full animate-float">
@@ -116,7 +110,6 @@ const Home = () => {
           </motion.div>
 
           <motion.div
-            style={{ y: parallaxY2 }}
             className="absolute bottom-32 left-16 w-24 h-24 opacity-15"
           >
             <svg viewBox="0 0 100 100" className="w-full h-full animate-bounce-slow">
@@ -132,7 +125,6 @@ const Home = () => {
           </motion.div>
 
           <motion.div
-            style={{ y: parallaxY3 }}
             className="absolute top-1/3 left-1/4 w-20 h-20 opacity-10"
           >
             <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse-slow">

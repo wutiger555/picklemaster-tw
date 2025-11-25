@@ -14,6 +14,8 @@ import About from './pages/About';
 import Resources from './pages/Resources';
 import FAQ from './pages/FAQ';
 import NewsDetail from './pages/NewsDetail';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Contact from './pages/Contact';
 import { ROUTES } from './utils/constants';
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
             <Route path={ROUTES.ABOUT} element={<About />} />
             <Route path={ROUTES.FAQ} element={<FAQ />} />
             <Route path={ROUTES.NEWS} element={<NewsDetail />} />
+            <Route path={ROUTES.PRIVACY_POLICY} element={<PrivacyPolicy />} />
+            <Route path={ROUTES.CONTACT} element={<Contact />} />
           </Routes>
         </main>
         <Footer />

@@ -47,9 +47,12 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://picklemastertw.site/equipment" />
 
+  <!-- Preconnect to external origins -->
+  <link rel="preconnect" href="https://www.google.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
+
   <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564"
-    crossorigin="anonymous"></script>
+  <!-- AdSense script is loaded lazily after user interaction -->
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -118,12 +121,12 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"></noscript>
 
   <title>匹克球裝備推薦 | 球拍選購指南、職業選手裝備分析</title>
-  <script type="module" crossorigin src="/assets/index-D9zIvfTp.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CM5g4yRY.css">
+  <script type="module" crossorigin src="/assets/index-CTlxZp2e.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-ivkGZg0P.css">
 </head>
 
 <body>
@@ -153,6 +156,27 @@
           });
       });
     }
+  </script>
+
+  <!-- Lazy Load Google AdSense -->
+  <script>
+    const loadAdSense = () => {
+      const script = document.createElement('script');
+      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      document.head.appendChild(script);
+
+      // Remove event listeners after loading the script
+      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
+        window.removeEventListener(event, loadAdSense, { once: true })
+      );
+    };
+
+    // Add event listeners to trigger AdSense loading on user interaction
+    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
+      window.addEventListener(event, loadAdSense, { once: true, passive: true })
+    );
   </script>
 </body>
 

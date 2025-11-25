@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -14,11 +14,6 @@ const Home = () => {
   usePageTitle();
 
 
-  // 視差滾動效果
-  const { scrollY } = useScroll();
-  const parallaxY1 = useTransform(scrollY, [0, 500], [0, -50]);
-  const parallaxY2 = useTransform(scrollY, [0, 500], [0, -100]);
-  const parallaxY3 = useTransform(scrollY, [0, 500], [0, -150]);
 
   const features = [
     {
@@ -99,7 +94,6 @@ const Home = () => {
 
           {/* 匹克球裝飾元素（帶洞的球） */}
           <motion.div
-            style={{ y: parallaxY1 }}
             className="absolute top-20 right-20 w-32 h-32 opacity-20"
           >
             <svg viewBox="0 0 100 100" className="w-full h-full animate-float">
@@ -116,7 +110,6 @@ const Home = () => {
           </motion.div>
 
           <motion.div
-            style={{ y: parallaxY2 }}
             className="absolute bottom-32 left-16 w-24 h-24 opacity-15"
           >
             <svg viewBox="0 0 100 100" className="w-full h-full animate-bounce-slow">
@@ -132,7 +125,6 @@ const Home = () => {
           </motion.div>
 
           <motion.div
-            style={{ y: parallaxY3 }}
             className="absolute top-1/3 left-1/4 w-20 h-20 opacity-10"
           >
             <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse-slow">
@@ -589,7 +581,7 @@ const Home = () => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${path.color} rounded-3xl blur-2xl opacity-0 group-hover:opacity-15 transition-opacity duration-700`} />
                 <div className="relative h-full bg-white rounded-3xl p-10 shadow-md hover:shadow-2xl border border-neutral-200/50 flex flex-col items-center text-center overflow-hidden transition-all duration-500">
                   {/* Step Indicator */}
-                  <div className="absolute top-4 right-6 text-6xl font-black text-neutral-100 select-none pointer-events-none group-hover:text-neutral-50 transition-colors duration-300">
+                  <div className="absolute top-4 right-6 text-6xl font-black text-neutral-200 select-none pointer-events-none group-hover:text-neutral-100 transition-colors duration-300">
                     0{index + 1}
                   </div>
 
@@ -623,7 +615,6 @@ const Home = () => {
       {/* CTA 區塊 - 視覺優化 */}
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-neutral-900">
-          <div className="absolute inset-0 bg-[url('/court-texture.png')] opacity-5 mix-blend-overlay" />
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/80 to-neutral-950/90" />
           {/* Abstract shapes */}
           <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-emerald-500/5 to-transparent" />

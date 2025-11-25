@@ -589,7 +589,7 @@ const Home = () => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${path.color} rounded-3xl blur-2xl opacity-0 group-hover:opacity-15 transition-opacity duration-700`} />
                 <div className="relative h-full bg-white rounded-3xl p-10 shadow-md hover:shadow-2xl border border-neutral-200/50 flex flex-col items-center text-center overflow-hidden transition-all duration-500">
                   {/* Step Indicator */}
-                  <div className="absolute top-4 right-6 text-6xl font-black text-neutral-100 select-none pointer-events-none group-hover:text-neutral-50 transition-colors duration-300">
+                  <div className="absolute top-4 right-6 text-6xl font-black text-neutral-200 select-none pointer-events-none group-hover:text-neutral-100 transition-colors duration-300">
                     0{index + 1}
                   </div>
 
@@ -623,7 +623,6 @@ const Home = () => {
       {/* CTA 區塊 - 視覺優化 */}
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-neutral-900">
-          <div className="absolute inset-0 bg-[url('/court-texture.png')] opacity-5 mix-blend-overlay" />
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/80 to-neutral-950/90" />
           {/* Abstract shapes */}
           <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-emerald-500/5 to-transparent" />

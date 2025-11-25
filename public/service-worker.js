@@ -2,7 +2,7 @@
 const CACHE_NAME = 'picklemaster-scorer-v1';
 const CACHE_URLS = [
   '/scorer',
-  '/logo.png',
+  '/logo.webp',
   '/',
 ];
 

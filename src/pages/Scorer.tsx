@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { usePageTitle } from '../hooks/usePageTitle';
-import SEOHead from '../components/common/SEOHead';
+import SEO from '../components/SEO';
 
 type ServingSide = 'team1' | 'team2';
 
@@ -15,7 +14,6 @@ interface GameState {
 }
 
 const Scorer = () => {
-  usePageTitle('匹克球計分器');
 
   const [gameState, setGameState] = useState<GameState>({
     team1Score: 0,
@@ -275,7 +273,7 @@ const Scorer = () => {
 
   return (
     <>
-      <SEOHead page="scorer" />
+      <SEO page="scorer" />
       {orientation === 'landscape' ? <LandscapeLayout /> : <PortraitLayout />}
 
       {/* 設定面板 */}

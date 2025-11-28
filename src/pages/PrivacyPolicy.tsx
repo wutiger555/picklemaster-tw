@@ -1,16 +1,10 @@
-import { usePageTitle } from '../hooks/usePageTitle';
-import SEOHead from '../components/common/SEOHead';
+import SEO from '../components/SEO';
 
 const PrivacyPolicy = () => {
-  usePageTitle('隱私權政策');
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <SEOHead
-        page="privacy"
-        title="隱私權政策 - Picklemaster Taiwan"
-        description="Picklemaster Taiwan 的隱私權政策，說明我們如何蒐集、使用與保護您的個人資料。"
-      />
+      <SEO page="privacy-policy" />
       <main className="container mx-auto px-4 py-12">
         <div className="bg-white p-8 md:p-12 rounded-2xl shadow-lg">
           <h1 className="text-4xl md:text-5xl font-black text-neutral-900 mb-8">

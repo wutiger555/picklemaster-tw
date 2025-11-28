@@ -1,10 +1,16 @@
-import SEO from '../components/SEO';
+import { usePageTitle } from '../hooks/usePageTitle';
+import SEOHead from '../components/common/SEOHead';
 
 const Contact = () => {
+  usePageTitle('聯絡我們');
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <SEO page="contact" />
+      <SEOHead
+        page="contact"
+        title="聯絡我們 - Picklemaster Taiwan"
+        description="聯絡 Picklemaster Taiwan。若您有任何問題、建議或合作機會，歡迎隨時與我們聯繫。"
+      />
       <main className="container mx-auto px-4 py-12">
         <div className="bg-white p-8 md:p-12 rounded-2xl shadow-lg">
           <h1 className="text-4xl md:text-5xl font-black text-neutral-900 mb-8">

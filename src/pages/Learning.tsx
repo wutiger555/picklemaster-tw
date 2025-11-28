@@ -10,9 +10,11 @@ import LearningPathTimeline from '../components/learning/LearningPathTimeline';
 import VideoTutorials from '../components/learning/VideoTutorials';
 import QuizCard from '../components/quiz/QuizCard';
 import GlassCard from '../components/common/GlassCard';
-import SEO from '../components/SEO';
+import { usePageTitle } from '../hooks/usePageTitle';
+import SEOHead from '../components/common/SEOHead';
 
 const Learning = () => {
+  usePageTitle('匹克球學習');
   const [activeTab, setActiveTab] = useState('basics');
 
   const tabs = [
@@ -25,7 +27,7 @@ const Learning = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-primary-50 to-secondary-50">
-      <SEO page="learning" />
+      <SEOHead page="learning" />
       {/* 標題區 */}
       <section className="relative bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500 text-white py-20 overflow-hidden">
         {/* Decorative wave */}

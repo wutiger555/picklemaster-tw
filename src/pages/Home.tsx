@@ -2,15 +2,20 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import GlassCard from '../components/common/GlassCard';
-import SEO from '../components/SEO';
+import SEOHead from '../components/common/SEOHead';
 
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 import NewsSection from '../components/news/NewsSection';
 import VideoSpotlight from '../components/home/VideoSpotlight';
 
 const Home = () => {
+  usePageTitle();
+
+
+
   const features = [
     {
       title: '互動式規則教學',
@@ -55,7 +60,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      <SEO page="home" />
+      <SEOHead page="home" />
       {/* 英雄區塊 - Above the Fold 黃金區優化 */}
       <section className="relative bg-gradient-to-br from-emerald-900 via-teal-900 to-emerald-950 text-white min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden">
         {/* 球場主題背景 */}
@@ -205,9 +210,6 @@ const Home = () => {
                 <div className="relative">
                   <h1 className="text-5xl md:text-7xl font-black mb-4 leading-tight text-white drop-shadow-2xl">
                     {BRAND.NAME_ZH}
-                    <span className="block text-3xl md:text-4xl mt-2 text-emerald-300">
-                      匹克球台灣
-                    </span>
                   </h1>
 
                   {/* 英文副標 */}

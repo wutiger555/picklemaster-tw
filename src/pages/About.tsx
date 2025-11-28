@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
 import GlassCard from '../components/common/GlassCard';
 import { staggerContainer, staggerItem } from '../utils/animations';
-import SEO from '../components/SEO';
+import SEOHead from '../components/common/SEOHead';
 
 const About = () => {
+  usePageTitle('關於我們');
 
   // 漂浮的匹克球動畫
   const FloatingBall = ({ delay = 0, duration = 3 }) => (
@@ -37,7 +39,7 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-primary-50 to-secondary-50 overflow-hidden">
-      <SEO page="about" />
+      <SEOHead page="about" />
       {/* 背景裝飾球 */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <FloatingBall delay={0} duration={4} />

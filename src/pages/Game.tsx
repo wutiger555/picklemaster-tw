@@ -2,13 +2,21 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PickleballGame from '../components/game/PickleballGame';
 import { ROUTES } from '../utils/constants';
+import { usePageTitle } from '../hooks/usePageTitle';
+
 import { staggerContainer, staggerItem } from '../utils/animations';
-import SEO from '../components/SEO';
+import SEOHead from '../components/common/SEOHead';
 
 const Game = () => {
+  usePageTitle('匹克球大師 | 互動遊戲');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-neutral-900 to-slate-800">
-      <SEO page="game" />
+      <SEOHead
+        title="匹克球大師 Pickle Master | 第一人稱擬真體驗"
+        description="體驗全台首款第一人稱匹克球網頁遊戲！具備必殺技火焰球、幸運一擊系統，以及擬真的物理引擎。立即挑戰成為匹克球大師！"
+        image="/og-game.png"
+      />
 
       {/* 返回按鈕 */}
       <div className="container mx-auto px-4 py-6">

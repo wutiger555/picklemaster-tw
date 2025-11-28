@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { NEWS_DATA } from '../data/newsData';
+import SEOHead from '../components/common/SEOHead';
 import { ROUTES } from '../utils/constants';
-import SEO from '../components/SEO';
 
 const NewsDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -20,10 +20,10 @@ const NewsDetail = () => {
 
     return (
         <div className="min-h-screen bg-neutral-50 pt-20 pb-24">
-            <SEO
-                titleOverride={`${newsItem.title} | PickleMaster TW`}
-                descriptionOverride={newsItem.summary}
-                page="news"
+            <SEOHead
+                title={`${newsItem.title} | PickleMaster TW`}
+                description={newsItem.summary}
+                image={newsItem.image}
             />
 
             <article className="container mx-auto px-4 max-w-4xl">

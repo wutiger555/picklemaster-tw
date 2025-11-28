@@ -4,9 +4,11 @@ import type { CourtsData, Court } from '../types';
 import CourtMap from '../components/map/CourtMap';
 import GlassCard from '../components/common/GlassCard';
 import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
-import SEO from '../components/SEO';
+import { usePageTitle } from '../hooks/usePageTitle';
+import SEOHead from '../components/common/SEOHead';
 
 const Courts = () => {
+  usePageTitle('全台匹克球場地圖');
   const [courtsData, setCourtsData] = useState<CourtsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
@@ -57,7 +59,7 @@ const Courts = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-white">
-      <SEO page="courts" />
+      <SEOHead page="courts" />
       {/* 標題區 - 升級設計 */}
       <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-accent-500 text-white py-20 md:py-24 overflow-hidden">
         {/* 背景裝飾 */}
@@ -73,7 +75,7 @@ const Courts = () => {
             animate="visible"
             className="font-display text-display-lg md:text-display-xl font-black mb-4 drop-shadow-lg"
           >
-            台灣匹克球場地圖
+            全台球場地圖
           </motion.h1>
           <motion.p
             variants={fadeInUp}

@@ -6,9 +6,11 @@ import CourtViewer3D from '../components/learning/CourtViewer3D';
 import SportComparison from '../components/rules/SportComparison';
 import GlassCard from '../components/common/GlassCard';
 import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
-import SEO from '../components/SEO';
+import { usePageTitle } from '../hooks/usePageTitle';
+import SEOHead from '../components/common/SEOHead';
 
 const Rules = () => {
+  usePageTitle('匹克球規則教學');
   const [activeTab, setActiveTab] = useState('sport-comparison');
 
   const tabs = [
@@ -20,7 +22,7 @@ const Rules = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-white">
-      <SEO page="rules" />
+      <SEOHead page="rules" />
       {/* 標題區 - 升級設計 */}
       <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-600 text-white py-20 md:py-24 overflow-hidden">
         {/* 背景裝飾 */}

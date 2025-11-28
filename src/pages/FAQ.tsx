@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePageTitle } from '../hooks/usePageTitle';
 import GlassCard from '../components/common/GlassCard';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
-import SEOHead from '../components/common/SEOHead';
-import { faqStructuredData } from '../utils/seo';
-import { useEffect } from 'react';
+import SEO from '../components/SEO';
 
 interface FAQItem {
   question: string;
@@ -16,25 +13,8 @@ interface FAQItem {
 }
 
 const FAQ = () => {
-  usePageTitle('常見問題 FAQ');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('全部');
-
-  // 添加 FAQ 結構化資料
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.setAttribute('data-faq', 'true');
-    script.textContent = JSON.stringify(faqStructuredData);
-    document.head.appendChild(script);
-
-    return () => {
-      const oldScript = document.querySelector('script[data-faq]');
-      if (oldScript) {
-        oldScript.remove();
-      }
-    };
-  }, []);
 
   const faqs: FAQItem[] = [
     {
@@ -147,7 +127,7 @@ const FAQ = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-primary-50 to-secondary-50">
-      <SEOHead page="faq" />
+      <SEO page="faq" />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500 text-white py-20 overflow-hidden">

@@ -1,69 +1,77 @@
-import { useEffect } from 'react';
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
+import { pageSEO } from '../utils/seo';
 
 interface SEOProps {
-  title?: string;
-  description?: string;
-  keywords?: string;
-  ogImage?: string;
-  canonical?: string;
+  page: string;
+  titleOverride?: string;
+  descriptionOverride?: string;
+  keywordsOverride?: string;
+  canonicalOverride?: string;
 }
 
-const SEO = ({
-  title = '匹克大師台灣 | Picklemaster Taiwan - 台灣匹克球玩家社群與資源平台',
-  description = '台灣最完整的匹克球（Pickleball）學習平台！提供全台球場地圖、互動式規則教學、3D球場配置、裝備選購指南、職業選手裝備推薦、學習路徑與測驗。加入台灣匹克球社群，一起享受這項有趣的運動！',
-  keywords = '匹克球,pickleball,台灣匹克球,匹克球規則,匹克球球場,匹克球教學,匹克球裝備,球拍推薦,運動,球類運動,pickleball taiwan,匹克球協會',
-  ogImage = '/picklemaster-tw/og-image.png',
-  canonical,
-}: SEOProps) => {
-  useEffect(() => {
-    // 更新標題
-    document.title = title;
+const SEO: React.FC<SEOProps> = ({ page, titleOverride, descriptionOverride, keywordsOverride, canonicalOverride }) => {
+  const location = useLocation();
+  const config = pageSEO[page] || {};
 
-    // 更新或創建 meta tags
-    const updateMetaTag = (name: string, content: string, isProperty = false) => {
-      const attribute = isProperty ? 'property' : 'name';
-      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+  const title = titleOverride || config.title || '匹克球台灣 | Picklemaster Taiwan';
+  const description = descriptionOverride || config.description || '台灣最完整的匹克球學習平台';
+  const keywords = keywordsOverride || config.keywords || '匹克球,台灣匹克球,pickleball taiwan';
 
-      if (!element) {
-        element = document.createElement('meta');
-        element.setAttribute(attribute, name);
-        document.head.appendChild(element);
-      }
+  // Determine canonical URL:
+  // 1. Explicit override
+  // 2. Config canonical
+  // 3. Current location (default behavior)
+  const canonical = canonicalOverride || config.canonical || `https://picklemastertw.site${location.pathname === '/' ? '' : location.pathname}`;
 
-      element.setAttribute('content', content);
-    };
+  const ogImage = config.ogImage || 'https://picklemastertw.site/og-image.png';
 
-    // 基本 meta tags
-    updateMetaTag('description', description);
-    updateMetaTag('keywords', keywords);
+  return (
+    <Helmet>
+      {/* Basic Meta Tags */}
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
+      <link rel="canonical" href={canonical} />
 
-    // Open Graph tags
-    updateMetaTag('og:title', title, true);
-    updateMetaTag('og:description', description, true);
-    updateMetaTag('og:image', ogImage, true);
-    updateMetaTag('og:type', 'website', true);
+      {/* Open Graph Tags */}
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={canonical} />
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:site_name" content="Picklemaster Taiwan" />
 
-    // Twitter Card tags
-    updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:title', title);
-    updateMetaTag('twitter:description', description);
-    updateMetaTag('twitter:image', ogImage);
+      {/* Twitter Card Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={ogImage} />
 
-    // Canonical URL
-    if (canonical) {
-      let linkElement = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+      {/* Structured Data (JSON-LD) */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Picklemaster Taiwan",
+          "url": "https://picklemastertw.site/",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://picklemastertw.site/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        })}
+      </script>
 
-      if (!linkElement) {
-        linkElement = document.createElement('link');
-        linkElement.setAttribute('rel', 'canonical');
-        document.head.appendChild(linkElement);
-      }
-
-      linkElement.setAttribute('href', canonical);
-    }
-  }, [title, description, keywords, ogImage, canonical]);
-
-  return null;
+      {/* Page Specific Structured Data if available */}
+      {config.structuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(config.structuredData)}
+        </script>
+      )}
+    </Helmet>
+  );
 };
 
 export default SEO;

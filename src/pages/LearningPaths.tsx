@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
-import SEOHead from '../components/common/SEOHead';
+import SEO from '../components/SEO';
 import VisualSkillGrid from '../components/learning/VisualSkillGrid';
 
 export default function LearningPaths() {
   return (
     <>
-      <SEOHead page="learning-paths" />
+      <SEO page="learning-paths" />
 
       <div className="min-h-screen bg-gray-50 pt-24 pb-20">
         <div className="container mx-auto px-4">
@@ -24,9 +24,9 @@ export default function LearningPaths() {
               transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl font-black text-gray-900 mb-6 leading-tight"
             >
-              不只是閱讀，<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                親眼看見你的進步
+              匹克球教學路徑<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 text-3xl md:text-5xl block mt-2">
+                不只是閱讀，親眼看見你的進步
               </span>
             </motion.h1>
             <motion.p

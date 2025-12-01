@@ -218,8 +218,8 @@ picklemaster-tw/
 ├── 📂 public/
 │   ├── 📂 data/
 │   │   └── courts.json         # 🗺️ 全台 55+ 球場資料
-│   ├── logo.png                # 🎨 網站 Logo
-│   ├── favicon.ico             # 🖼️ 網站圖示
+│   ├── logo.webp               # 🎨 網站 Logo (v2)
+│   ├── favicon-v2.ico          # 🖼️ 網站圖示
 │   ├── og-image.png            # 📸 社群分享預覽圖
 │   └── sitemap.xml             # 🔍 搜尋引擎索引
 ├── 📂 src/
@@ -233,26 +233,14 @@ picklemaster-tw/
 │   │   ├── quiz/               # ❓ 互動測驗
 │   │   └── hero/               # 🌟 首頁 Hero 組件
 │   ├── 📂 pages/                # 📄 8 個主要頁面
-│   │   ├── Home.tsx            # 🏠 首頁
-│   │   ├── Rules.tsx           # 📚 規則教學
-│   │   ├── Equipment.tsx       # 🏸 裝備指南
-│   │   ├── LearningPaths.tsx   # 📖 學習路徑
-│   │   ├── Courts.tsx          # 🗺️ 球場地圖
-│   │   ├── Game.tsx            # 🎮 互動遊戲
-│   │   ├── Resources.tsx       # 📱 資源中心
-│   │   └── About.tsx           # ℹ️ 關於我們
-│   ├── 📂 hooks/
-│   │   └── usePageTitle.ts     # 🎯 動態頁面標題 Hook
-│   ├── 📂 utils/
-│   │   └── constants.ts        # 🔧 常數定義（路由、品牌資訊）
-│   ├── 📂 types/
-│   │   └── index.ts            # 📝 TypeScript 類型定義
-│   └── 📂 styles/
-│       └── index.css           # 🎨 全域樣式與 Tailwind 配置
-├── 📂 docs/                     # 📦 建置輸出（GitHub Pages）
-└── 📂 .github/
-    └── workflows/
-        └── deploy.yml           # 🚀 自動部署 CI/CD
+│   ├── 📂 hooks/                # 🎣 自定義 Hooks
+│   ├── 📂 utils/                # 🛠️ 工具函數 (SEO, 常數)
+│   ├── 📂 types/                # 📝 TypeScript 類型定義
+│   └── 📂 styles/               # 🎨 全域樣式與 Tailwind 配置
+├── 📂 docs/                     # 📦 建置輸出（GitHub Pages 自動生成，請勿手動編輯）
+├── CHANGELOG.md                 # 📝 更新日誌
+├── README.md                    # 📘 專案說明
+└── vite.config.ts               # ⚡ Vite 配置
 ```
 
 </details>
@@ -369,6 +357,37 @@ git push origin main
 | 📊 提交至 Google Search Console | 加快索引速度 | 🔴 高 |
 | 🔗 建立反向連結 | 與協會、社群合作 | 🟡 中 |
 | ✍️ 持續更新內容 | 定期新增球場、教學 | 🟢 持續 |
+
+---
+
+## 🔌 第三方整合
+
+### Google AdSense
+- **客戶端 ID**: `ca-pub-7062108661079564`
+- **位置**: `index.html` 底部腳本
+- **廣告組件**: `src/components/ads/AdBanner.tsx`
+
+### Google Fonts
+- **Inter**: 現代無襯線字體（用於品牌名稱和 UI）
+- **Noto Sans TC**: 繁體中文字體（用於內容）
+
+---
+
+## 🔧 維護指南
+
+### 添加新球場
+1. 打開 `src/data/courtsData.ts` (或 `public/data/courts.json`)
+2. 按照現有 JSON 格式添加新的球場物件
+3. 提交變更，地圖將自動更新
+
+### 更新新聞
+1. 編輯 `src/data/newsData.ts`
+2. 依照 `NewsItem` 介面新增新聞條目
+3. 圖片請放置於 `public/images/news/`
+
+### SEO 配置更新
+1. 編輯 `src/utils/seo.ts`
+2. 針對特定頁面修改 title 或 description
 
 ---
 

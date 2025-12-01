@@ -99,6 +99,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Previous Versions]
 
+### v1.1.0 - Branding Update
+- **Brand New Mascot Logo**: Introduced a new pickleball character mascot (`picklemasterlogo.png`) to enhance brand identity.
+- **Icon System Overhaul**: Generated comprehensive set of favicons and app icons with `v2` cache-busting filenames to ensure immediate update on all devices.
+- **Hero Section Redesign**: Integrated the new mascot into the homepage hero section with responsive animations (desktop side-by-side, mobile centered).
+- **Header Logo Update**: Increased logo size for better visibility and updated to the new mascot design.
+- **SEO & Social Sharing**: Updated `og-image.png` with the new branding for better social media previews.
+- **PWA Assets**: Updated Android Chrome icons and `manifest.json` to use the new v2 assets.
+- **Documentation**: Updated `README.md` and `CHANGELOG.md` to reflect these changes.
+
 ### v1.0.0 - Initial Release
 - Interactive map with 55+ courts across Taiwan
 - Basic learning paths (Beginner, Intermediate, Advanced)

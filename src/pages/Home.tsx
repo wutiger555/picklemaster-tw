@@ -208,9 +208,29 @@ const Home = () => {
               >
                 {/* 品牌標識區 */}
                 <div className="relative">
-                  <h1 className="text-5xl md:text-7xl font-black mb-4 leading-tight text-white drop-shadow-2xl">
-                    {BRAND.NAME_ZH}
-                  </h1>
+                  <div className="flex items-center gap-4 mb-4">
+                    <motion.img
+                      src="/logo.webp?v=2"
+                      alt="Picklemaster Mascot"
+                      className="w-20 h-20 md:w-28 md:h-28 drop-shadow-2xl hidden md:block"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    />
+                    <h1 className="text-5xl md:text-7xl font-black leading-tight text-white drop-shadow-2xl">
+                      {BRAND.NAME_ZH}
+                    </h1>
+                  </div>
+
+                  {/* Mobile only mascot */}
+                  <motion.img
+                    src="/logo.webp?v=2"
+                    alt="Picklemaster Mascot"
+                    className="w-24 h-24 mx-auto mb-4 drop-shadow-2xl md:hidden block"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                  />
 
                   {/* 英文副標 */}
                   <div className="flex items-center space-x-3 mb-6">

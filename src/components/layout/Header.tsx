@@ -75,15 +75,15 @@ const Header = () => {
                     {/* Modern Sports Brand Logo */}
                     <Link
                         to={ROUTES.HOME}
-                        className="flex items-center space-x-3 group relative"
+                        className="flex items-center space-x-3 group relative py-1"
                     >
                         {/* Logo with dynamic glow */}
                         <div className="relative">
                             <div className="absolute inset-0 bg-emerald-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <img
-                                src="/logo.webp"
+                                src="/logo.webp?v=2"
                                 alt="Picklemaster Taiwan"
-                                className="w-10 h-10 object-contain relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
+                                className="w-14 h-14 md:w-16 md:h-16 object-contain relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
                             />
                         </div>
 

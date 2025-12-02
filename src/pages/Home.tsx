@@ -1,20 +1,47 @@
+import { useState, useEffect, Suspense, lazy } from 'react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Suspense, lazy } from 'react';
 import { ROUTES, BRAND } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useInView } from '../hooks/useInView';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import GlassCard from '../components/common/GlassCard';
 import SEOHead from '../components/common/SEOHead';
 
-const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
-import NewsSection from '../components/news/NewsSection';
-import VideoSpotlight from '../components/home/VideoSpotlight';
+import HeroCourtPreview from '../components/hero/HeroCourtPreview';
+
+// Lazy load heavy sections below the fold
+const NewsSection = lazy(() => import('../components/news/NewsSection'));
+const VideoSpotlight = lazy(() => import('../components/home/VideoSpotlight'));
+
+// Lazy Section Wrapper to trigger load on scroll
+const LazySection = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
+  const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0.1, rootMargin: "100px", once: true });
+  
+  return (
+    <div ref={ref} className={className}>
+      {inView ? (
+        <Suspense fallback={<div className="w-full h-96 animate-pulse bg-neutral-100/50 rounded-3xl" />}>
+          {children}
+        </Suspense>
+      ) : (
+        <div className="w-full h-24" /> // Minimal placeholder
+      )}
+    </div>
+  );
+};
 
 const Home = () => {
   usePageTitle();
+  const [isMobile, setIsMobile] = useState(false);
 
-
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const features = [
     {
@@ -76,7 +103,7 @@ const Home = () => {
             }} />
           </div>
 
-          {/* 球場線條裝飾 */}
+          {/* 球場線條裝飾 - 僅保留基礎線條，對效能影響小 */}
           <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 1000 800">
             {/* 水平線 */}
             <line x1="0" y1="200" x2="1000" y2="200" stroke="white" strokeWidth="3" strokeDasharray="20,15" />
@@ -93,80 +120,84 @@ const Home = () => {
             <rect x="600" y="410" width="300" height="140" fill="none" stroke="white" strokeWidth="2" opacity="0.6" />
           </svg>
 
-          {/* 匹克球裝飾元素（帶洞的球） */}
-          <motion.div
-            className="absolute top-20 right-20 w-32 h-32 opacity-20"
-          >
-            <svg viewBox="0 0 100 100" className="w-full h-full animate-float">
-              <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.8)" strokeWidth="3" />
-              <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.3)" />
-              {/* 球上的洞 */}
-              {[0, 60, 120, 180, 240, 300].map((angle, i) => {
-                const x = 50 + 25 * Math.cos((angle * Math.PI) / 180);
-                const y = 50 + 25 * Math.sin((angle * Math.PI) / 180);
-                return <circle key={i} cx={x} cy={y} r="4" fill="rgba(0,0,0,0.6)" />;
-              })}
-              <circle cx="50" cy="50" r="4" fill="rgba(0,0,0,0.6)" />
-            </svg>
-          </motion.div>
+          {/* 匹克球裝飾元素 - 僅在桌面版顯示以節省手機效能 */}
+          {!isMobile && (
+            <>
+              <motion.div
+                className="absolute top-20 right-20 w-32 h-32 opacity-20"
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full animate-float">
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.8)" strokeWidth="3" />
+                  <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.3)" />
+                  {/* 球上的洞 */}
+                  {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+                    const x = 50 + 25 * Math.cos((angle * Math.PI) / 180);
+                    const y = 50 + 25 * Math.sin((angle * Math.PI) / 180);
+                    return <circle key={i} cx={x} cy={y} r="4" fill="rgba(0,0,0,0.6)" />;
+                  })}
+                  <circle cx="50" cy="50" r="4" fill="rgba(0,0,0,0.6)" />
+                </svg>
+              </motion.div>
 
-          <motion.div
-            className="absolute bottom-32 left-16 w-24 h-24 opacity-15"
-          >
-            <svg viewBox="0 0 100 100" className="w-full h-full animate-bounce-slow">
-              <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.9)" strokeWidth="3" />
-              <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.4)" />
-              {[30, 90, 150, 210, 270, 330].map((angle, i) => {
-                const x = 50 + 25 * Math.cos((angle * Math.PI) / 180);
-                const y = 50 + 25 * Math.sin((angle * Math.PI) / 180);
-                return <circle key={i} cx={x} cy={y} r="4" fill="rgba(0,0,0,0.6)" />;
-              })}
-              <circle cx="50" cy="50" r="4" fill="rgba(0,0,0,0.6)" />
-            </svg>
-          </motion.div>
+              <motion.div
+                className="absolute bottom-32 left-16 w-24 h-24 opacity-15"
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full animate-bounce-slow">
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.9)" strokeWidth="3" />
+                  <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.4)" />
+                  {[30, 90, 150, 210, 270, 330].map((angle, i) => {
+                    const x = 50 + 25 * Math.cos((angle * Math.PI) / 180);
+                    const y = 50 + 25 * Math.sin((angle * Math.PI) / 180);
+                    return <circle key={i} cx={x} cy={y} r="4" fill="rgba(0,0,0,0.6)" />;
+                  })}
+                  <circle cx="50" cy="50" r="4" fill="rgba(0,0,0,0.6)" />
+                </svg>
+              </motion.div>
 
-          <motion.div
-            className="absolute top-1/3 left-1/4 w-20 h-20 opacity-10"
-          >
-            <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse-slow">
-              <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 1)" strokeWidth="3" />
-              <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.5)" />
-              {[0, 72, 144, 216, 288].map((angle, i) => {
-                const x = 50 + 20 * Math.cos((angle * Math.PI) / 180);
-                const y = 50 + 20 * Math.sin((angle * Math.PI) / 180);
-                return <circle key={i} cx={x} cy={y} r="3" fill="rgba(0,0,0,0.7)" />;
-              })}
-            </svg>
-          </motion.div>
+              <motion.div
+                className="absolute top-1/3 left-1/4 w-20 h-20 opacity-10"
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse-slow">
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 1)" strokeWidth="3" />
+                  <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.5)" />
+                  {[0, 72, 144, 216, 288].map((angle, i) => {
+                    const x = 50 + 20 * Math.cos((angle * Math.PI) / 180);
+                    const y = 50 + 20 * Math.sin((angle * Math.PI) / 180);
+                    return <circle key={i} cx={x} cy={y} r="3" fill="rgba(0,0,0,0.7)" />;
+                  })}
+                </svg>
+              </motion.div>
 
-          {/* 球拍輪廓裝飾 */}
-          <motion.div
-            animate={{
-              rotate: [0, 5, 0, -5, 0],
-              opacity: [0.05, 0.08, 0.05]
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute bottom-20 right-1/4 w-40 h-52"
-          >
-            <svg viewBox="0 0 100 140" className="w-full h-full">
-              {/* 球拍拍面 */}
-              <ellipse cx="50" cy="40" rx="35" ry="38" fill="none" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="3" />
-              <ellipse cx="50" cy="40" rx="30" ry="33" fill="rgba(251, 191, 36, 0.1)" />
-              {/* 網格 */}
-              {[...Array(6)].map((_, i) => (
-                <line key={`h${i}`} x1="20" y1={10 + i * 10} x2="80" y2={10 + i * 10} stroke="rgba(251, 191, 36, 0.3)" strokeWidth="1" />
-              ))}
-              {[...Array(6)].map((_, i) => (
-                <line key={`v${i}`} x1={25 + i * 10} y1="10" x2={25 + i * 10} y2="70" stroke="rgba(251, 191, 36, 0.3)" strokeWidth="1" />
-              ))}
-              {/* 握把 */}
-              <rect x="43" y="78" width="14" height="50" rx="7" fill="rgba(251, 191, 36, 0.4)" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="2" />
-            </svg>
-          </motion.div>
+              {/* 球拍輪廓裝飾 */}
+              <motion.div
+                animate={{
+                  rotate: [0, 5, 0, -5, 0],
+                  opacity: [0.05, 0.08, 0.05]
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="absolute bottom-20 right-1/4 w-40 h-52"
+              >
+                <svg viewBox="0 0 100 140" className="w-full h-full">
+                  {/* 球拍拍面 */}
+                  <ellipse cx="50" cy="40" rx="35" ry="38" fill="none" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="3" />
+                  <ellipse cx="50" cy="40" rx="30" ry="33" fill="rgba(251, 191, 36, 0.1)" />
+                  {/* 網格 */}
+                  {[...Array(6)].map((_, i) => (
+                    <line key={`h${i}`} x1="20" y1={10 + i * 10} x2="80" y2={10 + i * 10} stroke="rgba(251, 191, 36, 0.3)" strokeWidth="1" />
+                  ))}
+                  {[...Array(6)].map((_, i) => (
+                    <line key={`v${i}`} x1={25 + i * 10} y1="10" x2={25 + i * 10} y2="70" stroke="rgba(251, 191, 36, 0.3)" strokeWidth="1" />
+                  ))}
+                  {/* 握把 */}
+                  <rect x="43" y="78" width="14" height="50" rx="7" fill="rgba(251, 191, 36, 0.4)" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="2" />
+                </svg>
+              </motion.div>
+            </>
+          )}
 
           {/* 光暈效果 */}
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-transparent to-green-950/40" />
@@ -181,13 +212,7 @@ const Home = () => {
               transition={{ duration: 0.8 }}
               className="order-2 lg:order-1"
             >
-              <Suspense fallback={
-                <div className="w-full h-64 md:h-80 flex items-center justify-center bg-white/10 rounded-2xl">
-                  <div className="text-lg animate-pulse text-white">載入中...</div>
-                </div>
-              }>
-                <HeroCourtPreview />
-              </Suspense>
+              <HeroCourtPreview />
               <p className="text-center text-white/80 text-sm mt-4">
                 ↻ 360° 旋轉檢視真實球場配置
               </p>
@@ -197,43 +222,48 @@ const Home = () => {
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.6 }}
               className="order-1 lg:order-2"
             >
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
+                transition={{ duration: 0.4 }}
                 className="space-y-8"
               >
                 {/* 品牌標識區 */}
                 <div className="relative">
                   <div className="flex items-center gap-4 mb-4">
-                    <motion.img
-                      src="/logo.webp?v=2"
-                      alt="Picklemaster Mascot"
-                      className="w-20 h-20 md:w-28 md:h-28 drop-shadow-2xl hidden md:block"
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                    />
+                    {!isMobile && (
+                      <motion.img
+                        src="/logo.webp?v=2"
+                        alt="Picklemaster Mascot"
+                        className="w-20 h-20 md:w-28 md:h-28 drop-shadow-2xl hidden md:block"
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                        fetchPriority="high"
+                        width="112"
+                        height="112"
+                      />
+                    )}
                     <h1 className="text-5xl md:text-7xl font-black leading-tight text-white drop-shadow-2xl">
                       {BRAND.NAME_ZH}
                     </h1>
                   </div>
 
                   {/* Mobile only mascot */}
-                  <motion.img
+                  <img
                     src="/logo.webp?v=2"
                     alt="Picklemaster Mascot"
                     className="w-24 h-24 mx-auto mb-4 drop-shadow-2xl md:hidden block"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    width="96"
+                    height="96"
                   />
 
                   {/* 英文副標 */}
                   <div className="flex items-center space-x-3 mb-6">
+
                     <div className="h-1 w-12 bg-white/60 rounded-full"></div>
                     <p className="text-lg md:text-xl font-semibold text-white/90 tracking-wide">
                       {BRAND.NAME}
@@ -351,17 +381,19 @@ const Home = () => {
       </section>
 
       {/* Video Spotlight Section */}
-      <VideoSpotlight />
-
-
+      <LazySection>
+        <VideoSpotlight />
+      </LazySection>
 
       {/* 核心功能 - Bento Grid 不對稱佈局 */}
       <section className="py-28 md:py-36 bg-gradient-to-b from-white via-neutral-50/30 to-neutral-50 relative overflow-hidden">
-        {/* 背景裝飾 */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-20 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 left-20 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl"></div>
-        </div>
+        {/* 背景裝飾 - 僅桌面版顯示 */}
+        {!isMobile && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 right-20 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 left-20 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl"></div>
+          </div>
+        )}
 
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
@@ -393,7 +425,7 @@ const Home = () => {
                   variant="primary"
                   size="lg"
                   hoverable
-                  magnetic
+                  magnetic={!isMobile}
                   clickable
                   className="h-full relative min-h-[280px]"
                 >
@@ -423,7 +455,7 @@ const Home = () => {
                   variant="secondary"
                   size="lg"
                   hoverable
-                  magnetic
+                  magnetic={!isMobile}
                   clickable
                   className="h-full relative min-h-[280px]"
                 >
@@ -453,7 +485,7 @@ const Home = () => {
                   variant="accent"
                   size="xl"
                   hoverable
-                  magnetic
+                  magnetic={!isMobile}
                   clickable
                   className="h-full relative min-h-[400px] lg:min-h-[580px]"
                 >
@@ -511,7 +543,7 @@ const Home = () => {
                   variant="light"
                   size="lg"
                   hoverable
-                  magnetic
+                  magnetic={!isMobile}
                   clickable
                   className="h-full relative min-h-[280px]"
                 >
@@ -551,9 +583,12 @@ const Home = () => {
       </section>
 
       {/* News Section */}
-      <NewsSection />
+      <LazySection>
+        <NewsSection />
+      </LazySection>
 
       {/* 系統化學習路徑 - Grid Layout */}
+
       <section className="py-28 md:py-32 bg-gradient-to-b from-neutral-50 to-white relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <motion.div

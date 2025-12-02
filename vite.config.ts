@@ -9,6 +9,15 @@ export default defineConfig({
     outDir: 'docs',
     emptyOutDir: true,
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
+          'vendor-framer': ['framer-motion'],
+        },
+      },
+    },
   },
   server: {
     port: 5173,

@@ -56,8 +56,8 @@ const NewsSection: React.FC = () => {
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
                             className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeCategory === cat.id
-                                    ? 'bg-neutral-900 text-white shadow-lg scale-105'
-                                    : 'bg-white text-neutral-600 hover:bg-gray-50 border-2 border-gray-200 hover:border-gray-300'
+                                ? 'bg-neutral-900 text-white shadow-lg scale-105'
+                                : 'bg-white text-neutral-600 hover:bg-gray-50 border-2 border-gray-200 hover:border-gray-300'
                                 }`}
                         >
                             {cat.label}
@@ -89,16 +89,6 @@ const NewsSection: React.FC = () => {
                         ))}
                     </AnimatePresence>
                 </motion.div>
-
-                {/* View More Button (Optional) */}
-                <div className="mt-12 text-center">
-                    <button className="text-neutral-500 font-semibold hover:text-neutral-900 transition-colors text-sm flex items-center justify-center mx-auto">
-                        查看更多歷史消息
-                        <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                </div>
             </div>
         </section>
     );

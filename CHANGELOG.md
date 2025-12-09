@@ -9,6 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🎨 Major Page Redesigns (December 2024)
+
+##### 📍 Courts Page (`/courts`)
+- **Modern Hero Section**: Gradient background with animated statistics cards
+- **Region Filtering**: New region-based filtering (北部/中部/南部/東部)
+- **Improved Search**: Glassmorphic search bar in hero section
+- **Card Grid Layout**: Modern card design with hover effects and shadows
+- **Sticky Filter Bar**: Filters stay visible while scrolling
+- **SEO Content Block**: Added FAQ section for common court questions
+- **Related Resources**: New section linking to Rules, Equipment, and Learning
+- **Breadcrumb Navigation**: Added for better site structure
+
+##### 🏓 Equipment Page (`/equipment`)
+- **Removed Tab Navigation**: All content now displayed as scrollable sections
+- **Quick Selection Guide**: New "快速選購指南" section for different user types
+- **Price Tier Overview**: Visual cards showing Entry/Intermediate/Advanced tiers
+- **Section Anchors**: Quick navigation buttons in hero section
+- **Badge Highlights**: "最推薦" badge for intermediate tier
+- **Other Equipment Section**: Dark-themed section for shoes, balls, apparel
+- **Improved Visual Hierarchy**: Section labels with colored badges
+
+##### 🎯 Learning Page (`/learning`)
+- **Accordion-Style Sections**: Collapsible content blocks (3D Court, Interactive Court, Ball Animation)
+- **Quick Resource Links**: Top-of-page links to Rules, Equipment, Courts
+- **Skill Categories**: New visual cards for Serve, Return, Dink, Volley techniques
+- **Toggle Quiz**: Quiz section now toggleable for cleaner experience
+- **Animated Wave Background**: SVG wave animation in hero section
+- **CTA Section**: New dark-themed "準備好開始練習了嗎？" call-to-action
+- **Improved Loading States**: Smoother transitions between sections
+
+##### 🔍 SEO & Discoverability Improvements
+- **Breadcrumb Navigation**: Added to all three pages
+- **Internal Linking**: Cross-page links in related content sections
+- **FAQ Sections**: Added common questions with answers for SEO
+- **Semantic Structure**: Improved heading hierarchy (H1 → H2 → H3)
+- **Related Resources**: Every page now links to complementary content
+
 #### 🎥 Video Integration
 - **New `VideoTutorials` component**: Grid layout with hover effects, duration/level badges
 - **New `VideoSpotlight` component**: Cinematic home page section with video preview

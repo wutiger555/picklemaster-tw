@@ -92,11 +92,11 @@ const Header = () => {
                         <div className="flex flex-col">
                             {/* Main Brand - Bold & Modern */}
                             <div className="flex items-baseline space-x-2">
-                                <h1 className="text-xl font-black tracking-tight leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>
+                                <div className="text-xl font-black tracking-tight leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
                                         PICKLEMASTER
                                     </span>
-                                </h1>
+                                </div>
                                 {/* Dynamic accent bar */}
                                 <div className="flex flex-col space-y-0.5 hidden sm:flex">
                                     <div className="h-0.5 w-8 bg-gradient-to-r from-emerald-500 to-transparent rounded-full" />

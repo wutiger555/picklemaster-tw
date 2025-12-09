@@ -54,7 +54,7 @@ const Learning = () => {
             animate={{ opacity: 1, y: 0 }}
             className="font-display text-display-2xl font-black mb-4"
           >
-            技巧教學
+            匹克球教學 - 完整學習課程
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -62,7 +62,7 @@ const Learning = () => {
             transition={{ delay: 0.1 }}
             className="text-body-xl text-white/90 max-w-2xl mx-auto"
           >
-            從基礎規則到進階技巧，系統化學習匹克球
+            3D 互動教學、技巧訓練、戰術指導 | 從新手到進階的匹克球學習路徑
           </motion.p>
         </div>
       </section>

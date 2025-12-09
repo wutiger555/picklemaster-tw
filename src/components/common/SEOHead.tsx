@@ -1,6 +1,13 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { pageSEO, generateBreadcrumbStructuredData } from '../../utils/seo';
+import {
+  pageSEO,
+  generateBreadcrumbStructuredData,
+  equipmentProductData,
+  courtsLocationData,
+  learningCourseData,
+  faqStructuredData
+} from '../../utils/seo';
 
 interface SEOHeadProps {
   page?: string;
@@ -109,6 +116,33 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription,
       script.setAttribute('data-breadcrumb', 'true');
       script.textContent = JSON.stringify(breadcrumbData);
       document.head.appendChild(script);
+    }
+
+    // 添加頁面特定的結構化資料
+    const addStructuredData = (data: any, dataType: string) => {
+      // 移除舊的資料
+      const oldData = document.querySelector(`script[data-structured="${dataType}"]`);
+      if (oldData) {
+        oldData.remove();
+      }
+
+      // 添加新的資料
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-structured', dataType);
+      script.textContent = JSON.stringify(data);
+      document.head.appendChild(script);
+    };
+
+    // 根據頁面添加對應的結構化資料
+    if (currentPage === 'equipment') {
+      addStructuredData(equipmentProductData, 'equipment');
+    } else if (currentPage === 'courts') {
+      addStructuredData(courtsLocationData, 'courts');
+    } else if (currentPage === 'learning') {
+      addStructuredData(learningCourseData, 'learning');
+    } else if (currentPage === 'faq') {
+      addStructuredData(faqStructuredData, 'faq');
     }
   }, [title, description, keywords, location.pathname, currentPage]);
 

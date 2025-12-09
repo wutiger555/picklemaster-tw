@@ -1,5 +1,5 @@
 // Service Worker for PWA support
-const CACHE_NAME = 'picklemaster-scorer-v2';
+const CACHE_NAME = 'picklemaster-scorer-v3-fix-404';
 const CACHE_URLS = [
   '/scorer',
   '/logo.webp',

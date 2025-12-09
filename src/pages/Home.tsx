@@ -14,6 +14,7 @@ import CourtSkeleton from '../components/hero/CourtSkeleton';
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 const NewsSection = lazy(() => import('../components/news/NewsSection'));
 const VideoSpotlight = lazy(() => import('../components/home/VideoSpotlight'));
+const QuickNav = lazy(() => import('../components/home/QuickNav'));
 
 // Lazy Section Wrapper to trigger load on scroll
 const LazySection = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
@@ -314,6 +315,11 @@ const Home = () => {
           </svg>
         </div>
       </section>
+
+      {/* Quick Navigation & Search */}
+      <LazySection>
+        <QuickNav />
+      </LazySection>
 
       {/* Video Spotlight Section */}
       <LazySection>

@@ -1,5 +1,26 @@
 # https://www.robotstxt.org/robotstxt.html
+
+# 允許所有搜尋引擎爬取
 User-agent: *
 Allow: /
 
+# 特別允許 Googlebot 爬取所有內容
+User-agent: Googlebot
+Allow: /
+
+# 特別允許 Bingbot 爬取所有內容
+User-agent: Bingbot
+Allow: /
+
+# 排除不重要的資源
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /service-worker.js
+
+# Sitemap 位置
 Sitemap: https://picklemastertw.site/sitemap.xml
+
+# 重點頁面提示
+# 球場地圖: https://picklemastertw.site/courts
+# 規則教學: https://picklemastertw.site/rules
+# 裝備推薦: https://picklemastertw.site/equipment

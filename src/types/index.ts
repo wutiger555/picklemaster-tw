@@ -6,19 +6,53 @@ export interface Court {
     address: string;
     lat: number;
     lng: number;
+    city: string; // 城市
+    district?: string; // 行政區
   };
-  type: 'indoor' | 'outdoor';
+  type: 'indoor' | 'outdoor' | 'covered'; // covered = 風雨球場
   fee: 'free' | 'paid';
   price: string;
+  price_details?: {
+    weekday?: string; // 平日價格
+    weekend?: string; // 假日價格
+    peak?: string; // 尖峰時段
+    offpeak?: string; // 離峰時段
+    rental?: string; // 球具租借
+    membership?: string; // 會員費用
+  };
   courts_count: number;
+  surface?: 'concrete' | 'wood' | 'synthetic' | 'acrylic' | 'grass'; // 場地材質
+  net_type?: 'permanent' | 'portable' | 'self' | 'provided'; // 球網類型
+  ownership: 'public' | 'private' | 'school' | 'community'; // 經營類型
   opening_hours: string;
+  opening_details?: {
+    weekday?: string;
+    weekend?: string;
+    holiday?: string;
+    special_notes?: string;
+  };
   contact: string;
+  contact_details?: {
+    phone?: string;
+    email?: string;
+    line?: string;
+    instagram?: string;
+    facebook?: string;
+  };
   facilities: string[];
+  features?: string[]; // 球場特色
   line_group?: string;
   booking_url?: string;
-  booking_method?: string; // 預約方式說明
+  booking_method?: string;
   website?: string;
   reviews?: string;
+  rating?: number; // 1-5 評分
+  is_new?: boolean; // 是否為新球場（近半年內開放）
+  added_date?: string; // 加入日期
+  last_updated?: string; // 最後更新日期
+  images?: string[]; // 球場照片
+  google_maps_url?: string; // Google Maps 連結
+  navigation_tips?: string; // 導航提示
 }
 
 // 球場資料回應

@@ -1,20 +1,35 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { CourtsData, Court } from '../types';
 import CourtMap from '../components/map/CourtMap';
-import GlassCard from '../components/common/GlassCard';
-import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
 import { usePageTitle } from '../hooks/usePageTitle';
 import SEOHead from '../components/common/SEOHead';
+
+// Pickleball Icon Component
+const PickleballIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+    <circle cx="8" cy="9" r="1.5" fill="currentColor" />
+    <circle cx="16" cy="9" r="1.5" fill="currentColor" />
+    <circle cx="12" cy="15" r="1.5" fill="currentColor" />
+    <circle cx="8" cy="15" r="1.5" fill="currentColor" />
+    <circle cx="16" cy="15" r="1.5" fill="currentColor" />
+  </svg>
+);
 
 const Courts = () => {
   usePageTitle('全台匹克球場地圖');
   const [courtsData, setCourtsData] = useState<CourtsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
-  const [filterType, setFilterType] = useState<'all' | 'indoor' | 'outdoor'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'indoor' | 'outdoor' | 'covered'>('all');
   const [filterFee, setFilterFee] = useState<'all' | 'free' | 'paid'>('all');
+  const [filterOwnership, setFilterOwnership] = useState<'all' | 'public' | 'private' | 'school' | 'community'>('all');
+  const [filterCity, setFilterCity] = useState<string>('all');
+  const [showNewOnly, setShowNewOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     fetch('/data/courts.json')
@@ -29,382 +44,553 @@ const Courts = () => {
       });
   }, []);
 
-  // 篩選球場
-  const filteredCourts = courtsData?.courts.filter(court => {
-    // 類型篩選
+  const cities = [...new Set(courtsData?.courts.map((c: Court) => c.location.city).filter(Boolean) || [])].sort();
+
+  const stats = {
+    total: courtsData?.courts.length || 0,
+    indoor: courtsData?.courts.filter((c: Court) => c.type === 'indoor').length || 0,
+    outdoor: courtsData?.courts.filter((c: Court) => c.type === 'outdoor').length || 0,
+    free: courtsData?.courts.filter((c: Court) => c.fee === 'free').length || 0,
+    newCourts: courtsData?.courts.filter((c: Court) => c.is_new).length || 0,
+  };
+
+  const filteredCourts = courtsData?.courts.filter((court: Court) => {
     if (filterType !== 'all' && court.type !== filterType) return false;
-
-    // 收費篩選
     if (filterFee !== 'all' && court.fee !== filterFee) return false;
-
-    // 搜尋篩選
-    if (searchQuery && !court.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !court.location.address.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
+    if (filterOwnership !== 'all' && court.ownership !== filterOwnership) return false;
+    if (filterCity !== 'all' && court.location.city !== filterCity) return false;
+    if (showNewOnly && !court.is_new) return false;
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchName = court.name.toLowerCase().includes(query);
+      const matchAddress = court.location.address.toLowerCase().includes(query);
+      const matchCity = court.location.city?.toLowerCase().includes(query);
+      const matchFeatures = court.features?.some((f: string) => f.toLowerCase().includes(query));
+      if (!matchName && !matchAddress && !matchCity && !matchFeatures) return false;
     }
-
     return true;
   }) || [];
 
+  const typeLabels: Record<string, string> = { indoor: '室內', outdoor: '戶外', covered: '風雨' };
+  const ownershipLabels: Record<string, string> = { public: '公營', private: '民營', school: '學校', community: '社區' };
+
+  const clearFilters = () => {
+    setFilterType('all');
+    setFilterFee('all');
+    setFilterOwnership('all');
+    setFilterCity('all');
+    setShowNewOnly(false);
+    setSearchQuery('');
+    setSelectedCourt(null);
+  };
+
+  const hasActiveFilters = filterType !== 'all' || filterFee !== 'all' || filterOwnership !== 'all' || filterCity !== 'all' || showNewOnly || searchQuery;
+  const activeFilterCount = [filterType !== 'all', filterFee !== 'all', filterOwnership !== 'all', filterCity !== 'all', showNewOnly].filter(Boolean).length;
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-white">
-        <GlassCard variant="light" size="xl" className="text-center">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary-500 mb-4"></div>
-          <p className="font-display text-heading-lg font-bold text-neutral-900">載入球場資料中...</p>
-        </GlassCard>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-orange-50">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="inline-block mb-4"
+          >
+            <PickleballIcon className="w-16 h-16 text-teal-500" />
+          </motion.div>
+          <p className="text-neutral-600 font-medium">探索全台球場中...</p>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50/50 via-white to-orange-50/30">
       <SEOHead page="courts" />
-      {/* 標題區 - 升級設計 */}
-      <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-accent-500 text-white py-20 md:py-24 overflow-hidden">
-        {/* 背景裝飾 */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
-          <div className="absolute bottom-10 right-10 w-80 h-80 bg-primary-300/20 rounded-full blur-3xl animate-float"></div>
+
+      {/* Hero Header */}
+      <header className="relative overflow-hidden">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -right-20 w-80 h-80 bg-gradient-to-br from-teal-200/30 to-cyan-200/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-gradient-to-br from-orange-200/30 to-yellow-200/20 rounded-full blur-3xl" />
+          {/* Pickleball pattern */}
+          <div className="absolute top-10 right-10 opacity-5">
+            <PickleballIcon className="w-32 h-32 text-teal-900" />
+          </div>
         </div>
 
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.h1
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            className="font-display text-display-lg md:text-display-xl font-black mb-4 drop-shadow-lg"
-          >
-            台灣匹克球球場地圖
-          </motion.h1>
-          <motion.p
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.1 }}
-            className="text-body-lg md:text-body-xl text-white/90 max-w-2xl mx-auto mb-6"
-          >
-            55+ 匹克球球場完整資訊 | 台北、新北、台中、高雄、台南匹克球場推薦 🏓
-          </motion.p>
-
-          {/* 統計資訊 */}
+        <div className="container mx-auto px-4 py-10 md:py-14 relative z-10">
           <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-wrap items-center justify-center gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <motion.div variants={staggerItem}>
-              <GlassCard variant="light" size="sm" hoverable className="inline-block">
-                <div className="flex items-center gap-2 px-4 py-2">
-                  <span className="text-2xl">📍</span>
-                  <span className="font-mono text-heading-md font-bold text-neutral-900">
-                    {courtsData?.courts.length}
-                  </span>
-                  <span className="text-body-md text-neutral-700">個球場</span>
-                </div>
-              </GlassCard>
-            </motion.div>
+            <div className="flex items-center gap-3 mb-3">
+              <motion.div
+                whileHover={{ rotate: 180 }}
+                transition={{ duration: 0.5 }}
+                className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/25"
+              >
+                <PickleballIcon className="w-6 h-6 text-white" />
+              </motion.div>
+              <span className="text-teal-600 font-semibold text-sm tracking-wide uppercase">Court Finder</span>
+            </div>
 
-            <motion.div variants={staggerItem}>
-              <GlassCard variant="light" size="sm" hoverable className="inline-block">
-                <div className="flex items-center gap-2 px-4 py-2">
-                  <span className="text-2xl">🔍</span>
-                  <span className="font-mono text-heading-md font-bold text-neutral-900">
-                    {filteredCourts.length}
-                  </span>
-                  <span className="text-body-md text-neutral-700">個符合篩選</span>
-                </div>
-              </GlassCard>
-            </motion.div>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3">
+              全台匹克球場地圖
+            </h1>
+            <p className="text-neutral-600 text-lg max-w-xl mb-6">
+              收錄 {stats.total} 座球場，快速找到適合你的場地開始揮拍
+            </p>
+
+            {/* Quick Stats Pills */}
+            <div className="flex flex-wrap gap-2">
+              <motion.span
+                whileHover={{ scale: 1.05 }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/80 backdrop-blur-sm border border-teal-100 rounded-full text-sm text-neutral-700 shadow-sm"
+              >
+                <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                {stats.indoor} 室內
+              </motion.span>
+              <motion.span
+                whileHover={{ scale: 1.05 }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/80 backdrop-blur-sm border border-teal-100 rounded-full text-sm text-neutral-700 shadow-sm"
+              >
+                <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+                {stats.outdoor} 戶外
+              </motion.span>
+              <motion.span
+                whileHover={{ scale: 1.05 }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/80 backdrop-blur-sm border border-teal-100 rounded-full text-sm text-neutral-700 shadow-sm"
+              >
+                <span className="w-2 h-2 bg-green-400 rounded-full" />
+                {stats.free} 免費
+              </motion.span>
+              {stats.newCourts > 0 && (
+                <motion.span
+                  whileHover={{ scale: 1.05 }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-full text-sm text-orange-700 font-medium shadow-sm"
+                >
+                  <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                  {stats.newCourts} 新場地
+                </motion.span>
+              )}
+            </div>
           </motion.div>
+        </div>
+      </header>
 
-          {/* 資料來源 */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-6 text-caption-lg text-white/70"
-          >
-            📋 資料來源：
+      {/* Toolbar */}
+      <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-neutral-200/80 shadow-sm">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+            {/* Search */}
+            <div className="flex-1 relative group">
+              <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 group-focus-within:text-teal-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="搜尋球場..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:bg-white focus:border-teal-400 focus:ring-2 focus:ring-teal-100 focus:outline-none transition-all text-sm"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0">
+              {/* Quick Filters */}
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                {['all', 'indoor', 'outdoor'].map((type) => (
+                  <motion.button
+                    key={type}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setFilterType(type as typeof filterType)}
+                    className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${filterType === type
+                        ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-md shadow-teal-500/25'
+                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                      }`}
+                  >
+                    {type === 'all' ? '全部' : typeLabels[type]}
+                  </motion.button>
+                ))}
+              </div>
+
+              <div className="w-px h-6 bg-neutral-200 flex-shrink-0" />
+
+              {/* Fee Toggle */}
+              <div className="flex items-center bg-neutral-100 rounded-lg p-1 flex-shrink-0">
+                {['all', 'free', 'paid'].map((fee) => (
+                  <button
+                    key={fee}
+                    onClick={() => setFilterFee(fee as typeof filterFee)}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${filterFee === fee
+                        ? 'bg-white text-neutral-900 shadow-sm'
+                        : 'text-neutral-500 hover:text-neutral-700'
+                      }`}
+                  >
+                    {fee === 'all' ? '全部' : fee === 'free' ? '免費' : '付費'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="w-px h-6 bg-neutral-200 flex-shrink-0" />
+
+              {/* More Filters */}
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex-shrink-0 ${showFilters || activeFilterCount > 0
+                    ? 'bg-teal-50 text-teal-700 border border-teal-200'
+                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                篩選
+                {activeFilterCount > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 bg-teal-500 text-white text-xs rounded-full">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </motion.button>
+
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="px-3 py-2 text-neutral-500 hover:text-neutral-700 text-sm font-medium transition-colors flex-shrink-0"
+                >
+                  清除
+                </button>
+              )}
+
+              <div className="w-px h-6 bg-neutral-200 flex-shrink-0" />
+
+              {/* View Toggle */}
+              <div className="flex bg-neutral-100 rounded-lg p-1 flex-shrink-0">
+                <button
+                  onClick={() => setViewMode('map')}
+                  className={`p-2 rounded-md transition-all ${viewMode === 'map' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'
+                    }`}
+                  title="地圖模式"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'
+                    }`}
+                  title="列表模式"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Extended Filters */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-neutral-100 mt-3">
+                  <select
+                    value={filterCity}
+                    onChange={(e) => setFilterCity(e.target.value)}
+                    className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg focus:border-teal-400 focus:ring-1 focus:ring-teal-100 focus:outline-none text-sm"
+                  >
+                    <option value="all">全部城市</option>
+                    {cities.map((city) => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={filterOwnership}
+                    onChange={(e) => setFilterOwnership(e.target.value as typeof filterOwnership)}
+                    className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg focus:border-teal-400 focus:ring-1 focus:ring-teal-100 focus:outline-none text-sm"
+                  >
+                    <option value="all">全部經營類型</option>
+                    <option value="public">公營</option>
+                    <option value="private">民營</option>
+                    <option value="school">學校</option>
+                    <option value="community">社區</option>
+                  </select>
+
+                  {stats.newCourts > 0 && (
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={showNewOnly}
+                          onChange={(e) => setShowNewOnly(e.target.checked)}
+                          className="sr-only"
+                        />
+                        <div className={`w-9 h-5 rounded-full transition-colors ${showNewOnly ? 'bg-orange-500' : 'bg-neutral-300'}`}>
+                          <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform absolute top-0.5 ${showNewOnly ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                        </div>
+                      </div>
+                      <span className={`text-sm font-medium ${showNewOnly ? 'text-orange-600' : 'text-neutral-600'}`}>
+                        只看新場地
+                      </span>
+                    </label>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Results Count */}
+          <div className="flex items-center justify-between mt-3 text-sm">
+            <span className="text-neutral-500">
+              找到 <span className="font-semibold text-neutral-900">{filteredCourts.length}</span> 座球場
+            </span>
             <a
               href="https://pickleball.org.tw/stadium/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/90 hover:text-white hover:underline mx-1"
+              className="text-neutral-400 hover:text-teal-600 transition-colors text-xs"
             >
-              中華民國匹克球協會
+              資料來源：中華民國匹克球協會
             </a>
-            • 社群彙整
-          </motion.div>
+          </div>
         </div>
+      </div>
 
-        {/* 波浪裝飾 */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-auto">
-            <path
-              fill="#fafafa"
-              d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-            />
-          </svg>
-        </div>
-      </section>
-
-      <div className="container mx-auto px-4 py-12">
-        {/* 搜尋與篩選區 - Glassmorphism */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
-          <GlassCard variant="light" size="lg">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* 搜尋框 */}
-              <div className="md:col-span-2">
-                <label className="block text-body-sm font-semibold text-neutral-700 mb-2">
-                  🔍 搜尋球場
-                </label>
-                <input
-                  type="text"
-                  placeholder="輸入球場名稱或地址..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-neutral-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none text-body-md"
+      {/* Content */}
+      <div className="container mx-auto px-4 py-6">
+        {viewMode === 'map' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+            {/* Map */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="lg:col-span-3 xl:col-span-3"
+            >
+              <div className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-neutral-900/5 border border-neutral-200/80">
+                <CourtMap
+                  courts={filteredCourts}
+                  selectedCourt={selectedCourt}
+                  onCourtSelect={setSelectedCourt}
                 />
               </div>
+            </motion.div>
 
-              {/* 類型篩選 */}
-              <div>
-                <label className="block text-body-sm font-semibold text-neutral-700 mb-2">
-                  🏢 球場類型
-                </label>
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value as any)}
-                  className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-neutral-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none text-body-md"
-                >
-                  <option value="all">全部</option>
-                  <option value="indoor">室內</option>
-                  <option value="outdoor">戶外</option>
-                </select>
+            {/* Court List Sidebar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="lg:col-span-2"
+            >
+              <div className="bg-white rounded-2xl shadow-lg shadow-neutral-900/5 border border-neutral-200/80 overflow-hidden">
+                <div className="p-4 border-b border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
+                  <h2 className="font-semibold text-neutral-900">球場列表</h2>
+                </div>
+                <div className="max-h-[540px] overflow-y-auto">
+                  {filteredCourts.length === 0 ? (
+                    <div className="p-8 text-center">
+                      <PickleballIcon className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
+                      <p className="text-neutral-500">沒有符合條件的球場</p>
+                    </div>
+                  ) : (
+                    filteredCourts.map((court: Court, index: number) => (
+                      <motion.div
+                        key={court.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.03 }}
+                        onClick={() => setSelectedCourt(court)}
+                        className={`p-4 border-b border-neutral-100 cursor-pointer transition-all hover:bg-teal-50/50 ${selectedCourt?.id === court.id
+                            ? 'bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-l-teal-500'
+                            : ''
+                          }`}
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="font-semibold text-neutral-900 text-sm leading-tight">
+                            {court.name}
+                          </h3>
+                          {court.is_new && (
+                            <span className="flex-shrink-0 px-1.5 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-semibold rounded">
+                              NEW
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-neutral-500 mb-2.5 line-clamp-1">
+                          {court.location.address}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.type === 'indoor' ? 'bg-blue-50 text-blue-600' :
+                              court.type === 'covered' ? 'bg-purple-50 text-purple-600' :
+                                'bg-emerald-50 text-emerald-600'
+                            }`}>
+                            {typeLabels[court.type] || '戶外'}
+                          </span>
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.fee === 'free' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'
+                            }`}>
+                            {court.fee === 'free' ? '免費' : '付費'}
+                          </span>
+                          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
+                            {court.courts_count}面
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
               </div>
-
-              {/* 收費篩選 */}
-              <div>
-                <label className="block text-body-sm font-semibold text-neutral-700 mb-2">
-                  💰 收費方式
-                </label>
-                <select
-                  value={filterFee}
-                  onChange={(e) => setFilterFee(e.target.value as any)}
-                  className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-neutral-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none text-body-md"
-                >
-                  <option value="all">全部</option>
-                  <option value="free">免費</option>
-                  <option value="paid">付費</option>
-                </select>
-              </div>
-            </div>
-
-            {/* 清除篩選按鈕 */}
-            {(filterType !== 'all' || filterFee !== 'all' || searchQuery) && (
-              <div className="mt-4 text-center">
-                <button
-                  onClick={() => {
-                    setFilterType('all');
-                    setFilterFee('all');
-                    setSearchQuery('');
-                    setSelectedCourt(null);
-                  }}
-                  className="px-6 py-2 bg-neutral-900 hover:bg-neutral-800 text-white rounded-full text-body-sm font-semibold transition-all shadow-elevated-sm hover:shadow-elevated-md"
-                >
-                  🔄 清除所有篩選
+            </motion.div>
+          </div>
+        ) : (
+          /* List View */
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4"
+          >
+            {filteredCourts.length === 0 ? (
+              <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200">
+                <PickleballIcon className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+                <p className="text-neutral-500 text-lg">沒有符合條件的球場</p>
+                <button onClick={clearFilters} className="mt-4 text-teal-600 hover:text-teal-700 font-medium">
+                  清除所有篩選
                 </button>
               </div>
-            )}
-          </GlassCard>
-        </motion.div>
+            ) : (
+              filteredCourts.map((court: Court, index: number) => (
+                <motion.div
+                  key={court.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ y: -2 }}
+                  className="bg-white rounded-2xl border border-neutral-200 p-5 hover:shadow-lg hover:shadow-neutral-900/5 transition-all"
+                >
+                  <div className="flex flex-col md:flex-row md:items-start gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-start gap-3 mb-2">
+                        <h3 className="font-bold text-neutral-900 text-lg">
+                          {court.name}
+                        </h3>
+                        {court.is_new && (
+                          <span className="px-2 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-bold rounded">
+                            NEW
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-neutral-500 mb-4 flex items-center gap-1">
+                        <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                        {court.location.address}
+                      </p>
 
-        {/* 互動地圖 */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mb-12"
-        >
-          <CourtMap
-            courts={filteredCourts}
-            selectedCourt={selectedCourt}
-            onCourtSelect={setSelectedCourt}
-          />
-        </motion.div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-sm mb-4">
+                        <div>
+                          <span className="text-neutral-400 text-xs">類型</span>
+                          <p className="font-semibold text-neutral-800">{typeLabels[court.type] || '戶外'}</p>
+                        </div>
+                        <div>
+                          <span className="text-neutral-400 text-xs">球場數</span>
+                          <p className="font-semibold text-neutral-800">{court.courts_count} 面</p>
+                        </div>
+                        <div>
+                          <span className="text-neutral-400 text-xs">經營</span>
+                          <p className="font-semibold text-neutral-800">{ownershipLabels[court.ownership] || '公營'}</p>
+                        </div>
+                        <div>
+                          <span className="text-neutral-400 text-xs">收費</span>
+                          <p className={`font-semibold ${court.fee === 'free' ? 'text-emerald-600' : 'text-amber-600'}`}>
+                            {court.fee === 'free' ? '免費' : court.price}
+                          </p>
+                        </div>
+                      </div>
 
-        {/* 球場列表 */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <GlassCard variant="light" size="md" className="mb-6">
-            <h2 className="font-display text-display-sm font-black text-neutral-900 flex items-center">
-              <span className="mr-2">📋</span>
-              球場列表
-            </h2>
-          </GlassCard>
+                      <div className="flex items-center gap-2 text-sm text-neutral-600">
+                        <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {court.opening_hours}
+                      </div>
 
-          {filteredCourts.length === 0 ? (
-            <GlassCard variant="medium" size="xl">
-              <div className="text-center py-8">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="font-display text-heading-xl font-bold text-neutral-900 mb-2">
-                  找不到符合條件的球場
-                </h3>
-                <p className="text-body-md text-neutral-600">請嘗試調整篩選條件或搜尋關鍵字</p>
-              </div>
-            </GlassCard>
-          ) : (
-            <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {filteredCourts.map((court) => (
-                <motion.div key={court.id} variants={staggerItem}>
-                  <GlassCard
-                    variant={selectedCourt?.id === court.id ? 'primary' : 'light'}
-                    size="md"
-                    hoverable
-                    magnetic
-                    clickable
-                    onClick={() => setSelectedCourt(court)}
-                    className="h-full"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-display text-heading-lg font-bold text-neutral-900 flex-1">
-                        {court.name}
-                      </h3>
-                      {selectedCourt?.id === court.id && (
-                        <span className="text-2xl animate-bounce">📍</span>
+                      {court.features && court.features.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {court.features.map((feature: string, i: number) => (
+                            <span key={i} className="px-2.5 py-1 bg-teal-50 text-teal-700 text-xs font-medium rounded-full">
+                              {feature}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </div>
 
-                    <p className="text-body-sm text-neutral-600 mb-4 flex items-start">
-                      <span className="mr-1">📍</span>
-                      {court.location.address}
-                    </p>
-
-                    <div className="space-y-2 text-body-sm mb-4">
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-neutral-700">類型</span>
-                        <span className={`px-3 py-1 rounded-full text-caption-lg font-bold ${court.type === 'indoor'
-                            ? 'bg-secondary-100 text-secondary-700'
-                            : 'bg-primary-100 text-primary-700'
-                          }`}>
-                          {court.type === 'indoor' ? '🏢 室內' : '🌳 戶外'}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-neutral-700">收費</span>
-                        <span className={`px-3 py-1 rounded-full text-caption-lg font-bold ${court.fee === 'free'
-                            ? 'bg-primary-100 text-primary-700'
-                            : 'bg-accent-100 text-accent-700'
-                          }`}>
-                          {court.price}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-neutral-700">球場數</span>
-                        <span className="font-mono text-neutral-900 font-bold">{court.courts_count} 面</span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-neutral-700">開放時間</span>
-                        <span className="text-neutral-800 text-caption-lg">{court.opening_hours}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-neutral-700">聯絡電話</span>
+                    <div className="flex flex-col gap-2.5 md:items-end min-w-[160px]">
+                      {court.contact && (
                         <a
                           href={`tel:${court.contact}`}
-                          className="text-secondary-600 hover:text-secondary-700 font-mono font-semibold"
-                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-2 text-sm text-neutral-600 hover:text-teal-600 transition-colors"
                         >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
                           {court.contact}
                         </a>
-                      </div>
-
-                      {court.booking_method && (
-                        <div className="pt-3 border-t border-neutral-200">
-                          <p className="text-caption-lg font-semibold text-neutral-700 mb-2 flex items-center">
-                            <span className="mr-1">📅</span>
-                            預約方式
-                          </p>
-                          <p className="text-caption-md text-neutral-600 leading-relaxed bg-blue-50/50 p-3 rounded-lg border border-blue-100">
-                            {court.booking_method}
-                          </p>
-                        </div>
                       )}
-
-                      {(court.booking_url || court.website) && (
-                        <div className="flex flex-col space-y-2 pt-2 border-t border-neutral-200">
-                          {court.booking_url && (
-                            <a
-                              href={court.booking_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:shadow-elevated-md transition-all text-body-sm font-semibold"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              📅 線上預約
-                            </a>
-                          )}
-                          {court.website && (
-                            <a
-                              href={court.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-all text-body-sm font-semibold"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              🌐 官方網站
-                            </a>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="pt-4 border-t border-neutral-200">
-                      <p className="text-caption-lg font-semibold text-neutral-600 mb-2">🎯 設施</p>
-                      <div className="flex flex-wrap gap-2">
-                        {court.facilities.map((facility, index) => (
-                          <span
-                            key={index}
-                            className="bg-neutral-100 text-neutral-700 px-3 py-1 rounded-full text-caption-md font-medium"
+                      <div className="flex gap-2 flex-wrap md:flex-nowrap">
+                        {court.booking_url && (
+                          <motion.a
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            href={court.booking_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-teal-500/25 transition-shadow"
                           >
-                            {facility}
-                          </span>
-                        ))}
+                            預約場地
+                          </motion.a>
+                        )}
+                        {court.website && (
+                          <a
+                            href={court.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2 border border-neutral-200 text-neutral-700 text-sm font-medium rounded-lg hover:bg-neutral-50 transition-colors"
+                          >
+                            官網
+                          </a>
+                        )}
+                        <button
+                          onClick={() => {
+                            setSelectedCourt(court);
+                            setViewMode('map');
+                          }}
+                          className="px-4 py-2 border border-neutral-200 text-neutral-600 text-sm font-medium rounded-lg hover:bg-neutral-50 hover:border-teal-200 hover:text-teal-600 transition-colors"
+                        >
+                          地圖
+                        </button>
                       </div>
                     </div>
-
-                    {court.reviews && (
-                      <div className="pt-3 border-t border-neutral-200 mt-3">
-                        <p className="text-caption-lg font-semibold text-neutral-600 mb-1 flex items-center">
-                          <span className="mr-1">💬</span>
-                          球場評價
-                        </p>
-                        <p className="text-caption-md text-neutral-600 italic">{court.reviews}</p>
-                      </div>
-                    )}
-                  </GlassCard>
+                  </div>
                 </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </motion.div>
+              ))
+            )}
+          </motion.div>
+        )}
       </div>
     </div>
   );

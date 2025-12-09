@@ -17,9 +17,9 @@ export const pageSEO: Record<string, SEOConfig> = {
     ogImage: '/og-image.png'
   },
   courts: {
-    title: '台灣匹克球場地圖 | 55+球場完整資訊 - 台北台中高雄台南',
-    description: '台灣最完整的匹克球場地圖！收錄台北、新北、台中、高雄、台南等全台55+個匹克球場。提供詳細地址、開放時間、室內/室外、收費資訊。搜尋離你最近的匹克球場，立即開始打球！',
-    keywords: '匹克球場,台灣匹克球場,匹克球場地圖,台北匹克球場,台中匹克球場,高雄匹克球場,台南匹克球場,新北匹克球場,桃園匹克球場,pickleball court taiwan'
+    title: '台灣匹克球場地圖 2025 | 全台 55+ 球場完整資訊 - 免費查詢最近球場',
+    description: '2025年台灣最完整的匹克球場地圖！收錄台北、新北、台中、高雄、台南、桃園等全台 55+ 個匹克球場。GPS 定位找最近球場、篩選室內/戶外/免費場地。包含 Pickle Day、Social N Pickle 等民營球場資訊。場地預約、價格、開放時間一目了然！',
+    keywords: '匹克球場,台灣匹克球場,匹克球場地圖,台北匹克球場,台中匹克球場,高雄匹克球場,台南匹克球場,新北匹克球場,桃園匹克球場,免費匹克球場,室內匹克球場,戶外匹克球場,匹克球場推薦,匹克球場預約,pickleball court taiwan,pickle day,社區匹克球場,河濱匹克球場,大安森林公園匹克球,匹克球場地,附近匹克球場,最近匹克球場'
   },
   rules: {
     title: '匹克球規則完整教學 | 互動式3D規則說明 - 雙彈跳、廚房區詳解',
@@ -151,7 +151,7 @@ export const faqStructuredData = {
 };
 
 // 麵包屑結構化資料生成器
-export const generateBreadcrumbStructuredData = (items: Array<{name: string, url: string}>) => {
+export const generateBreadcrumbStructuredData = (items: Array<{ name: string, url: string }>) => {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -350,61 +350,184 @@ export const equipmentProductData = {
   ]
 };
 
-// Courts 頁面 - 球場地圖結構化資料
+// Courts 頁面 - 球場地圖結構化資料 (增強版)
 export const courtsLocationData = {
   "@context": "https://schema.org",
-  "@type": "ItemList",
-  "name": "台灣匹克球場地圖",
-  "description": "台灣55+個匹克球場完整資訊，包含台北、新北、台中、高雄、台南等地區",
-  "numberOfItems": 55,
-  "itemListElement": [
+  "@graph": [
     {
-      "@type": "SportsActivityLocation",
-      "position": 1,
-      "name": "台北市匹克球場",
-      "description": "台北市區內的匹克球場，包含室內外場地",
-      "address": {
-        "@type": "PostalAddress",
-        "addressRegion": "台北市",
-        "addressCountry": "TW"
+      "@type": "WebPage",
+      "@id": "https://picklemastertw.site/courts#webpage",
+      "url": "https://picklemastertw.site/courts",
+      "name": "台灣匹克球場地圖 2025 | 全台 55+ 球場完整資訊",
+      "description": "2025年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費場地。",
+      "isPartOf": {
+        "@id": "https://picklemastertw.site/#website"
       },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "25.0330",
-        "longitude": "121.5654"
+      "about": {
+        "@type": "Thing",
+        "name": "匹克球場",
+        "description": "Pickleball Courts in Taiwan"
+      },
+      "inLanguage": "zh-TW",
+      "datePublished": "2024-01-01",
+      "dateModified": "2025-12-10"
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://picklemastertw.site/courts#courtlist",
+      "name": "台灣匹克球場完整列表",
+      "description": "收錄台北、新北、台中、高雄、台南、桃園等全台 55+ 個匹克球場的完整資訊",
+      "numberOfItems": 55,
+      "itemListElement": [
+        {
+          "@type": "SportsActivityLocation",
+          "position": 1,
+          "name": "台北大安森林公園匹克球場",
+          "description": "台北市中心知名免費戶外匹克球場，環境優美，4面標準球場",
+          "sport": "Pickleball",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "新生南路二段1號",
+            "addressLocality": "大安區",
+            "addressRegion": "台北市",
+            "addressCountry": "TW"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "25.0330",
+            "longitude": "121.5354"
+          },
+          "openingHours": "Mo-Su 06:00-21:00",
+          "isAccessibleForFree": true,
+          "amenityFeature": [
+            { "@type": "LocationFeatureSpecification", "name": "飲水機", "value": true },
+            { "@type": "LocationFeatureSpecification", "name": "廁所", "value": true },
+            { "@type": "LocationFeatureSpecification", "name": "遮陽棚", "value": true }
+          ]
+        },
+        {
+          "@type": "SportsActivityLocation",
+          "position": 2,
+          "name": "Pickle Day Social Club 信義店",
+          "description": "台灣首間匹克球主題社交俱樂部，位於信義區A11百貨",
+          "sport": "Pickleball",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "松壽路11號7樓",
+            "addressLocality": "信義區",
+            "addressRegion": "台北市",
+            "addressCountry": "TW"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "25.0362",
+            "longitude": "121.5678"
+          },
+          "openingHours": "Mo-Su 10:00-22:00",
+          "isAccessibleForFree": false,
+          "priceRange": "$$$"
+        },
+        {
+          "@type": "SportsActivityLocation",
+          "position": 3,
+          "name": "新北大都會公園河濱匹克球中心",
+          "description": "新北市最大匹克球場，8面標準球場，2025年9月啟用",
+          "sport": "Pickleball",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "三重區",
+            "addressRegion": "新北市",
+            "addressCountry": "TW"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "25.0650",
+            "longitude": "121.4850"
+          },
+          "isAccessibleForFree": true
+        },
+        {
+          "@type": "SportsActivityLocation",
+          "position": 4,
+          "name": "勤美誠品 PiCKLE & CHiLL 高空匹克球場",
+          "description": "台中市15樓天台球場，邊打球邊俯瞰台中市景",
+          "sport": "Pickleball",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "公益路68號15樓",
+            "addressLocality": "西區",
+            "addressRegion": "台中市",
+            "addressCountry": "TW"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "24.1510",
+            "longitude": "120.6648"
+          },
+          "isAccessibleForFree": false
+        },
+        {
+          "@type": "SportsActivityLocation",
+          "position": 5,
+          "name": "高雄市立社會教育館匹克球場",
+          "description": "高雄市區室內匹克球場，設施完善",
+          "sport": "Pickleball",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "小港區",
+            "addressRegion": "高雄市",
+            "addressCountry": "TW"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "22.5726",
+            "longitude": "120.3580"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://picklemastertw.site/courts#webapp",
+      "name": "台灣匹克球場地圖",
+      "description": "GPS 定位找最近球場、篩選室內/戶外/免費/民營場地的互動式地圖工具",
+      "applicationCategory": "SportsApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "featureList": [
+        "GPS 定位找最近球場",
+        "依城市篩選球場",
+        "依類型篩選（室內/戶外/風雨球場）",
+        "依經營類型篩選（公營/民營/社區）",
+        "依收費篩選（免費/付費）",
+        "只顯示新開放球場",
+        "互動式地圖瀏覽",
+        "球場詳細資訊查看"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "TWD"
       }
     },
     {
-      "@type": "SportsActivityLocation",
-      "position": 2,
-      "name": "新北市匹克球場",
-      "description": "新北市各區匹克球場資訊",
-      "address": {
-        "@type": "PostalAddress",
-        "addressRegion": "新北市",
-        "addressCountry": "TW"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "25.0169",
-        "longitude": "121.4627"
-      }
-    },
-    {
-      "@type": "SportsActivityLocation",
-      "position": 3,
-      "name": "台中市匹克球場",
-      "description": "台中市匹克球場完整資訊",
-      "address": {
-        "@type": "PostalAddress",
-        "addressRegion": "台中市",
-        "addressCountry": "TW"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "24.1477",
-        "longitude": "120.6736"
-      }
+      "@type": "LocalBusiness",
+      "@id": "https://picklemastertw.site/courts#service",
+      "name": "台灣匹克球場資訊服務",
+      "description": "提供全台匹克球場的完整資訊查詢服務",
+      "areaServed": [
+        { "@type": "City", "name": "台北市" },
+        { "@type": "City", "name": "新北市" },
+        { "@type": "City", "name": "桃園市" },
+        { "@type": "City", "name": "台中市" },
+        { "@type": "City", "name": "台南市" },
+        { "@type": "City", "name": "高雄市" },
+        { "@type": "City", "name": "新竹市" },
+        { "@type": "City", "name": "新竹縣" },
+        { "@type": "City", "name": "嘉義市" }
+      ],
+      "serviceType": "Sports Facility Finder",
+      "availableLanguage": "zh-TW"
     }
   ]
 };

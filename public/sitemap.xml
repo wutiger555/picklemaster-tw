@@ -1,80 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  
+  <!-- 首頁 -->
   <url>
     <loc>https://picklemastertw.site/</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://picklemastertw.site/og-image.png</image:loc>
+      <image:title>匹克球台灣 - 台灣最完整的匹克球學習平台</image:title>
+    </image:image>
   </url>
+  
+  <!-- 球場地圖 - 重點頁面 -->
   <url>
     <loc>https://picklemastertw.site/courts</loc>
-    <lastmod>2025-12-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://picklemastertw.site/og-image.png</image:loc>
+      <image:title>台灣匹克球場地圖 2025 - 全台55+球場完整資訊</image:title>
+      <image:caption>GPS定位找最近球場、篩選室內戶外免費場地、包含Pickle Day等民營球場</image:caption>
+    </image:image>
   </url>
+  
+  <!-- 裝備推薦 -->
   <url>
     <loc>https://picklemastertw.site/equipment</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://picklemastertw.site/og-image.png</image:loc>
+      <image:title>匹克球裝備推薦 - 球拍選購指南</image:title>
+    </image:image>
   </url>
+  
+  <!-- 技巧教學 -->
   <url>
     <loc>https://picklemastertw.site/learning</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
+  
+  <!-- 規則教學 -->
   <url>
     <loc>https://picklemastertw.site/rules</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  
+  <!-- 學習路徑 -->
   <url>
     <loc>https://picklemastertw.site/learning-paths</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  
+  <!-- FAQ -->
   <url>
     <loc>https://picklemastertw.site/faq</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  
+  <!-- 學習資源 -->
   <url>
     <loc>https://picklemastertw.site/resources</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
+  
+  <!-- 互動遊戲 -->
   <url>
     <loc>https://picklemastertw.site/game</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  
+  <!-- 計分器 -->
   <url>
     <loc>https://picklemastertw.site/scorer</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
+  
+  <!-- 關於我們 -->
   <url>
     <loc>https://picklemastertw.site/about</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  
+  <!-- 聯絡我們 -->
   <url>
     <loc>https://picklemastertw.site/contact</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  
+  <!-- 隱私政策 -->
   <url>
     <loc>https://picklemastertw.site/privacy-policy</loc>
-    <lastmod>2025-12-09</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

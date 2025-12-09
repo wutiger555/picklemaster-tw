@@ -30,7 +30,7 @@ const Equipment = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-black mb-4"
           >
-            裝備指南
+            匹克球球拍選購指南
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -38,7 +38,7 @@ const Equipment = () => {
             transition={{ delay: 0.1 }}
             className="text-xl text-white/90 max-w-2xl mx-auto"
           >
-            選擇適合你的球拍與裝備，提升你的球技
+            專業匹克球球拍推薦、材質分析、重量選擇 | 找到最適合你的匹克球裝備
           </motion.p>
         </div>
       </section>

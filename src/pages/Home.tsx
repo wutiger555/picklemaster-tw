@@ -8,12 +8,13 @@ import { useInView } from '../hooks/useInView';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import GlassCard from '../components/common/GlassCard';
 import SEOHead from '../components/common/SEOHead';
+import CourtSkeleton from '../components/hero/CourtSkeleton';
 
-import HeroCourtPreview from '../components/hero/HeroCourtPreview';
-
-// Lazy load heavy sections below the fold
+// Lazy load heavy sections including 3D components
+const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 const NewsSection = lazy(() => import('../components/news/NewsSection'));
 const VideoSpotlight = lazy(() => import('../components/home/VideoSpotlight'));
+const QuickNav = lazy(() => import('../components/home/QuickNav'));
 
 // Lazy Section Wrapper to trigger load on scroll
 const LazySection = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
@@ -120,82 +121,15 @@ const Home = () => {
             <rect x="600" y="410" width="300" height="140" fill="none" stroke="white" strokeWidth="2" opacity="0.6" />
           </svg>
 
-          {/* 匹克球裝飾元素 - 僅在桌面版顯示以節省手機效能 */}
+          {/* 簡化裝飾元素 - 僅保留最小裝飾以提升效能 */}
           {!isMobile && (
             <>
-              <motion.div
-                className="absolute top-20 right-20 w-32 h-32 opacity-20"
-              >
-                <svg viewBox="0 0 100 100" className="w-full h-full animate-float">
-                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.8)" strokeWidth="3" />
-                  <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.3)" />
-                  {/* 球上的洞 */}
-                  {[0, 60, 120, 180, 240, 300].map((angle, i) => {
-                    const x = 50 + 25 * Math.cos((angle * Math.PI) / 180);
-                    const y = 50 + 25 * Math.sin((angle * Math.PI) / 180);
-                    return <circle key={i} cx={x} cy={y} r="4" fill="rgba(0,0,0,0.6)" />;
-                  })}
-                  <circle cx="50" cy="50" r="4" fill="rgba(0,0,0,0.6)" />
+              <div className="absolute top-20 right-20 w-32 h-32 opacity-15">
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="2" />
+                  <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.2)" />
                 </svg>
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-32 left-16 w-24 h-24 opacity-15"
-              >
-                <svg viewBox="0 0 100 100" className="w-full h-full animate-bounce-slow">
-                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 0.9)" strokeWidth="3" />
-                  <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.4)" />
-                  {[30, 90, 150, 210, 270, 330].map((angle, i) => {
-                    const x = 50 + 25 * Math.cos((angle * Math.PI) / 180);
-                    const y = 50 + 25 * Math.sin((angle * Math.PI) / 180);
-                    return <circle key={i} cx={x} cy={y} r="4" fill="rgba(0,0,0,0.6)" />;
-                  })}
-                  <circle cx="50" cy="50" r="4" fill="rgba(0,0,0,0.6)" />
-                </svg>
-              </motion.div>
-
-              <motion.div
-                className="absolute top-1/3 left-1/4 w-20 h-20 opacity-10"
-              >
-                <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse-slow">
-                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(251, 191, 36, 1)" strokeWidth="3" />
-                  <circle cx="50" cy="50" r="40" fill="rgba(251, 191, 36, 0.5)" />
-                  {[0, 72, 144, 216, 288].map((angle, i) => {
-                    const x = 50 + 20 * Math.cos((angle * Math.PI) / 180);
-                    const y = 50 + 20 * Math.sin((angle * Math.PI) / 180);
-                    return <circle key={i} cx={x} cy={y} r="3" fill="rgba(0,0,0,0.7)" />;
-                  })}
-                </svg>
-              </motion.div>
-
-              {/* 球拍輪廓裝飾 */}
-              <motion.div
-                animate={{
-                  rotate: [0, 5, 0, -5, 0],
-                  opacity: [0.05, 0.08, 0.05]
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="absolute bottom-20 right-1/4 w-40 h-52"
-              >
-                <svg viewBox="0 0 100 140" className="w-full h-full">
-                  {/* 球拍拍面 */}
-                  <ellipse cx="50" cy="40" rx="35" ry="38" fill="none" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="3" />
-                  <ellipse cx="50" cy="40" rx="30" ry="33" fill="rgba(251, 191, 36, 0.1)" />
-                  {/* 網格 */}
-                  {[...Array(6)].map((_, i) => (
-                    <line key={`h${i}`} x1="20" y1={10 + i * 10} x2="80" y2={10 + i * 10} stroke="rgba(251, 191, 36, 0.3)" strokeWidth="1" />
-                  ))}
-                  {[...Array(6)].map((_, i) => (
-                    <line key={`v${i}`} x1={25 + i * 10} y1="10" x2={25 + i * 10} y2="70" stroke="rgba(251, 191, 36, 0.3)" strokeWidth="1" />
-                  ))}
-                  {/* 握把 */}
-                  <rect x="43" y="78" width="14" height="50" rx="7" fill="rgba(251, 191, 36, 0.4)" stroke="rgba(251, 191, 36, 0.6)" strokeWidth="2" />
-                </svg>
-              </motion.div>
+              </div>
             </>
           )}
 
@@ -212,7 +146,9 @@ const Home = () => {
               transition={{ duration: 0.8 }}
               className="order-2 lg:order-1"
             >
-              <HeroCourtPreview />
+              <Suspense fallback={<CourtSkeleton />}>
+                <HeroCourtPreview />
+              </Suspense>
               <p className="text-center text-white/80 text-sm mt-4">
                 ↻ 360° 旋轉檢視真實球場配置
               </p>
@@ -379,6 +315,11 @@ const Home = () => {
           </svg>
         </div>
       </section>
+
+      {/* Quick Navigation & Search */}
+      <LazySection>
+        <QuickNav />
+      </LazySection>
 
       {/* Video Spotlight Section */}
       <LazySection>

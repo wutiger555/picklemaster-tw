@@ -75,7 +75,7 @@ const Courts = () => {
             animate="visible"
             className="font-display text-display-lg md:text-display-xl font-black mb-4 drop-shadow-lg"
           >
-            全台球場地圖
+            台灣匹克球球場地圖
           </motion.h1>
           <motion.p
             variants={fadeInUp}
@@ -84,7 +84,7 @@ const Courts = () => {
             transition={{ delay: 0.1 }}
             className="text-body-lg md:text-body-xl text-white/90 max-w-2xl mx-auto mb-6"
           >
-            尋找離你最近的匹克球場，開始你的匹克球之旅 🏓
+            55+ 匹克球球場完整資訊 | 台北、新北、台中、高雄、台南匹克球場推薦 🏓
           </motion.p>
 
           {/* 統計資訊 */}

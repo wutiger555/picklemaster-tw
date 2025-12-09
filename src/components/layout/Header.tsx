@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { ROUTES } from '../../utils/constants';
+import SearchBar from '../search/SearchBar';
 
 const Header = () => {
     const location = useLocation();
@@ -113,6 +114,11 @@ const Header = () => {
 
                     {/* Desktop Navigation */}
                     <div className="hidden lg:flex items-center space-x-1">
+                        {/* Search Bar */}
+                        <div className="mr-2">
+                            <SearchBar variant="header" />
+                        </div>
+
                         {navigation.map((item, index) => (
                             <div
                                 key={index}

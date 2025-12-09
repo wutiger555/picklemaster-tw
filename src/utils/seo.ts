@@ -281,3 +281,180 @@ export const howToStructuredData = {
     }
   ]
 };
+
+// Equipment 頁面 - 球拍產品結構化資料
+export const equipmentProductData = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "匹克球拍選購指南",
+  "description": "專業匹克球拍推薦與選購指南，包含材質分析、重量選擇、價格範圍",
+  "numberOfItems": 3,
+  "itemListElement": [
+    {
+      "@type": "Product",
+      "position": 1,
+      "name": "入門級匹克球拍",
+      "description": "適合新手的複合材質匹克球拍，重量適中，價格實惠",
+      "category": "匹克球拍",
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "TWD",
+        "lowPrice": "2000",
+        "highPrice": "4000",
+        "availability": "https://schema.org/InStock"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.3",
+        "reviewCount": "50"
+      }
+    },
+    {
+      "@type": "Product",
+      "position": 2,
+      "name": "中階級匹克球拍",
+      "description": "玻璃纖維材質，適合中級球員，提供良好的控球性和力量",
+      "category": "匹克球拍",
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "TWD",
+        "lowPrice": "4000",
+        "highPrice": "8000",
+        "availability": "https://schema.org/InStock"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.6",
+        "reviewCount": "120"
+      }
+    },
+    {
+      "@type": "Product",
+      "position": 3,
+      "name": "高階級碳纖維匹克球拍",
+      "description": "職業級碳纖維材質，輕量化設計，提供最佳性能表現",
+      "category": "匹克球拍",
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "TWD",
+        "lowPrice": "8000",
+        "highPrice": "15000",
+        "availability": "https://schema.org/InStock"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "80"
+      }
+    }
+  ]
+};
+
+// Courts 頁面 - 球場地圖結構化資料
+export const courtsLocationData = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "台灣匹克球場地圖",
+  "description": "台灣55+個匹克球場完整資訊，包含台北、新北、台中、高雄、台南等地區",
+  "numberOfItems": 55,
+  "itemListElement": [
+    {
+      "@type": "SportsActivityLocation",
+      "position": 1,
+      "name": "台北市匹克球場",
+      "description": "台北市區內的匹克球場，包含室內外場地",
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "台北市",
+        "addressCountry": "TW"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "25.0330",
+        "longitude": "121.5654"
+      }
+    },
+    {
+      "@type": "SportsActivityLocation",
+      "position": 2,
+      "name": "新北市匹克球場",
+      "description": "新北市各區匹克球場資訊",
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "新北市",
+        "addressCountry": "TW"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "25.0169",
+        "longitude": "121.4627"
+      }
+    },
+    {
+      "@type": "SportsActivityLocation",
+      "position": 3,
+      "name": "台中市匹克球場",
+      "description": "台中市匹克球場完整資訊",
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "台中市",
+        "addressCountry": "TW"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "24.1477",
+        "longitude": "120.6736"
+      }
+    }
+  ]
+};
+
+// Learning 頁面 - 教學課程結構化資料
+export const learningCourseData = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "匹克球完整學習課程",
+  "description": "從新手到進階的系統化匹克球學習路徑，包含3D互動教學、技巧訓練、戰術指導",
+  "provider": {
+    "@type": "Organization",
+    "name": "Picklemaster Taiwan",
+    "url": "https://picklemastertw.site"
+  },
+  "educationalLevel": "初級到進階",
+  "inLanguage": "zh-TW",
+  "availableLanguage": "zh-TW",
+  "coursePrerequisites": "無需先備知識，適合完全新手",
+  "hasCourseInstance": [
+    {
+      "@type": "CourseInstance",
+      "name": "新手入門課程",
+      "description": "基礎規則、握拍技巧、發球練習",
+      "courseMode": "online",
+      "courseWorkload": "PT5H"
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "中階進修課程",
+      "description": "進階技巧、戰術運用、雙打配合",
+      "courseMode": "online",
+      "courseWorkload": "PT10H"
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "高手養成課程",
+      "description": "技術精進、心理素質、競技訓練",
+      "courseMode": "online",
+      "courseWorkload": "PT15H"
+    }
+  ],
+  "teaches": [
+    "匹克球基本規則",
+    "發球技巧",
+    "接發球技術",
+    "正反手擊球",
+    "網前截擊",
+    "雙打戰術",
+    "場上站位",
+    "比賽策略"
+  ]
+};

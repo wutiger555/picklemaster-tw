@@ -140,8 +140,8 @@ const CourtGuide = () => {
                                 key={tool.id}
                                 onClick={() => setActiveTool(tool.id)}
                                 className={`px-6 py-3 font-bold text-lg transition-colors ${activeTool === tool.id
-                                        ? 'bg-emerald-500 text-white'
-                                        : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white'
+                                    ? 'bg-emerald-500 text-white'
+                                    : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white'
                                     }`}
                             >
                                 {tool.icon} {tool.name}
@@ -230,12 +230,12 @@ const CourtGuide = () => {
                                     key={zone.id}
                                     onClick={() => setActiveZone(zone)}
                                     className={`w-full text-left p-5 transition-all border-l-4 ${activeZone.id === zone.id
-                                            ? `bg-neutral-100 ${zone.color === 'rose' ? 'border-rose-500' :
-                                                zone.color === 'blue' ? 'border-blue-500' :
-                                                    zone.color === 'amber' ? 'border-amber-500' :
-                                                        'border-emerald-500'
-                                            }`
-                                            : 'border-transparent hover:bg-neutral-50'
+                                        ? `bg-neutral-100 ${zone.color === 'rose' ? 'border-rose-500' :
+                                            zone.color === 'blue' ? 'border-blue-500' :
+                                                zone.color === 'amber' ? 'border-amber-500' :
+                                                    'border-emerald-500'
+                                        }`
+                                        : 'border-transparent hover:bg-neutral-50'
                                         }`}
                                 >
                                     <h3 className="font-bold text-lg text-neutral-900">{zone.name}</h3>
@@ -253,15 +253,15 @@ const CourtGuide = () => {
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
                                     className={`p-8 md:p-10 ${activeZone.color === 'rose' ? 'bg-rose-50' :
-                                            activeZone.color === 'blue' ? 'bg-blue-50' :
-                                                activeZone.color === 'amber' ? 'bg-amber-50' :
-                                                    'bg-emerald-50'
+                                        activeZone.color === 'blue' ? 'bg-blue-50' :
+                                            activeZone.color === 'amber' ? 'bg-amber-50' :
+                                                'bg-emerald-50'
                                         }`}
                                 >
                                     <h3 className={`text-3xl font-black mb-2 ${activeZone.color === 'rose' ? 'text-rose-600' :
-                                            activeZone.color === 'blue' ? 'text-blue-600' :
-                                                activeZone.color === 'amber' ? 'text-amber-600' :
-                                                    'text-emerald-600'
+                                        activeZone.color === 'blue' ? 'text-blue-600' :
+                                            activeZone.color === 'amber' ? 'text-amber-600' :
+                                                'text-emerald-600'
                                         }`}>
                                         {activeZone.name}
                                     </h3>
@@ -276,9 +276,9 @@ const CourtGuide = () => {
                                         {activeZone.rules.map((rule, i) => (
                                             <li key={i} className="flex items-start gap-3">
                                                 <span className={`w-6 h-6 flex items-center justify-center text-white text-sm font-bold shrink-0 ${activeZone.color === 'rose' ? 'bg-rose-500' :
-                                                        activeZone.color === 'blue' ? 'bg-blue-500' :
-                                                            activeZone.color === 'amber' ? 'bg-amber-500' :
-                                                                'bg-emerald-500'
+                                                    activeZone.color === 'blue' ? 'bg-blue-500' :
+                                                        activeZone.color === 'amber' ? 'bg-amber-500' :
+                                                            'bg-emerald-500'
                                                     }`}>
                                                     {i + 1}
                                                 </span>
@@ -317,8 +317,8 @@ const CourtGuide = () => {
                         {[
                             { label: '球場長度', value: COURT_DIMENSIONS.LENGTH, unit: '英尺' },
                             { label: '球場寬度', value: COURT_DIMENSIONS.WIDTH, unit: '英尺' },
-                            { label: '廚房區深度', value: COURT_DIMENSIONS.NVZ_DEPTH, unit: '英尺' },
-                            { label: '網高（中央）', value: COURT_DIMENSIONS.NET_HEIGHT_CENTER, unit: '英寸' },
+                            { label: '廚房區深度', value: COURT_DIMENSIONS.NON_VOLLEY_ZONE, unit: '英尺' },
+                            { label: '網高（中央）', value: 34, unit: '英寸' },
                         ].map((dim, i) => (
                             <motion.div
                                 key={i}

@@ -160,7 +160,7 @@ const Learning = () => {
                 <span className="inline-flex items-center gap-2 text-yellow-300 font-bold">
                   學習規則
                   <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecas="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </span>
               </div>
@@ -233,10 +233,10 @@ const Learning = () => {
               >
                 <Link to={item.link} className="block group">
                   <span className={`text-7xl font-black block mb-4 transition-colors ${item.color === 'blue' ? 'text-blue-500/30 group-hover:text-blue-400' :
-                      item.color === 'emerald' ? 'text-emerald-500/30 group-hover:text-emerald-400' :
-                        item.color === 'rose' ? 'text-rose-500/30 group-hover:text-rose-400' :
-                          item.color === 'violet' ? 'text-violet-500/30 group-hover:text-violet-400' :
-                            'text-amber-500/30 group-hover:text-amber-400'
+                    item.color === 'emerald' ? 'text-emerald-500/30 group-hover:text-emerald-400' :
+                      item.color === 'rose' ? 'text-rose-500/30 group-hover:text-rose-400' :
+                        item.color === 'violet' ? 'text-violet-500/30 group-hover:text-violet-400' :
+                          'text-amber-500/30 group-hover:text-amber-400'
                     }`}>
                     {String(item.step).padStart(2, '0')}
                   </span>

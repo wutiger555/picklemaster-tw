@@ -1272,6 +1272,218 @@
         "廁所"
       ],
       "reviews": "南投縣主要戶外球場"
+    },
+    {
+      "id": 56,
+      "name": "台北市新生公園羽毛球場（可打匹克球）",
+      "location": {
+        "address": "台北市中山區新生北路三段105號",
+        "lat": 25.0722,
+        "lng": 121.5287
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2585-0192",
+      "facilities": [
+        "廁所",
+        "飲水機",
+        "夜間照明"
+      ],
+      "shared_with": "羽毛球",
+      "reviews": "新生公園內羽毛球場，場地劃有羽球線也可供匹克球使用"
+    },
+    {
+      "id": 57,
+      "name": "台北市民族公園羽毛球場（可打匹克球）",
+      "location": {
+        "address": "台北市松山區民族東路510巷",
+        "lat": 25.0654,
+        "lng": 121.5562
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "opening_hours": "06:00-22:00",
+      "contact": "",
+      "facilities": [
+        "廁所",
+        "飲水機",
+        "夜間照明"
+      ],
+      "shared_with": "羽毛球",
+      "reviews": "民族公園羽毛球場，場地可與羽毛球交替使用"
+    },
+    {
+      "id": 58,
+      "name": "台北市榮星花園羽球場（可打匹克球）",
+      "location": {
+        "address": "台北市中山區民權東路三段1號",
+        "lat": 25.0636,
+        "lng": 121.5406
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "",
+      "facilities": [
+        "廁所",
+        "飲水機",
+        "夜間照明"
+      ],
+      "shared_with": "羽毛球",
+      "reviews": "榮星花園內球場，早晨有匹克球社團活動"
+    },
+    {
+      "id": 59,
+      "name": "新北市碧潭風景區運動場",
+      "location": {
+        "address": "新北市新店區碧潭路8號",
+        "lat": 24.9573,
+        "lng": 121.5379
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "opening_hours": "06:00-21:00",
+      "contact": "",
+      "facilities": [
+        "廁所",
+        "停車場"
+      ],
+      "reviews": "碧潭風景區內，運動後可逛碧潭老街"
+    },
+    {
+      "id": 60,
+      "name": "台北市大佳河濱公園匹克球場",
+      "location": {
+        "address": "台北市中山區濱江街（大佳河濱公園內）",
+        "lat": 25.0700,
+        "lng": 121.5480
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 4,
+      "opening_hours": "06:00-22:00",
+      "contact": "",
+      "facilities": [
+        "廁所",
+        "飲水機",
+        "停車場",
+        "夜間照明"
+      ],
+      "reviews": "大佳河濱公園內匹克球場，環境優美，夜間照明佳"
+    },
+    {
+      "id": 61,
+      "name": "台北市景美河濱公園匹克球場",
+      "location": {
+        "address": "台北市文山區景美溪右岸",
+        "lat": 24.9910,
+        "lng": 121.5415
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "opening_hours": "06:00-21:00",
+      "contact": "",
+      "facilities": [
+        "廁所",
+        "飲水機"
+      ],
+      "reviews": "景美河濱公園球場，鄰近景美夜市"
+    },
+    {
+      "id": 62,
+      "name": "新北市蘆洲微風運動公園",
+      "location": {
+        "address": "新北市蘆洲區中正路301號",
+        "lat": 25.0830,
+        "lng": 121.4745
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "opening_hours": "06:00-22:00",
+      "contact": "",
+      "facilities": [
+        "廁所",
+        "飲水機",
+        "夜間照明"
+      ],
+      "reviews": "蘆洲地區戶外運動場"
+    },
+    {
+      "id": 63,
+      "name": "桃園市虎頭山環保公園",
+      "location": {
+        "address": "桃園市桃園區成功路三段虎頭山",
+        "lat": 24.9980,
+        "lng": 121.3320
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "opening_hours": "06:00-21:00",
+      "contact": "",
+      "facilities": [
+        "廁所",
+        "停車場"
+      ],
+      "reviews": "虎頭山風景區內，空氣清新"
+    },
+    {
+      "id": 64,
+      "name": "台中市文心森林公園",
+      "location": {
+        "address": "台中市南屯區文心路一段289號",
+        "lat": 24.1520,
+        "lng": 120.6520
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "opening_hours": "06:00-22:00",
+      "contact": "",
+      "facilities": [
+        "廁所",
+        "飲水機"
+      ],
+      "reviews": "台中市區熱門公園，綠地廣闊"
+    },
+    {
+      "id": 65,
+      "name": "高雄市左營運動中心",
+      "location": {
+        "address": "高雄市左營區軍校路199號",
+        "lat": 22.6850,
+        "lng": 120.2931
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 150-250 元",
+      "courts_count": 6,
+      "opening_hours": "06:00-22:00",
+      "contact": "07-588-7770",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "reviews": "高雄左營地區優質室內球場"
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import type { CourtsData, Court } from '../types';
@@ -16,6 +16,19 @@ const REGIONS = [
   { id: 'east', name: '東部', icon: '🏔️', cities: ['宜蘭縣', '花蓮縣', '台東縣'] },
 ];
 
+// 計算兩點之間的距離（Haversine 公式）
+const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+  const R = 6371; // 地球半徑（公里）
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
 const Courts = () => {
   usePageTitle('全台匹克球場地圖');
   const [courtsData, setCourtsData] = useState<CourtsData | null>(null);
@@ -26,6 +39,12 @@ const Courts = () => {
   const [filterFee, setFilterFee] = useState<'all' | 'free' | 'paid'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showMap, setShowMap] = useState(true);
+
+  // 定位相關狀態
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [nearestCourt, setNearestCourt] = useState<{ court: Court; distance: number } | null>(null);
 
   useEffect(() => {
     fetch('/data/courts.json')
@@ -40,15 +59,73 @@ const Courts = () => {
       });
   }, []);
 
+  // 取得使用者位置
+  const getUserLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationError('您的瀏覽器不支援定位功能');
+      return;
+    }
+
+    setLocationLoading(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        setLocationLoading(false);
+      },
+      (error) => {
+        setLocationLoading(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError('請允許網站存取您的位置');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError('無法取得您的位置資訊');
+            break;
+          case error.TIMEOUT:
+            setLocationError('定位請求超時');
+            break;
+          default:
+            setLocationError('定位時發生錯誤');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, []);
+
+  // 計算最近球場
+  useEffect(() => {
+    if (userLocation && courtsData?.courts) {
+      let nearest: { court: Court; distance: number } | null = null;
+
+      courtsData.courts.forEach(court => {
+        const distance = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          court.location.lat,
+          court.location.lng
+        );
+
+        if (!nearest || distance < nearest.distance) {
+          nearest = { court, distance };
+        }
+      });
+
+      setNearestCourt(nearest);
+    }
+  }, [userLocation, courtsData]);
+
   // 根據地區篩選
   const getRegionCities = (regionId: string) => {
     const region = REGIONS.find(r => r.id === regionId);
     return region?.cities || [];
   };
 
-  // 篩選球場
+  // 篩選球場（含距離排序）
   const filteredCourts = useMemo(() => {
-    return courtsData?.courts.filter(court => {
+    let courts = courtsData?.courts.filter(court => {
       // 地區篩選
       if (activeRegion !== 'all') {
         const cities = getRegionCities(activeRegion);
@@ -64,7 +141,17 @@ const Courts = () => {
       }
       return true;
     }) || [];
-  }, [courtsData, activeRegion, filterType, filterFee, searchQuery]);
+
+    // 如果有用戶位置，按距離排序
+    if (userLocation) {
+      courts = courts.map(court => ({
+        ...court,
+        distance: calculateDistance(userLocation.lat, userLocation.lng, court.location.lat, court.location.lng)
+      })).sort((a, b) => (a.distance || 0) - (b.distance || 0));
+    }
+
+    return courts;
+  }, [courtsData, activeRegion, filterType, filterFee, searchQuery, userLocation]);
 
   // 統計資料
   const stats = useMemo(() => ({
@@ -188,6 +275,82 @@ const Courts = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </motion.div>
+
+            {/* 定位按鈕 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mt-4"
+            >
+              <button
+                onClick={getUserLocation}
+                disabled={locationLoading}
+                className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-400 text-white font-bold rounded-xl transition-colors"
+              >
+                {locationLoading ? (
+                  <>
+                    <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    定位中...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    📍 找離我最近的球場
+                  </>
+                )}
+              </button>
+
+              {locationError && (
+                <p className="mt-2 text-red-300 text-sm">⚠️ {locationError}</p>
+              )}
+            </motion.div>
+
+            {/* 最近球場提示 */}
+            <AnimatePresence>
+              {nearestCourt && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mt-4 p-4 bg-gradient-to-r from-emerald-500/90 to-teal-500/90 backdrop-blur-md rounded-2xl border border-white/20"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">🎯</div>
+                    <div className="flex-1">
+                      <p className="text-emerald-100 text-sm mb-1">離你最近的球場</p>
+                      <h3 className="text-xl font-bold text-white mb-1">
+                        {nearestCourt.court.name}
+                      </h3>
+                      <p className="text-emerald-100 text-sm mb-2">
+                        📍 {nearestCourt.court.location.address}
+                      </p>
+                      <div className="flex items-center gap-4">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-white/20 rounded-full text-sm font-bold">
+                          🚗 {nearestCourt.distance.toFixed(1)} 公里
+                        </span>
+                        <span className="text-emerald-100 text-sm">
+                          {nearestCourt.court.type === 'indoor' ? '🏢 室內' : '🌳 戶外'} ·
+                          {nearestCourt.court.fee === 'free' ? ' ✨ 免費' : ` 💰 ${nearestCourt.court.price}`}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setSelectedCourt(nearestCourt.court)}
+                      className="px-4 py-2 bg-white text-emerald-600 font-bold rounded-xl hover:bg-emerald-50 transition-colors"
+                    >
+                      查看詳情
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -404,6 +567,11 @@ const Courts = () => {
 
                   {/* 詳細資訊 */}
                   <div className="flex flex-wrap gap-3 text-xs text-neutral-500 mb-4">
+                    {userLocation && (court as any).distance && (
+                      <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                        <span>🚗</span> {((court as any).distance as number).toFixed(1)} km
+                      </span>
+                    )}
                     <span className="flex items-center gap-1">
                       <span>🎾</span> {court.courts_count} 面場地
                     </span>

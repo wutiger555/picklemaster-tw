@@ -26,8 +26,11 @@ const Header = () => {
                 label: '學習',
                 type: 'dropdown',
                 items: [
-                    { path: ROUTES.RULES, label: '規則教學', description: '互動式學習匹克球規則與場地配置' },
-                    { path: ROUTES.LEARNING_PATHS, label: '學習路徑', description: '從新手到進階的完整學習系統' },
+                    { path: ROUTES.LEARNING, label: '學習中心', description: '完整學習資源入口與學習路徑規劃' },
+                    { path: ROUTES.RULES, label: '規則教學', description: '互動式學習匹克球規則與計分方式' },
+                    { path: ROUTES.TECHNIQUES, label: '技巧教學', description: '發球、Dink、截擊等核心技巧影片', badge: 'NEW' },
+                    { path: ROUTES.COURT_GUIDE, label: '球場解說', description: '3D 互動球場與區域規則詳解', badge: 'NEW' },
+                    { path: ROUTES.QUIZ, label: '知識測驗', description: '快問快答檢驗你的學習成果', badge: 'NEW' },
                 ],
             },
             {
@@ -35,7 +38,7 @@ const Header = () => {
                 type: 'dropdown',
                 items: [
                     { path: ROUTES.COURTS, label: '找球場', description: '全台 55+ 球場地圖與詳細資訊' },
-                    { path: ROUTES.SCORER, label: '計分器', description: '專業比賽計分工具', badge: 'NEW' },
+                    { path: ROUTES.SCORER, label: '計分器', description: '專業比賽計分工具' },
                 ],
             },
             { path: ROUTES.EQUIPMENT, label: '裝備', type: 'link' },
@@ -44,10 +47,12 @@ const Header = () => {
                 type: 'dropdown',
                 items: [
                     { path: ROUTES.RESOURCES, label: '資源中心', description: '影片教學、文章與社群連結' },
+                    { path: ROUTES.LEARNING_PATHS, label: '視覺化學習', description: '互動圖表與進階視覺化工具' },
                     { path: ROUTES.ABOUT, label: '關於', description: '了解 Picklemaster Taiwan' },
                 ],
             },
         ];
+
 
     return (
         <header className="sticky top-0 z-50 shadow-lg">
@@ -113,7 +118,7 @@ const Header = () => {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center space-x-1">
+                    <div className="hidden lg:flex items-center space-x-0.5">
                         {/* Search Bar */}
                         <div className="mr-2">
                             <SearchBar variant="header" />
@@ -128,7 +133,7 @@ const Header = () => {
                                     <Link
                                         to={item.path!}
                                         className={`
-                      px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 block text-sm relative
+                      px-3 xl:px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 block text-sm relative whitespace-nowrap
                       ${isActive(item.path!)
                                                 ? 'text-emerald-700 bg-emerald-50 shadow-sm'
                                                 : 'text-neutral-700 hover:text-emerald-700 hover:bg-neutral-50/80'
@@ -143,12 +148,12 @@ const Header = () => {
                                 ) : (
                                     <>
                                         <button
-                                            className="px-5 py-2.5 rounded-xl font-semibold text-neutral-700 hover:text-emerald-700 hover:bg-neutral-50/80 transition-all duration-200 flex items-center space-x-1.5 text-sm"
+                                            className="px-3 xl:px-5 py-2.5 rounded-xl font-semibold text-neutral-700 hover:text-emerald-700 hover:bg-neutral-50/80 transition-all duration-200 flex items-center space-x-1.5 text-sm whitespace-nowrap"
                                             onMouseEnter={() => setActiveDropdown(item.label)}
                                         >
                                             <span>{item.label}</span>
                                             <svg
-                                                className="w-3.5 h-3.5 transition-transform duration-200"
+                                                className="w-3.5 h-3.5 transition-transform duration-200 shrink-0"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"

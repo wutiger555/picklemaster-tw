@@ -12,6 +12,9 @@ const Rules = lazy(() => import('./pages/Rules'));
 const Equipment = lazy(() => import('./pages/Equipment'));
 const LearningPaths = lazy(() => import('./pages/LearningPaths'));
 const Learning = lazy(() => import('./pages/Learning'));
+const Techniques = lazy(() => import('./pages/Techniques'));
+const CourtGuide = lazy(() => import('./pages/CourtGuide'));
+const Quiz = lazy(() => import('./pages/Quiz'));
 const Courts = lazy(() => import('./pages/Courts'));
 const Game = lazy(() => import('./pages/Game'));
 const Scorer = lazy(() => import('./pages/Scorer'));
@@ -36,6 +39,9 @@ function App() {
               <Route path={ROUTES.EQUIPMENT} element={<Equipment />} />
               <Route path={ROUTES.LEARNING_PATHS} element={<LearningPaths />} />
               <Route path={ROUTES.LEARNING} element={<Learning />} />
+              <Route path={ROUTES.TECHNIQUES} element={<Techniques />} />
+              <Route path={ROUTES.COURT_GUIDE} element={<CourtGuide />} />
+              <Route path={ROUTES.QUIZ} element={<Quiz />} />
               <Route path={ROUTES.COURTS} element={<Courts />} />
               <Route path={ROUTES.GAME} element={<Game />} />
               <Route path={ROUTES.SCORER} element={<Scorer />} />

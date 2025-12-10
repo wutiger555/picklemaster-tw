@@ -1,187 +1,363 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import InteractiveCourt from '../components/court/InteractiveCourt';
 import BallAnimation from '../components/court/BallAnimation';
 import CourtViewer3D from '../components/learning/CourtViewer3D';
 import SportComparison from '../components/rules/SportComparison';
-import GlassCard from '../components/common/GlassCard';
-import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
 import { usePageTitle } from '../hooks/usePageTitle';
 import SEOHead from '../components/common/SEOHead';
+import { ROUTES } from '../utils/constants';
+
+// 核心規則
+const CORE_RULES = [
+  {
+    id: 'two-bounce',
+    title: '雙彈跳規則',
+    subtitle: 'Two-Bounce Rule',
+    description: '發球後接發球方必須讓球彈地一次才能擊球，發球方的第一次回擊也必須讓球彈地一次。',
+    details: [
+      '發球後，接發球方必須等球彈地才能回擊',
+      '接發球回擊後，發球方也必須等球彈地才能回擊',
+      '完成兩次彈跳後，雙方可以選擇截擊或彈地擊球',
+      '此規則防止發球方和接發球方過早搶網'
+    ],
+    color: 'blue'
+  },
+  {
+    id: 'kitchen',
+    title: '廚房區規則',
+    subtitle: 'Non-Volley Zone (NVZ)',
+    description: '廚房區是距離網子 7 英尺的區域。在此區域內不能進行截擊。',
+    details: [
+      '廚房線高 7 英尺，包含線本身',
+      '不能在廚房內截擊（球未落地就打）',
+      '擊球動量帶入廚房也算犯規',
+      '球彈地後可以進入廚房擊球'
+    ],
+    color: 'rose'
+  },
+  {
+    id: 'serve',
+    title: '發球規則',
+    subtitle: 'Serving Rules',
+    description: '發球必須是低手發球，球拍接觸球時必須在腰部以下。',
+    details: [
+      '必須為低手發球（Underhand）',
+      '球拍接觸球時需在腰部以下',
+      '發球時雙腳必須在底線後',
+      '發球須落在對角發球區內'
+    ],
+    color: 'amber'
+  },
+  {
+    id: 'scoring',
+    title: '計分規則',
+    subtitle: 'Scoring System',
+    description: '只有發球方可以得分。雙打報分時需報出三個數字。',
+    details: [
+      '只有發球方可以得分',
+      '雙打報分格式：己方分-對方分-發球員號',
+      '一般比賽打到 11 分，須贏 2 分',
+      '開局時只有一位發球員'
+    ],
+    color: 'emerald'
+  }
+];
 
 const Rules = () => {
   usePageTitle('匹克球規則教學');
-  const [activeTab, setActiveTab] = useState('sport-comparison');
-
-  const tabs = [
-    { id: 'sport-comparison', label: '運動對比', icon: '⚖️' },
-    { id: 'interactive-court', label: '互動式球場', icon: '🎯' },
-    { id: '3d-court', label: '3D 球場配置', icon: '🏟️' },
-    { id: 'ball-path', label: '球路徑分析', icon: '⚡' },
-  ];
+  const [activeRule, setActiveRule] = useState(CORE_RULES[0]);
+  const [activeTool, setActiveTool] = useState('3d');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-white">
+    <div className="min-h-screen">
       <SEOHead page="rules" />
-      {/* 標題區 - 升級設計 */}
-      <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-600 text-white py-20 md:py-24 overflow-hidden">
-        {/* 背景裝飾 */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 right-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
-          <div className="absolute bottom-10 left-10 w-96 h-96 bg-secondary-300/20 rounded-full blur-3xl animate-float"></div>
-        </div>
 
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.h1
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            className="font-display text-display-lg md:text-display-xl font-black mb-4 drop-shadow-lg"
-          >
-            規則教學
-          </motion.h1>
-          <motion.p
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.1 }}
-            className="text-body-lg md:text-body-xl text-white/90 max-w-2xl mx-auto"
-          >
-            透過互動式教學，快速掌握匹克球的基本規則與球場配置
-          </motion.p>
-        </div>
-
-        {/* 波浪裝飾 */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-auto">
-            <path
-              fill="#fafafa"
-              d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-            />
+      {/* ═══════════════════════════════════════════════════════════════
+          HERO - 球場風格
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600">
+        {/* 球場線條 */}
+        <div className="absolute inset-0 opacity-15">
+          <svg className="w-full h-full" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
+            <rect x="50" y="25" width="700" height="350" fill="none" stroke="white" strokeWidth="3" />
+            <line x1="400" y1="25" x2="400" y2="375" stroke="white" strokeWidth="3" />
+            <rect x="50" y="25" width="110" height="350" fill="white" fillOpacity="0.2" />
+            <rect x="640" y="25" width="110" height="350" fill="white" fillOpacity="0.2" />
           </svg>
+        </div>
+
+        <div className="container mx-auto px-6 md:px-12 relative z-10 py-16">
+          <nav className="flex items-center gap-2 text-sm text-white/50 mb-8">
+            <Link to={ROUTES.HOME} className="hover:text-white transition-colors">首頁</Link>
+            <span>/</span>
+            <Link to={ROUTES.LEARNING} className="hover:text-white transition-colors">學習中心</Link>
+            <span>/</span>
+            <span className="text-white">規則教學</span>
+          </nav>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-3xl"
+          >
+            <span className="inline-flex items-center gap-2 text-blue-200 font-bold text-sm mb-4">
+              <span className="w-8 h-0.5 bg-yellow-400" />
+              RULES
+            </span>
+
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] mb-6">
+              規則教學
+            </h1>
+
+            <p className="text-xl text-blue-100 leading-relaxed max-w-xl">
+              雙彈跳、廚房區、發球計分——完整規則說明與互動教學
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12">
-        {/* 頁籤導航 - Glassmorphism 設計 */}
-        <div className="mb-16">
+      {/* ═══════════════════════════════════════════════════════════════
+          四大核心規則
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-24 bg-white">
+        <div className="container mx-auto px-6 md:px-12">
           <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="flex flex-wrap justify-center gap-4"
+            className="mb-12"
           >
-            {tabs.map((tab) => (
-              <motion.div key={tab.id} variants={staggerItem}>
-                <GlassCard
-                  variant={activeTab === tab.id ? 'secondary' : 'light'}
-                  size="sm"
-                  hoverable
-                  clickable
-                  onClick={() => setActiveTab(tab.id)}
-                  className="cursor-pointer transition-all duration-300"
+            <span className="inline-flex items-center gap-2 text-neutral-400 font-bold text-sm mb-4">
+              <span className="w-6 h-0.5 bg-neutral-400" />
+              CORE RULES
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-neutral-900">
+              四大核心規則
+            </h2>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* 規則選擇 */}
+            <div className="lg:col-span-4 space-y-2">
+              {CORE_RULES.map((rule, index) => (
+                <button
+                  key={rule.id}
+                  onClick={() => setActiveRule(rule)}
+                  className={`w-full text-left p-5 transition-all ${activeRule.id === rule.id
+                      ? `${rule.color === 'blue' ? 'bg-blue-600' :
+                        rule.color === 'rose' ? 'bg-rose-500' :
+                          rule.color === 'amber' ? 'bg-amber-500' :
+                            'bg-emerald-600'
+                      } text-white`
+                      : 'bg-neutral-100 hover:bg-neutral-200'
+                    }`}
                 >
-                  <div className="flex items-center gap-3 px-4 py-2">
-                    <span className="text-2xl">{tab.icon}</span>
-                    <span className="font-display text-heading-md font-bold text-neutral-900">
-                      {tab.label}
+                  <div className="flex items-center gap-4">
+                    <span className={`text-4xl font-black ${activeRule.id === rule.id ? 'text-white/30' : 'text-neutral-300'
+                      }`}>
+                      {String(index + 1).padStart(2, '0')}
                     </span>
+                    <div>
+                      <h3 className="font-bold text-lg">{rule.title}</h3>
+                      <p className={`text-sm ${activeRule.id === rule.id ? 'text-white/70' : 'text-neutral-500'}`}>
+                        {rule.subtitle}
+                      </p>
+                    </div>
                   </div>
-                </GlassCard>
-              </motion.div>
-            ))}
-          </motion.div>
+                </button>
+              ))}
+            </div>
+
+            {/* 規則詳情 */}
+            <div className="lg:col-span-8">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeRule.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className={`h-full p-8 md:p-12 ${activeRule.color === 'blue' ? 'bg-blue-50' :
+                      activeRule.color === 'rose' ? 'bg-rose-50' :
+                        activeRule.color === 'amber' ? 'bg-amber-50' :
+                          'bg-emerald-50'
+                    }`}
+                >
+                  <h3 className={`text-3xl font-black mb-2 ${activeRule.color === 'blue' ? 'text-blue-600' :
+                      activeRule.color === 'rose' ? 'text-rose-600' :
+                        activeRule.color === 'amber' ? 'text-amber-600' :
+                          'text-emerald-600'
+                    }`}>
+                    {activeRule.title}
+                  </h3>
+                  <p className="text-neutral-500 mb-6">{activeRule.subtitle}</p>
+
+                  <p className="text-neutral-700 text-lg mb-8 leading-relaxed">
+                    {activeRule.description}
+                  </p>
+
+                  <h4 className="font-bold text-neutral-700 mb-4">詳細說明：</h4>
+                  <ul className="space-y-3">
+                    {activeRule.details.map((detail, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <span className={`w-6 h-6 flex items-center justify-center text-white text-sm font-bold shrink-0 ${activeRule.color === 'blue' ? 'bg-blue-500' :
+                            activeRule.color === 'rose' ? 'bg-rose-500' :
+                              activeRule.color === 'amber' ? 'bg-amber-500' :
+                                'bg-emerald-500'
+                          }`}>
+                          {i + 1}
+                        </span>
+                        <span className="text-neutral-600">{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
+      </section>
 
-        {/* 運動對比 */}
-        {activeTab === 'sport-comparison' && (
+      {/* ═══════════════════════════════════════════════════════════════
+          互動工具
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-24 bg-neutral-900">
+        <div className="container mx-auto px-6 md:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-12"
           >
-            <section className="mb-20">
-              <GlassCard variant="light" size="lg" className="mb-12">
-                <h2 className="font-display text-display-md font-black text-center mb-4 text-neutral-900">
-                  匹克球 vs 網球 vs 羽球
-                </h2>
-                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
-                  透過視覺化對比，了解匹克球與其他球拍運動的差異與優勢
-                </p>
-              </GlassCard>
-              <SportComparison />
-            </section>
+            <span className="inline-flex items-center gap-2 text-blue-400 font-bold text-sm mb-4">
+              <span className="w-6 h-0.5 bg-blue-400" />
+              INTERACTIVE TOOLS
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-white">
+              視覺化互動工具
+            </h2>
           </motion.div>
-        )}
 
-        {/* 互動式球場 */}
-        {activeTab === 'interactive-court' && (
+          {/* 工具切換 */}
+          <div className="flex flex-wrap gap-4 mb-10">
+            {[
+              { id: '3d', name: '3D 球場', icon: '🏟️' },
+              { id: 'interactive', name: '互動球場', icon: '📍' },
+              { id: 'trajectory', name: '球路軌跡', icon: '🎾' },
+            ].map((tool) => (
+              <button
+                key={tool.id}
+                onClick={() => setActiveTool(tool.id)}
+                className={`px-6 py-3 font-bold text-lg transition-colors ${activeTool === tool.id
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white'
+                  }`}
+              >
+                {tool.icon} {tool.name}
+              </button>
+            ))}
+          </div>
+
+          {/* 工具展示 */}
+          <AnimatePresence mode="wait">
+            {activeTool === '3d' && (
+              <motion.div
+                key="3d"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <p className="text-neutral-400 mb-6">拖曳滑鼠旋轉視角，了解球場立體結構</p>
+                <CourtViewer3D />
+              </motion.div>
+            )}
+
+            {activeTool === 'interactive' && (
+              <motion.div
+                key="interactive"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <p className="text-neutral-400 mb-6">點擊各區域了解詳細規則</p>
+                <InteractiveCourt />
+              </motion.div>
+            )}
+
+            {activeTool === 'trajectory' && (
+              <motion.div
+                key="trajectory"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <p className="text-neutral-400 mb-6">觀察不同擊球的球路軌跡</p>
+                <BallAnimation />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          運動對比
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-24 bg-gradient-to-br from-amber-50 via-white to-orange-50">
+        <div className="container mx-auto px-6 md:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-12"
           >
-            <section className="mb-20">
-              <GlassCard variant="light" size="lg" className="mb-12">
-                <h2 className="font-display text-display-md font-black text-center mb-4 text-neutral-900">
-                  互動式球場教學
-                </h2>
-                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
-                  點擊球場上的不同區域，了解每個位置的規則和戰術要點
-                </p>
-              </GlassCard>
-              <InteractiveCourt />
-            </section>
+            <span className="inline-flex items-center gap-2 text-amber-600 font-bold text-sm mb-4">
+              <span className="w-6 h-0.5 bg-amber-500" />
+              COMPARISON
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-neutral-900">
+              匹克球 vs 網球 vs 羽球
+            </h2>
           </motion.div>
-        )}
 
-        {/* 3D 球場配置 */}
-        {activeTab === '3d-court' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section className="mb-20">
-              <GlassCard variant="light" size="lg" className="mb-12">
-                <h2 className="font-display text-display-md font-black text-center mb-4 text-neutral-900">
-                  3D 球場配置與站位教學
-                </h2>
-                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
-                  360 度檢視球場結構，學習正確的站位與各區域規則
-                </p>
-              </GlassCard>
-              <CourtViewer3D />
-            </section>
-          </motion.div>
-        )}
+          <SportComparison />
+        </div>
+      </section>
 
-        {/* 球路徑動畫 */}
-        {activeTab === 'ball-path' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section className="mb-20">
-              <GlassCard variant="light" size="lg" className="mb-12">
-                <h2 className="font-display text-display-md font-black text-center mb-4 text-neutral-900">
-                  球路徑動畫
-                </h2>
-                <p className="text-center text-body-md text-neutral-600 max-w-2xl mx-auto">
-                  學習不同擊球類型的球路軌跡和落點
-                </p>
-              </GlassCard>
-              <BallAnimation />
-            </section>
-          </motion.div>
-        )}
-      </div>
+      {/* ═══════════════════════════════════════════════════════════════
+          相關連結
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-16 bg-blue-600">
+        <div className="container mx-auto px-6 md:px-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div>
+              <h2 className="text-2xl font-black text-white mb-2">規則學會了？</h2>
+              <p className="text-blue-100">繼續學習技巧或開始實戰！</p>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <Link
+                to={ROUTES.TECHNIQUES}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-rose-500 text-white font-bold hover:bg-rose-600 transition-colors"
+              >
+                🎯 技巧教學
+              </Link>
+              <Link
+                to={ROUTES.QUIZ}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 text-white font-bold hover:bg-violet-700 transition-colors"
+              >
+                ✏️ 知識測驗
+              </Link>
+              <Link
+                to={ROUTES.COURTS}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-600 font-bold hover:bg-blue-50 transition-colors"
+              >
+                📍 找球場開打
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

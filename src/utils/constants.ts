@@ -28,6 +28,9 @@ export const ROUTES = {
   EQUIPMENT: '/equipment',
   LEARNING_PATHS: '/learning-paths',
   LEARNING: '/learning',
+  TECHNIQUES: '/techniques',
+  COURT_GUIDE: '/court-guide',
+  QUIZ: '/quiz',
   COURTS: '/courts',
   GAME: '/game',
   SCORER: '/scorer',
@@ -38,6 +41,7 @@ export const ROUTES = {
   PRIVACY_POLICY: '/privacy-policy',
   CONTACT: '/contact',
 } as const;
+
 
 // 球場類型
 export const COURT_TYPES = {

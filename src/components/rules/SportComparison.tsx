@@ -286,21 +286,30 @@ const SportComparison = () => {
                             <p className="text-sm text-neutral-600">約為網球場的 1/4</p>
                         </div>
                         <div className="relative bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 border-2 border-emerald-400 ring-4 ring-emerald-200">
-                            {/* 球場示意圖 */}
-                            <div className="aspect-[13.4/6.1] bg-emerald-500/20 border-4 border-emerald-500 rounded-lg relative">
-                                {/* 中線 */}
-                                <div className="absolute top-0 bottom-0 left-1/2 w-1 bg-emerald-600/50" />
-                                {/* 廚房區（兩側） */}
-                                <div className="absolute top-0 left-0 right-1/2 h-[30%] bg-emerald-600/30 border-b-2 border-emerald-600">
-                                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] font-bold text-emerald-700">
+                            {/* 球場示意圖 - 從上方俯視 */}
+                            <div className="aspect-[13.4/6.1] bg-emerald-500/20 border-4 border-emerald-500 rounded-lg relative overflow-hidden">
+                                {/* 中線（網子位置） */}
+                                <div className="absolute top-0 bottom-0 left-1/2 w-1 bg-white -translate-x-1/2 z-10" />
+
+                                {/* 左側廚房區（網前 7 英尺 ≈ 16% 的球場長度） */}
+                                <div className="absolute top-0 bottom-0 left-[34%] right-1/2 bg-red-400/40 border-l-2 border-red-500">
+                                    <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px] font-bold text-red-700 whitespace-nowrap">
                                         廚房區
                                     </span>
                                 </div>
-                                <div className="absolute top-0 left-1/2 right-0 h-[30%] bg-emerald-600/30 border-b-2 border-emerald-600">
-                                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] font-bold text-emerald-700">
+
+                                {/* 右側廚房區 */}
+                                <div className="absolute top-0 bottom-0 left-1/2 right-[34%] bg-red-400/40 border-r-2 border-red-500">
+                                    <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px] font-bold text-red-700 whitespace-nowrap">
                                         廚房區
                                     </span>
                                 </div>
+
+                                {/* 發球區中線（左側） */}
+                                <div className="absolute top-1/2 left-0 w-[34%] h-0.5 bg-emerald-600/50" />
+
+                                {/* 發球區中線（右側） */}
+                                <div className="absolute top-1/2 right-0 w-[34%] h-0.5 bg-emerald-600/50" />
                             </div>
                             {/* 尺寸標註 */}
                             <div className="mt-4 space-y-2 text-center">

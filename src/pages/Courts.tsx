@@ -484,6 +484,8 @@ const Courts = () => {
                 courts={filteredCourts}
                 selectedCourt={selectedCourt}
                 onCourtSelect={setSelectedCourt}
+                userLocation={userLocation}
+                nearestCourt={nearestCourt?.court}
               />
             </motion.div>
           )}

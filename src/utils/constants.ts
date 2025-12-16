@@ -26,6 +26,7 @@ export const ROUTES = {
   HOME: '/',
   RULES: '/rules',
   EQUIPMENT: '/equipment',
+  PRO_PLAYERS: '/pro-players',
   LEARNING_PATHS: '/learning-paths',
   LEARNING: '/learning',
   COURTS: '/courts',

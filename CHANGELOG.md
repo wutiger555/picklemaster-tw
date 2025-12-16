@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🏆 Pro Players Page
+- **New "Titans" Section**: Interactive 3D trading cards for top players (Ben Johns, Anna Leigh Waters)
+- **Stats Visualization**: Dynamic power/control/speed bars for each player
+- **Equipment Integration**: Direct links to player's paddle of choice
+- **Special Entry**: Added "Tesla Bot" as a fun easter egg
+
+#### 🔧 Court Visualizer Refinement
+- **Logic Correction**: Fixed serve and return paths to strictly follow cross-court rules
+- **UI Upgrade**: Replaced emoji controls with professional SVG playback bar
+- **Step Navigation**: Added clickable step indicators and progress tracking
+- **Visual Accuracy**: Corrected court markings (kitchen line does not cross center)
+
+### Changed
+
+#### 🧭 Navigation Structure
+- **Consolidated Menu**: Merged "Equipment" and "Pro Players" into "**職業與裝備**" (Gear & Pros)
+- **Simplified "More"**: Renamed "Resources" to "更多" (More) containing About and Resources
+
+#### 🎨 UI & Content
+- **Learning Paths**: Redesigned timeline for premium look (removed rainbow gradient)
+- **News Feed**: Updated Taipei Open results and added Tesla/Razer paddle news
+- **Image Handling**: Added elegant gradient fallbacks for broken news images
+
+#### 🔍 SEO
+- **New Route**: Added metadata and static generation for `/pro-players`
+
+### Added
+
 #### 🎥 Video Integration
 - **New `VideoTutorials` component**: Grid layout with hover effects, duration/level badges
 - **New `VideoSpotlight` component**: Cinematic home page section with video preview

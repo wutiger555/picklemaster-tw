@@ -38,9 +38,16 @@ const Header = () => {
                     { path: ROUTES.SCORER, label: '計分器', description: '專業比賽計分工具', badge: 'NEW' },
                 ],
             },
-            { path: ROUTES.EQUIPMENT, label: '裝備', type: 'link' },
             {
-                label: '資源',
+                label: '裝備與選手',
+                type: 'dropdown',
+                items: [
+                    { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '世界頂尖球員戰力分析與裝備', badge: 'HOT' },
+                    { path: ROUTES.EQUIPMENT, label: '裝備指南', description: '球拍選購建議與最新科技解析' },
+                ],
+            },
+            {
+                label: '更多',
                 type: 'dropdown',
                 items: [
                     { path: ROUTES.RESOURCES, label: '資源中心', description: '影片教學、文章與社群連結' },

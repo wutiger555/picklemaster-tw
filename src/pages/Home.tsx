@@ -201,11 +201,11 @@ const Home = () => {
 
             {/* Timeline Container */}
             <div className="max-w-4xl mx-auto relative">
-              {/* Vertical Line - Hidden on mobile */}
-              <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-200 via-blue-200 to-purple-200 -translate-x-1/2"></div>
+              {/* Vertical Line - Refined Premium Look */}
+              <div className="hidden md:block absolute left-1/2 top-0 bottom-8 w-px bg-gradient-to-b from-transparent via-neutral-300 to-transparent -translate-x-1/2 z-0"></div>
 
               {/* Timeline Items */}
-              <div className="space-y-12 md:space-y-16">
+              <div className="space-y-12 md:space-y-16 relative z-10">
                 {[
                   {
                     level: '新手入門',
@@ -244,15 +244,17 @@ const Home = () => {
                     className={`relative flex items-center ${path.position === 'right' ? 'md:flex-row-reverse' : ''
                       }`}
                   >
-                    {/* Timeline Node */}
+                    {/* Style updates to timeline nodes for better layering */}
                     <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 z-10">
                       <m.div
                         initial={{ scale: 0 }}
                         whileInView={{ scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.2 + 0.3, type: "spring", stiffness: 200 }}
-                        className={`w-16 h-16 rounded-full bg-gradient-to-br ${path.gradient} flex items-center justify-center text-3xl shadow-lg`}
+                        className={`w-12 h-12 rounded-full bg-white border-4 border-white shadow-xl flex items-center justify-center text-xl z-10 relative`}
                       >
+                        {/* Colored Ring */}
+                        <div className={`absolute inset-0 rounded-full border-2 border-${path.color}-500 opacity-20`}></div>
                         {path.icon}
                       </m.div>
                     </div>
@@ -263,57 +265,59 @@ const Home = () => {
                       className={`w-full md:w-[calc(50%-3rem)] group ${path.position === 'right' ? 'md:ml-auto' : 'md:mr-auto'
                         }`}
                     >
-                      <div className={`relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border-2 border-${path.color}-100 hover:border-${path.color}-300 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-[1.02]`}>
+                      <div className={`relative bg-white rounded-2xl p-6 sm:p-8 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1`}>
                         {/* Mobile Icon */}
-                        <div className="md:hidden w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-2xl mb-4">
+                        <div className="md:hidden w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center text-2xl mb-4">
                           {path.icon}
                         </div>
 
-                        {/* Step Number */}
-                        <div className={`absolute -top-3 ${path.position === 'right' ? 'md:right-4' : 'md:left-4'} left-4 bg-gradient-to-r ${path.gradient} text-white text-xs font-bold px-3 py-1 rounded-full shadow-md`}>
-                          STEP {index + 1}
+                        {/* Step Label - Cleaner Look */}
+                        <div className={`absolute top-6 ${path.position === 'right' ? 'md:left-auto md:right-8' : 'right-8'} right-8 text-xs font-bold tracking-widest text-neutral-400 uppercase`}>
+                          Step 0{index + 1}
                         </div>
 
                         {/* Content */}
                         <div className={`${path.position === 'right' ? 'md:text-right' : 'md:text-left'} text-left`}>
-                          <h3 className="text-2xl font-bold text-neutral-900 mb-2">
+                          <h3 className="text-xl md:text-2xl font-bold text-neutral-800 mb-2">
                             {path.level}
                           </h3>
-                          <p className="text-sm text-neutral-600 font-medium mb-3">
+                          <p className="text-sm md:text-base text-neutral-600 font-medium mb-3">
                             {path.desc}
                           </p>
-                          <p className="text-xs text-neutral-500 mb-4">
+                          <p className="text-xs text-neutral-400 mb-4 leading-relaxed">
                             {path.details}
                           </p>
-                          <div className={`flex items-center ${path.position === 'right' ? 'md:justify-end' : 'md:justify-start'} justify-start text-${path.color}-600 font-semibold text-sm group-hover:translate-x-1 transition-transform`}>
+                          <div className={`flex items-center ${path.position === 'right' ? 'md:justify-end' : 'md:justify-start'} justify-start text-neutral-900 font-bold text-sm group-hover:translate-x-1 transition-transform`}>
                             <span>開始學習</span>
                             <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
                           </div>
                         </div>
-
-                        {/* Decorative Corner */}
-                        <div className={`absolute ${path.position === 'right' ? 'md:left-0 md:-translate-x-2' : 'md:right-0 md:translate-x-2'} right-0 translate-x-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-br ${path.gradient} rounded-full hidden md:block`}></div>
                       </div>
                     </Link>
                   </m.div>
                 ))}
               </div>
 
-              {/* End Badge */}
+              {/* End Badge - Premium Look */}
               <m.div
-                initial={{ opacity: 0, scale: 0 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.8, type: "spring" }}
-                className="mt-12 flex justify-center"
+                transition={{ delay: 0.6 }}
+                className="mt-16 flex justify-center relative z-10"
               >
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <span>完成所有階段，成為匹克球達人</span>
+                <div className="group bg-white pl-2 pr-6 py-2 rounded-full border border-neutral-200 shadow-2xl flex items-center gap-4 hover:scale-105 transition-transform duration-300">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-white flex items-center justify-center shadow-md">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Goal</p>
+                    <p className="text-sm font-bold text-neutral-800">成為匹克球達人</p>
+                  </div>
                 </div>
               </m.div>
             </div>

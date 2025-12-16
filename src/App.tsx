@@ -10,6 +10,7 @@ import { ROUTES } from './utils/constants';
 // Lazy load pages
 const Rules = lazy(() => import('./pages/Rules'));
 const Equipment = lazy(() => import('./pages/Equipment'));
+const ProPlayers = lazy(() => import('./pages/ProPlayers'));
 const LearningPaths = lazy(() => import('./pages/LearningPaths'));
 const Learning = lazy(() => import('./pages/Learning'));
 const Courts = lazy(() => import('./pages/Courts'));
@@ -34,6 +35,7 @@ function App() {
               <Route path={ROUTES.HOME} element={<Home />} />
               <Route path={ROUTES.RULES} element={<Rules />} />
               <Route path={ROUTES.EQUIPMENT} element={<Equipment />} />
+              <Route path={ROUTES.PRO_PLAYERS} element={<ProPlayers />} />
               <Route path={ROUTES.LEARNING_PATHS} element={<LearningPaths />} />
               <Route path={ROUTES.LEARNING} element={<Learning />} />
               <Route path={ROUTES.COURTS} element={<Courts />} />

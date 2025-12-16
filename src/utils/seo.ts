@@ -65,6 +65,11 @@ export const pageSEO: Record<string, SEOConfig> = {
     title: '匹克球 FAQ 懶人包 | 新手最常問的 100 個問題',
     description: '什麼是雙彈跳？球拍要買哪一種？哪裡可以學球？匯整所有匹克球新手最想知道的問題，一次幫你解答。',
     keywords: '匹克球FAQ,匹克球問題,匹克球疑問,匹克球規則問題,匹克球新手問題'
+  },
+  pro_players: {
+    title: '世界頂尖匹克球選手排名 & 裝備解密 | Picklemaster Taiwan',
+    description: '認識世界排名前十的匹克球職業選手。Ben Johns 用什麼球拍？Anna Leigh Waters 的必殺技是什麼？完整戰力分析與裝備大公開。',
+    keywords: '匹克球選手,匹克球排名,Ben Johns,Anna Leigh Waters,匹克球職業選手,PPA巡迴賽,APP巡迴賽,匹克球球星'
   }
 };
 

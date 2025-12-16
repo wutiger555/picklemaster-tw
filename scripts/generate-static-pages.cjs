@@ -205,6 +205,21 @@ const pageSEO = {
                 }
             ]
         }
+    },
+    'pro-players': {
+        title: '世界頂尖匹克球選手排名 & 裝備解密 | Picklemaster Taiwan',
+        description: '認識世界排名前十的匹克球職業選手。Ben Johns 用什麼球拍？Anna Leigh Waters 的必殺技是什麼？完整戰力分析與裝備大公開。',
+        keywords: '匹克球選手,匹克球排名,Ben Johns,Anna Leigh Waters,匹克球職業選手,PPA巡迴賽,APP巡迴賽,匹克球球星',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "世界頂尖匹克球選手列表",
+            "itemListElement": [
+                { "@type": "Person", "position": 1, "name": "Ben Johns" },
+                { "@type": "Person", "position": 2, "name": "Anna Leigh Waters" },
+                { "@type": "Person", "position": 3, "name": "Tyson McGuffin" }
+            ]
+        }
     }
 };
 

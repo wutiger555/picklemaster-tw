@@ -232,6 +232,7 @@ const Header = () => {
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="lg:hidden p-2.5 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-all duration-200"
+                        aria-label="切換選單"
                     >
                         {mobileMenuOpen ? (
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

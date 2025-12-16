@@ -97,6 +97,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Performance Improvements
+- **Mobile Performance Optimization**: Targeted improvements for mobile PageSpeed score.
+  - **LCP Optimization**: Preloaded logo image and optimized Hero section loading.
+  - **Bundle Size Reduction**: Removed `framer-motion` from critical path (LoadingSpinner) and implemented `LazyMotion` for the Home page.
+  - **Accessibility**: Added accessible attributes to interactive elements (Header menu, 3D Preview toggle).
+
+---
+
 ## [Previous Versions]
 
 ### v1.1.0 - Branding Update

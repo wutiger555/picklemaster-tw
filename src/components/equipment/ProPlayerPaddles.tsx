@@ -144,6 +144,54 @@ const ProPlayerPaddles = () => {
       playStyle: '力量型女子球員，攻擊性強',
       source: 'CRBN Official & PPA Tour Stats 2024',
     },
+    {
+      id: 'tesla-plaid',
+      name: 'Tesla x Selkirk',
+      nameZh: '特斯拉聯名款',
+      country: 'USA',
+      ranking: '科技跨界聯名',
+      paddle: {
+        brand: 'Selkirk',
+        model: 'Tesla Plaid Paddle',
+        type: '力量型',
+        weight: '7.8 oz (221g)',
+        core: 'Polymer Honeycomb',
+        surface: 'Carbon Fiber (Cybertruck Style)',
+        price: '$350.00',
+      },
+      achievements: [
+        '🚀 Tesla 工程師親自設計空氣動力學',
+        '⚡ 靈感來自 Cybertruck 與 Plaid 車型',
+        '⭐ 2025 年 12 月 12 日限量發售幾小時完售',
+        '💼 汽車工藝與運動科技的極致結合',
+      ],
+      playStyle: '極致速度與未來科技感',
+      source: 'Tesla & Selkirk Official Announcement',
+    },
+    {
+      id: 'razer-joola',
+      name: 'Razer x JOOLA',
+      nameZh: '雷蛇電競聯名款',
+      country: 'USA',
+      ranking: '電競跨界聯名',
+      paddle: {
+        brand: 'JOOLA',
+        model: 'Perseus Pro IV (Razer Ed.)',
+        type: '控制型',
+        weight: '8.0 oz (227g)',
+        core: 'Polymer Honeycomb',
+        surface: 'Carbon Friction (Razer Green)',
+        price: '$299.95',
+      },
+      achievements: [
+        '🐍 電競潮牌 Razer 跨界首作',
+        '🎮 限量 1337 支 (LEET) 秒殺逸品',
+        '⭐ 結合電競美學與世界冠軍球拍性能',
+        '💼 2025 年 12 月 9 日限量發行',
+      ],
+      playStyle: '精準操控與電競潮流風格',
+      source: 'Razer & JOOLA Official Collaboration',
+    },
   ];
 
   return (
@@ -157,91 +205,91 @@ const ProPlayerPaddles = () => {
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {worldPlayers.map((player) => (
-              <div
-                key={player.id}
-                className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100"
-              >
-                {/* 選手資訊 */}
-                <div className="mb-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-800">{player.name}</h3>
-                      {player.nameZh && (
-                        <p className="text-base text-gray-600">{player.nameZh}</p>
-                      )}
-                      <div className="flex items-center mt-2 space-x-2">
-                        <span className="text-2xl">{player.country === 'USA' ? '🇺🇸' : player.country === 'Canada' ? '🇨🇦' : '🇹🇼'}</span>
-                        <span className="text-sm text-gray-600">{player.country}</span>
-                      </div>
-                    </div>
-                    <div className="bg-gradient-to-br from-pickleball-100 to-sport-100 rounded-xl px-4 py-2">
-                      <p className="text-xs text-gray-600 text-center">排名</p>
-                      <p className="text-sm font-bold text-gray-800 text-center whitespace-nowrap">
-                        {player.ranking.split('（')[0]}
-                      </p>
+          {worldPlayers.map((player) => (
+            <div
+              key={player.id}
+              className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100"
+            >
+              {/* 選手資訊 */}
+              <div className="mb-6">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-800">{player.name}</h3>
+                    {player.nameZh && (
+                      <p className="text-base text-gray-600">{player.nameZh}</p>
+                    )}
+                    <div className="flex items-center mt-2 space-x-2">
+                      <span className="text-2xl">{player.country === 'USA' ? '🇺🇸' : player.country === 'Canada' ? '🇨🇦' : '🇹🇼'}</span>
+                      <span className="text-sm text-gray-600">{player.country}</span>
                     </div>
                   </div>
-
-                  {/* 成就 */}
-                  <div className="mb-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">🏆 主要成就：</p>
-                    <ul className="space-y-1">
-                      {player.achievements.map((achievement, index) => (
-                        <li key={index} className="text-sm text-gray-700">{achievement}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* 打法風格 */}
-                  <div className="bg-sport-50 rounded-xl p-3 mb-4">
-                    <p className="text-xs font-semibold text-gray-600 mb-1">打法風格</p>
-                    <p className="text-sm text-gray-800">{player.playStyle}</p>
+                  <div className="bg-gradient-to-br from-pickleball-100 to-sport-100 rounded-xl px-4 py-2">
+                    <p className="text-xs text-gray-600 text-center">排名</p>
+                    <p className="text-sm font-bold text-gray-800 text-center whitespace-nowrap">
+                      {player.ranking.split('（')[0]}
+                    </p>
                   </div>
                 </div>
 
-                {/* 球拍資訊 */}
-                <div className="bg-gradient-to-r from-pickleball-50 to-court-50 rounded-xl p-5 border-2 border-pickleball-200">
-                  <h4 className="font-bold text-gray-800 mb-4 flex items-center">
-                    <span className="text-xl mr-2">🏓</span>
-                    使用球拍
-                  </h4>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">品牌</span>
-                      <span className="text-base font-bold text-pickleball-700">{player.paddle.brand}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">型號</span>
-                      <span className="text-sm font-semibold text-gray-800">{player.paddle.model}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">類型</span>
-                      <span className="text-sm text-gray-800">{player.paddle.type}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">重量</span>
-                      <span className="text-sm text-gray-800">{player.paddle.weight}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">核心</span>
-                      <span className="text-sm text-gray-800">{player.paddle.core}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">表面</span>
-                      <span className="text-sm text-gray-800">{player.paddle.surface}</span>
-                    </div>
-                    <div className="flex justify-between items-center pt-2 border-t border-pickleball-200">
-                      <span className="text-sm font-semibold text-gray-700">參考售價</span>
-                      <span className="text-lg font-bold text-sport-600">{player.paddle.price}</span>
-                    </div>
-                  </div>
+                {/* 成就 */}
+                <div className="mb-4">
+                  <p className="text-sm font-semibold text-gray-700 mb-2">🏆 主要成就：</p>
+                  <ul className="space-y-1">
+                    {player.achievements.map((achievement, index) => (
+                      <li key={index} className="text-sm text-gray-700">{achievement}</li>
+                    ))}
+                  </ul>
                 </div>
 
-                <p className="text-xs text-gray-400 italic mt-4">{player.source}</p>
+                {/* 打法風格 */}
+                <div className="bg-sport-50 rounded-xl p-3 mb-4">
+                  <p className="text-xs font-semibold text-gray-600 mb-1">打法風格</p>
+                  <p className="text-sm text-gray-800">{player.playStyle}</p>
+                </div>
               </div>
-            ))}
+
+              {/* 球拍資訊 */}
+              <div className="bg-gradient-to-r from-pickleball-50 to-court-50 rounded-xl p-5 border-2 border-pickleball-200">
+                <h4 className="font-bold text-gray-800 mb-4 flex items-center">
+                  <span className="text-xl mr-2">🏓</span>
+                  使用球拍
+                </h4>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">品牌</span>
+                    <span className="text-base font-bold text-pickleball-700">{player.paddle.brand}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">型號</span>
+                    <span className="text-sm font-semibold text-gray-800">{player.paddle.model}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">類型</span>
+                    <span className="text-sm text-gray-800">{player.paddle.type}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">重量</span>
+                    <span className="text-sm text-gray-800">{player.paddle.weight}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">核心</span>
+                    <span className="text-sm text-gray-800">{player.paddle.core}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">表面</span>
+                    <span className="text-sm text-gray-800">{player.paddle.surface}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-pickleball-200">
+                    <span className="text-sm font-semibold text-gray-700">參考售價</span>
+                    <span className="text-lg font-bold text-sport-600">{player.paddle.price}</span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-400 italic mt-4">{player.source}</p>
+            </div>
+          ))}
         </div>
 
         {/* 選購建議 */}

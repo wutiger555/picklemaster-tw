@@ -66,23 +66,23 @@ export const NEWS_DATA: NewsItem[] = [
   },
   {
     id: 'tw-new-2',
-    title: '2025 臺北匹克球公開賽即將登場',
-    summary: '備受矚目的 2025 臺北匹克球公開賽已公布各組賽程，預計將吸引國內外眾多好手參賽。',
+    title: '2025 臺北匹克球公開賽圓滿落幕',
+    summary: '全台最大規模戶外賽事於天母運動公園圓滿落幕！集結17面國際標準場地，展現高水準競技盛況。',
     content: `
-      <p>中華民國匹克球總會正式公告，「2025 臺北匹克球公開賽」各組賽程時間已於 11 月 14 日公布。這項賽事是台灣年度重要的匹克球盛事之一，吸引了來自各地的頂尖選手報名參加。</p>
+      <p>「2025 臺北匹克球公開賽」於 12 月 14 日在台北市天母運動公園圓滿落幕。本屆賽事作為全台最大規模的戶外匹克球公開賽，特別啟用了 17 面全新整修的標準比賽場地，吸引了來自全國各地的頂尖好手同場競技。</p>
 
-      <p>為了讓更多選手有機會參與，主辦單位特別宣布公開男子單打組別將加開名額，報名受理至 11 月 30 日截止。預計比賽將競爭激烈，精彩可期。</p>
+      <p>賽事期間天公作美，連兩天的好天氣讓比賽進行順利。這也是天母運動公園匹克球場啟用後的首場大型正式與國際賽事，完善的場地設施獲得參賽選手的一致好評。中華民國匹克球總會表示，未來將爭取更多國際積分賽事在此舉辦，讓台灣選手有更多與國際接軌的機會。</p>
 
-      <p>這場公開賽不僅是選手展現實力的舞台，也是推廣匹克球運動的重要平台。歡迎喜愛匹克球的民眾屆時前往觀賽，為選手們加油打氣。</p>
+      <p>本次賽事設有公開組與分齡組競賽，雖然詳細獲獎名單尚待總會官網正式公佈，但現場高水準的攻防對決已讓觀賽民眾大呼過癮，成功帶動了北台灣的匹克球觀賽熱潮。</p>
       
       <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.shop3500.com/ctpf" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中華民國匹克球總會</a></p>
     `,
-    date: '2025-11-14',
+    date: '2025-12-15',
     category: 'Tournament',
     image: 'https://images.unsplash.com/photo-1515523110800-9415d13b84a8?q=80&w=1974&auto=format&fit=crop', // Generic court
     source: '中華民國匹克球總會',
     link: 'https://www.shop3500.com/ctpf',
-    tags: ['Tournament', 'Taipei']
+    tags: ['Tournament', 'Taipei', 'Results']
   },
 
   // International News
@@ -105,5 +105,37 @@ export const NEWS_DATA: NewsItem[] = [
     source: 'Pickleball World Cup',
     link: 'https://swishtournaments.com/pbworldcup/',
     tags: ['World Cup', 'USA']
+  },
+  {
+    id: 'tech-news-1',
+    title: '電競巨頭 Razer 進軍匹克球！推出這款超帥聯名球拍',
+    summary: 'Razer 與 JOOLA 聯名推出限量版「Perseus Pro IV」匹克球拍，結合電競美學與專業性能，限量 1337 支秒殺。',
+    content: `
+      <p>電競潮牌 Razer 宣布與匹克球大廠 JOOLA 合作，推出限量版聯名球拍「Razer x JOOLA Perseus Pro IV」。這款球拍以 JOOLA 頂級的 Perseus Pro IV 為基礎，融入了 Razer 標誌性的黑綠配色與三頭蛇 Logo，外型極具科技感。</p>
+      <p>除了外觀吸睛，性能也毫不馬虎。採用 16mm 碳纖維蜂巢核心，提供絕佳的控制力與回球手感。限量生產 1337 支（象徵電競術語 "LEET"），每支都有獨一無二的編號，不僅是實戰兵器，更是收藏逸品。</p>
+      <p>這款球拍於 2025 年 12 月 9 日開賣，定價 $299.95 美金，開賣後短短幾秒內即被搶購一空，展顯出匹克球與年輕潮流文化的完美結合。</p>
+    `,
+    date: '2025-12-10',
+    category: 'Equipment',
+    image: 'https://assets2.razerzone.com/images/pnx.assets/618c0b6863158f964298150338787042/razer-joola-perseus-pro-iv-1920x1080-desktop.jpg',
+    source: 'Razer Official',
+    link: 'https://www.razer.com/collaborations/joola',
+    tags: ['Gear', 'Razer', 'Limited Edition']
+  },
+  {
+    id: 'tech-news-2',
+    title: 'Tesla 也出球拍？Cybertruck 風格「Plaid Paddle」登場',
+    summary: 'Tesla 跨界匹克球！由 Tesla 設計團隊與 Selkirk 聯手打造，運用空氣動力學設計，定價 $350 美金。',
+    content: `
+      <p>電動車龍頭 Tesla 正式跨足匹克球市場！Tesla 與知名球拍品牌 Selkirk Sport 合作，推出了名為「Tesla Plaid Paddle」的限量球拍。這款球拍由 Tesla 的車輛設計工程師親自操刀，將車輛空氣動力學的概念應用於球拍設計上。</p>
+      <p>球拍採用了類似 Cybertruck 的未來感稜角設計，並在拍頸處設計了特殊的導流孔，據稱能有效降低揮拍風阻，提升擊球速度。材質方面使用了頂級碳纖維與專利吸震材料，定價高達 $350 美金。</p>
+      <p>這款球拍於 12 月 12 日在 Tesla 官網與 Selkirk 官網同步上架，儘管價格不斐，依然在數小時內完售，再次證明了這兩大品牌的強大號召力。</p>
+    `,
+    date: '2025-12-13',
+    category: 'Equipment',
+    image: 'https://cdn.shopify.com/s/files/1/0257/2425/files/Tesla_Selkirk_Paddle_Lifestyle_1.jpg?v=1734032134',
+    source: 'Selkirk Sport',
+    link: 'https://www.selkirk.com/pages/tesla',
+    tags: ['Gear', 'Tesla', 'Innovation']
   }
 ];

@@ -1105,6 +1105,63 @@
       "reviews": "松山區交通便利，捷運可達"
     },
     {
+      "id": 25,
+      "name": "台北市天母運動公園匹克球場",
+      "location": {
+        "address": "台北市士林區忠誠路二段77號",
+        "lat": 25.1130,
+        "lng": 121.5330,
+        "city": "台北市",
+        "district": "士林區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 17,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "is_new": true,
+      "added_date": "2025-12",
+      "opening_hours": "全天開放 (夜間照明至 22:00)",
+      "contact": "台北市體育局",
+      "features": [
+        "17面比賽級場地",
+        "2025臺北匹克球公開賽主場",
+        "全台最大戶外場地群"
+      ],
+      "last_updated": "2025-12-16",
+      "reviews": "全台最大戶外匹克球場地群，全新啟用"
+    },
+    {
+      "id": 26,
+      "name": "Upcoming: 宜蘭風雨多元運動球場",
+      "location": {
+        "address": "宜蘭縣宜蘭市中山路一段755號",
+        "lat": 24.7610,
+        "lng": 121.7540,
+        "city": "宜蘭縣",
+        "district": "宜蘭市"
+      },
+      "type": "covered",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 6,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "is_upcoming": true,
+      "opening_hours": "興建規劃中，預計 2026 完工",
+      "contact": "宜蘭縣政府",
+      "features": [
+        "4500萬重點建設",
+        "風雨球場設計",
+        "羽匹共用多元規劃"
+      ],
+      "last_updated": "2025-12-16",
+      "reviews": "宜蘭縣政府重點體育建設，免受風雨影響"
+    },
+    {
       "id": 35,
       "name": "台北市中山運動中心",
       "location": {

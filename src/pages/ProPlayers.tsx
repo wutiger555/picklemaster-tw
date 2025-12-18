@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import SEOHead from '../components/common/SEOHead';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -48,17 +49,66 @@ const PLAYERS = [
 ];
 
 const PlayerCard = ({ player, index }: { player: any, index: number }) => {
+    const [imageError, setImageError] = useState(false);
+
+    // Dynamic gradients for fallback
+    const fallbackGradients = [
+        'from-indigo-600 via-purple-600 to-pink-600',
+        'from-orange-500 via-red-500 to-yellow-500',
+        'from-blue-600 via-cyan-500 to-teal-400',
+        'from-emerald-600 via-green-500 to-lime-400'
+    ];
+
+    const bgGradient = player.isSpecial ? 'from-gray-700 via-gray-900 to-black' : fallbackGradients[index % fallbackGradients.length];
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
-            className={`group relative w-full md:w-[400px] h-[550px] rounded-3xl overflow-hidden shadow-2xl ${player.isSpecial ? 'border-4 border-emerald-400' : ''}`}
+            className={`group relative w-full md:w-[400px] h-[550px] rounded-3xl overflow-hidden shadow-2xl bg-neutral-800 ${player.isSpecial ? 'border-4 border-emerald-400' : ''}`}
         >
-            {/* Background Image */}
-            <div className="absolute inset-0">
-                <img src={player.image} alt={player.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            {/* Background Image or Fallback */}
+            <div className={`absolute inset-0 ${imageError ? `bg-gradient-to-br ${bgGradient}` : ''}`}>
+                {!imageError ? (
+                    <img
+                        src={player.image}
+                        alt={player.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        onError={() => setImageError(true)}
+                    />
+                ) : (
+                    // Premium Fallback Design
+                    <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden">
+                        {/* Abstract Background Elements */}
+                        <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/20 to-transparent animate-pulse" />
+                        <div className="absolute top-0 -left-1/2 w-[200%] h-[200%] bg-white/5 rotate-12 transform origin-center" />
+
+                        {/* Large Initial Watermark */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[120px] font-black text-white/10 select-none tracking-tighter">
+                            {player.name.substring(0, 1)}
+                        </div>
+
+                        {/* Centered Icon */}
+                        <motion.div
+                            initial={{ scale: 0.8 }}
+                            animate={{ scale: 1 }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 260,
+                                damping: 20
+                            }}
+                            className="z-10 relative"
+                        >
+                            <div className="w-32 h-32 rounded-full bg-white/10 backdrop-blur-lg border border-white/30 flex items-center justify-center shadow-2xl ring-4 ring-white/5">
+                                <span className="text-6xl filter drop-shadow-lg">
+                                    {player.isSpecial ? '🤖' : '👤'}
+                                </span>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
             </div>
 

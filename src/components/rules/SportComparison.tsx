@@ -287,30 +287,34 @@ const SportComparison = () => {
                         </div>
                         <div className="relative bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 border-2 border-emerald-400 ring-4 ring-emerald-200">
                             {/* 球場示意圖 */}
-                            <div className="aspect-[13.4/6.1] bg-emerald-500/20 border-4 border-emerald-500 rounded-lg relative">
-                                {/* 中線 */}
-                                <div className="absolute top-0 bottom-0 left-1/2 w-1 bg-emerald-600/50" />
-                                {/* 廚房區（兩側） */}
-                                <div className="absolute top-0 left-0 right-1/2 h-[30%] bg-emerald-600/30 border-b-2 border-emerald-600">
-                                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] font-bold text-emerald-700">
+                            <div className="aspect-[13.4/6.1] bg-emerald-500/20 border-4 border-emerald-500 rounded-lg relative overflow-hidden">
+                                {/* 網子 (Net) - 垂直中線 */}
+                                <div className="absolute top-0 bottom-0 left-1/2 w-1 bg-emerald-600/80 -translate-x-1/2 z-10" />
+
+                                {/* 廚房區 (Kitchen Zone) - 網前 7ft (約 15.9% 寬度) */}
+                                {/* 使用 left/right 定位，從中間 (50%) 向外延伸約 16% */}
+                                {/* 左側廚房線: 50% - 16% = 34% */}
+                                {/* 右側廚房線: 50% + 16% = 66% (right = 34%) */}
+                                <div className="absolute top-0 bottom-0 left-[34%] right-[34%] bg-emerald-600/20 border-l-2 border-r-2 border-emerald-600 flex items-center justify-center">
+                                    <span className="text-[10px] font-bold text-emerald-800 whitespace-nowrap">
                                         廚房區
                                     </span>
                                 </div>
-                                <div className="absolute top-0 left-1/2 right-0 h-[30%] bg-emerald-600/30 border-b-2 border-emerald-600">
-                                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] font-bold text-emerald-700">
-                                        廚房區
-                                    </span>
-                                </div>
+
+                                {/* 發球中線 (Center Service Line) - 水平線 */}
+                                {/* 從底線延伸到廚房線 */}
+                                <div className="absolute top-1/2 left-0 w-[34%] h-0.5 bg-emerald-600/50 -translate-y-1/2" />
+                                <div className="absolute top-1/2 right-0 w-[34%] h-0.5 bg-emerald-600/50 -translate-y-1/2" />
                             </div>
                             {/* 尺寸標註 */}
                             <div className="mt-4 space-y-2 text-center">
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="text-neutral-600">長度：</span>
-                                    <span className="font-bold text-emerald-700">13.4 公尺</span>
+                                    <span className="font-bold text-emerald-700">13.4 公尺 (44 ft)</span>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="text-neutral-600">寬度：</span>
-                                    <span className="font-bold text-emerald-700">6.1 公尺</span>
+                                    <span className="font-bold text-emerald-700">6.1 公尺 (20 ft)</span>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="text-neutral-600">面積：</span>
@@ -318,7 +322,7 @@ const SportComparison = () => {
                                 </div>
                                 <div className="pt-2 border-t border-emerald-200">
                                     <span className="text-xs text-emerald-600 font-semibold">
-                                        ✨ 廚房區深度：2.13 公尺
+                                        ✨ 廚房區深度：2.13 公尺 (7 ft)
                                     </span>
                                 </div>
                             </div>

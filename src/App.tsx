@@ -9,6 +9,7 @@ import { ROUTES } from './utils/constants';
 
 // Lazy load pages
 const Rules = lazy(() => import('./pages/Rules'));
+const NewcomerGuide = lazy(() => import('./pages/NewcomerGuide'));
 const Equipment = lazy(() => import('./pages/Equipment'));
 const ProPlayers = lazy(() => import('./pages/ProPlayers'));
 const LearningPaths = lazy(() => import('./pages/LearningPaths'));
@@ -33,6 +34,7 @@ function App() {
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               <Route path={ROUTES.HOME} element={<Home />} />
+              <Route path={ROUTES.NEWCOMER_GUIDE} element={<NewcomerGuide />} />
               <Route path={ROUTES.RULES} element={<Rules />} />
               <Route path={ROUTES.EQUIPMENT} element={<Equipment />} />
               <Route path={ROUTES.PRO_PLAYERS} element={<ProPlayers />} />

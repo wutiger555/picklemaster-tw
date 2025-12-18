@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { NEWS_DATA } from '../data/newsData';
@@ -9,6 +9,7 @@ const NewsDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const newsItem = NEWS_DATA.find(item => item.id === id);
+    const [imageError, setImageError] = useState(false);
 
     useEffect(() => {
         if (!newsItem) {
@@ -17,6 +18,39 @@ const NewsDetail = () => {
     }, [newsItem, navigate]);
 
     if (!newsItem) return null;
+
+    const fallbackGradients: Record<string, string> = {
+        Taiwan: 'from-blue-400 to-indigo-600',
+        International: 'from-violet-400 to-fuchsia-600',
+        Equipment: 'from-amber-400 to-orange-600',
+        Tournament: 'from-emerald-400 to-green-600',
+        Courts: 'from-teal-400 to-cyan-600',
+    };
+
+    const getCategoryIcon = (category: string) => {
+        switch (category) {
+            case 'Equipment':
+                return (
+                    <svg className="w-24 h-24 text-white/90 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.5 10.5L9.5 15.5M10.0387 7.02528L5.7868 11.2771C-0.34005 17.404 -0.34005 20.4674 5.7868 26.5942C11.9136 32.7211 14.9771 32.7211 21.1039 26.5942L25.3558 22.3424C31.4827 16.2155 31.4827 13.1521 25.3558 7.02528C19.2289 0.898427 16.1655 0.898427 10.0387 7.02528Z" transform="scale(0.6) translate(8,4)" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                );
+            case 'Courts':
+                return (
+                    <svg className="w-24 h-24 text-white/90 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                );
+            default:
+                return (
+                    <svg className="w-24 h-24 text-white/90 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                );
+        }
+    };
 
     return (
         <div className="min-h-screen bg-neutral-50 pt-20 pb-24">
@@ -59,13 +93,32 @@ const NewsDetail = () => {
                         {newsItem.title}
                     </h1>
 
-                    {/* Main Image */}
-                    <div className="relative aspect-video w-full overflow-hidden rounded-2xl shadow-xl mb-10">
-                        <img
-                            src={newsItem.image}
-                            alt={newsItem.title}
-                            className="w-full h-full object-cover"
-                        />
+                    {/* Main Image with Fallback */}
+                    <div className={`relative aspect-video w-full overflow-hidden rounded-2xl shadow-xl mb-10 ${imageError ? `bg-gradient-to-br ${fallbackGradients[newsItem.category] || 'from-gray-400 to-gray-500'}` : 'bg-neutral-200'}`}>
+                        {!imageError ? (
+                            <img
+                                src={newsItem.image}
+                                alt={newsItem.title}
+                                className="w-full h-full object-cover"
+                                onError={() => setImageError(true)}
+                            />
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden text-white">
+                                <div className="absolute inset-0 bg-white/10 skew-x-12 -translate-x-full animate-pulse opacity-20"></div>
+                                <motion.div
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ type: "spring" }}
+                                >
+                                    {getCategoryIcon(newsItem.category)}
+                                </motion.div>
+                                <div className="mt-4 px-6 text-center">
+                                    <span className="inline-block px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-sm font-bold tracking-wider uppercase border border-white/20">
+                                        {newsItem.category} Focus
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </motion.div>
 

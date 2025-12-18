@@ -25,6 +25,7 @@ export const LEARNING_PATHS = {
 export const ROUTES = {
   HOME: '/',
   RULES: '/rules',
+  NEWCOMER_GUIDE: '/newcomer-guide',
   EQUIPMENT: '/equipment',
   PRO_PLAYERS: '/pro-players',
   LEARNING_PATHS: '/learning-paths',

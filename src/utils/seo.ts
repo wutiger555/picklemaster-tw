@@ -70,6 +70,11 @@ export const pageSEO: Record<string, SEOConfig> = {
     title: '世界頂尖匹克球選手排名 & 裝備解密 | Picklemaster Taiwan',
     description: '認識世界排名前十的匹克球職業選手。Ben Johns 用什麼球拍？Anna Leigh Waters 的必殺技是什麼？完整戰力分析與裝備大公開。',
     keywords: '匹克球選手,匹克球排名,Ben Johns,Anna Leigh Waters,匹克球職業選手,PPA巡迴賽,APP巡迴賽,匹克球球星'
+  },
+  newcomer: {
+    title: '第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南',
+    description: '想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算（球拍/場地費）、羽球轉匹克球技巧分析、甚至幫你判斷適不適合這項運動。不用爬文，這一頁就夠！',
+    keywords: '匹克球新手,匹克球入門,匹克球費用,匹克球拍價格,羽球轉匹克球,網球轉匹克球,匹克球教學,台灣匹克球'
   }
 };
 

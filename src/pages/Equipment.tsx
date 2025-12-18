@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import PaddleGuide from '../components/equipment/PaddleGuide';
 import ProPlayerPaddles from '../components/equipment/ProPlayerPaddles';
@@ -9,206 +8,148 @@ import SEOHead from '../components/common/SEOHead';
 
 const Equipment = () => {
   usePageTitle('匹克球裝備指南');
-  const [activeTab, setActiveTab] = useState('paddle-guide');
-
-  const tabs = [
-    { id: 'paddle-guide', label: '球拍完全指南' },
-    { id: 'comparison', label: '球拍對比' },
-    { id: 'pro-paddles', label: '職業選手裝備' },
-    { id: 'recommender', label: '選購建議工具' },
-    { id: 'budget', label: '裝備預算參考' },
-  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-neutral-50">
       <SEOHead page="equipment" />
-      {/* 標題區 */}
-      <section className="bg-gradient-to-r from-pickleball-500 via-sport-500 to-court-500 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
+
+      {/* Hero Section */}
+      <section className="relative bg-neutral-900 text-white py-24 overflow-hidden">
+        {/* Abstract Background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-20"></div>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
+        </div>
+
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-black mb-4"
+            className="text-4xl md:text-6xl font-black mb-6 tracking-tight"
           >
-            匹克球球拍選購指南
+            匹克球<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">裝備全攻略</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-xl text-white/90 max-w-2xl mx-auto"
+            className="text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed"
           >
-            專業匹克球球拍推薦、材質分析、重量選擇 | 找到最適合你的匹克球裝備
+            從新手入門到職業競技，我們幫你解析球拍科技，<br className="hidden md:block" />
+            用數據與 AI 幫你找到最適合的「神兵利器」。
           </motion.p>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12">
-        {/* 頁籤導航 */}
-        <div className="mb-12">
-          <div className="flex flex-wrap justify-center gap-4">
-            {tabs.map((tab) => (
-              <motion.button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-pickleball-500 to-sport-500 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
-                }`}
-              >
-                <span>{tab.label}</span>
-              </motion.button>
-            ))}
+      <div className="container mx-auto px-4 py-16 space-y-32">
+
+        {/* 1. Recommender - High Value Interaction */}
+        <section id="recommender" className="scroll-mt-24">
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-4">
+              AI 智能推薦
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-neutral-900">
+              不知道怎麼選？<br />
+              <span className="text-emerald-600">30 秒</span> 找出你的命定球拍
+            </h2>
           </div>
-        </div>
+          <PaddleRecommender />
+        </section>
 
-        {/* 球拍完全指南 */}
-        {activeTab === 'paddle-guide' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section className="mb-20">
-              <h2 className="text-3xl font-black text-center mb-8 text-gray-800">
-                球拍完全指南
-              </h2>
-              <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-                深入了解球拍的材質、重量、平衡點等規格如何影響你的打法
-              </p>
-              <PaddleGuide />
-            </section>
-          </motion.div>
-        )}
+        {/* 2. Comparison Table */}
+        <section id="comparison" className="scroll-mt-24">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black text-neutral-900 mb-4">熱門球拍規格一覽</h2>
+            <p className="text-neutral-600">一目了然的材質與性能差異，不再被專有名詞搞混。</p>
+          </div>
+          <PaddleComparison />
+        </section>
 
-        {/* 球拍對比 */}
-        {activeTab === 'comparison' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <PaddleComparison />
-          </motion.div>
-        )}
+        {/* 3. Detailed Guide (SEO Content) */}
+        <section id="guide" className="scroll-mt-24">
+          <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-neutral-100">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-black text-neutral-900 mb-4">球拍材質與規格深度解析</h2>
+              <p className="text-neutral-600">什麼是蜂巢核？碳纖維跟玻璃纖維差在哪？這裡有詳細解答。</p>
+            </div>
+            <PaddleGuide />
+          </div>
+        </section>
 
-        {/* 職業選手裝備 */}
-        {activeTab === 'pro-paddles' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section className="mb-20">
-              <h2 className="text-3xl font-black text-center mb-8 text-gray-800">
-                頂尖選手裝備
-              </h2>
-              <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-                看看職業選手都在用什麼球拍，了解他們的選擇理由
-              </p>
-              <ProPlayerPaddles />
-            </section>
-          </motion.div>
-        )}
+        {/* 4. Pro Players */}
+        <section id="pro-paddles" className="scroll-mt-24">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black text-neutral-900 mb-4">跟著世界冠軍選裝備</h2>
+            <p className="text-neutral-600">看看職業選手都在用什麼球拍，以及他們的選擇理由。</p>
+          </div>
+          <ProPlayerPaddles />
+        </section>
 
-        {/* 選購建議工具 */}
-        {activeTab === 'recommender' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section className="mb-20">
-              <h2 className="text-3xl font-black text-center mb-8 text-gray-800">
-                球拍選擇建議工具
-              </h2>
-              <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-                根據你的打法風格和經驗，為你推薦最適合的球拍
-              </p>
-              <PaddleRecommender />
-            </section>
-          </motion.div>
-        )}
+        {/* 5. Budget Guide */}
+        <section id="budget" className="scroll-mt-24 pb-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black text-neutral-900 mb-8">
+              裝備預算參考
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-left">
+              <div className="bg-white rounded-2xl p-8 shadow-lg border border-neutral-100 relative overflow-hidden group hover:shadow-xl transition-shadow">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                <h3 className="font-bold text-xl text-neutral-900 mb-6 flex items-center">
+                  🏸 球拍價格區間
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
+                    <span className="font-medium text-neutral-600">入門級 (複合材質)</span>
+                    <span className="text-emerald-600 font-bold">NT$ 1,500 - 3,000</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
+                    <span className="font-medium text-neutral-600">中階級 (玻璃纖維)</span>
+                    <span className="text-emerald-600 font-bold">NT$ 3,000 - 6,000</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-neutral-600">高階級 (碳纖維)</span>
+                    <span className="text-emerald-600 font-bold">NT$ 6,000+</span>
+                  </div>
+                </div>
+                <p className="text-xs text-neutral-400 mt-6 bg-neutral-50 p-3 rounded-lg">
+                  💡 提示：新手建議從中階球拍開始，重量 7.5-8.5 oz 最為泛用。
+                </p>
+              </div>
 
-        {/* 裝備預算參考 */}
-        {activeTab === 'budget' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <section className="mb-20">
-              <h2 className="text-3xl font-black text-center mb-8 text-gray-800">
-                裝備預算參考
-              </h2>
-              <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-                了解各級別裝備的價格範圍，做出明智的購買決策
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <div className="bg-white rounded-2xl p-6 shadow-lg">
-                  <h3 className="font-bold text-xl text-court-700 mb-4">
-                    球拍預算參考
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center border-b pb-3">
-                      <span className="font-semibold text-gray-700">入門級</span>
-                      <span className="text-court-600 font-bold">NT$ 2,000 - 4,000</span>
-                    </div>
-                    <div className="flex justify-between items-center border-b pb-3">
-                      <span className="font-semibold text-gray-700">中階級</span>
-                      <span className="text-sport-600 font-bold">NT$ 4,000 - 8,000</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-700">高階級</span>
-                      <span className="text-pickleball-600 font-bold">NT$ 8,000+</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg border border-neutral-100 relative overflow-hidden group hover:shadow-xl transition-shadow">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                <h3 className="font-bold text-xl text-neutral-900 mb-6 flex items-center">
+                  👟 其他必要裝備
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 text-blue-500 font-bold text-sm">1</div>
+                    <div>
+                      <p className="font-bold text-neutral-900">專用運動鞋</p>
+                      <p className="text-sm text-neutral-500">建議網球鞋或羽球鞋，避免慢跑鞋（易翻船）</p>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 mt-4">
-                    提示：新手建議從中階球拍開始，重量 7.5-8.5 oz 較適合
-                  </p>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-lg">
-                  <h3 className="font-bold text-xl text-sport-700 mb-4">
-                    其他裝備
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-start">
-                      <span className="text-sport-500 mr-2">•</span>
-                      <div>
-                        <p className="font-semibold text-gray-800">鞋子</p>
-                        <p className="text-sm text-gray-600">室內運動鞋或網球鞋，良好抓地力</p>
-                      </div>
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 text-blue-500 font-bold text-sm">2</div>
+                    <div>
+                      <p className="font-bold text-neutral-900">排汗運動服</p>
+                      <p className="text-sm text-neutral-500">選擇透氣材質，避免棉質衣物</p>
                     </div>
-                    <div className="flex items-start">
-                      <span className="text-sport-500 mr-2">•</span>
-                      <div>
-                        <p className="font-semibold text-gray-800">服裝</p>
-                        <p className="text-sm text-gray-600">透氣排汗的運動服飾</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="text-sport-500 mr-2">•</span>
-                      <div>
-                        <p className="font-semibold text-gray-800">配件</p>
-                        <p className="text-sm text-gray-600">護腕、頭帶、運動毛巾</p>
-                      </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 text-blue-500 font-bold text-sm">3</div>
+                    <div>
+                      <p className="font-bold text-neutral-900">護目鏡 (推薦)</p>
+                      <p className="text-sm text-neutral-500">保護眼睛，避免球速過快誤傷</p>
                     </div>
                   </div>
                 </div>
               </div>
-            </section>
-          </motion.div>
-        )}
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

@@ -21,37 +21,32 @@ const Header = () => {
         | { path: string; label: string; type: 'link' }
         | { label: string; type: 'dropdown'; items: DropdownItem[] }
     > = [
-            { path: ROUTES.HOME, label: '首頁', type: 'link' },
+            { path: ROUTES.COURTS, label: '找球場', type: 'link' },
             {
-                label: '學習',
+                label: '新手專區',
                 type: 'dropdown',
                 items: [
-                    { path: ROUTES.RULES, label: '規則教學', description: '互動式學習匹克球規則與場地配置' },
-                    { path: ROUTES.LEARNING_PATHS, label: '學習路徑', description: '從新手到進階的完整學習系統' },
+                    { path: ROUTES.NEWCOMER_GUIDE, label: '新手懶人包', description: '費用、轉項分析、入門指引', badge: '必看' },
+                    { path: ROUTES.RULES, label: '規則教學', description: '3D 互動式規則解說' },
+                    { path: ROUTES.FAQ, label: '常見問題', description: '解決你的所有疑問' },
                 ],
             },
             {
-                label: '球場',
+                label: '裝備與攻略',
                 type: 'dropdown',
                 items: [
-                    { path: ROUTES.COURTS, label: '找球場', description: '全台 55+ 球場地圖與詳細資訊' },
-                    { path: ROUTES.SCORER, label: '計分器', description: '專業比賽計分工具', badge: 'NEW' },
-                ],
-            },
-            {
-                label: '裝備與選手',
-                type: 'dropdown',
-                items: [
-                    { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '世界頂尖球員戰力分析與裝備', badge: 'HOT' },
-                    { path: ROUTES.EQUIPMENT, label: '裝備指南', description: '球拍選購建議與最新科技解析' },
+                    { path: ROUTES.EQUIPMENT, label: '裝備指南', description: '球拍材質與選購建議' },
+                    { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '世界冠軍的裝備與數據', badge: 'HOT' },
+                    { path: ROUTES.LEARNING_PATHS, label: '學習路徑', description: '從入門到精通的系統化課程' },
                 ],
             },
             {
                 label: '更多',
                 type: 'dropdown',
                 items: [
-                    { path: ROUTES.RESOURCES, label: '資源中心', description: '影片教學、文章與社群連結' },
-                    { path: ROUTES.ABOUT, label: '關於', description: '了解 Picklemaster Taiwan' },
+                    { path: ROUTES.SCORER, label: '計分器', description: '實用比賽計分工具' },
+                    { path: ROUTES.RESOURCES, label: '資源中心', description: '影片、社團與書籍推薦' },
+                    { path: ROUTES.ABOUT, label: '關於我們', description: 'Picklemaster 的故事' },
                 ],
             },
         ];

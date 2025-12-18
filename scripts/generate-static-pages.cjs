@@ -220,6 +220,23 @@ const pageSEO = {
                 { "@type": "Person", "position": 3, "name": "Tyson McGuffin" }
             ]
         }
+    },
+    newcomer: {
+        title: '第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南',
+        description: '想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算（球拍/場地費）、羽球轉匹克球技巧分析、甚至幫你判斷適不適合這項運動。不用爬文，這一頁就夠！',
+        keywords: '匹克球新手,匹克球入門,匹克球費用,匹克球拍價格,羽球轉匹克球,網球轉匹克球,匹克球教學,台灣匹克球',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            "name": "新手匹克球入門指南",
+            "description": "完整的台灣匹克球新手入門攻略，包含費用試算、規則教學與裝備選購",
+            "step": [
+                { "@type": "HowToStep", "position": 1, "name": "自我評估", "text": "確認自己是否適合匹克球運動（如有羽球背景、想找低負擔運動）" },
+                { "@type": "HowToStep", "position": 2, "name": "預算規劃", "text": "透過費用計算機評估入門成本（球拍、場地費）" },
+                { "@type": "HowToStep", "position": 3, "name": "學習規則", "text": "掌握雙彈跳、廚房區等核心規則" },
+                { "@type": "HowToStep", "position": 4, "name": "尋找球場", "text": "搜尋住家附近的匹克球場地" }
+            ]
+        }
     }
 };
 

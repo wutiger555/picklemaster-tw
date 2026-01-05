@@ -1348,6 +1348,311 @@
       "website": "https://www.tcsc.com.tw/",
       "last_updated": "2025-12-10",
       "reviews": "台中地區場地數量最多"
+    },
+    {
+      "id": 41,
+      "name": "台南市哈赫拿爾匹克球場",
+      "location": {
+        "address": "台南市南區體育路90號",
+        "lat": 22.9700,
+        "lng": 120.1900,
+        "city": "台南市",
+        "district": "南區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "入會費$1000/年費$1200",
+      "courts_count": 4,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "平日 07:00-09:00, 17:00-22:00; 假日 07:00-11:00, 17:00-22:00",
+      "contact": "0937-562-012",
+      "facilities": [
+        "廁所",
+        "夜間照明"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "台南專用匹克球場，會員制經營"
+    },
+    {
+      "id": 42,
+      "name": "彰化縣中彰運動公園",
+      "location": {
+        "address": "彰化縣彰化市彰南路三段85號",
+        "lat": 24.0600,
+        "lng": 120.5800,
+        "city": "彰化縣",
+        "district": "彰化市"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 3,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "週一 19:00-22:00",
+      "contact": "0952-519-037",
+      "facilities": [
+        "停車場",
+        "夜間照明"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "彰化地區新興運動公園球場"
+    },
+    {
+      "id": 43,
+      "name": "南投縣埔里鎮立綜合球場",
+      "location": {
+        "address": "南投縣埔里鎮六合路228號",
+        "lat": 23.9660,
+        "lng": 120.9690,
+        "city": "南投縣",
+        "district": "埔里鎮"
+      },
+      "type": "indoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "public",
+      "opening_hours": "週一至週五 16:00-20:00",
+      "contact": "0983-711-749",
+      "facilities": [
+        "廁所",
+        "停車場"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "埔里室內球場，適合下雨天打球"
+    },
+    {
+      "id": 44,
+      "name": "屏東歸來匹克球場",
+      "location": {
+        "address": "屏東縣屏東市歸仁路63巷70號",
+        "lat": 22.6500,
+        "lng": 120.5000,
+        "city": "屏東縣",
+        "district": "屏東市"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "surface": "concrete",
+      "net_type": "permanent",
+      "ownership": "community",
+      "opening_hours": "週一至週五 18:30起; 假日 16:30起",
+      "contact": "0931-737-731",
+      "facilities": [
+        "夜間照明"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "屏東歸來社區熱門球場"
+    },
+    {
+      "id": 45,
+      "name": "新北市泰山運動中心",
+      "location": {
+        "address": "新北市泰山區全興路167號",
+        "lat": 25.0560,
+        "lng": 121.4360,
+        "city": "新北市",
+        "district": "泰山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "$200-300/小時",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "週五 13:00-16:00",
+      "contact": "Line @579urgnx",
+      "facilities": [
+        "冷氣",
+        "淋浴間",
+        "停車場"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "泰山地區新開放時段，需預約"
+    },
+    {
+      "id": 46,
+      "name": "新北市五股公民會館",
+      "location": {
+        "address": "新北市五股區御史路1巷59號",
+        "lat": 25.0850,
+        "lng": 121.4400,
+        "city": "新北市",
+        "district": "五股區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "$120-170",
+      "courts_count": 2,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "週三 15:00-20:00",
+      "contact": "Line @579urgnx",
+      "facilities": [
+        "冷氣",
+        "飲水機"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "五股區室內好去處，價格親民"
+    },
+    {
+      "id": 47,
+      "name": "台北市景美河濱球場",
+      "location": {
+        "address": "台北市文山區景美河濱公園",
+        "lat": 25.0000,
+        "lng": 121.5300,
+        "city": "台北市",
+        "district": "文山區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 4,
+      "surface": "concrete",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "週末 07:00-11:30",
+      "contact": "02-2895-2365",
+      "facilities": [
+        "停車場",
+        "廁所"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "河濱公園空氣好，週末晨練好去處"
+    },
+    {
+      "id": 48,
+      "name": "台北市南湖國小",
+      "location": {
+        "address": "台北市內湖區康寧路三段200號",
+        "lat": 25.0700,
+        "lng": 121.6100,
+        "city": "台北市",
+        "district": "內湖區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "$250-450",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "school",
+      "opening_hours": "週六 18:00-21:00; 週日 18:00-22:00",
+      "contact": "Line @579urgnx",
+      "facilities": [
+        "飲水機",
+        "廁所"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "內湖熱門學校場地，需提前預約"
+    },
+    {
+      "id": 49,
+      "name": "台北市幸安國小",
+      "location": {
+        "address": "台北市大安區仁愛路三段22號",
+        "lat": 25.0380,
+        "lng": 121.5350,
+        "city": "台北市",
+        "district": "大安區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "$250-550",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "school",
+      "opening_hours": "週六 16:00-20:00; 週日 10:00-12:00",
+      "contact": "Line @579urgnx",
+      "facilities": [
+        "飲水機"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "大安區市中心，交通便利"
+    },
+    {
+      "id": 50,
+      "name": "新北市板橋新埔國小",
+      "location": {
+        "address": "新北市板橋區陽明街206號",
+        "lat": 25.0200,
+        "lng": 121.4600,
+        "city": "新北市",
+        "district": "板橋區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "$250-350",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "school",
+      "opening_hours": "週三/週五 18:00-20:00",
+      "contact": "Line @579urgnx",
+      "facilities": [
+        "飲水機"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "板橋地區學校場地，平日晚上開放"
+    },
+    {
+      "id": 51,
+      "name": "台北市士林天母公園",
+      "location": {
+        "address": "台北市士林區中山北路七段141巷旁",
+        "lat": 25.1250,
+        "lng": 121.5300,
+        "city": "台北市",
+        "district": "士林區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "surface": "concrete",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "週一至週五 08:30-12:00",
+      "contact": "02-2895-2365",
+      "facilities": [
+        "廁所"
+      ],
+      "is_new": true,
+      "added_date": "2026-01",
+      "last_updated": "2026-01-05",
+      "reviews": "天母公園戶外場地，環境清幽"
     }
   ]
 }

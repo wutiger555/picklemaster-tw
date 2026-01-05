@@ -11,6 +11,7 @@ import CourtSkeleton from '../components/hero/CourtSkeleton';
 // Lazy load heavy sections including 3D components
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 const NewsSection = lazy(() => import('../components/news/NewsSection'));
+const NewCourtsTicker = lazy(() => import('../components/home/NewCourtsTicker'));
 
 // Lazy Section Wrapper to trigger load on scroll
 const LazySection = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
@@ -177,8 +178,13 @@ const Home = () => {
         </section>
 
 
+        {/* 新球場跑馬燈 */}
+        <Suspense fallback={null}>
+          <NewCourtsTicker />
+        </Suspense>
+
         {/* 新聞區塊 - 玻璃態 */}
-        <LazySection className="bg-gradient-to-b from-white to-neutral-50/30">
+        <LazySection className="bg-gradient-to-b from-white to-neutral-50/30 pt-8">
           <NewsSection />
         </LazySection>
 

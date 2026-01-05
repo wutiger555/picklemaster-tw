@@ -2,38 +2,258 @@
   "courts": [
     {
       "id": 1,
-      "name": "台北市大安森林公園匹克球場",
+      "name": "新北大都會公園河濱匹克球中心",
       "location": {
-        "address": "台北市大安區新生南路二段1號",
-        "lat": 25.0330,
-        "lng": 121.5354
+        "address": "新北市三重區疏洪東路一段",
+        "lat": 25.0580,
+        "lng": 121.4720,
+        "city": "新北市",
+        "district": "三重區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 8,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "週一至週四 06:00-22:00，週五週六 06:00-24:00",
+      "contact": "02-2960-3456",
+      "facilities": [
+        "夜間照明",
+        "停車場",
+        "廁所",
+        "飲水機"
+      ],
+      "features": [
+        "全台首座河濱匹克球中心",
+        "8面專用球場",
+        "2025年9月啟用"
+      ],
+      "is_new": true,
+      "added_date": "2025-09",
+      "last_updated": "2025-12-10",
+      "reviews": "2025年新開放，全台首座河濱專用匹克球中心"
+    },
+    {
+      "id": 2,
+      "name": "Pickle Day Social Club 新光三越A11",
+      "location": {
+        "address": "台北市信義區松壽路11號4樓",
+        "lat": 25.0361,
+        "lng": 121.5678,
+        "city": "台北市",
+        "district": "信義區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "體驗課 $600起/人，場地租借 $1200/小時",
+      "price_details": {
+        "weekday": "場租 $1200/hr",
+        "weekend": "場租 $1500/hr",
+        "membership": "月費會員制"
+      },
+      "courts_count": 2,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "11:00-21:30",
+      "contact": "線上預約",
+      "contact_details": {
+        "instagram": "@pickledaysocialclub",
+        "line": "@pickleday"
+      },
+      "facilities": [
+        "冷氣",
+        "球具租借",
+        "教練指導",
+        "咖啡吧"
+      ],
+      "features": [
+        "百貨頂樓球場",
+        "市區精華地段",
+        "社交俱樂部氛圍",
+        "初學者友善"
+      ],
+      "booking_url": "https://www.tinybot.cc/pickledaysocialclub",
+      "booking_method": "線上預約系統，可預約體驗課、場地租借、Happy Hour",
+      "is_new": true,
+      "added_date": "2024-11",
+      "last_updated": "2025-12-10",
+      "reviews": "信義區潮流匹克球社交俱樂部，適合初學者體驗"
+    },
+    {
+      "id": 3,
+      "name": "Pickle Day Social Club 中和旗艦店",
+      "location": {
+        "address": "新北市中和區錦和路388號2樓",
+        "lat": 24.9920,
+        "lng": 121.4985,
+        "city": "新北市",
+        "district": "中和區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場地租借 $1000/小時起",
+      "courts_count": 3,
+      "surface": "wood",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "10:00-22:00",
+      "contact": "線上預約",
+      "contact_details": {
+        "instagram": "@pickledaysocialclub"
+      },
+      "facilities": [
+        "冷氣",
+        "球具租借",
+        "教練指導",
+        "更衣室",
+        "淋浴間"
+      ],
+      "features": [
+        "專業室內球場",
+        "木質地板",
+        "教練課程"
+      ],
+      "booking_url": "https://www.tinybot.cc/pickledaysocialclub",
+      "is_new": true,
+      "added_date": "2024-06",
+      "last_updated": "2025-12-10",
+      "reviews": "專業民營匹克球俱樂部，設施完善"
+    },
+    {
+      "id": 4,
+      "name": "勤美誠品 PiCKLE & CHiLL 高空匹克球場",
+      "location": {
+        "address": "台中市西區公益路68號15樓",
+        "lat": 24.1513,
+        "lng": 120.6610,
+        "city": "台中市",
+        "district": "西區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "場地租借，詳情洽詢",
+      "courts_count": 2,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "11:00-21:00",
+      "contact": "04-2328-1000",
+      "facilities": [
+        "景觀視野",
+        "咖啡吧"
+      ],
+      "features": [
+        "中部首座高空匹克球場",
+        "15樓天台絕佳視野",
+        "結合運動與美景"
+      ],
+      "is_new": true,
+      "added_date": "2024-09",
+      "last_updated": "2025-12-10",
+      "reviews": "台中勤美誠品頂樓，邊打球邊欣賞城市美景"
+    },
+    {
+      "id": 5,
+      "name": "Social N Pickle 桃園龜山店",
+      "location": {
+        "address": "桃園市龜山區大湖路160巷50號",
+        "lat": 25.0280,
+        "lng": 121.3580,
+        "city": "桃園市",
+        "district": "龜山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場租 $400-800/hr",
+      "price_details": {
+        "weekday": "$400/hr",
+        "weekend": "$600-800/hr"
+      },
+      "courts_count": 4,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "09:00-22:00",
+      "contact": "線上預約",
+      "facilities": [
+        "冷氣",
+        "停車場",
+        "球具租借",
+        "教練課程"
+      ],
+      "features": [
+        "工業風美學",
+        "專業匹克球場",
+        "適合各程度球友"
+      ],
+      "booking_url": "https://www.booknow.com.tw/socialnpickle",
+      "is_new": true,
+      "added_date": "2024-08",
+      "last_updated": "2025-12-10",
+      "reviews": "桃園專業民營球場，工業風設計超有氛圍"
+    },
+    {
+      "id": 6,
+      "name": "台北市龍山河濱公園羽匹共用場",
+      "location": {
+        "address": "台北市萬華區龍山河濱公園",
+        "lat": 25.0350,
+        "lng": 121.4960,
+        "city": "台北市",
+        "district": "萬華區"
       },
       "type": "outdoor",
       "fee": "free",
       "price": "免費",
       "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "02-2700-3830",
+      "surface": "concrete",
+      "net_type": "self",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "opening_details": {
+        "special_notes": "2025年12月10日起開放匹克球共用"
+      },
+      "contact": "台北市體育局",
       "facilities": [
-        "飲水機",
-        "廁所",
-        "遮陽棚"
+        "夜間照明",
+        "停車場",
+        "廁所"
       ],
-      "line_group": "",
-      "reviews": "台北市中心知名免費球場，環境優美"
+      "features": [
+        "羽球場共用",
+        "河濱運動",
+        "2025/12/10開放"
+      ],
+      "is_new": true,
+      "added_date": "2025-12",
+      "last_updated": "2025-12-10",
+      "reviews": "2025年12月10日起開放匹克球使用"
     },
     {
-      "id": 2,
+      "id": 7,
       "name": "台北市信義運動中心",
       "location": {
         "address": "台北市信義區松勤街100號",
         "lat": 25.0453,
-        "lng": 121.5783
+        "lng": 121.5783,
+        "city": "台北市",
+        "district": "信義區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "平日離峰 250元/時，尖峰 400元/時",
+      "price": "平日離峰 $250/hr，尖峰 $400/hr",
+      "price_details": {
+        "offpeak": "$250/hr",
+        "peak": "$400/hr",
+        "rental": "球拍租借 $50"
+      },
       "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
       "opening_hours": "06:00-22:00",
       "contact": "02-2723-7131",
       "facilities": [
@@ -44,133 +264,15 @@
         "冷氣",
         "球具租借"
       ],
+      "features": [
+        "設施完善",
+        "專業場地"
+      ],
       "website": "https://xysc.teamxports.com/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "booking_method": "現場或電話預約（02-8786-1911），僅開放三日內（含當日）場地預約，不提供線上預約服務",
+      "booking_method": "現場或電話預約，僅開放三日內場地預約",
+      "last_updated": "2025-12-10",
       "reviews": "台北市設施最完善的匹克球場之一"
-    },
-    {
-      "id": 3,
-      "name": "台北市華中河濱公園匹克球場",
-      "location": {
-        "address": "台北市萬華區華中河濱公園",
-        "lat": 25.0190,
-        "lng": 121.4985
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2303-2451",
-      "facilities": [
-        "飲水機",
-        "廁所",
-        "停車場",
-        "夜間照明"
-      ],
-      "line_group": "",
-      "reviews": "河濱公園球場，夜間照明佳，球友眾多"
-    },
-    {
-      "id": 4,
-      "name": "台北市內湖運動中心",
-      "location": {
-        "address": "台北市內湖區洲子街12號",
-        "lat": 25.0787,
-        "lng": 121.5705
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-350 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2627-8888",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "website": "https://nhsc.cyc.org.tw/",
-      "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "booking_method": "線上預約或現場預約，建議透過預約系統查詢場地狀況",
-      "reviews": "內湖科技園區周邊，上班族下班運動好選擇"
-    },
-    {
-      "id": 5,
-      "name": "台北市大安運動中心",
-      "location": {
-        "address": "台北市大安區辛亥路三段55號",
-        "lat": 25.0161,
-        "lng": 121.5435
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 250-400 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2377-0300",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "website": "https://www.daansports.com.tw/",
-      "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "reviews": "大安區優質運動中心，設施新穎"
-    },
-    {
-      "id": 6,
-      "name": "台北市松山運動中心",
-      "location": {
-        "address": "台北市松山區敦化北路1號",
-        "lat": 25.0502,
-        "lng": 121.5485
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 250-400 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2570-1717",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "website": "https://sssc.com.tw/",
-      "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "reviews": "松山區交通便利，捷運可達"
-    },
-    {
-      "id": 7,
-      "name": "台北市中山運動中心",
-      "location": {
-        "address": "台北市中山區中山北路二段44號",
-        "lat": 25.0547,
-        "lng": 121.5225
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 250-400 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2542-0008",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "reviews": "中山區中心位置，近捷運雙連站"
     },
     {
       "id": 8,
@@ -178,12 +280,17 @@
       "location": {
         "address": "台北市北投區石牌路一段39巷100號",
         "lat": 25.1145,
-        "lng": 121.5163
+        "lng": 121.5163,
+        "city": "台北市",
+        "district": "北投區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "每小時 200-350 元",
+      "price": "每小時 $200-350",
       "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
       "opening_hours": "06:00-22:00",
       "contact": "02-2820-3232",
       "facilities": [
@@ -194,22 +301,225 @@
         "冷氣",
         "溫泉SPA"
       ],
+      "features": [
+        "運動後可泡溫泉",
+        "北投特色"
+      ],
       "website": "https://www.btsport.org.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "last_updated": "2025-12-10",
       "reviews": "運動後可泡溫泉，北投特色球場"
     },
     {
       "id": 9,
+      "name": "台北市士林至善公園",
+      "location": {
+        "address": "台北市士林區至善路二段",
+        "lat": 25.1050,
+        "lng": 121.5480,
+        "city": "台北市",
+        "district": "士林區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費（需自備球網）",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "self",
+      "ownership": "public",
+      "opening_hours": "下午時段開放匹克球",
+      "contact": "02-2881-2512",
+      "facilities": [
+        "廁所",
+        "飲水機"
+      ],
+      "features": [
+        "免費場地",
+        "需自備球網",
+        "永久標線"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "士林免費戶外球場，下午時段開放"
+    },
+    {
+      "id": 10,
+      "name": "新北市中和國民運動中心",
+      "location": {
+        "address": "新北市中和區錦和路350號",
+        "lat": 24.9982,
+        "lng": 121.4897,
+        "city": "新北市",
+        "district": "中和區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $350",
+      "price_details": {
+        "weekday": "$350/hr (12:00-17:00)",
+        "rental": "球拍租借"
+      },
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "平日 12:00-17:00 (4樓籃球場)",
+      "contact": "02-2248-8282",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣",
+        "球具租借"
+      ],
+      "booking_method": "現場預約或電話預約",
+      "website": "https://www.zhsc.com.tw/",
+      "last_updated": "2025-12-10",
+      "reviews": "新北中和地區便利球場"
+    },
+    {
+      "id": 11,
+      "name": "高雄市前金運動中心",
+      "location": {
+        "address": "高雄市前金區中華三路110號",
+        "lat": 22.6280,
+        "lng": 120.2910,
+        "city": "高雄市",
+        "district": "前金區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場地租借，詳情洽詢",
+      "courts_count": 3,
+      "surface": "synthetic",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "07-241-0999",
+      "facilities": [
+        "更衣室",
+        "冷氣",
+        "國際認證運動地墊"
+      ],
+      "features": [
+        "與羽球場共用",
+        "線上預約"
+      ],
+      "booking_url": "https://www.cianjin-sc.com/",
+      "last_updated": "2025-12-10",
+      "reviews": "高雄室內專業球場，冷氣舒適"
+    },
+    {
+      "id": 12,
+      "name": "宜蘭運動公園匹克球場",
+      "location": {
+        "address": "宜蘭縣宜蘭市中山路一段755號",
+        "lat": 24.7605,
+        "lng": 121.7536,
+        "city": "宜蘭縣",
+        "district": "宜蘭市"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 8,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "06:00-21:00",
+      "contact": "03-925-1000",
+      "facilities": [
+        "停車場",
+        "飲水機",
+        "廁所"
+      ],
+      "features": [
+        "8面球場",
+        "景觀優美",
+        "國際賽事場地"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "宜蘭地區最大匹克球場，曾舉辦國際賽事"
+    },
+    {
+      "id": 13,
+      "name": "台中市國際網球中心",
+      "location": {
+        "address": "台中市北區雙十路一段2號",
+        "lat": 24.1500,
+        "lng": 120.6850,
+        "city": "台中市",
+        "district": "北區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "場地費，詳情洽詢",
+      "courts_count": 4,
+      "surface": "acrylic",
+      "net_type": "portable",
+      "ownership": "public",
+      "opening_hours": "09:00-21:00",
+      "contact": "04-2221-5118",
+      "facilities": [
+        "廁所",
+        "停車場",
+        "飲水機"
+      ],
+      "features": [
+        "永久標線",
+        "亞洲匹克球錦標賽場地"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "台中最受歡迎匹克球場，曾辦亞洲錦標賽"
+    },
+    {
+      "id": 14,
+      "name": "台南府平公園匹克球專用場",
+      "location": {
+        "address": "台南市安平區府平路旁",
+        "lat": 22.9980,
+        "lng": 120.1650,
+        "city": "台南市",
+        "district": "安平區"
+      },
+      "type": "covered",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "community",
+      "opening_hours": "06:00-22:00",
+      "contact": "台南市匹克球協會",
+      "facilities": [
+        "遮陽棚",
+        "夜間照明"
+      ],
+      "features": [
+        "台南首座專用球場",
+        "晴雨遮棚",
+        "社區經營"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "台南安平區專用匹克球場，有遮陽設施"
+    },
+    {
+      "id": 15,
       "name": "台北市萬華運動中心",
       "location": {
         "address": "台北市萬華區西藏路125-1號",
         "lat": 25.0363,
-        "lng": 121.4978
+        "lng": 121.4978,
+        "city": "台北市",
+        "district": "萬華區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "每小時 200-350 元",
+      "price": "每小時 $200-350",
       "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
       "opening_hours": "06:00-22:00",
       "contact": "02-2339-0555",
       "facilities": [
@@ -221,326 +531,86 @@
       ],
       "website": "http://whsc.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "last_updated": "2025-12-10",
       "reviews": "萬華區運動中心，社區球友活躍"
     },
     {
-      "id": 10,
-      "name": "新北市河濱匹克球中心",
-      "location": {
-        "address": "新北市板橋區華江一路",
-        "lat": 25.0231,
-        "lng": 121.4683
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 8,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2960-3456",
-      "facilities": [
-        "更衣室",
-        "停車場",
-        "飲水機",
-        "廁所"
-      ],
-      "line_group": "",
-      "reviews": "新北市最大戶外免費球場"
-    },
-    {
-      "id": 11,
-      "name": "台中市南屯運動中心",
-      "location": {
-        "address": "台中市南屯區黎明路一段568號",
-        "lat": 24.1390,
-        "lng": 120.6380
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200 元",
-      "courts_count": 6,
-      "opening_hours": "08:00-22:00",
-      "contact": "04-2389-2211",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "line_group": "",
-      "reviews": "台中南屯區熱門球場"
-    },
-    {
-      "id": 12,
-      "name": "高雄市鳳山運動園區",
-      "location": {
-        "address": "高雄市鳳山區體育路50號",
-        "lat": 22.6273,
-        "lng": 120.3014
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "07-740-5823",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所",
-        "夜間照明"
-      ],
-      "line_group": "",
-      "reviews": "高雄地區熱門球場，場地寬敞，夜間照明良好"
-    },
-    {
-      "id": 13,
-      "name": "新北市板橋第二運動場",
-      "location": {
-        "address": "新北市板橋區漢生東路278號",
-        "lat": 25.0142,
-        "lng": 121.4625
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "02-2687-1010",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所",
-        "夜間照明"
-      ],
-      "line_group": "",
-      "reviews": "新北市政府設立的公共球場，交通便利"
-    },
-    {
-      "id": 14,
-      "name": "桃園市蘆竹國民運動中心",
-      "location": {
-        "address": "桃園市蘆竹區中正路1號",
-        "lat": 25.0454,
-        "lng": 121.2915
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "03-352-1188",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "website": "https://www.tyfa.com.tw/",
-      "reviews": "桃園地區優質室內球場，冷氣充足，適合夏季"
-    },
-    {
-      "id": 15,
-      "name": "新竹市體育場",
-      "location": {
-        "address": "新竹市東區體育街2號",
-        "lat": 24.8046,
-        "lng": 120.9962
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "03-522-7171",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所"
-      ],
-      "line_group": "",
-      "reviews": "新竹地區球友常聚集的場地"
-    },
-    {
       "id": 16,
-      "name": "台南市永華運動公園",
+      "name": "台北市內湖運動中心",
       "location": {
-        "address": "台南市安平區永華路二段",
-        "lat": 22.9908,
-        "lng": 120.1875
+        "address": "台北市內湖區洲子街12號",
+        "lat": 25.0787,
+        "lng": 121.5705,
+        "city": "台北市",
+        "district": "內湖區"
       },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 6,
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $200-350",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
       "opening_hours": "06:00-22:00",
-      "contact": "06-299-1111",
+      "contact": "02-2627-8888",
       "facilities": [
+        "更衣室",
+        "淋浴間",
         "停車場",
         "飲水機",
-        "廁所",
-        "夜間照明"
+        "冷氣"
       ],
-      "line_group": "",
-      "reviews": "台南地區知名匹克球場，常有球友團體活動"
+      "features": [
+        "近內湖科技園區"
+      ],
+      "website": "https://nhsc.cyc.org.tw/",
+      "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "last_updated": "2025-12-10",
+      "reviews": "內湖科技園區周邊，上班族運動好選擇"
     },
     {
       "id": 17,
-      "name": "新北市中和運動中心",
+      "name": "捷運北投會館",
       "location": {
-        "address": "新北市中和區民安街135號",
-        "lat": 24.9982,
-        "lng": 121.4897
+        "address": "台北市北投區大業路527巷88號",
+        "lat": 25.1320,
+        "lng": 121.5010,
+        "city": "台北市",
+        "district": "北投區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "每小時 250-350 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2248-8282",
+      "price": "詳情洽詢",
+      "courts_count": 2,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "依場館公告",
+      "contact": "02-2893-6100",
       "facilities": [
         "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
+        "停車場"
       ],
-      "website": "https://www.zhsc.ntpc.gov.tw/",
-      "booking_url": "https://www.zhsc.ntpc.gov.tw/",
-      "reviews": "新北中和地區便利球場，可線上預約"
+      "last_updated": "2025-12-10",
+      "reviews": "北投區室內球場選擇"
     },
     {
       "id": 18,
-      "name": "台中市北區國民運動中心",
-      "location": {
-        "address": "台中市北區崇德路一段55號",
-        "lat": 24.1625,
-        "lng": 120.6844
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 8,
-      "opening_hours": "06:00-22:00",
-      "contact": "04-2235-1658",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣",
-        "球具租借"
-      ],
-      "website": "https://www.tcsc.com.tw/",
-      "reviews": "台中地區場地數量最多，設施完善"
-    },
-    {
-      "id": 19,
-      "name": "宜蘭運動公園",
-      "location": {
-        "address": "宜蘭縣宜蘭市中山路一段755號",
-        "lat": 24.7605,
-        "lng": 121.7536
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "03-925-1000",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所"
-      ],
-      "line_group": "",
-      "reviews": "宜蘭地區球友聚會場地，景觀優美"
-    },
-    {
-      "id": 20,
-      "name": "桃園市青埔運動中心",
-      "location": {
-        "address": "桃園市中壢區領航北路一段99號",
-        "lat": 25.0085,
-        "lng": 121.2145
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 250-350 元",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "03-287-0909",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣",
-        "球具租借"
-      ],
-      "website": "https://qpsports.com.tw/",
-      "booking_url": "https://qpsports.com.tw/",
-      "reviews": "青埔地區新建球場，設施新穎，鄰近高鐵站"
-    },
-    {
-      "id": 21,
-      "name": "新北市新莊國民運動中心",
-      "location": {
-        "address": "新北市新莊區中華路一段75號",
-        "lat": 25.0371,
-        "lng": 121.4351
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-350 元",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2994-6800",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "website": "https://www.xzsports.com.tw/",
-      "reviews": "新莊區大型運動中心，球場數量充足"
-    },
-    {
-      "id": 22,
-      "name": "新北市新店陽光運動公園",
-      "location": {
-        "address": "新北市新店區安康路二段",
-        "lat": 24.9796,
-        "lng": 121.5327
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2211-3426",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所",
-        "夜間照明"
-      ],
-      "reviews": "新店區河濱球場，空氣清新，景色宜人"
-    },
-    {
-      "id": 23,
       "name": "台北市南港運動中心",
       "location": {
         "address": "台北市南港區玉成街69號",
         "lat": 25.0508,
-        "lng": 121.5908
+        "lng": 121.5908,
+        "city": "台北市",
+        "district": "南港區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "每小時 250-400 元",
+      "price": "每小時 $250-400",
       "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
       "opening_hours": "06:00-22:00",
       "contact": "02-2651-8899",
       "facilities": [
@@ -551,22 +621,28 @@
         "冷氣"
       ],
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "last_updated": "2025-12-10",
       "reviews": "南港軟體園區附近，科技業球友眾多"
     },
     {
-      "id": 24,
-      "name": "台北市文山運動中心",
+      "id": 19,
+      "name": "台北市大安運動中心",
       "location": {
-        "address": "台北市文山區興隆路三段222號",
-        "lat": 24.9869,
-        "lng": 121.5455
+        "address": "台北市大安區辛亥路三段55號",
+        "lat": 25.0161,
+        "lng": 121.5435,
+        "city": "台北市",
+        "district": "大安區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "每小時 200-350 元",
+      "price": "每小時 $250-400",
       "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
       "opening_hours": "06:00-22:00",
-      "contact": "02-2930-0658",
+      "contact": "02-2377-0300",
       "facilities": [
         "更衣室",
         "淋浴間",
@@ -574,21 +650,240 @@
         "飲水機",
         "冷氣"
       ],
+      "website": "https://www.daansports.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "reviews": "文山區社區型運動中心"
+      "last_updated": "2025-12-10",
+      "reviews": "大安區優質運動中心，設施新穎"
+    },
+    {
+      "id": 20,
+      "name": "Loho Pickleball Club 龍潭",
+      "location": {
+        "address": "桃園市龍潭區",
+        "lat": 24.8640,
+        "lng": 121.2170,
+        "city": "桃園市",
+        "district": "龍潭區"
+      },
+      "type": "indoor",
+      "fee": "free",
+      "price": "免費（會員制）",
+      "courts_count": 3,
+      "surface": "wood",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依俱樂部公告",
+      "contact": "洽俱樂部",
+      "facilities": [
+        "專用球場",
+        "球具提供"
+      ],
+      "features": [
+        "會員制俱樂部",
+        "木質專用球場"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "桃園龍潭私人匹克球俱樂部"
+    },
+    {
+      "id": 21,
+      "name": "台中市潭子國民運動中心",
+      "location": {
+        "address": "台中市潭子區勝利路140號",
+        "lat": 24.2120,
+        "lng": 120.7050,
+        "city": "台中市",
+        "district": "潭子區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場地費，詳情洽詢",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "週一 09:00-11:00",
+      "contact": "04-2534-6611",
+      "facilities": [
+        "更衣室",
+        "冷氣",
+        "停車場"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "台中潭子區運動中心"
+    },
+    {
+      "id": 22,
+      "name": "大里二二八公園匹克球場",
+      "location": {
+        "address": "台中市大里區國光路二段",
+        "lat": 24.0994,
+        "lng": 120.6779,
+        "city": "台中市",
+        "district": "大里區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "全天開放",
+      "contact": "04-2406-0999",
+      "facilities": [
+        "廁所"
+      ],
+      "features": [
+        "台中市第一座標準匹克球場",
+        "2023年啟用"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "台中市首座標準匹克球場"
+    },
+    {
+      "id": 23,
+      "name": "高雄三民公園",
+      "location": {
+        "address": "高雄市三民區十全一路100號",
+        "lat": 22.6450,
+        "lng": 120.3080,
+        "city": "高雄市",
+        "district": "三民區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "surface": "concrete",
+      "net_type": "self",
+      "ownership": "public",
+      "opening_hours": "週三 18:00-21:00，週日 18:00-21:00",
+      "contact": "高雄市匹克球協會",
+      "facilities": [
+        "廁所"
+      ],
+      "features": [
+        "社區開放時段"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "高雄三民區戶外場地"
+    },
+    {
+      "id": 24,
+      "name": "桃園市青埔運動中心",
+      "location": {
+        "address": "桃園市中壢區領航北路一段99號",
+        "lat": 25.0085,
+        "lng": 121.2145,
+        "city": "桃園市",
+        "district": "中壢區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $250-350",
+      "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "03-287-0909",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣",
+        "球具租借"
+      ],
+      "features": [
+        "鄰近高鐵站",
+        "設施新穎"
+      ],
+      "website": "https://qpsports.com.tw/",
+      "booking_url": "https://qpsports.com.tw/",
+      "last_updated": "2025-12-10",
+      "reviews": "青埔地區新建球場，鄰近高鐵站"
     },
     {
       "id": 25,
+      "name": "新北市新莊國民運動中心",
+      "location": {
+        "address": "新北市新莊區中華路一段75號",
+        "lat": 25.0371,
+        "lng": 121.4351,
+        "city": "新北市",
+        "district": "新莊區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $200-350",
+      "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2994-6800",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "website": "https://www.xzsports.com.tw/",
+      "last_updated": "2025-12-10",
+      "reviews": "新莊區大型運動中心，球場數量充足"
+    },
+    {
+      "id": 26,
+      "name": "台北市華中河濱公園匹克球場",
+      "location": {
+        "address": "台北市萬華區華中河濱公園",
+        "lat": 25.0190,
+        "lng": 121.4985,
+        "city": "台北市",
+        "district": "萬華區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 6,
+      "surface": "concrete",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2303-2451",
+      "facilities": [
+        "飲水機",
+        "廁所",
+        "停車場",
+        "夜間照明"
+      ],
+      "features": [
+        "河濱公園",
+        "夜間照明佳"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "河濱公園球場，夜間照明佳，球友眾多"
+    },
+    {
+      "id": 27,
       "name": "新北市永和運動中心",
       "location": {
         "address": "新北市永和區得和路208號",
         "lat": 25.0098,
-        "lng": 121.5156
+        "lng": 121.5156,
+        "city": "新北市",
+        "district": "永和區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "每小時 250-350 元",
+      "price": "每小時 $250-350",
       "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
       "opening_hours": "06:00-22:00",
       "contact": "02-2923-1999",
       "facilities": [
@@ -598,604 +893,30 @@
         "飲水機",
         "冷氣"
       ],
+      "features": [
+        "近捷運頂溪站"
+      ],
       "website": "https://www.yhsports.com.tw/",
+      "last_updated": "2025-12-10",
       "reviews": "永和區優質球場，近捷運頂溪站"
     },
     {
-      "id": 26,
-      "name": "新北市汐止國民運動中心",
-      "location": {
-        "address": "新北市汐止區民權街二段90號",
-        "lat": 25.0661,
-        "lng": 121.6423
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-8648-3998",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "汐止區運動中心，設施新穎"
-    },
-    {
-      "id": 27,
-      "name": "新北市三重運動中心",
-      "location": {
-        "address": "新北市三重區大同南路195號",
-        "lat": 25.0590,
-        "lng": 121.4896
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-350 元",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2287-8787",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "三重區大型運動中心"
-    },
-    {
       "id": 28,
-      "name": "新北市土城運動中心",
-      "location": {
-        "address": "新北市土城區和平路24號",
-        "lat": 24.9737,
-        "lng": 121.4421
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2268-0818",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "土城區便利球場"
-    },
-    {
-      "id": 29,
-      "name": "桃園市桃園國民運動中心",
-      "location": {
-        "address": "桃園市桃園區三民路一段1號",
-        "lat": 24.9935,
-        "lng": 121.3092
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "03-339-2567",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "桃園市區主要運動中心"
-    },
-    {
-      "id": 30,
-      "name": "桃園市中壢國民運動中心",
-      "location": {
-        "address": "桃園市中壢區中山東路三段369號",
-        "lat": 24.9669,
-        "lng": 121.2413
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "03-463-7388",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "中壢區運動中心"
-    },
-    {
-      "id": 31,
-      "name": "桃園市平鎮國民運動中心",
-      "location": {
-        "address": "桃園市平鎮區南東路51號",
-        "lat": 24.9443,
-        "lng": 121.2165
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "03-469-0909",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "平鎮區運動中心，設施優良"
-    },
-    {
-      "id": 32,
-      "name": "新竹市香山運動公園",
-      "location": {
-        "address": "新竹市香山區中華路五段892號",
-        "lat": 24.7763,
-        "lng": 120.9224
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "03-537-6821",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所"
-      ],
-      "reviews": "新竹香山區戶外球場"
-    },
-    {
-      "id": 33,
-      "name": "新竹縣竹北國民運動中心",
-      "location": {
-        "address": "新竹縣竹北市福興路920號",
-        "lat": 24.8362,
-        "lng": 121.0113
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "03-658-0928",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "竹北地區新穎運動中心"
-    },
-    {
-      "id": 34,
-      "name": "台中市西屯運動中心",
-      "location": {
-        "address": "台中市西屯區河南路二段30號",
-        "lat": 24.1713,
-        "lng": 120.6414
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "04-2462-1500",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "台中西屯區大型運動中心"
-    },
-    {
-      "id": 35,
-      "name": "台中市大里運動中心",
-      "location": {
-        "address": "台中市大里區國光路二段500號",
-        "lat": 24.0994,
-        "lng": 120.6779
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 200-300 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "04-2406-0999",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "大里區運動中心"
-    },
-    {
-      "id": 36,
-      "name": "台中市豐原體育館",
-      "location": {
-        "address": "台中市豐原區圓環南路28號",
-        "lat": 24.2480,
-        "lng": 120.7231
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 150-250 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "04-2524-0362",
-      "facilities": [
-        "更衣室",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "豐原區體育館，價格實惠"
-    },
-    {
-      "id": 37,
-      "name": "台中市潭子運動公園",
-      "location": {
-        "address": "台中市潭子區中山路二段241號",
-        "lat": 24.2073,
-        "lng": 120.7053
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "04-2534-8280",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所"
-      ],
-      "reviews": "潭子區戶外免費球場"
-    },
-    {
-      "id": 38,
-      "name": "彰化縣立體育館",
-      "location": {
-        "address": "彰化縣彰化市健興路1號",
-        "lat": 24.0741,
-        "lng": 120.5129
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 150-250 元",
-      "courts_count": 4,
-      "opening_hours": "08:00-22:00",
-      "contact": "04-726-1831",
-      "facilities": [
-        "更衣室",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "彰化縣主要室內球場"
-    },
-    {
-      "id": 39,
-      "name": "彰化員林運動公園",
-      "location": {
-        "address": "彰化縣員林市員集路一段188號",
-        "lat": 23.9591,
-        "lng": 120.5741
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "04-832-2410",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所"
-      ],
-      "reviews": "員林地區戶外球場"
-    },
-    {
-      "id": 40,
-      "name": "台南市體育園區",
-      "location": {
-        "address": "台南市南區體育路10號",
-        "lat": 22.9736,
-        "lng": 120.2029
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "06-262-2331",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所",
-        "夜間照明"
-      ],
-      "reviews": "台南市大型體育園區，設施完善"
-    },
-    {
-      "id": 41,
-      "name": "台南市東區國民運動中心",
-      "location": {
-        "address": "台南市東區東平路1號",
-        "lat": 22.9921,
-        "lng": 120.2295
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 150-250 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "06-209-0800",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "台南東區運動中心"
-    },
-    {
-      "id": 42,
-      "name": "台南市永康體育公園",
-      "location": {
-        "address": "台南市永康區復華一街",
-        "lat": 23.0265,
-        "lng": 120.2419
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "06-201-6351",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所",
-        "夜間照明"
-      ],
-      "reviews": "永康區戶外球場"
-    },
-    {
-      "id": 43,
-      "name": "高雄市左營國民運動中心",
-      "location": {
-        "address": "高雄市左營區文慈路99號",
-        "lat": 22.6821,
-        "lng": 120.2949
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 150-250 元",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "07-556-0855",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "website": "https://www.kysports.com.tw/",
-      "reviews": "高雄左營區大型運動中心，近高鐵站"
-    },
-    {
-      "id": 44,
-      "name": "高雄市苓雅國民運動中心",
-      "location": {
-        "address": "高雄市苓雅區中正一路94號",
-        "lat": 22.6208,
-        "lng": 120.3072
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 150-250 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "07-221-5999",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "高雄苓雅區運動中心"
-    },
-    {
-      "id": 45,
-      "name": "高雄市三民國民運動中心",
-      "location": {
-        "address": "高雄市三民區金鼎路88號",
-        "lat": 22.6581,
-        "lng": 120.3243
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 150-250 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "07-342-8882",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "三民區運動中心"
-    },
-    {
-      "id": 46,
-      "name": "高雄市中正運動公園",
-      "location": {
-        "address": "高雄市苓雅區中正一路96號",
-        "lat": 22.6199,
-        "lng": 120.3081
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 6,
-      "opening_hours": "06:00-22:00",
-      "contact": "07-746-2508",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所",
-        "夜間照明"
-      ],
-      "reviews": "高雄市區大型運動公園"
-    },
-    {
-      "id": 47,
-      "name": "屏東縣立體育館",
-      "location": {
-        "address": "屏東縣屏東市勝利路30號",
-        "lat": 22.6739,
-        "lng": 120.4918
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 100-200 元",
-      "courts_count": 4,
-      "opening_hours": "08:00-22:00",
-      "contact": "08-732-7084",
-      "facilities": [
-        "更衣室",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "屏東縣主要室內球場"
-    },
-    {
-      "id": 48,
-      "name": "花蓮縣立體育館",
-      "location": {
-        "address": "花蓮縣花蓮市達固湖灣大路1號",
-        "lat": 23.9769,
-        "lng": 121.6069
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 100-200 元",
-      "courts_count": 4,
-      "opening_hours": "08:00-22:00",
-      "contact": "03-842-3100",
-      "facilities": [
-        "更衣室",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "花蓮縣主要室內球場"
-    },
-    {
-      "id": 49,
-      "name": "台東運動公園",
-      "location": {
-        "address": "台東縣台東市中華路一段950號",
-        "lat": 22.7479,
-        "lng": 121.1396
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "089-362-067",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所"
-      ],
-      "reviews": "台東地區戶外球場，環境優美"
-    },
-    {
-      "id": 50,
-      "name": "基隆市信義運動中心",
-      "location": {
-        "address": "基隆市信義區東信路191號",
-        "lat": 25.1274,
-        "lng": 121.7596
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 150-250 元",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2465-1900",
-      "facilities": [
-        "更衣室",
-        "淋浴間",
-        "停車場",
-        "飲水機",
-        "冷氣"
-      ],
-      "reviews": "基隆市主要運動中心"
-    },
-    {
-      "id": 51,
-      "name": "基隆河濱運動公園",
-      "location": {
-        "address": "基隆市暖暖區源遠路177號",
-        "lat": 25.1019,
-        "lng": 121.7423
-      },
-      "type": "outdoor",
-      "fee": "free",
-      "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-22:00",
-      "contact": "02-2456-7890",
-      "facilities": [
-        "停車場",
-        "飲水機",
-        "廁所",
-        "夜間照明"
-      ],
-      "reviews": "基隆河濱球場，空氣清新"
-    },
-    {
-      "id": 52,
       "name": "嘉義市國民運動中心",
       "location": {
         "address": "嘉義市東區體育路2號",
         "lat": 23.4825,
-        "lng": 120.4648
+        "lng": 120.4648,
+        "city": "嘉義市",
+        "district": "東區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "每小時 150-250 元",
+      "price": "每小時 $150-250",
       "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
       "opening_hours": "06:00-22:00",
       "contact": "05-275-5122",
       "facilities": [
@@ -1206,72 +927,427 @@
         "冷氣"
       ],
       "website": "https://www.tmcysports.com.tw/",
+      "last_updated": "2025-12-10",
       "reviews": "嘉義市主要運動中心，設施優良"
     },
     {
-      "id": 53,
-      "name": "雲林縣立體育館",
+      "id": 29,
+      "name": "高雄市左營國民運動中心",
       "location": {
-        "address": "雲林縣斗六市公誠里體育路1號",
-        "lat": 23.7074,
-        "lng": 120.5434
+        "address": "高雄市左營區文慈路99號",
+        "lat": 22.6821,
+        "lng": 120.2949,
+        "city": "高雄市",
+        "district": "左營區"
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "每小時 100-200 元",
-      "courts_count": 4,
-      "opening_hours": "08:00-22:00",
-      "contact": "05-553-2393",
+      "price": "每小時 $150-250",
+      "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "07-556-0855",
       "facilities": [
         "更衣室",
+        "淋浴間",
         "停車場",
         "飲水機",
         "冷氣"
       ],
-      "reviews": "雲林斗六地區主要球場"
-    },
-    {
-      "id": 54,
-      "name": "苗栗縣立體育館",
-      "location": {
-        "address": "苗栗縣苗栗市玉清路351號",
-        "lat": 24.5630,
-        "lng": 120.8242
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "每小時 100-200 元",
-      "courts_count": 4,
-      "opening_hours": "08:00-22:00",
-      "contact": "037-332-700",
-      "facilities": [
-        "更衣室",
-        "停車場",
-        "飲水機",
-        "冷氣"
+      "features": [
+        "近高鐵站"
       ],
-      "reviews": "苗栗縣主要室內球場"
+      "website": "https://www.kysports.com.tw/",
+      "last_updated": "2025-12-10",
+      "reviews": "高雄左營區大型運動中心，近高鐵站"
     },
     {
-      "id": 55,
-      "name": "南投縣立體育場",
+      "id": 30,
+      "name": "高雄鳳山運動園區",
       "location": {
-        "address": "南投縣南投市彰南路二段61號",
-        "lat": 23.9092,
-        "lng": 120.6847
+        "address": "高雄市鳳山區體育路50號",
+        "lat": 22.6273,
+        "lng": 120.3014,
+        "city": "高雄市",
+        "district": "鳳山區"
       },
       "type": "outdoor",
       "fee": "free",
       "price": "免費",
-      "courts_count": 4,
-      "opening_hours": "06:00-21:00",
-      "contact": "049-222-4153",
+      "courts_count": 6,
+      "surface": "concrete",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "07-740-5823",
       "facilities": [
         "停車場",
         "飲水機",
+        "廁所",
+        "夜間照明"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "高雄地區熱門球場，場地寬敞"
+    },
+    {
+      "id": 31,
+      "name": "新竹縣竹北國民運動中心",
+      "location": {
+        "address": "新竹縣竹北市福興路920號",
+        "lat": 24.8362,
+        "lng": 121.0113,
+        "city": "新竹縣",
+        "district": "竹北市"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $200-300",
+      "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "03-658-0928",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "竹北地區新穎運動中心"
+    },
+    {
+      "id": 32,
+      "name": "花蓮中山公園網球場",
+      "location": {
+        "address": "花蓮縣花蓮市中正路與中山路交叉",
+        "lat": 23.9760,
+        "lng": 121.6050,
+        "city": "花蓮縣",
+        "district": "花蓮市"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "surface": "concrete",
+      "net_type": "self",
+      "ownership": "public",
+      "opening_hours": "全天開放",
+      "contact": "03-822-8383",
+      "facilities": [
         "廁所"
       ],
-      "reviews": "南投縣主要戶外球場"
+      "last_updated": "2025-12-10",
+      "reviews": "花蓮市區戶外場地"
+    },
+    {
+      "id": 33,
+      "name": "屏東廣興匹克球場",
+      "location": {
+        "address": "屏東縣屏東市廣興里",
+        "lat": 22.6800,
+        "lng": 120.4850,
+        "city": "屏東縣",
+        "district": "屏東市"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "surface": "concrete",
+      "net_type": "permanent",
+      "ownership": "community",
+      "opening_hours": "06:00-21:00",
+      "contact": "屏東匹克球社團",
+      "facilities": [
+        "廁所"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "屏東社區匹克球場"
+    },
+    {
+      "id": 34,
+      "name": "台北市松山運動中心",
+      "location": {
+        "address": "台北市松山區敦化北路1號",
+        "lat": 25.0502,
+        "lng": 121.5485,
+        "city": "台北市",
+        "district": "松山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $250-400",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2570-1717",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "features": [
+        "捷運可達"
+      ],
+      "website": "https://sssc.com.tw/",
+      "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "last_updated": "2025-12-10",
+      "reviews": "松山區交通便利，捷運可達"
+    },
+    {
+      "id": 25,
+      "name": "台北市天母運動公園匹克球場",
+      "location": {
+        "address": "台北市士林區忠誠路二段77號",
+        "lat": 25.1130,
+        "lng": 121.5330,
+        "city": "台北市",
+        "district": "士林區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 17,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "is_new": true,
+      "added_date": "2025-12",
+      "opening_hours": "全天開放 (夜間照明至 22:00)",
+      "contact": "台北市體育局",
+      "features": [
+        "17面比賽級場地",
+        "2025臺北匹克球公開賽主場",
+        "全台最大戶外場地群"
+      ],
+      "last_updated": "2025-12-16",
+      "reviews": "全台最大戶外匹克球場地群，全新啟用"
+    },
+    {
+      "id": 26,
+      "name": "Upcoming: 宜蘭風雨多元運動球場",
+      "location": {
+        "address": "宜蘭縣宜蘭市中山路一段755號",
+        "lat": 24.7610,
+        "lng": 121.7540,
+        "city": "宜蘭縣",
+        "district": "宜蘭市"
+      },
+      "type": "covered",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 6,
+      "surface": "acrylic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "is_upcoming": true,
+      "opening_hours": "興建規劃中，預計 2026 完工",
+      "contact": "宜蘭縣政府",
+      "features": [
+        "4500萬重點建設",
+        "風雨球場設計",
+        "羽匹共用多元規劃"
+      ],
+      "last_updated": "2025-12-16",
+      "reviews": "宜蘭縣政府重點體育建設，免受風雨影響"
+    },
+    {
+      "id": 35,
+      "name": "台北市中山運動中心",
+      "location": {
+        "address": "台北市中山區中山北路二段44號",
+        "lat": 25.0547,
+        "lng": 121.5225,
+        "city": "台北市",
+        "district": "中山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $250-400",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2542-0008",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "features": [
+        "近捷運雙連站"
+      ],
+      "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "last_updated": "2025-12-10",
+      "reviews": "中山區中心位置，近捷運雙連站"
+    },
+    {
+      "id": 36,
+      "name": "台北市文山運動中心",
+      "location": {
+        "address": "台北市文山區興隆路三段222號",
+        "lat": 24.9869,
+        "lng": 121.5455,
+        "city": "台北市",
+        "district": "文山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $200-350",
+      "courts_count": 4,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2930-0658",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "booking_url": "https://booking-tpsc.sporetrofit.com/",
+      "last_updated": "2025-12-10",
+      "reviews": "文山區社區型運動中心"
+    },
+    {
+      "id": 37,
+      "name": "新北市三重運動中心",
+      "location": {
+        "address": "新北市三重區大同南路195號",
+        "lat": 25.0590,
+        "lng": 121.4896,
+        "city": "新北市",
+        "district": "三重區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $200-350",
+      "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "02-2287-8787",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "三重區大型運動中心"
+    },
+    {
+      "id": 38,
+      "name": "桃園市蘆竹國民運動中心",
+      "location": {
+        "address": "桃園市蘆竹區中正路1號",
+        "lat": 25.0454,
+        "lng": 121.2915,
+        "city": "桃園市",
+        "district": "蘆竹區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $200-300",
+      "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "03-352-1188",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "features": [
+        "冷氣充足"
+      ],
+      "website": "https://www.tyfa.com.tw/",
+      "last_updated": "2025-12-10",
+      "reviews": "桃園地區優質室內球場"
+    },
+    {
+      "id": 39,
+      "name": "台中市南屯運動中心",
+      "location": {
+        "address": "台中市南屯區黎明路一段568號",
+        "lat": 24.1390,
+        "lng": 120.6380,
+        "city": "台中市",
+        "district": "南屯區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $200",
+      "courts_count": 6,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "08:00-22:00",
+      "contact": "04-2389-2211",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣"
+      ],
+      "last_updated": "2025-12-10",
+      "reviews": "台中南屯區熱門球場"
+    },
+    {
+      "id": 40,
+      "name": "台中北區國民運動中心",
+      "location": {
+        "address": "台中市北區崇德路一段55號",
+        "lat": 24.1625,
+        "lng": 120.6844,
+        "city": "台中市",
+        "district": "北區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 $200-300",
+      "courts_count": 8,
+      "surface": "wood",
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00",
+      "contact": "04-2235-1658",
+      "facilities": [
+        "更衣室",
+        "淋浴間",
+        "停車場",
+        "飲水機",
+        "冷氣",
+        "球具租借"
+      ],
+      "features": [
+        "場地數量多"
+      ],
+      "website": "https://www.tcsc.com.tw/",
+      "last_updated": "2025-12-10",
+      "reviews": "台中地區場地數量最多"
     }
   ]
 }

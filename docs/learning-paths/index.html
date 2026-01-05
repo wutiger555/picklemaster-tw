@@ -6,6 +6,8 @@
   <link rel="icon" type="image/x-icon" href="/favicon-v2.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-v2-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-v2-16x16.png">
+  <link rel="preload" as="image" href="/logo.webp?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-v2-192x192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -19,6 +21,11 @@
 
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
+
+  <!-- Cache Control for Safari/Mobile Fix -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 
   <!-- SEO Meta Tags -->
   <meta name="description"
@@ -34,7 +41,7 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://picklemastertw.site/learning-paths" />
-  <meta property="og:title" content="匹克球學習路徑 | 新手到進階完整課程 - 系統化學習" />
+  <meta property="og:title" content="匹克球從 0 到 100：新手入門 → 高手進階完整學習地圖" />
   <meta property="og:description"
     content="匹克球台灣提供全台55+球場地圖、互動式規則教學、3D球場配置、專業裝備推薦。涵蓋台北、台中、高雄、台南等地區匹克球場資訊。從新手入門到進階技巧，完整學習路徑助你快速上手匹克球運動！" />
   <meta property="og:image" content="https://picklemastertw.site/og-image.png" />
@@ -42,8 +49,8 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://picklemastertw.site/learning-paths" />
-  <meta name="twitter:title" content="匹克球學習路徑 | 新手到進階完整課程 - 系統化學習" />
-  <meta name="twitter:description" content="完整的匹克球學習路徑！從新手入門到進階高手，系統化課程包含基礎握拍、發球技巧、正反手擊球、截擊技術、戰術運用。適合初學者、中級球員、進階選手的分級學習內容。" />
+  <meta name="twitter:title" content="匹克球從 0 到 100：新手入門 → 高手進階完整學習地圖" />
+  <meta name="twitter:description" content="別在那裡亂打！系統化匹克球課程，從握拍發球到高階戰術（Third Shot Drop）。分級學習路徑，帶你一步步成為匹克球高手。免費開始學習！" />
   <meta name="twitter:image" content="https://picklemastertw.site/og-image.png" />
 
   <!-- Canonical URL -->
@@ -57,81 +64,24 @@
   <!-- AdSense script is loaded lazily after user interaction -->
 
   <!-- JSON-LD Structured Data -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebSite",
-          "@id": "https://picklemastertw.site/#website",
-          "url": "https://picklemastertw.site/",
-          "name": "匹克大師台灣 | Picklemaster Taiwan",
-          "description": "台灣最完整的匹克球學習平台，提供全台55+球場地圖、互動式規則教學、3D球場配置、裝備選購指南",
-          "inLanguage": "zh-TW",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://picklemastertw.site/?s={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        },
-        {
-          "@type": "Organization",
-          "@id": "https://picklemastertw.site/#organization",
-          "name": "Picklemaster Taiwan",
-          "alternateName": "匹克大師台灣",
-          "url": "https://picklemastertw.site/",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://picklemastertw.site/logo.png",
-            "width": 512,
-            "height": 512
-          },
-          "sameAs": [
-            "https://github.com/wutiger555/picklemaster-tw"
-          ]
-        },
-        {
-          "@type": "SportsActivityLocation",
-          "name": "台灣匹克球場地圖",
-          "description": "提供全台灣超過55個匹克球場的詳細資訊與地圖",
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": "23.5",
-            "longitude": "121.0"
-          },
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "TW",
-            "addressRegion": "台灣"
-          }
-        },
-        {
-          "@type": "Course",
-          "name": "匹克球學習路徑",
-          "description": "從新手到進階的完整匹克球學習課程，包含3D互動教學、規則說明、技術動作指導",
-          "provider": {
-            "@id": "https://picklemastertw.site/#organization"
-          },
-          "educationalLevel": "初級到進階",
-          "inLanguage": "zh-TW",
-          "availableLanguage": "zh-TW"
-        }
-      ]
-    }
-    </script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Course","name":"匹克球完整學習課程","description":"從新手到進階的系統化匹克球學習路徑","provider":{"@type":"Organization","name":"Picklemaster Taiwan","url":"https://picklemastertw.site"},"hasCourseInstance":[{"@type":"CourseInstance","name":"新手入門課程","courseMode":"online"},{"@type":"CourseInstance","name":"中階進修課程","courseMode":"online"},{"@type":"CourseInstance","name":"高手養成課程","courseMode":"online"}]}</script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+  </noscript>
 
-  <title>匹克球學習路徑 | 新手到進階完整課程 - 系統化學習</title>
-  <script type="module" crossorigin src="/assets/index-Bhwz1E72.js"></script>
+  <title>匹克球從 0 到 100：新手入門 → 高手進階完整學習地圖</title>
+  <script type="module" crossorigin src="/assets/index-DastTper.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-CAIyZZp1.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-wVsjGBvf.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-D4YnZzbV.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-S1ez-L3l.css">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-BRgEkIhI.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-U4hO9YOJ.css">
 </head>
 
 <body>

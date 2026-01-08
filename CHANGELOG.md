@@ -7,35 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.2.0] - Visual & SEO Overhaul
+
+### Featured Updates 🚀
+- **Commercial-Grade Design**: Complete restyling of key pages (Home, Equipment, Newcomer) with a "Sporty/Modern" aesthetic inspired by top sports brands.
+- **Smooth Experience**: Integrated `Lenis` for premium scroll mechanics.
+- **SEO & Discovery**: Automated sitemap generation and improved metadata structure.
+
 ### Added
+
+#### 🎨 Visual Overhaul & UI
+- **Home Hero Section**: High-energy gradient text, animated background rings, and integrated 3D court preview.
+- **Newcomer Guide**: "Bento Grid" layout, dynamic motion effects, and localized content for beginners.
+- **Equipment Page**: Flagship product-page style with dark mode, full-width visuals, and interactive AI recommender.
+- **Premium Footer**: Nike-style organized layout with deep neutral colors and structured navigation.
+- **Animation System**: Added `spin-slow`, `pulse-slow`, and `gradient-x` animations to Tailwind config.
+
+#### ⚙️ Technical Core
+- **Smooth Scroll**: Implemented `@studio-freight/lenis` for fluid, momentum-based scrolling.
+- **Sitemap Generation**: Updated `generate-static-pages.cjs` to automatically build `sitemap.xml` for Google Search Console.
+- **Deployment**: Verified and optimized GitHub Actions workflow for automated CD.
 
 #### 🏆 Pro Players Page
 - **New "Titans" Section**: Interactive 3D trading cards for top players (Ben Johns, Anna Leigh Waters)
 - **Stats Visualization**: Dynamic power/control/speed bars for each player
 - **Equipment Integration**: Direct links to player's paddle of choice
 - **Special Entry**: Added "Tesla Bot" as a fun easter egg
-
-#### 🔧 Court Visualizer Refinement
-- **Logic Correction**: Fixed serve and return paths to strictly follow cross-court rules
-- **UI Upgrade**: Replaced emoji controls with professional SVG playback bar
-- **Step Navigation**: Added clickable step indicators and progress tracking
-- **Visual Accuracy**: Corrected court markings (kitchen line does not cross center)
-
-### Changed
-
-#### 🧭 Navigation Structure
-- **Consolidated Menu**: Merged "Equipment" and "Pro Players" into "**職業與裝備**" (Gear & Pros)
-- **Simplified "More"**: Renamed "Resources" to "更多" (More) containing About and Resources
-
-#### 🎨 UI & Content
-- **Learning Paths**: Redesigned timeline for premium look (removed rainbow gradient)
-- **News Feed**: Updated Taipei Open results and added Tesla/Razer paddle news
-- **Image Handling**: Added elegant gradient fallbacks for broken news images
-
-#### 🔍 SEO
-- **New Route**: Added metadata and static generation for `/pro-players`
-
-### Added
 
 #### 🎥 Video Integration
 - **New `VideoTutorials` component**: Grid layout with hover effects, duration/level badges
@@ -84,6 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Archive system**: Added `archived` field for news management
 - **Tags support**: Categorization and filtering capabilities
 
+### Changed
+
 #### 🎨 UI/UX Improvements
 - **Header redesign**: Modern sports brand aesthetic with Inter font
   - Removed emojis for professional look
@@ -94,7 +93,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Game page update**: "Pickle Master" branding with FPS game description
 - **SEO enhancements**: Custom title, description, and image props for pages
 
+#### 🧭 Navigation Structure
+- **Consolidated Menu**: Merged "Equipment" and "Pro Players" into "**職業與裝備**" (Gear & Pros)
+- **Simplified "More"**: Renamed "Resources" to "更多" (More) containing About and Resources
+
+#### 🎨 UI & Content (General)
+- **Learning Paths**: Redesigned timeline for premium look (removed rainbow gradient)
+- **News Feed**: Updated Taipei Open results and added Tesla/Razer paddle news
+- **Image Handling**: Added elegant gradient fallbacks for broken news images
+
+#### 🚀 Performance Improvements
+- **Mobile Performance Optimization**: Targeted improvements for mobile PageSpeed score.
+  - **LCP Optimization**: Preloaded logo image and optimized Hero section loading.
+  - **Bundle Size Reduction**: Removed `framer-motion` from critical path (LoadingSpinner) and implemented `LazyMotion` for the Home page.
+  - **Accessibility**: Added accessible attributes to interactive elements (Header menu, 3D Preview toggle).
+
 ### Fixed
+
+#### 🔧 Court Visualizer Refinement
+- **Logic Correction**: Fixed serve and return paths to strictly follow cross-court rules
+- **UI Upgrade**: Replaced emoji controls with professional SVG playback bar
+- **Step Navigation**: Added clickable step indicators and progress tracking
+- **Visual Accuracy**: Corrected court markings (kitchen line does not cross center)
 
 #### 🗺️ Map Z-Index Issue
 - Fixed map overlaying header by reducing legend z-index from `z-10` to `z-[5]`
@@ -106,30 +126,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added continuous hover area using `pt-2` on dropdown wrapper
 - Moved `onMouseEnter` to button element for better UX
 
-### Changed
-
-#### 📝 Documentation Updates
+### Documentation
 - Created `NEWS_MAINTENANCE.md` for news content guidelines
 - Updated `README.md` with new "Pickle Master" game features
 - All game instructions now in Traditional Chinese
-
-#### 🎮 Game Mechanics
-- Renamed to "Pickle Master" (匹克球大師)
-- Updated controls description: Focus, Fireball, Lucky Shot
-- Documented core rules: Kitchen zone, Two-bounce rule
-
-### Removed
-- Unused `animate-pulse-slow` CSS (kept in file but not actively used)
-- Sport selector buttons (merged into single view)
-- Complex scorer features (timer, history, sets, etc.)
-
----
-
-### Performance Improvements
-- **Mobile Performance Optimization**: Targeted improvements for mobile PageSpeed score.
-  - **LCP Optimization**: Preloaded logo image and optimized Hero section loading.
-  - **Bundle Size Reduction**: Removed `framer-motion` from critical path (LoadingSpinner) and implemented `LazyMotion` for the Home page.
-  - **Accessibility**: Added accessible attributes to interactive elements (Header menu, 3D Preview toggle).
 
 ---
 

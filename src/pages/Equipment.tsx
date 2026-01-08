@@ -13,142 +13,101 @@ const Equipment = () => {
     <div className="min-h-screen bg-neutral-50">
       <SEOHead page="equipment" />
 
-      {/* Hero Section */}
-      <section className="relative bg-neutral-900 text-white py-24 overflow-hidden">
-        {/* Abstract Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-20"></div>
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
+      {/* Hero Section - Commercial Style */}
+      <section className="relative h-[80vh] bg-neutral-950 flex items-center overflow-hidden">
+        {/* Background Media Placeholder */}
+        <div className="absolute inset-0 bg-neutral-900">
+          <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-900/80 to-transparent z-10"></div>
+          {/* Mocking a high-quality product shot background */}
+          <div className="absolute right-0 top-0 w-2/3 h-full bg-neutral-800 opacity-20 bg-[url('https://images.unsplash.com/photo-1599474924187-334a405be655?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay grayscale"></div>
         </div>
 
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-black mb-6 tracking-tight"
+        <div className="container mx-auto px-4 relative z-20">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            className="max-w-2xl"
           >
-            匹克球<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">裝備全攻略</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed"
-          >
-            從新手入門到職業競技，我們幫你解析球拍科技，<br className="hidden md:block" />
-            用數據與 AI 幫你找到最適合的「神兵利器」。
-          </motion.p>
+            <span className="text-emerald-500 font-bold tracking-widest uppercase mb-4 block text-sm">PickleMaster Gear</span>
+            <h1 className="text-7xl md:text-9xl font-black text-white mb-6 tracking-tighter leading-[0.9]">
+              FIND YOUR <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">EDGE.</span>
+            </h1>
+            <p className="text-xl text-neutral-400 max-w-lg font-medium leading-relaxed mb-10">
+              裝備不只是工具，它是你戰術的延伸。
+              <br />從新手入門到職業競技，找到屬於你的勝利方程式。
+            </p>
+            <a href="#recommender" className="inline-block px-10 py-5 bg-white text-black font-bold text-lg hover:bg-emerald-500 hover:text-white transition-colors duration-300">
+              開始智能挑選
+            </a>
+          </motion.div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-16 space-y-32">
+      <div className="container mx-auto px-4 py-24 space-y-40">
 
-        {/* 1. Recommender - High Value Interaction */}
+        {/* 1. Feature: Recommender - Sleek Dark Mode */}
         <section id="recommender" className="scroll-mt-24">
-          <div className="text-center mb-12">
-            <span className="inline-block px-4 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-4">
-              AI 智能推薦
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-neutral-900">
-              不知道怎麼選？<br />
-              <span className="text-emerald-600">30 秒</span> 找出你的命定球拍
-            </h2>
-          </div>
-          <PaddleRecommender />
-        </section>
-
-        {/* 2. Comparison Table */}
-        <section id="comparison" className="scroll-mt-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-black text-neutral-900 mb-4">熱門球拍規格一覽</h2>
-            <p className="text-neutral-600">一目了然的材質與性能差異，不再被專有名詞搞混。</p>
-          </div>
-          <PaddleComparison />
-        </section>
-
-        {/* 3. Detailed Guide (SEO Content) */}
-        <section id="guide" className="scroll-mt-24">
-          <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-neutral-100">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-black text-neutral-900 mb-4">球拍材質與規格深度解析</h2>
-              <p className="text-neutral-600">什麼是蜂巢核？碳纖維跟玻璃纖維差在哪？這裡有詳細解答。</p>
+          <div className="w-full max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-12 bg-neutral-100 rounded-none md:rounded-[3rem] overflow-hidden p-0 md:p-12">
+              <div className="w-full md:w-1/3 p-10">
+                <h2 className="text-4xl font-black text-neutral-950 mb-6">TOO MANY <br />CHOICES?</h2>
+                <p className="text-neutral-600 mb-8 font-medium">
+                  市面上有數百種球拍，但只有一種適合你。
+                  讓我們的 AI 算法幫你過濾掉行銷話術，直接找到真愛。
+                </p>
+                <div className="h-1 w-20 bg-neutral-950"></div>
+              </div>
+              <div className="w-full md:w-2/3">
+                <PaddleRecommender />
+              </div>
             </div>
-            <PaddleGuide />
           </div>
         </section>
 
-        {/* 4. Pro Players */}
-        <section id="pro-paddles" className="scroll-mt-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-black text-neutral-900 mb-4">跟著世界冠軍選裝備</h2>
-            <p className="text-neutral-600">看看職業選手都在用什麼球拍，以及他們的選擇理由。</p>
+        {/* 2. Visual Grid: Specs & Guide */}
+        <section>
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+            <h2 className="text-5xl font-black text-neutral-950 tracking-tighter">DEEP DIVE</h2>
+            <p className="text-neutral-500 font-bold uppercase tracking-widest text-sm">Technical Specifications</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Card 1: Material */}
+            <div className="bg-neutral-950 text-white p-12 min-h-[500px] flex flex-col justify-between group relative overflow-hidden">
+              <div className="absolute inset-0 bg-neutral-900 transition-transform duration-700 group-hover:scale-105"></div>
+              <div className="relative z-10">
+                <span className="text-emerald-500 font-mono text-xs mb-2 block">01 / MATERIALS</span>
+                <h3 className="text-3xl font-bold mb-4">Core & Surface</h3>
+                <p className="text-neutral-400 max-w-sm">蜂巢核 vs 複合材料。了解材質如何影響擊球的甜蜜點與聲音。</p>
+              </div>
+              <div className="relative z-10 mt-10">
+                <PaddleGuide />
+              </div>
+            </div>
+
+            {/* Card 2: Stats */}
+            <div className="bg-neutral-100 p-12 min-h-[500px] flex flex-col justify-between relative overflow-hidden">
+              <div className="relative z-10">
+                <span className="text-neutral-500 font-mono text-xs mb-2 block">02 / SPECS</span>
+                <h3 className="text-3xl font-bold text-neutral-950 mb-4">Compare Stats</h3>
+                <p className="text-neutral-600 max-w-sm">數據不會說謊。直接比較各款球拍的重量、握把長度與核心厚度。</p>
+              </div>
+              <div className="relative z-10 mt-10 overflow-x-auto">
+                <PaddleComparison />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 3. Pro Section (Carousel Style) */}
+        <section id="pro-paddles" className="border-t border-neutral-200 pt-24">
+          <div className="text-center mb-20">
+            <span className="text-emerald-600 font-bold uppercase tracking-widest text-sm block mb-4">The Professionals</span>
+            <h2 className="text-5xl md:text-7xl font-black text-neutral-950 tracking-tighter uppercase">Champions'<br />Choice</h2>
           </div>
           <ProPlayerPaddles />
-        </section>
-
-        {/* 5. Budget Guide */}
-        <section id="budget" className="scroll-mt-24 pb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-black text-neutral-900 mb-8">
-              裝備預算參考
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-left">
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-neutral-100 relative overflow-hidden group hover:shadow-xl transition-shadow">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
-                <h3 className="font-bold text-xl text-neutral-900 mb-6 flex items-center">
-                  🏸 球拍價格區間
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
-                    <span className="font-medium text-neutral-600">入門級 (複合材質)</span>
-                    <span className="text-emerald-600 font-bold">NT$ 1,500 - 3,000</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
-                    <span className="font-medium text-neutral-600">中階級 (玻璃纖維)</span>
-                    <span className="text-emerald-600 font-bold">NT$ 3,000 - 6,000</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-neutral-600">高階級 (碳纖維)</span>
-                    <span className="text-emerald-600 font-bold">NT$ 6,000+</span>
-                  </div>
-                </div>
-                <p className="text-xs text-neutral-400 mt-6 bg-neutral-50 p-3 rounded-lg">
-                  💡 提示：新手建議從中階球拍開始，重量 7.5-8.5 oz 最為泛用。
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-neutral-100 relative overflow-hidden group hover:shadow-xl transition-shadow">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
-                <h3 className="font-bold text-xl text-neutral-900 mb-6 flex items-center">
-                  👟 其他必要裝備
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 text-blue-500 font-bold text-sm">1</div>
-                    <div>
-                      <p className="font-bold text-neutral-900">專用運動鞋</p>
-                      <p className="text-sm text-neutral-500">建議網球鞋或羽球鞋，避免慢跑鞋（易翻船）</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 text-blue-500 font-bold text-sm">2</div>
-                    <div>
-                      <p className="font-bold text-neutral-900">排汗運動服</p>
-                      <p className="text-sm text-neutral-500">選擇透氣材質，避免棉質衣物</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 text-blue-500 font-bold text-sm">3</div>
-                    <div>
-                      <p className="font-bold text-neutral-900">護目鏡 (推薦)</p>
-                      <p className="text-sm text-neutral-500">保護眼睛，避免球速過快誤傷</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </section>
       </div>
     </div>

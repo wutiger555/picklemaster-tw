@@ -62,7 +62,8 @@ export default {
         'float': 'float 3s ease-in-out infinite',
         'slide-in': 'slideIn 0.5s ease-out',
         'slide-down': 'slideDown 0.2s ease-out',
-        // 新增進階動畫
+        'spin-slow': 'spin 15s linear infinite',
+        'gradient-x': 'gradientX 15s ease infinite',
         'fade-in': 'fadeIn 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
         'shimmer': 'shimmer 2s linear infinite',
@@ -70,6 +71,16 @@ export default {
       },
 
       keyframes: {
+        gradientX: {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left center'
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center'
+          },
+        },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-20px)' },

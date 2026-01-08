@@ -331,8 +331,32 @@ async function generateStaticPages() {
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
 
-        console.log('Static page generation completed successfully!');
+        // Generate Sitemap.xml
+        console.log('Generating sitemap.xml...');
+        let sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>${BASE_URL}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>`;
 
+        for (const route of Object.keys(pageSEO)) {
+            sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/${route}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>`;
+        }
+
+        sitemapContent += `
+</urlset>`;
+
+        fs.writeFileSync(path.join(BUILD_DIR, 'sitemap.xml'), sitemapContent);
+        console.log('sitemap.xml generated successfully!');
+
+        console.log('Static page generation completed successfully!');
     } catch (error) {
         console.error('Error generating static pages:', error);
         process.exit(1);

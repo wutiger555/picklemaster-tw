@@ -37,143 +37,130 @@ const Home = () => {
     <LazyMotion features={domAnimation}>
       <div className="min-h-screen">
         <SEOHead page="home" />
-        {/* 英雄區塊 - 簡潔設計 */}
-        <section className="relative bg-gradient-to-br from-emerald-900 via-teal-900 to-emerald-950 text-white min-h-[75vh] flex items-center overflow-hidden">
-          {/* 球場主題背景 */}
-          <div className="absolute inset-0 overflow-hidden">
-            {/* 球場紋理底層 */}
-            <div className="absolute inset-0 opacity-15">
-              <div className="absolute inset-0" style={{
-                backgroundImage: `
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)
-              `,
-                backgroundSize: '60px 60px'
-              }} />
-            </div>
+        {/* Hero Section - High Energy Sports Style */}
+        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-white">
+          {/* Dynamic Background */}
+          <div className="absolute inset-0 pointer-events-none">
+            {/* Mesh Gradients */}
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-400/10 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/3 animate-pulse-slow"></div>
+            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3 animate-pulse-slow"></div>
 
-            {/* 球場線條裝飾 */}
-            <svg className="absolute inset-0 w-full h-full opacity-8" viewBox="0 0 1000 800">
-              <line x1="0" y1="400" x2="1000" y2="400" stroke="white" strokeWidth="3" />
-              <line x1="500" y1="0" x2="500" y2="800" stroke="white" strokeWidth="2" strokeDasharray="15,10" />
-              <rect x="200" y="300" width="250" height="120" fill="none" stroke="white" strokeWidth="1.5" opacity="0.5" />
-              <rect x="550" y="380" width="250" height="120" fill="none" stroke="white" strokeWidth="1.5" opacity="0.5" />
-            </svg>
+            {/* Animated Rings */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-neutral-100 rounded-full animate-spin-slow"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-neutral-100 rounded-full animate-spin-slow" style={{ animationDirection: 'reverse', animationDuration: '20s' }}></div>
 
-            {/* 光暈效果 */}
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-transparent to-green-950/40" />
+            {/* Grid Texture */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px]"></div>
           </div>
 
-          <div className="container mx-auto px-4 relative z-10 py-12">
-            <div className="max-w-5xl mx-auto">
-              {/* 精緻標語 - 極簡設計 */}
-              <m.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="text-center mb-8"
-              >
-                <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-6">
-                  <span className="text-2xl">🏓</span>
-                  <p className="text-lg md:text-xl text-white/95 font-semibold tracking-wide">
-                    探索匹克球的無限可能
-                  </p>
-                </div>
-              </m.div>
+          <div className="container mx-auto px-4 relative z-10 pt-20">
+            <div className="max-w-6xl mx-auto text-center">
 
-              {/* 3D 球場預覽 - 居中 */}
+              {/* Badge */}
               <m.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="mb-12"
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 bg-neutral-900 text-white px-5 py-2 rounded-full mb-8 shadow-xl shadow-emerald-500/20 transform -rotate-2 hover:rotate-0 transition-transform cursor-default"
               >
+                <span className="text-emerald-400 text-lg">⚡</span>
+                <span className="font-bold text-sm tracking-wide">全台最大匹克球學習平台</span>
+              </m.div>
+
+              {/* Main Headline */}
+              <m.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="text-6xl sm:text-7xl md:text-9xl font-black text-neutral-900 mb-6 tracking-tighter leading-[0.9]"
+              >
+                MASTER THE <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-blue-500 animate-gradient-x">GAME.</span>
+              </m.h1>
+
+              {/* Description */}
+              <m.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="text-lg md:text-2xl text-neutral-500 font-medium max-w-2xl mx-auto mb-10 leading-relaxed"
+              >
+                探索台灣最完整的匹克球地圖與課程。
+                <br className="hidden md:block" />從 <span className="text-emerald-600 font-bold">零基礎入門</span> 到 <span className="text-blue-600 font-bold">職業級戰術</span>，都在這裡。
+              </m.p>
+
+              {/* 3D Preview (Kept but styled better) */}
+              <m.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.5 }}
+                className="relative mb-12 max-w-4xl mx-auto"
+              >
+                {/* Glow behind 3D element */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-emerald-500/10 to-blue-500/10 blur-3xl rounded-full -z-10"></div>
+
                 <Suspense fallback={<CourtSkeleton />}>
-                  <HeroCourtPreview />
+                  {/* Wrapping in a container that handles scale nicely */}
+                  <div className="transform scale-90 md:scale-100 transition-transform hover:scale-[1.02] duration-500">
+                    <HeroCourtPreview />
+                  </div>
                 </Suspense>
-                <p className="text-center text-white/70 text-sm mt-4">
-                  ↻ 360° 旋轉檢視真實球場配置
+                <p className="text-center text-neutral-400 text-xs mt-4 tracking-widest uppercase font-bold">
+                  ●  Interactive 3D Preview  ●
                 </p>
               </m.div>
 
-              {/* CTA 按鈕組 - 簡潔版 */}
+              {/* CTA Buttons */}
               <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8"
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
               >
-                <m.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link
-                    to={ROUTES.RULES}
-                    className="group bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center min-w-[160px] sm:min-w-[180px] justify-center"
-                  >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    開始學習
-                  </Link>
-                </m.div>
+                <Link
+                  to={ROUTES.NEWCOMER_GUIDE}
+                  className="group relative px-8 py-4 bg-neutral-900 text-white rounded-xl font-bold text-lg overflow-hidden shadow-2xl shadow-neutral-900/30 w-full sm:w-auto min-w-[200px]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="relative flex items-center justify-center gap-2">
+                    我是新手 <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
+                </Link>
 
-                <m.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link
-                    to={ROUTES.COURTS}
-                    className="group bg-white/10 backdrop-blur-md text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 flex items-center min-w-[160px] sm:min-w-[180px] justify-center"
-                  >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    找球場
-                  </Link>
-                </m.div>
-
-                <m.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link
-                    to={ROUTES.SCORER}
-                    className="group bg-accent-500 hover:bg-accent-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center min-w-[160px] sm:min-w-[180px] justify-center"
-                  >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    計分器
-                  </Link>
-                </m.div>
+                <Link
+                  to={ROUTES.COURTS}
+                  className="group px-8 py-4 bg-white text-neutral-900 border-2 border-neutral-100 rounded-xl font-bold text-lg hover:border-emerald-200 hover:bg-emerald-50 transition-all w-full sm:w-auto min-w-[200px] flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  搜尋球場
+                </Link>
               </m.div>
 
-              {/* 簡潔統計 */}
+              {/* Stats - Minimal */}
               <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="flex items-center justify-center gap-4 sm:gap-8 text-white/80 text-xs sm:text-sm"
+                transition={{ delay: 0.8 }}
+                className="grid grid-cols-3 gap-8 max-w-lg mx-auto border-t border-neutral-100 pt-8"
               >
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-base sm:text-lg">🏟️</span>
-                  <span className="font-semibold">55+ 球場</span>
+                <div className="text-center">
+                  <div className="text-2xl font-black text-neutral-900">55+</div>
+                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Courts</div>
                 </div>
-                <div className="w-px h-4 bg-white/30"></div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-base sm:text-lg">🎓</span>
-                  <span className="font-semibold">互動教學</span>
+                <div className="text-center border-l border-neutral-100">
+                  <div className="text-2xl font-black text-neutral-900">3D</div>
+                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Learning</div>
                 </div>
-                <div className="w-px h-4 bg-white/30"></div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-base sm:text-lg">🎾</span>
-                  <span className="font-semibold">裝備指南</span>
+                <div className="text-center border-l border-neutral-100">
+                  <div className="text-2xl font-black text-neutral-900">100%</div>
+                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Free</div>
                 </div>
               </m.div>
-            </div>
-          </div>
 
-          {/* 波浪裝飾 */}
-          <div className="absolute bottom-0 left-0 right-0">
-            <svg viewBox="0 0 1440 120" className="w-full h-auto">
-              <path
-                fill="#ffffff"
-                d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-              />
-            </svg>
+            </div>
           </div>
         </section>
 

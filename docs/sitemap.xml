@@ -19,7 +19,7 @@
 
   <!-- 球場地圖 - 重點頁面 -->
   <url>
-    <loc>https://picklemastertw.site/courts</loc>
+    <loc>https://picklemastertw.site/courts/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -32,7 +32,7 @@
 
   <!-- 裝備推薦 -->
   <url>
-    <loc>https://picklemastertw.site/equipment</loc>
+    <loc>https://picklemastertw.site/equipment/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
@@ -44,7 +44,7 @@
 
   <!-- 技巧教學 -->
   <url>
-    <loc>https://picklemastertw.site/learning</loc>
+    <loc>https://picklemastertw.site/learning/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
@@ -52,7 +52,7 @@
 
   <!-- 規則教學 -->
   <url>
-    <loc>https://picklemastertw.site/rules</loc>
+    <loc>https://picklemastertw.site/rules/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -60,7 +60,7 @@
 
   <!-- 學習路徑 -->
   <url>
-    <loc>https://picklemastertw.site/learning-paths</loc>
+    <loc>https://picklemastertw.site/learning-paths/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -68,7 +68,7 @@
 
   <!-- FAQ -->
   <url>
-    <loc>https://picklemastertw.site/faq</loc>
+    <loc>https://picklemastertw.site/faq/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -76,7 +76,7 @@
 
   <!-- 學習資源 -->
   <url>
-    <loc>https://picklemastertw.site/resources</loc>
+    <loc>https://picklemastertw.site/resources/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -84,7 +84,7 @@
 
   <!-- 互動遊戲 -->
   <url>
-    <loc>https://picklemastertw.site/game</loc>
+    <loc>https://picklemastertw.site/game/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -92,7 +92,7 @@
 
   <!-- 計分器 -->
   <url>
-    <loc>https://picklemastertw.site/scorer</loc>
+    <loc>https://picklemastertw.site/scorer/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
@@ -100,7 +100,7 @@
 
   <!-- 關於我們 -->
   <url>
-    <loc>https://picklemastertw.site/about</loc>
+    <loc>https://picklemastertw.site/about/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -108,7 +108,7 @@
 
   <!-- 聯絡我們 -->
   <url>
-    <loc>https://picklemastertw.site/contact</loc>
+    <loc>https://picklemastertw.site/contact/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -116,7 +116,7 @@
 
   <!-- 隱私政策 -->
   <url>
-    <loc>https://picklemastertw.site/privacy-policy</loc>
+    <loc>https://picklemastertw.site/privacy-policy/</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

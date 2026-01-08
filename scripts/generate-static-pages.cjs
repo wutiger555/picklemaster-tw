@@ -281,7 +281,8 @@ async function generateStaticPages() {
             );
 
             // Replace Canonical URL
-            const canonicalUrl = `${BASE_URL}/${route}`;
+            // Add trailing slash to match GitHub Pages directory behavior
+            const canonicalUrl = `${BASE_URL}/${route}/`;
             content = content.replace(
                 /<link rel="canonical" href=".*?" \/>/,
                 `<link rel="canonical" href="${canonicalUrl}" />`

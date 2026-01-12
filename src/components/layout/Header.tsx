@@ -27,6 +27,7 @@ const Header = () => {
                 type: 'dropdown',
                 items: [
                     { path: ROUTES.NEWCOMER_GUIDE, label: '新手懶人包', description: '費用、轉項分析、入門指引', badge: '必看' },
+                    { path: ROUTES.LEVELS, label: '等級檢測', description: '30秒測出你的匹克球等級', badge: 'NEW' },
                     { path: ROUTES.RULES, label: '規則教學', description: '3D 互動式規則解說' },
                     { path: ROUTES.FAQ, label: '常見問題', description: '解決你的所有疑問' },
                 ],

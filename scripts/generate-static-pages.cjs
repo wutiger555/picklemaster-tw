@@ -114,6 +114,19 @@ const pageSEO = {
             ]
         }
     },
+    levels: {
+        title: '匹克球等級測試 | 30秒測出你的程度 (1.0-5.0 分級對照表)',
+        description: '你是新手還是高手？全台首創「匹克球等級互動測驗」。回答 7 個問題，立即分析你的匹克球 Level。完整收錄 1.0 到 5.0+ 分級技能標準與升級攻略。',
+        keywords: '匹克球等級,pickleball rating,匹克球分級,匹克球程度,匹克球測驗,3.0選手,3.5選手,4.0選手',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "Quiz",
+            "name": "匹克球等級自我檢測",
+            "description": "透過互動式問答找出你的匹克球技術等級",
+            "educationalUse": "assignment",
+            "learningResourceType": "Assessment"
+        }
+    },
     learning: {
         title: '匹克球實戰技巧 | 3D 球路分析 & 360 度站位教學',
         description: '想變強必看！提供 3D 球場戰術板教學、職業選手球路分析。發球致勝技巧、第三球各種打法、網前截擊反應訓練。互動式內容讓你觀念大升級。',

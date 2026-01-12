@@ -66,6 +66,18 @@
     <priority>0.9</priority>
   </url>
 
+  <!-- 等級檢測 -->
+  <url>
+    <loc>https://picklemastertw.site/levels/</loc>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://picklemastertw.site/og-image.png</image:loc>
+      <image:title>匹克球等級測試 - 30秒測出你的程度</image:title>
+    </image:image>
+  </url>
+
   <!-- FAQ -->
   <url>
     <loc>https://picklemastertw.site/faq/</loc>

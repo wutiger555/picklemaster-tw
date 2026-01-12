@@ -36,6 +36,7 @@ export const ROUTES = {
   RESOURCES: '/resources',
   ABOUT: '/about',
   FAQ: '/faq',
+  LEVELS: '/levels',
   NEWS: '/news/:id',
   PRIVACY_POLICY: '/privacy-policy',
   CONTACT: '/contact',

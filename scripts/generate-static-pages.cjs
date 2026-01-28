@@ -24,6 +24,13 @@ const pageSEO = {
                     "inLanguage": "zh-TW"
                 },
                 {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "找球場", "item": "https://picklemastertw.site/courts" }
+                    ]
+                },
+                {
                     "@type": "SportsActivityLocation",
                     "name": "台灣匹克球場地圖",
                     "description": "提供全台灣超過55個匹克球場的詳細資訊與地圖",
@@ -48,14 +55,33 @@ const pageSEO = {
         keywords: '匹克球規則,pickleball rules,匹克球雙彈跳,匹克球廚房區,匹克球發球規則,匹克球計分,匹克球界線,匹克球教學,匹克球入門',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "HowTo",
-            "name": "如何開始打匹克球 - 規則篇",
-            "description": "完整的匹克球規則指南，從雙彈跳到廚房區限制",
-            "step": [
-                { "@type": "HowToStep", "position": 1, "name": "雙彈跳規則", "text": "發球和接發球都必須讓球落地彈起後才能擊球" },
-                { "@type": "HowToStep", "position": 2, "name": "廚房區規則", "text": "在網前7英尺區域內不能截擊" },
-                { "@type": "HowToStep", "position": 3, "name": "發球規則", "text": "發球必須對角線發向對方場地" },
-                { "@type": "HowToStep", "position": 4, "name": "計分規則", "text": "只有發球方得分，通常打到11分獲勝" }
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/rules#webpage",
+                    "url": "https://picklemastertw.site/rules",
+                    "name": "3分鐘學會匹克球！超簡單 3D 互動規則教學",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.site/newcomer" },
+                        { "@type": "ListItem", "position": 3, "name": "規則教學", "item": "https://picklemastertw.site/rules" }
+                    ]
+                },
+                {
+                    "@type": "HowTo",
+                    "name": "如何開始打匹克球 - 規則篇",
+                    "description": "完整的匹克球規則指南，從雙彈跳到廚房區限制",
+                    "step": [
+                        { "@type": "HowToStep", "position": 1, "name": "雙彈跳規則", "text": "發球和接發球都必須讓球落地彈起後才能擊球" },
+                        { "@type": "HowToStep", "position": 2, "name": "廚房區規則", "text": "在網前7英尺區域內不能截擊" },
+                        { "@type": "HowToStep", "position": 3, "name": "發球規則", "text": "發球必須對角線發向對方場地" },
+                        { "@type": "HowToStep", "position": 4, "name": "計分規則", "text": "只有發球方得分，通常打到11分獲勝" }
+                    ]
+                }
             ]
         }
     },
@@ -65,34 +91,52 @@ const pageSEO = {
         keywords: '匹克球拍,pickleball paddle,匹克球裝備,球拍推薦,匹克球拍推薦,碳纖維球拍,玻璃纖維球拍,匹克球用品,匹克球裝備購買',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "ItemList",
-            "name": "匹克球拍選購指南",
-            "description": "專業匹克球拍推薦與選購指南，包含材質分析、重量選擇、價格範圍",
-            "numberOfItems": 3,
-            "itemListElement": [
+            "@graph": [
                 {
-                    "@type": "Product",
-                    "position": 1,
-                    "name": "入門級匹克球拍",
-                    "description": "適合新手的複合材質匹克球拍，重量適中，價格實惠",
-                    "category": "匹克球拍",
-                    "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "2000", "highPrice": "4000", "availability": "https://schema.org/InStock" }
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/equipment#webpage",
+                    "url": "https://picklemastertw.site/equipment",
+                    "name": "匹克球拍選購指南",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
                 },
                 {
-                    "@type": "Product",
-                    "position": 2,
-                    "name": "中階級匹克球拍",
-                    "description": "玻璃纖維材質，適合中級球員，提供良好的控球性和力量",
-                    "category": "匹克球拍",
-                    "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "4000", "highPrice": "8000", "availability": "https://schema.org/InStock" }
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "裝備指南", "item": "https://picklemastertw.site/equipment" }
+                    ]
                 },
                 {
-                    "@type": "Product",
-                    "position": 3,
-                    "name": "高階級碳纖維匹克球拍",
-                    "description": "職業級碳纖維材質，輕量化設計，提供最佳性能表現",
-                    "category": "匹克球拍",
-                    "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "8000", "highPrice": "15000", "availability": "https://schema.org/InStock" }
+                    "@type": "ItemList",
+                    "name": "匹克球拍選購指南",
+                    "description": "專業匹克球拍推薦與選購指南，包含材質分析、重量選擇、價格範圍",
+                    "numberOfItems": 3,
+                    "itemListElement": [
+                        {
+                            "@type": "Product",
+                            "position": 1,
+                            "name": "入門級匹克球拍",
+                            "description": "適合新手的複合材質匹克球拍，重量適中，價格實惠",
+                            "category": "匹克球拍",
+                            "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "2000", "highPrice": "4000", "availability": "https://schema.org/InStock" }
+                        },
+                        {
+                            "@type": "Product",
+                            "position": 2,
+                            "name": "中階級匹克球拍",
+                            "description": "玻璃纖維材質，適合中級球員，提供良好的控球性和力量",
+                            "category": "匹克球拍",
+                            "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "4000", "highPrice": "8000", "availability": "https://schema.org/InStock" }
+                        },
+                        {
+                            "@type": "Product",
+                            "position": 3,
+                            "name": "高階級碳纖維匹克球拍",
+                            "description": "職業級碳纖維材質，輕量化設計，提供最佳性能表現",
+                            "category": "匹克球拍",
+                            "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "8000", "highPrice": "15000", "availability": "https://schema.org/InStock" }
+                        }
+                    ]
                 }
             ]
         }
@@ -103,14 +147,32 @@ const pageSEO = {
         keywords: '匹克球教學,匹克球課程,匹克球學習,匹克球訓練,匹克球入門,匹克球技巧,匹克球戰術,pickleball training,pickleball lesson',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "Course",
-            "name": "匹克球完整學習課程",
-            "description": "從新手到進階的系統化匹克球學習路徑",
-            "provider": { "@type": "Organization", "name": "Picklemaster Taiwan", "url": "https://picklemastertw.site" },
-            "hasCourseInstance": [
-                { "@type": "CourseInstance", "name": "新手入門課程", "courseMode": "online" },
-                { "@type": "CourseInstance", "name": "中階進修課程", "courseMode": "online" },
-                { "@type": "CourseInstance", "name": "高手養成課程", "courseMode": "online" }
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/learning-paths#webpage",
+                    "url": "https://picklemastertw.site/learning-paths",
+                    "name": "匹克球完整學習課程",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "學習路徑", "item": "https://picklemastertw.site/learning-paths" }
+                    ]
+                },
+                {
+                    "@type": "Course",
+                    "name": "匹克球完整學習課程",
+                    "description": "從新手到進階的系統化匹克球學習路徑",
+                    "provider": { "@type": "Organization", "name": "Picklemaster Taiwan", "url": "https://picklemastertw.site" },
+                    "hasCourseInstance": [
+                        { "@type": "CourseInstance", "name": "新手入門課程", "courseMode": "online" },
+                        { "@type": "CourseInstance", "name": "中階進修課程", "courseMode": "online" },
+                        { "@type": "CourseInstance", "name": "高手養成課程", "courseMode": "online" }
+                    ]
+                }
             ]
         }
     },
@@ -120,10 +182,28 @@ const pageSEO = {
         keywords: '匹克球技巧,匹克球教學,匹克球訓練,匹克球發球,匹克球截擊,匹克球戰術,匹克球策略,pickleball technique',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "Course",
-            "name": "匹克球互動技巧教學",
-            "description": "3D互動式匹克球教學，包含站位、球路分析",
-            "provider": { "@type": "Organization", "name": "Picklemaster Taiwan", "url": "https://picklemastertw.site" }
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/learning#webpage",
+                    "url": "https://picklemastertw.site/learning",
+                    "name": "匹克球互動技巧教學",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "實戰技巧", "item": "https://picklemastertw.site/learning" }
+                    ]
+                },
+                {
+                    "@type": "Course",
+                    "name": "匹克球互動技巧教學",
+                    "description": "3D互動式匹克球教學，包含站位、球路分析",
+                    "provider": { "@type": "Organization", "name": "Picklemaster Taiwan", "url": "https://picklemastertw.site" }
+                }
+            ]
         }
     },
     game: {
@@ -132,11 +212,29 @@ const pageSEO = {
         keywords: '匹克球遊戲,pickleball game,匹克球練習,匹克球模擬,線上匹克球,匹克球訓練遊戲',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "name": "Pickle Master 互動遊戲",
-            "applicationCategory": "Game",
-            "operatingSystem": "Web",
-            "offers": { "@type": "Offer", "price": "0" }
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/game#webpage",
+                    "url": "https://picklemastertw.site/game",
+                    "name": "Pickle Master 互動遊戲",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "互動遊戲", "item": "https://picklemastertw.site/game" }
+                    ]
+                },
+                {
+                    "@type": "SoftwareApplication",
+                    "name": "Pickle Master 互動遊戲",
+                    "applicationCategory": "Game",
+                    "operatingSystem": "Web",
+                    "offers": { "@type": "Offer", "price": "0" }
+                }
+            ]
         }
     },
     scorer: {
@@ -145,11 +243,29 @@ const pageSEO = {
         keywords: '匹克球計分器,pickleball scorer,匹克球計分,比賽計分,匹克球裁判,匹克球比分',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "name": "匹克球專業計分器",
-            "applicationCategory": "SportsApplication",
-            "operatingSystem": "Web, iOS, Android",
-            "offers": { "@type": "Offer", "price": "0" }
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/scorer#webpage",
+                    "url": "https://picklemastertw.site/scorer",
+                    "name": "專業匹克球計分器",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "計分器", "item": "https://picklemastertw.site/scorer" }
+                    ]
+                },
+                {
+                    "@type": "SoftwareApplication",
+                    "name": "匹克球專業計分器",
+                    "applicationCategory": "SportsApplication",
+                    "operatingSystem": "Web, iOS, Android",
+                    "offers": { "@type": "Offer", "price": "0" }
+                }
+            ]
         }
     },
     resources: {
@@ -158,9 +274,27 @@ const pageSEO = {
         keywords: '匹克球資源,匹克球影片,匹克球YouTube,台灣匹克球協會,匹克球社團,匹克球書籍,pickleball resources',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "匹克球學習資源彙整",
-            "description": "彙整台灣匹克球相關資源、社群、教學頻道"
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/resources#webpage",
+                    "url": "https://picklemastertw.site/resources",
+                    "name": "匹克球學習資源彙整",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "資源中心", "item": "https://picklemastertw.site/resources" }
+                    ]
+                },
+                {
+                    "@type": "CollectionPage",
+                    "name": "匹克球學習資源彙整",
+                    "description": "彙整台灣匹克球相關資源、社群、教學頻道"
+                }
+            ]
         }
     },
     about: {
@@ -169,10 +303,29 @@ const pageSEO = {
         keywords: '匹克球台灣,台灣匹克球,picklemaster taiwan,匹克球推廣,匹克球社群,台灣運動',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "Picklemaster Taiwan",
-            "url": "https://picklemastertw.site",
-            "logo": "https://picklemastertw.site/logo.png"
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/about#webpage",
+                    "url": "https://picklemastertw.site/about",
+                    "name": "關於 Picklemaster Taiwan",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "更多", "item": "" },
+                        { "@type": "ListItem", "position": 3, "name": "關於我們", "item": "https://picklemastertw.site/about" }
+                    ]
+                },
+                {
+                    "@type": "Organization",
+                    "name": "Picklemaster Taiwan",
+                    "url": "https://picklemastertw.site",
+                    "logo": "https://picklemastertw.site/logo.png"
+                }
+            ]
         }
     },
     faq: {
@@ -181,27 +334,46 @@ const pageSEO = {
         keywords: '匹克球FAQ,匹克球問題,匹克球疑問,匹克球規則問題,匹克球新手問題',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
+            "@graph": [
                 {
-                    "@type": "Question",
-                    "name": "什麼是匹克球（Pickleball）？",
-                    "acceptedAnswer": { "@type": "Answer", "text": "匹克球（Pickleball）是一項結合網球、羽毛球和乒乓球特點的球拍運動。使用類似乒乓球拍的實心球拍和有孔的塑膠球，在類似羽毛球大小的場地上進行。" }
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/faq#webpage",
+                    "url": "https://picklemastertw.site/faq",
+                    "name": "匹克球常見問題",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
                 },
                 {
-                    "@type": "Question",
-                    "name": "台灣哪裡可以打匹克球？",
-                    "acceptedAnswer": { "@type": "Answer", "text": "台灣目前有超過55個匹克球場，分佈在台北、新北、台中、高雄、台南等主要城市。您可以查閱我們網站上的地圖。" }
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.site/newcomer" },
+                        { "@type": "ListItem", "position": 3, "name": "常見問題", "item": "https://picklemastertw.site/faq" }
+                    ]
                 },
                 {
-                    "@type": "Question",
-                    "name": "匹克球的基本規則是什麼？",
-                    "acceptedAnswer": { "@type": "Answer", "text": "核心規則包括：雙彈跳規則、廚房區（Non-Volley Zone）限制、對角發球、以及每局11分制的特殊計分方式。" }
-                },
-                {
-                    "@type": "Question",
-                    "name": "匹克球和網球有什麼不同？",
-                    "acceptedAnswer": { "@type": "Answer", "text": "匹克球場較小（約網球場1/3），使用實心拍與中空塑膠球（球速較慢），且有發球不落地、雙彈跳等特殊規則，節奏較網球更適合各年齡層。" }
+                    "@type": "FAQPage",
+                    "mainEntity": [
+                        {
+                            "@type": "Question",
+                            "name": "什麼是匹克球（Pickleball）？",
+                            "acceptedAnswer": { "@type": "Answer", "text": "匹克球（Pickleball）是一項結合網球、羽毛球和乒乓球特點的球拍運動。使用類似乒乓球拍的實心球拍和有孔的塑膠球，在類似羽毛球大小的場地上進行。" }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "台灣哪裡可以打匹克球？",
+                            "acceptedAnswer": { "@type": "Answer", "text": "台灣目前有超過55個匹克球場，分佈在台北、新北、台中、高雄、台南等主要城市。您可以查閱我們網站上的地圖。" }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "匹克球的基本規則是什麼？",
+                            "acceptedAnswer": { "@type": "Answer", "text": "核心規則包括：雙彈跳規則、廚房區（Non-Volley Zone）限制、對角發球、以及每局11分制的特殊計分方式。" }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "匹克球和網球有什麼不同？",
+                            "acceptedAnswer": { "@type": "Answer", "text": "匹克球場較小（約網球場1/3），使用實心拍與中空塑膠球（球速較慢），且有發球不落地、雙彈跳等特殊規則，節奏較網球更適合各年齡層。" }
+                        }
+                    ]
                 }
             ]
         }
@@ -209,15 +381,34 @@ const pageSEO = {
     'pro-players': {
         title: '世界頂尖匹克球選手排名 & 裝備解密 | Picklemaster Taiwan',
         description: '認識世界排名前十的匹克球職業選手。Ben Johns 用什麼球拍？Anna Leigh Waters 的必殺技是什麼？完整戰力分析與裝備大公開。',
-        keywords: '匹克球選手,匹克球排名,Ben Johns,Anna Leigh Waters,匹克球職業選手,PPA巡迴賽,APP巡迴賽,匹克球球星',
+        keywords: '匹克球選手,匹克球排名,Ben Johns,Anna Leigh Waters,匹克球職業選手, PPA巡迴賽, APP巡迴賽, 匹克球球星',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "ItemList",
-            "name": "世界頂尖匹克球選手列表",
-            "itemListElement": [
-                { "@type": "Person", "position": 1, "name": "Ben Johns" },
-                { "@type": "Person", "position": 2, "name": "Anna Leigh Waters" },
-                { "@type": "Person", "position": 3, "name": "Tyson McGuffin" }
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/pro-players#webpage",
+                    "url": "https://picklemastertw.site/pro-players",
+                    "name": "世界頂尖匹克球選手",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "裝備與攻略", "item": "https://picklemastertw.site/equipment" },
+                        { "@type": "ListItem", "position": 3, "name": "頂尖選手", "item": "https://picklemastertw.site/pro-players" }
+                    ]
+                },
+                {
+                    "@type": "ItemList",
+                    "name": "世界頂尖匹克球選手列表",
+                    "itemListElement": [
+                        { "@type": "Person", "position": 1, "name": "Ben Johns" },
+                        { "@type": "Person", "position": 2, "name": "Anna Leigh Waters" },
+                        { "@type": "Person", "position": 3, "name": "Tyson McGuffin" }
+                    ]
+                }
             ]
         }
     },
@@ -227,14 +418,33 @@ const pageSEO = {
         keywords: '匹克球新手,匹克球入門,匹克球費用,匹克球拍價格,羽球轉匹克球,網球轉匹克球,匹克球教學,台灣匹克球',
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "HowTo",
-            "name": "新手匹克球入門指南",
-            "description": "完整的台灣匹克球新手入門攻略，包含費用試算、規則教學與裝備選購",
-            "step": [
-                { "@type": "HowToStep", "position": 1, "name": "自我評估", "text": "確認自己是否適合匹克球運動（如有羽球背景、想找低負擔運動）" },
-                { "@type": "HowToStep", "position": 2, "name": "預算規劃", "text": "透過費用計算機評估入門成本（球拍、場地費）" },
-                { "@type": "HowToStep", "position": 3, "name": "學習規則", "text": "掌握雙彈跳、廚房區等核心規則" },
-                { "@type": "HowToStep", "position": 4, "name": "尋找球場", "text": "搜尋住家附近的匹克球場地" }
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/newcomer#webpage",
+                    "url": "https://picklemastertw.site/newcomer",
+                    "name": "新手匹克球入門指南",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.site/newcomer" },
+                        { "@type": "ListItem", "position": 3, "name": "新手懶人包", "item": "https://picklemastertw.site/newcomer" }
+                    ]
+                },
+                {
+                    "@type": "HowTo",
+                    "name": "新手匹克球入門指南",
+                    "description": "完整的台灣匹克球新手入門攻略，包含費用試算、規則教學與裝備選購",
+                    "step": [
+                        { "@type": "HowToStep", "position": 1, "name": "自我評估", "text": "確認自己是否適合匹克球運動（如有羽球背景、想找低負擔運動）" },
+                        { "@type": "HowToStep", "position": 2, "name": "預算規劃", "text": "透過費用計算機評估入門成本（球拍、場地費）" },
+                        { "@type": "HowToStep", "position": 3, "name": "學習規則", "text": "掌握雙彈跳、廚房區等核心規則" },
+                        { "@type": "HowToStep", "position": 4, "name": "尋找球場", "text": "搜尋住家附近的匹克球場地" }
+                    ]
+                }
             ]
         }
     }

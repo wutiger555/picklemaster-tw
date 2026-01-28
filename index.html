@@ -3,35 +3,32 @@
 
 <head>
   <meta charset="UTF-8" />
+  <!-- Icons -->
   <link rel="icon" type="image/x-icon" href="/favicon-v2.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-v2-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-v2-16x16.png">
-  <link rel="preload" as="image" href="/logo.webp?v=2">
-  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-v2-192x192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- iOS PWA Support -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="匹克球計分器" />
+  <meta name="apple-mobile-web-app-title" content="Picklemaster TW" />
 
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
 
-  <!-- Cache Control for Safari/Mobile Fix -->
+  <!-- Cache Control -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
 
   <!-- SEO Meta Tags -->
   <meta name="description"
-    content="匹克球台灣提供全台55+球場地圖、互動式規則教學、3D球場配置、專業裝備推薦。涵蓋台北、台中、高雄、台南等地區匹克球場資訊。從新手入門到進階技巧，完整學習路徑助你快速上手匹克球運動！" />
-  <meta name="keywords"
-    content="匹克球,台灣匹克球,匹克球台灣,pickleball taiwan,匹克球場地圖,匹克球教學,匹克球規則,匹克球裝備,台北匹克球,台中匹克球,高雄匹克球,台南匹克球,匹克球入門" />
+    content="匹克球台灣 (Picklemaster Taiwan) 是台灣最完整的匹克球學習平台。提供全台 55+ 球場地圖、3D 互動規則教學、新手入門指南與裝備推薦。加入我們，一起享受匹克球的樂趣！" />
+  <meta name="keywords" content="匹克球,台灣匹克球,匹克球台灣,Picklemaster Taiwan,匹克球場地圖,匹克球教學,匹克球規則,匹克球拍推薦,台北匹克球,台中匹克球,高雄匹克球" />
   <meta name="author" content="Picklemaster Taiwan" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <meta name="geo.region" content="TW" />
@@ -42,9 +39,10 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://picklemastertw.site/" />
   <meta property="og:title" content="匹克球台灣 | 台灣最完整的匹克球學習平台 - Picklemaster Taiwan" />
-  <meta property="og:description"
-    content="匹克球台灣提供全台55+球場地圖、互動式規則教學、3D球場配置、專業裝備推薦。涵蓋台北、台中、高雄、台南等地區匹克球場資訊。從新手入門到進階技巧，完整學習路徑助你快速上手匹克球運動！" />
+  <meta property="og:description" content="匹克球台灣提供全台55+球場地圖、互動式規則教學、3D球場配置、專業裝備推薦。涵蓋台北、台中、高雄、台南等地區匹克球場資訊。" />
   <meta property="og:image" content="https://picklemastertw.site/og-image.png" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:site_name" content="Picklemaster Taiwan" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -56,14 +54,11 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://picklemastertw.site/" />
 
-  <!-- Preconnect to external origins -->
+  <!-- Preconnect -->
   <link rel="preconnect" href="https://www.google.com">
   <link rel="preconnect" href="https://images.unsplash.com">
 
-  <!-- Google AdSense -->
-  <!-- AdSense script is loaded lazily after user interaction -->
-
-  <!-- JSON-LD Structured Data -->
+  <!-- JSON-LD Structured Data (Optimized for Sitelinks) -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -73,7 +68,7 @@
           "@id": "https://picklemastertw.site/#website",
           "url": "https://picklemastertw.site/",
           "name": "匹克大師台灣 | Picklemaster Taiwan",
-          "description": "台灣最完整的匹克球學習平台，提供全台55+球場地圖、互動式規則教學、3D球場配置、裝備選購指南",
+          "description": "台灣最完整的匹克球學習平台，提供全台球場地圖、規則教學與裝備指南",
           "inLanguage": "zh-TW",
           "potentialAction": {
             "@type": "SearchAction",
@@ -89,39 +84,30 @@
           "url": "https://picklemastertw.site/",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://picklemastertw.site/logo.png",
+            "url": "https://picklemastertw.site/android-chrome-v2-512x512.png",
             "width": 512,
             "height": 512
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "url": "https://picklemastertw.site/contact"
           },
           "sameAs": [
             "https://github.com/wutiger555/picklemaster-tw"
           ]
         },
         {
-          "@type": "SportsActivityLocation",
-          "name": "台灣匹克球場地圖",
-          "description": "提供全台灣超過55個匹克球場的詳細資訊與地圖",
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": "23.5",
-            "longitude": "121.0"
-          },
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "TW",
-            "addressRegion": "台灣"
-          }
-        },
-        {
-          "@type": "Course",
-          "name": "匹克球學習路徑",
-          "description": "從新手到進階的完整匹克球學習課程，包含3D互動教學、規則說明、技術動作指導",
-          "provider": {
-            "@id": "https://picklemastertw.site/#organization"
-          },
-          "educationalLevel": "初級到進階",
-          "inLanguage": "zh-TW",
-          "availableLanguage": "zh-TW"
+          "@type": "SiteNavigationElement",
+          "@id": "https://picklemastertw.site/#navigation",
+          "name": ["球場地圖", "新手入門", "規則教學", "裝備指南", "學習路徑"],
+          "url": [
+            "https://picklemastertw.site/courts",
+            "https://picklemastertw.site/newcomer",
+            "https://picklemastertw.site/rules",
+            "https://picklemastertw.site/equipment",
+            "https://picklemastertw.site/learning-paths"
+          ]
         }
       ]
     }

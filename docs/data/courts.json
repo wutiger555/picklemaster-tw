@@ -1653,6 +1653,184 @@
       "added_date": "2026-01",
       "last_updated": "2026-01-05",
       "reviews": "天母公園戶外場地，環境清幽"
+    },
+    {
+      "id": 52,
+      "name": "臺北市網球中心匹克球場",
+      "location": {
+        "address": "台北市士林區福林路 170 號",
+        "lat": 25.1009,
+        "lng": 121.5281,
+        "city": "台北市",
+        "district": "士林區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館定價，平日離峰較便宜",
+      "courts_count": 4,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "每日 06:00-22:00",
+      "contact": "02-2881-5799",
+      "facilities": [
+        "冷氣",
+        "停車場",
+        "淋浴間",
+        "球具租借",
+        "置物櫃"
+      ],
+      "features": [
+        "士林區指標性綜合運動場館",
+        "新納入匹克球場地",
+        "鄰近劍潭捷運站",
+        "設施完善品質穩定"
+      ],
+      "booking_url": "https://www.tsc.taipei/",
+      "is_new": true,
+      "added_date": "2026-03",
+      "last_updated": "2026-04-24",
+      "reviews": "台北頂級運動中心新增匹克球設施，環境專業舒適"
+    },
+    {
+      "id": 53,
+      "name": "P.dang 匹克球館 淡水",
+      "location": {
+        "address": "新北市淡水區",
+        "lat": 25.1712,
+        "lng": 121.4485,
+        "city": "新北市",
+        "district": "淡水區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "零打 $200/人，場租另計",
+      "courts_count": 6,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "10:00-22:00",
+      "contact": "線上預約",
+      "facilities": [
+        "冷氣",
+        "球具租借",
+        "教練指導",
+        "DUPR 積分賽"
+      ],
+      "features": [
+        "6 面專用室內球場",
+        "定期舉辦 DUPR 認證賽",
+        "零打友善價位",
+        "北台灣最大匹克球館之一"
+      ],
+      "is_new": true,
+      "added_date": "2025-12",
+      "last_updated": "2026-04-24",
+      "reviews": "淡水區專業匹克球館，定期 DUPR 賽事"
+    },
+    {
+      "id": 54,
+      "name": "DOPE 水獺綠洲 新莊店",
+      "location": {
+        "address": "新北市新莊區",
+        "lat": 25.0359,
+        "lng": 121.4513,
+        "city": "新北市",
+        "district": "新莊區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場租 $900-1,200/小時",
+      "courts_count": 4,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "10:00-22:00",
+      "contact": "線上預約",
+      "facilities": [
+        "冷氣",
+        "精品 Lounge",
+        "飲料吧",
+        "教練課程"
+      ],
+      "features": [
+        "精品會館級裝潢",
+        "4 面室內場",
+        "適合商務社交",
+        "都會區熱門選項"
+      ],
+      "is_new": true,
+      "added_date": "2025-11",
+      "last_updated": "2026-04-24",
+      "reviews": "新莊高端匹克球會館，裝潢精緻"
+    },
+    {
+      "id": 55,
+      "name": "永春高中匹克球場",
+      "location": {
+        "address": "台北市信義區松山路 654 號",
+        "lat": 25.0412,
+        "lng": 121.5780,
+        "city": "台北市",
+        "district": "信義區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依租借方案",
+      "courts_count": 2,
+      "surface": "synthetic",
+      "net_type": "portable",
+      "ownership": "school",
+      "opening_hours": "週二 19:00-22:00、週五 19:30-21:30、週日 20:00-22:00",
+      "contact": "校方租借",
+      "facilities": [
+        "冷氣",
+        "羽球場改打"
+      ],
+      "features": [
+        "信義區中心地段",
+        "僅晚間與週日開放",
+        "適合下班後打球"
+      ],
+      "is_new": true,
+      "added_date": "2026-02",
+      "last_updated": "2026-04-24",
+      "reviews": "信義區學校場地，下班後去打剛剛好"
+    },
+    {
+      "id": 56,
+      "name": "Social N Pickle 桃園龜山 24 小時場",
+      "location": {
+        "address": "桃園市龜山區",
+        "lat": 25.0301,
+        "lng": 121.3745,
+        "city": "桃園市",
+        "district": "龜山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場租 $800/小時起",
+      "courts_count": 2,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "24 小時營業",
+      "contact": "線上預約",
+      "facilities": [
+        "冷氣",
+        "24 小時開放",
+        "監視器",
+        "自助打卡"
+      ],
+      "features": [
+        "北台灣唯一 24 小時匹克球場",
+        "適合夜貓子與輪班族",
+        "線上自助預約"
+      ],
+      "is_new": true,
+      "added_date": "2025-10",
+      "last_updated": "2026-04-24",
+      "reviews": "全台少見 24 小時匹克球館，自由度高"
     }
   ]
 }

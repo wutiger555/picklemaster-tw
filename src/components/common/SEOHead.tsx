@@ -182,7 +182,10 @@ const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> 
     'tournaments': '2026 賽事',
     'glossary': '術語字典',
     'ratings': 'DUPR 評級',
-    'newcomer-guide': '新手懶人包'
+    'newcomer-guide': '新手懶人包',
+    'techniques': '技巧百科',
+    'articles': '深度專欄',
+    'tools': '工具箱'
   };
 
   if (page !== 'home' && pageNames[page]) {

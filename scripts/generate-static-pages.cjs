@@ -508,6 +508,18 @@ const pageSEO = {
             ]
         }
     },
+    articles: {
+        title: '匹克球深度專欄 | 器材評測、運動科學、族群指南一次看',
+        description: '每篇 2000-3000 字深度長文。十大球拍評測、匹克球 vs 網球完整比較、傷害預防、銀髮族入門、營養體能訓練。',
+        keywords: '匹克球長文,匹克球評測,匹克球科學,匹克球指南,pickleball article,匹克球教學文章',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            "name": "匹克球深度專欄",
+            "description": "深度長文：器材評測、運動科學、技術戰術、族群指南",
+            "url": "https://picklemastertw.site/articles"
+        }
+    },
     techniques: {
         title: '匹克球技巧百科 | 12+ 深度教學：Dink、Drop、Erne、ATP 一次掌握',
         description: '從新手握拍到進階 ERNE/ATP，每個技巧都有完整步驟分解、常見錯誤修正、專屬練習菜單與職業選手心法。',
@@ -619,6 +631,18 @@ const pageSEO = {
     }
 };
 
+// Articles (per-slug static pages) — mirror of src/data/articlesData.ts metadata only
+const ARTICLE_SLUGS = [
+    { slug: '2026-best-pickleball-paddles', title: '2026 十大匹克球拍完整評測', summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro IV、Selkirk Labs Project 002、Paddletek Bantam TS-5 等頂級選手愛用款。', category: '器材評測' },
+    { slug: 'pickleball-vs-tennis-badminton-padel', title: '匹克球 vs 網球 vs 羽球 vs Padel 完整比較', summary: '四大拍類運動一次看懂：場地、難度、體能、社群文化。', category: '比較分析' },
+    { slug: '2026-best-pickleball-shoes', title: '2026 最佳匹克球鞋選購指南', summary: '匹克球專用鞋 vs 網球鞋 vs 羽球鞋完整比較。2026 Top 8 匹克球鞋實測。', category: '器材評測' },
+    { slug: 'indoor-vs-outdoor-balls', title: '匹克球室內球 vs 戶外球全解析', summary: '26 孔還是 40 孔？設計差異、球速、彈跳、耐用度、主流品牌實測。', category: '器材評測' },
+    { slug: 'pickleball-injury-prevention', title: '匹克球傷害預防完整指南', summary: '5 大常見傷害（匹克球肘、膝蓋、腳踝、肩膀、眼睛）的成因、預防、應對方法。', category: '運動科學' },
+    { slug: 'senior-pickleball-guide', title: '50+ 歲銀髮族匹克球入門完全指南', summary: '50+ 歲銀髮族匹克球入門完全指南：健康好處、裝備選擇、運動頻率建議。', category: '族群指南' },
+    { slug: 'doubles-vs-singles', title: '匹克球雙打 vs 單打完整對照', summary: '規則差異、站位、戰術、體能消耗、適合族群。95% 球友打雙打的真正原因。', category: '技術戰術' },
+    { slug: 'pickleball-nutrition-fitness', title: '匹克球選手的營養與體能訓練', summary: '賽前吃什麼、補水策略、重訓菜單、職業選手作息範例。', category: '運動科學' },
+];
+
 // Techniques (per-slug static pages) — mirror of src/data/techniquesData.ts (minimal subset for SEO)
 const TECHNIQUE_SLUGS = [
     { slug: 'continental-grip', name: '大陸式握拍', nameEn: 'Continental Grip', tagline: '匹克球最通用的握拍法，一種握法應付所有球路' },
@@ -726,6 +750,36 @@ async function generateStaticPages() {
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
 
+        // ===== Generate per-article pages =====
+        console.log('Generating article detail pages...');
+        for (const a of ARTICLE_SLUGS) {
+            const dirPath = path.join(BUILD_DIR, 'articles', a.slug);
+            fs.mkdirSync(dirPath, { recursive: true });
+            const title = `${a.title} | 匹克球深度專欄`;
+            const desc = a.summary;
+            const canonical = `${BASE_URL}/articles/${a.slug}`;
+            let content = template;
+            content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
+            content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+            content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+            content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+            content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+            content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+            const articleSchema = {
+                "@context": "https://schema.org", "@type": "Article",
+                "headline": a.title,
+                "description": desc,
+                "articleSection": a.category,
+                "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
+                "publisher": { "@type": "Organization", "name": "Picklemaster Taiwan", "logo": { "@type": "ImageObject", "url": "https://picklemastertw.site/android-chrome-v2-512x512.png" } },
+                "mainEntityOfPage": canonical,
+                "datePublished": "2026-04-25"
+            };
+            content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`);
+            fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+        }
+        console.log(`  Generated ${ARTICLE_SLUGS.length} article detail pages`);
+
         // ===== Generate per-technique pages =====
         console.log('Generating technique detail pages...');
         for (const t of TECHNIQUE_SLUGS) {
@@ -825,6 +879,17 @@ async function generateStaticPages() {
         <lastmod>${today}</lastmod>
         <changefreq>${meta.f}</changefreq>
         <priority>${meta.p}</priority>
+    </url>`;
+        }
+
+        // Add per-article URLs
+        for (const a of ARTICLE_SLUGS) {
+            sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/articles/${a.slug}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
     </url>`;
         }
 

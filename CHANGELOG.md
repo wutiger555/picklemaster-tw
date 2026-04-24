@@ -7,6 +7,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.0] - Long-Form Content & AI-Overview Optimization (2026-04-25)
+
+### 🎯 Mission
+把「Picklemaster Taiwan」升級為 AI 搜尋時代的匹克球內容權威。透過長文、FAQ、術語三線並進，最大化 Google AI Overview、Perplexity、ChatGPT 引用機率。
+
+### Featured Updates 🚀
+- **8 篇深度長文**（共 ~18,000 字）：每篇 2000-3000 字，涵蓋器材、運動科學、比較分析、族群指南
+- **FAQ 13 題 → 100+ 題**（8 大類別）
+- **術語字典 20 條 → 80+ 條**
+
+### Added
+
+#### 📖 深度專欄 Articles
+- `/articles` 索引頁 + 6 大分類篩選
+- `/articles/:slug` 每篇獨立詳情頁含：
+  - Article JSON-LD + FAQPage JSON-LD（雙 schema 強化 AI 引用）
+  - 目錄 TOC、章節錨點、相關文章推薦
+  - 參考資料來源標註
+- **8 篇長文**：
+  - `2026-best-pickleball-paddles` 2026 十大匹克球拍完整評測
+  - `pickleball-vs-tennis-badminton-padel` 匹克球 vs 網球 vs 羽球 vs Padel 完整比較
+  - `2026-best-pickleball-shoes` 2026 最佳匹克球鞋選購指南
+  - `indoor-vs-outdoor-balls` 匹克球室內球 vs 戶外球全解析
+  - `pickleball-injury-prevention` 匹克球傷害預防完整指南
+  - `senior-pickleball-guide` 50+ 歲銀髮族匹克球入門完全指南
+  - `doubles-vs-singles` 匹克球雙打 vs 單打完整對照
+  - `pickleball-nutrition-fitness` 匹克球選手的營養與體能訓練
+
+#### ❓ FAQ 擴充（13 → 100 題）
+- 8 大類別：基礎入門、規則細節、裝備器材、技術訓練、比賽賽事、球場設施、社群生活、運動健康
+- 每類別 10-15 題，每題 2-5 句精準回答
+- 新增：搜尋功能、類別篩選、FAQPage schema 自動生成
+- 資料獨立為 `faqData.ts`（方便維護與擴充）
+
+#### 📚 術語字典擴充（20 → 80+ 條）
+- **規則**：+10 條（腳步犯規、重賽、干擾、擦網球、換發、首輪發球員、報分、平手決勝、球拍檢查、延遲比賽）
+- **技術**：+13 條（Drive、Lob、Punch Volley、Roll Volley、Block Volley、Topspin、Backspin、Sidespin、Soft Hands、Paddle Up、Ready Position、Split Step、Follow Through）
+- **戰術**：+10 條（Cross Court、Down the Line、Weak Side、Middle Shot、No Man's Land、Bert、Fake、Poach Signal、Reset Zone、Dink Rally）
+- **裝備**：+10 條（握把尺寸、加握把膠帶、拍面、邊框、球拍重量、匹克球、Dura Fast 40、Franklin X-40、廚房線、專用球鞋）
+- **場地**：+10 條（底線、邊線、中線、發球區、網柱、戶外球場、室內球場、風雨球場、壓克力面層、Sport Court）
+- **賽制**：+11 條（Dreambreaker、循環賽、單淘汰、雙淘汰、瑞士制、分齡組、混合雙打、公開組、APG、CTPF、USAPA）
+- **人物**：+2 條（Ben Johns、Anna Leigh Waters）
+
+### Changed
+
+#### 🔍 SEO / AI Overview 優化
+- **sitemap.xml** 93 → **102 URLs**（+8 篇長文 + 1 索引頁）
+- 每篇長文自動生成獨立 Article + FAQPage schema
+- 靜態頁產生器新增 `articles/` 子路由批次生成
+- llms.txt 完整列出所有長文、FAQ、術語字典
+- SEOHead breadcrumbs 支援新路由
+
+### Technical Notes
+
+- **內容量化**：總字數從 ~15,000 增至 **~45,000 字**（3 倍）
+- **結構化資料**：每篇長文雙 schema（Article + FAQPage），大幅提升 AI 引用機率
+- **純資料檔設計**：articlesData.ts、faqData.ts、glossaryData.ts 三者可獨立維護
+- **關鍵字覆蓋**：估計新增 500+ 個長尾關鍵字入口
+
+### Build Stats
+- 新增檔案：4 個（articlesData.ts, faqData.ts, Articles.tsx, ArticleDetail.tsx）
+- 修改檔案：7 個（FAQ.tsx 重寫、glossaryData.ts 擴充、路由、SEO、生成器）
+- 總頁面：88+ → **102+**
+- 專欄長文：0 → **8 篇（18,000 字）**
+- FAQ：13 → **100 題**
+- 術語：20 → **80+ 條**
+
+---
+
 ## [v1.4.0] - Content Depth & Pure-Info Tools (2026-04-24)
 
 ### 🎯 Mission

@@ -27,7 +27,8 @@ const Header = () => {
                 label: '學習',
                 type: 'dropdown',
                 items: [
-                    { path: ROUTES.TECHNIQUES, label: '技巧百科', description: '12+ 深度教學含步驟分解', badge: 'NEW' },
+                    { path: ROUTES.TECHNIQUES, label: '技巧百科', description: '12+ 深度教學含步驟分解' },
+                    { path: ROUTES.ARTICLES, label: '深度專欄', description: '器材評測、運動科學、族群指南', badge: 'NEW' },
                     { path: ROUTES.NEWCOMER_GUIDE, label: '新手懶人包', description: '費用、轉項分析、入門指引', badge: '必看' },
                     { path: ROUTES.RULES, label: '規則教學', description: '3D 互動式規則解說' },
                     { path: ROUTES.LEARNING_PATHS, label: '學習路徑', description: '從入門到精通的系統化課程' },

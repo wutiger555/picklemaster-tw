@@ -125,6 +125,11 @@ export const pageSEO: Record<string, SEOConfig> = {
     title: '匹克球場地劃線指南 | 標準尺寸 + 羽球場改造教學',
     description: '完整場地尺寸（20×44 英尺）、廚房區位置、網高規範、場地材質建議。教你如何把羽毛球場改造為匹克球場。',
     keywords: '匹克球 場地尺寸,pickleball court dimensions,羽球場 改 匹克球,匹克球 劃線,匹克球 場地建造'
+  },
+  articles: {
+    title: '匹克球深度專欄 | 器材評測、運動科學、族群指南一次看',
+    description: '每篇 2000-3000 字深度長文。十大球拍評測、匹克球 vs 網球完整比較、傷害預防、銀髮族入門、營養體能訓練。',
+    keywords: '匹克球長文,匹克球評測,匹克球科學,匹克球指南,pickleball article,匹克球教學文章'
   }
 };
 

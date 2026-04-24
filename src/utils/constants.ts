@@ -39,6 +39,8 @@ export const ROUTES = {
   TOURNAMENTS: '/tournaments',
   GLOSSARY: '/glossary',
   RATINGS: '/ratings',
+  ARTICLES: '/articles',
+  ARTICLE_DETAIL: '/articles/:slug',
   TECHNIQUES: '/techniques',
   TECHNIQUE_DETAIL: '/techniques/:slug',
   COURT_DETAIL: '/courts/:slug',

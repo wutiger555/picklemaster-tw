@@ -38,6 +38,21 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 - [術語字典](https://picklemastertw.site/glossary): 中英對照匹克球術語大全，涵蓋規則、技術、戰術、裝備、場地、賽制。
 - [DUPR 評級指南](https://picklemastertw.site/ratings): 2026 全球通用動態評級系統 1.0-8.0 完整說明。
 
+### 深度專欄
+- [深度專欄](https://picklemastertw.site/articles): 8 篇 2000-3000 字長文，涵蓋器材評測、運動科學、比較分析、族群指南：
+  - [2026 十大匹克球拍完整評測](https://picklemastertw.site/articles/2026-best-pickleball-paddles)
+  - [匹克球 vs 網球 vs 羽球 vs Padel](https://picklemastertw.site/articles/pickleball-vs-tennis-badminton-padel)
+  - [2026 最佳匹克球鞋選購指南](https://picklemastertw.site/articles/2026-best-pickleball-shoes)
+  - [匹克球室內球 vs 戶外球全解析](https://picklemastertw.site/articles/indoor-vs-outdoor-balls)
+  - [匹克球傷害預防完整指南](https://picklemastertw.site/articles/pickleball-injury-prevention)
+  - [50+ 歲銀髮族匹克球入門指南](https://picklemastertw.site/articles/senior-pickleball-guide)
+  - [匹克球雙打 vs 單打完整對照](https://picklemastertw.site/articles/doubles-vs-singles)
+  - [匹克球選手的營養與體能訓練](https://picklemastertw.site/articles/pickleball-nutrition-fitness)
+
+### FAQ 與術語
+- [FAQ 100+ 題完整解答](https://picklemastertw.site/faq): 8 大類別包含基礎入門、規則細節、裝備器材、技術訓練、比賽賽事、球場設施、社群生活、運動健康。
+- [術語字典 80+ 條](https://picklemastertw.site/glossary): 中英對照匹克球術語大全。
+
 ### 實用工具
 - [工具箱總覽](https://picklemastertw.site/tools): 所有純前端工具入口。
 - [DUPR 模擬器](https://picklemastertw.site/tools/dupr-simulator): 預估下一場比賽對你 DUPR 的影響。

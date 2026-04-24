@@ -23,6 +23,8 @@ const FAQ = lazy(() => import('./pages/FAQ'));
 const Tournaments = lazy(() => import('./pages/Tournaments'));
 const Glossary = lazy(() => import('./pages/Glossary'));
 const Ratings = lazy(() => import('./pages/Ratings'));
+const Articles = lazy(() => import('./pages/Articles'));
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Techniques = lazy(() => import('./pages/Techniques'));
 const TechniqueDetail = lazy(() => import('./pages/TechniqueDetail'));
 const CourtDetail = lazy(() => import('./pages/CourtDetail'));
@@ -88,6 +90,8 @@ function App() {
               <Route path={ROUTES.TOURNAMENTS} element={<Tournaments />} />
               <Route path={ROUTES.GLOSSARY} element={<Glossary />} />
               <Route path={ROUTES.RATINGS} element={<Ratings />} />
+              <Route path={ROUTES.ARTICLES} element={<Articles />} />
+              <Route path={ROUTES.ARTICLE_DETAIL} element={<ArticleDetail />} />
               <Route path={ROUTES.TECHNIQUES} element={<Techniques />} />
               <Route path={ROUTES.TECHNIQUE_DETAIL} element={<TechniqueDetail />} />
               <Route path={ROUTES.COURT_DETAIL} element={<CourtDetail />} />

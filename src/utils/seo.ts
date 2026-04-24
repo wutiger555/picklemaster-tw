@@ -75,6 +75,26 @@ export const pageSEO: Record<string, SEOConfig> = {
     title: '第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南',
     description: '想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算（球拍/場地費）、羽球轉匹克球技巧分析、甚至幫你判斷適不適合這項運動。不用爬文，這一頁就夠！',
     keywords: '匹克球新手,匹克球入門,匹克球費用,匹克球拍價格,羽球轉匹克球,網球轉匹克球,匹克球教學,台灣匹克球'
+  },
+  'newcomer-guide': {
+    title: '第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南',
+    description: '想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算（球拍/場地費）、羽球轉匹克球技巧分析、甚至幫你判斷適不適合這項運動。',
+    keywords: '匹克球新手,匹克球入門,匹克球費用,匹克球拍價格,羽球轉匹克球,網球轉匹克球,匹克球教學,台灣匹克球'
+  },
+  tournaments: {
+    title: '2026 台灣匹克球賽事總覽 | CTPF 全年認證賽、國際積分賽',
+    description: '完整掌握 2026 台灣匹克球賽事：臺灣盃、NAPA 盃、港都盃、中正盃、噶瑪蘭盃、臺北公開賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
+    keywords: '2026匹克球賽事,台灣匹克球比賽,CTPF賽事,臺灣盃匹克球,NAPA盃,港都盃,中正盃,噶瑪蘭盃,臺北匹克球公開賽,APG 亞洲匹克球運動會,匹克球錦標賽,匹克球報名'
+  },
+  glossary: {
+    title: '匹克球術語大全 | 中英對照字典 - Dink, Erne, ATP 全收錄',
+    description: '全台最完整的匹克球中英文術語字典。雙彈跳、廚房區、第三球下切、Erne、ATP、疊站、DUPR...規則、技術、戰術、裝備、場地、賽制一次看懂。',
+    keywords: '匹克球術語,pickleball glossary,dink,erne,ATP,third shot drop,雙彈跳,廚房區,疊站,DUPR,匹克球英文,匹克球中英對照'
+  },
+  ratings: {
+    title: 'DUPR 評級指南 2026 | 全球通用匹克球動態評分系統完整解析',
+    description: '2026 起 DUPR 成為全球匹克球賽事標準。1.0-8.0 評級意義、技術對照、典型球員、如何取得評分。台灣選手完整指南。',
+    keywords: 'DUPR,DUPR評級,匹克球評分,匹克球等級,Dynamic Universal Pickleball Rating,匹克球 DUPR 台灣,pickleball rating'
   }
 };
 
@@ -161,8 +181,178 @@ export const faqStructuredData = {
         "@type": "Answer",
         "text": "基本裝備包括：1) 匹克球拍 - 價格從數百到數千元不等；2) 匹克球 - 室內用球（較軟）或室外用球（較硬）；3) 運動鞋 - 建議穿著室內運動鞋，避免黑色鞋底；4) 運動服裝 - 舒適透氣的運動服；5) 其他 - 護腕、運動毛巾、水壺等。初學者可先到球場租借球拍體驗。"
       }
+    },
+    {
+      "@type": "Question",
+      "name": "2026 年台灣有哪些匹克球賽事？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "2026 年台灣主要匹克球賽事包括：1) 1 月 30 日至 2 月 1 日 臺灣盃全國公開賽（宜蘭大學）；2) 2 月底 NAPA 盃全國錦標賽；3) 4 月 港都盃（高雄樹德大學）；4) 6 月 全國中正盃（台北大安運動中心）；5) 8 月 噶瑪蘭盃（宜蘭運動公園）；6) 9 月 臺北匹克球公開賽（國際積分賽）；7) 10 月 亞洲匹克球運動會 APG；8) 11 月 伯朗盃（宜蘭）。完整賽程請見本站 /tournaments 頁面。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "什麼是 DUPR 評級？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "DUPR (Dynamic Universal Pickleball Rating) 是全球通用的匹克球動態評級系統，範圍 1.0 到 8.0。2026 年起成為全球主要賽事的報名依據。初學者約 1.0-2.5，中階球員 3.0-4.0，進階玩家 4.0-5.0，職業選手 5.5+（Ben Johns 達 8.0）。台灣選手可透過參加 CTPF 認證賽事累積 DUPR 評分。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "什麼是「廚房區」(Kitchen / Non-Volley Zone)？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "廚房區是球網兩側各 7 英尺（約 2.13 公尺）的禁止截擊區域（正式名稱 Non-Volley Zone, NVZ）。球員站在此區域內或踩線時，不能在球未落地前擊球（稱為 volley）。即使球員起跳截擊後落地進入此區，也算犯規失分。這個規則是為了防止網前強攻，讓比賽更公平。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "什麼是第三球下切 (Third Shot Drop)？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "第三球下切是匹克球最重要的進階技術之一。當接發球方已站在網前時，發球方必須將第三球（回擊接發球回球的那球）打成高弧線並落入對方廚房區。這讓發球方有時間跟著上網，把雙方帶入廚房戰，扭轉開局劣勢。熟練第三球下切是從中階升級到進階的關鍵。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "台灣匹克球有多少人在玩？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "根據中華民國匹克球協會 (CTPF) 統計，台灣匹克球人口從 2024 年的 14 萬、2025 年的 50 萬，2026 年預估突破 120 萬人。全台已認證教練超過 1,400 人，球場數量已達 60+ 處。匹克球是目前台灣成長最快的新興運動。"
+      }
     }
   ]
+};
+
+// SportsEvent Schema for 2026 tournaments (AI Search Overview 優化)
+export const tournamentsEventData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ItemList",
+      "name": "2026 台灣匹克球賽事總覽",
+      "description": "中華民國匹克球協會 (CTPF) 2026 年度認證賽事與國際積分賽完整列表",
+      "numberOfItems": 11,
+      "itemListElement": [
+        {
+          "@type": "SportsEvent",
+          "position": 1,
+          "name": "2026 臺灣盃全國匹克球公開賽",
+          "alternateName": "Taiwan Cup National Pickleball Open 2026",
+          "sport": "Pickleball",
+          "startDate": "2026-01-30",
+          "endDate": "2026-02-01",
+          "eventStatus": "https://schema.org/EventPostponed",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "location": {
+            "@type": "Place",
+            "name": "國立宜蘭大學體育館",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "神農路一段 1 號",
+              "addressLocality": "宜蘭市",
+              "addressRegion": "宜蘭縣",
+              "addressCountry": "TW"
+            }
+          },
+          "organizer": {
+            "@type": "SportsOrganization",
+            "name": "中華民國匹克球協會 (CTPF)",
+            "url": "https://www.ctpf.org.tw/"
+          }
+        },
+        {
+          "@type": "SportsEvent",
+          "position": 2,
+          "name": "2026 NAPA 盃全國匹克球錦標賽",
+          "sport": "Pickleball",
+          "startDate": "2026-02-28",
+          "endDate": "2026-03-01",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "location": { "@type": "Place", "name": "待公告", "address": { "@type": "PostalAddress", "addressCountry": "TW" } },
+          "organizer": { "@type": "SportsOrganization", "name": "中華民國匹克球協會 (CTPF)" }
+        },
+        {
+          "@type": "SportsEvent",
+          "position": 3,
+          "name": "2026 港都盃全國匹克球錦標賽",
+          "sport": "Pickleball",
+          "startDate": "2026-04-18",
+          "location": { "@type": "Place", "name": "樹德科技大學", "address": { "@type": "PostalAddress", "addressLocality": "高雄市", "addressCountry": "TW" } }
+        },
+        {
+          "@type": "SportsEvent",
+          "position": 4,
+          "name": "2026 全國中正盃匹克球錦標賽",
+          "sport": "Pickleball",
+          "startDate": "2026-06-20",
+          "location": { "@type": "Place", "name": "台北市大安運動中心", "address": { "@type": "PostalAddress", "addressLocality": "台北市", "addressCountry": "TW" } }
+        },
+        {
+          "@type": "SportsEvent",
+          "position": 5,
+          "name": "2026 噶瑪蘭盃匹克球錦標賽",
+          "sport": "Pickleball",
+          "startDate": "2026-08-15",
+          "location": { "@type": "Place", "name": "宜蘭運動公園", "address": { "@type": "PostalAddress", "addressLocality": "宜蘭縣", "addressCountry": "TW" } }
+        },
+        {
+          "@type": "SportsEvent",
+          "position": 6,
+          "name": "2026 臺北匹克球公開賽",
+          "sport": "Pickleball",
+          "startDate": "2026-09-12",
+          "location": { "@type": "Place", "name": "臺北體育館", "address": { "@type": "PostalAddress", "addressLocality": "台北市", "addressCountry": "TW" } },
+          "organizer": { "@type": "SportsOrganization", "name": "臺北市政府體育局" }
+        },
+        {
+          "@type": "SportsEvent",
+          "position": 7,
+          "name": "2026 亞洲匹克球運動會 (APG)",
+          "sport": "Pickleball",
+          "startDate": "2026-10-15",
+          "location": { "@type": "Place", "name": "亞洲輪值", "address": { "@type": "PostalAddress", "addressCountry": "Asia" } },
+          "organizer": { "@type": "SportsOrganization", "name": "Asia Federation of Pickleball", "url": "https://www.afpickleball.org/" }
+        },
+        {
+          "@type": "SportsEvent",
+          "position": 8,
+          "name": "2026 伯朗盃匹克球公開賽",
+          "sport": "Pickleball",
+          "startDate": "2026-11-07",
+          "location": { "@type": "Place", "name": "宜蘭縣羅東運動公園", "address": { "@type": "PostalAddress", "addressLocality": "宜蘭縣", "addressCountry": "TW" } },
+          "organizer": { "@type": "SportsOrganization", "name": "金車伯朗" }
+        }
+      ]
+    }
+  ]
+};
+
+// DUPR Ratings DefinedTerm Set
+export const ratingsDefinedTermSet = {
+  "@context": "https://schema.org",
+  "@type": "DefinedTermSet",
+  "name": "DUPR 匹克球評級系統",
+  "description": "Dynamic Universal Pickleball Rating - 全球通用匹克球動態評分系統，範圍 1.0-8.0，2026 年起成為全球主要賽事報名依據",
+  "hasDefinedTerm": [
+    { "@type": "DefinedTerm", "name": "1.0-2.0 初學者 Beginner", "description": "剛接觸匹克球，熟悉基本規則與握拍" },
+    { "@type": "DefinedTerm", "name": "2.5 入門 Novice", "description": "能完成基本對打，深度節奏仍不穩定" },
+    { "@type": "DefinedTerm", "name": "3.0 初階 Intermediate Low", "description": "掌握基礎擊球，學習軟球策略" },
+    { "@type": "DefinedTerm", "name": "3.5 中階 Intermediate", "description": "技術完整，有主動戰術意識" },
+    { "@type": "DefinedTerm", "name": "4.0 進階 Advanced", "description": "業餘賽事常勝軍，多樣戰術穩定" },
+    { "@type": "DefinedTerm", "name": "4.5-5.0 高手 Expert", "description": "接近職業門檻，全面出色" },
+    { "@type": "DefinedTerm", "name": "5.5+ 職業 Pro", "description": "PPA、MLP 國際職業巡迴賽級別" }
+  ]
+};
+
+// Glossary DefinedTermSet (AI search friendly)
+export const glossaryDefinedTermSet = {
+  "@context": "https://schema.org",
+  "@type": "DefinedTermSet",
+  "name": "匹克球術語大全",
+  "description": "Picklemaster Taiwan 編纂的中英對照匹克球術語權威字典，涵蓋規則、技術、戰術、裝備、場地、賽制",
+  "inDefinedTermSet": "https://picklemastertw.site/glossary"
 };
 
 // 麵包屑結構化資料生成器

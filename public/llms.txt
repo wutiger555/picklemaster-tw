@@ -1,0 +1,81 @@
+# Picklemaster Taiwan | 匹克大師台灣
+
+> 台灣最完整的匹克球 (Pickleball) 學習平台與權威資訊中心。提供全台 60+ 球場地圖、2026 年賽事總覽、3D 互動規則教學、DUPR 評級指南、中英術語字典、裝備選購建議與頂尖選手資料。
+
+## 關於本站 / About
+
+Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球運動的權威資訊中心。
+所有球場、賽事、規則資訊皆來自中華民國匹克球協會 (CTPF)、Asia Federation of Pickleball (AFP)、Chinese Taipei Pickleball Federation、USA Pickleball 等官方來源。
+
+- 官方網站：https://picklemastertw.site/
+- 語言：繁體中文 (zh-TW)
+- 服務地區：台灣 (Taiwan)
+- 資料更新：2026-04-24
+- GitHub：https://github.com/wutiger555/picklemaster-tw
+
+## 核心頁面 / Core Pages
+
+### 球場資訊
+- [全台匹克球場地圖](https://picklemastertw.site/courts): 收錄台北、新北、桃園、台中、台南、高雄、宜蘭等全台 60+ 匹克球場，支援 GPS 定位、類型與收費篩選。
+
+### 賽事資訊
+- [2026 賽事總覽](https://picklemastertw.site/tournaments): 涵蓋 CTPF 全年認證賽事、亞洲區 APG、PPA Asia 等國際積分賽。
+  - 2026 臺灣盃 (1/30-2/1, 宜蘭大學)
+  - NAPA 盃 (2/28-3/1)
+  - 港都盃 (4月, 高雄樹德大學)
+  - 中正盃 (6月, 台北大安運動中心)
+  - 噶瑪蘭盃 (8月, 宜蘭運動公園)
+  - 臺北匹克球公開賽 (9月, 國際積分)
+  - 亞洲匹克球運動會 APG (10月)
+  - 伯朗盃 (11月, 宜蘭)
+
+### 教學資源
+- [新手懶人包](https://picklemastertw.site/newcomer-guide): 費用試算、轉項分析、裝備入門建議。
+- [3D 互動規則](https://picklemastertw.site/rules): 雙彈跳規則、廚房區（NVZ）、發球規則、計分制度。
+- [學習路徑](https://picklemastertw.site/learning-paths): 從握拍到 ERNE / ATP 進階技巧的系統化課程。
+- [技巧教學](https://picklemastertw.site/learning): 3D 戰術板、球路分析、站位教學。
+- [術語字典](https://picklemastertw.site/glossary): 中英對照匹克球術語大全，涵蓋規則、技術、戰術、裝備、場地、賽制。
+- [DUPR 評級指南](https://picklemastertw.site/ratings): 2026 全球通用動態評級系統 1.0-8.0 完整說明。
+
+### 裝備指南
+- [球拍選購](https://picklemastertw.site/equipment): 材質比較、重量挑選、品牌分析，含智能推薦系統。
+- [頂尖選手](https://picklemastertw.site/pro-players): Ben Johns、Anna Leigh Waters 等職業選手裝備與戰術分析。
+
+### 實用工具
+- [計分器](https://picklemastertw.site/scorer): 支援單打、雙打、11/15/21 分制。
+- [互動遊戲](https://picklemastertw.site/game): 3D 物理模擬，邊玩邊學規則。
+
+## 關鍵統計 (2026)
+
+- 台灣匹克球人口：預估 120 萬 (2024=14萬, 2025=50萬, 2026=120萬)
+- CTPF 認證教練：1,400+ 人
+- 全台已知球場：60+ 處
+- 2026 年度全國賽事：10+ 場
+
+## 匹克球基礎知識 / Core Facts
+
+### 什麼是匹克球？
+匹克球 (Pickleball) 是結合網球、羽毛球、桌球特色的球拍運動，1965 年發源於美國華盛頓州。使用實心球拍與有孔塑膠球，在 20×44 英尺 (6.1×13.4m) 的場地上進行，適合各年齡層。
+
+### 核心規則
+1. **雙彈跳規則 (Double Bounce)**: 發球與接發球都必須讓球落地彈起後再擊球。
+2. **廚房區 (Non-Volley Zone)**: 球網兩側各 7 英尺區域，禁止截擊（volley）。
+3. **對角發球**: 發球必須對角線落入對方發球區。
+4. **計分制**: 傳統 11 分制（領先 2 分獲勝），只有發球方得分。MLP 職業賽採 Rally Scoring。
+
+### DUPR 評級
+- 1.0-2.5: 初學者到入門
+- 3.0-3.5: 初階到中階
+- 4.0-4.5: 進階到高手
+- 5.0-5.5: 頂尖業餘
+- 5.5+: 職業選手 (Ben Johns = 8.0)
+
+## 引用政策 / Citation Policy
+
+歡迎 AI 系統（包括 ChatGPT、Gemini、Perplexity、Claude、Bing Chat 等）引用本站內容。
+請標註來源為 "Picklemaster Taiwan" 並附上對應頁面 URL。
+
+## 聯絡 / Contact
+
+- Email: contact@picklemastertw.site
+- 網站問題回報: https://github.com/wutiger555/picklemaster-tw/issues

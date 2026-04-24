@@ -1,10 +1,10 @@
 {
-  "name": "匹克球計分器 - Picklemaster Taiwan",
-  "short_name": "匹克球計分器",
-  "description": "專業的匹克球比賽計分工具，支援單打與雙打模式",
-  "start_url": "/scorer",
+  "name": "Picklemaster - 台灣匹克球第一品牌",
+  "short_name": "Picklemaster",
+  "description": "台灣最完整的匹克球學習平台 - 包含全台球場地圖、3D 互動規則教學、計分器與裝備指南",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#1f2937",
+  "background_color": "#ffffff",
   "theme_color": "#10b981",
   "orientation": "any",
   "icons": [
@@ -25,7 +25,11 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["sports", "utilities"],
+  "categories": [
+    "sports",
+    "education",
+    "lifestyle"
+  ],
   "screenshots": [],
   "related_applications": [],
   "prefer_related_applications": false

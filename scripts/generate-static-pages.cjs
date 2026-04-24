@@ -412,6 +412,126 @@ const pageSEO = {
             ]
         }
     },
+    tournaments: {
+        title: '2026 台灣匹克球賽事總覽 | CTPF 全年認證賽、國際積分賽',
+        description: '完整掌握 2026 台灣匹克球賽事：臺灣盃、NAPA 盃、港都盃、中正盃、噶瑪蘭盃、臺北公開賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
+        keywords: '2026匹克球賽事,台灣匹克球比賽,CTPF賽事,臺灣盃匹克球,NAPA盃,港都盃,中正盃,噶瑪蘭盃,臺北匹克球公開賽,APG 亞洲匹克球運動會,匹克球錦標賽,匹克球報名',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/tournaments#webpage",
+                    "url": "https://picklemastertw.site/tournaments",
+                    "name": "2026 台灣匹克球賽事總覽",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "2026 賽事", "item": "https://picklemastertw.site/tournaments" }
+                    ]
+                },
+                {
+                    "@type": "ItemList",
+                    "name": "2026 台灣匹克球賽事",
+                    "numberOfItems": 11,
+                    "itemListElement": [
+                        { "@type": "SportsEvent", "position": 1, "name": "2026 臺灣盃全國匹克球公開賽", "sport": "Pickleball", "startDate": "2026-01-30", "endDate": "2026-02-01", "location": { "@type": "Place", "name": "國立宜蘭大學體育館" } },
+                        { "@type": "SportsEvent", "position": 2, "name": "2026 NAPA 盃全國匹克球錦標賽", "sport": "Pickleball", "startDate": "2026-02-28", "endDate": "2026-03-01" },
+                        { "@type": "SportsEvent", "position": 3, "name": "2026 港都盃全國匹克球錦標賽", "sport": "Pickleball", "startDate": "2026-04-18", "location": { "@type": "Place", "name": "樹德科技大學" } },
+                        { "@type": "SportsEvent", "position": 4, "name": "2026 全國中正盃匹克球錦標賽", "sport": "Pickleball", "startDate": "2026-06-20", "location": { "@type": "Place", "name": "台北市大安運動中心" } },
+                        { "@type": "SportsEvent", "position": 5, "name": "2026 噶瑪蘭盃匹克球錦標賽", "sport": "Pickleball", "startDate": "2026-08-15", "location": { "@type": "Place", "name": "宜蘭運動公園" } },
+                        { "@type": "SportsEvent", "position": 6, "name": "2026 臺北匹克球公開賽", "sport": "Pickleball", "startDate": "2026-09-12", "location": { "@type": "Place", "name": "臺北體育館" } },
+                        { "@type": "SportsEvent", "position": 7, "name": "2026 亞洲匹克球運動會 (APG)", "sport": "Pickleball", "startDate": "2026-10-15" }
+                    ]
+                }
+            ]
+        }
+    },
+    glossary: {
+        title: '匹克球術語大全 | 中英對照字典 - Dink, Erne, ATP 全收錄',
+        description: '全台最完整的匹克球中英文術語字典。雙彈跳、廚房區、第三球下切、Erne、ATP、疊站、DUPR...規則、技術、戰術、裝備、場地、賽制一次看懂。',
+        keywords: '匹克球術語,pickleball glossary,dink,erne,ATP,third shot drop,雙彈跳,廚房區,疊站,DUPR,匹克球英文,匹克球中英對照',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/glossary#webpage",
+                    "url": "https://picklemastertw.site/glossary",
+                    "name": "匹克球術語大全",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "術語字典", "item": "https://picklemastertw.site/glossary" }
+                    ]
+                },
+                {
+                    "@type": "DefinedTermSet",
+                    "name": "匹克球術語大全",
+                    "description": "中英對照匹克球術語權威字典，涵蓋規則、技術、戰術、裝備、場地、賽制"
+                }
+            ]
+        }
+    },
+    ratings: {
+        title: 'DUPR 評級指南 2026 | 全球通用匹克球動態評分系統完整解析',
+        description: '2026 起 DUPR 成為全球匹克球賽事標準。1.0-8.0 評級意義、技術對照、典型球員、如何取得評分。台灣選手完整指南。',
+        keywords: 'DUPR,DUPR評級,匹克球評分,匹克球等級,Dynamic Universal Pickleball Rating,匹克球 DUPR 台灣,pickleball rating',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/ratings#webpage",
+                    "url": "https://picklemastertw.site/ratings",
+                    "name": "DUPR 評級指南 2026",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "DUPR 評級", "item": "https://picklemastertw.site/ratings" }
+                    ]
+                },
+                {
+                    "@type": "DefinedTermSet",
+                    "name": "DUPR 匹克球評級系統",
+                    "description": "Dynamic Universal Pickleball Rating - 全球通用匹克球動態評分系統，範圍 1.0-8.0"
+                }
+            ]
+        }
+    },
+    'newcomer-guide': {
+        title: '第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南',
+        description: '想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算、羽球轉匹克球技巧分析。',
+        keywords: '匹克球新手,匹克球入門,匹克球費用,匹克球拍價格,羽球轉匹克球,網球轉匹克球,匹克球教學,台灣匹克球',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "https://picklemastertw.site/newcomer-guide#webpage",
+                    "url": "https://picklemastertw.site/newcomer-guide",
+                    "name": "新手匹克球入門指南",
+                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "新手懶人包", "item": "https://picklemastertw.site/newcomer-guide" }
+                    ]
+                }
+            ]
+        }
+    },
     newcomer: {
         title: '第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南',
         description: '想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算（球拍/場地費）、羽球轉匹克球技巧分析、甚至幫你判斷適不適合這項運動。不用爬文，這一頁就夠！',
@@ -541,22 +661,45 @@ async function generateStaticPages() {
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
 
-        // Generate Sitemap.xml
+        // Generate Sitemap.xml (2026 enhanced)
         console.log('Generating sitemap.xml...');
+        const today = new Date().toISOString().split('T')[0];
+        const priorityMap = {
+            courts: { p: '1.0', f: 'daily' },
+            tournaments: { p: '1.0', f: 'weekly' },
+            equipment: { p: '0.95', f: 'weekly' },
+            learning: { p: '0.95', f: 'weekly' },
+            'newcomer-guide': { p: '0.95', f: 'weekly' },
+            rules: { p: '0.9', f: 'weekly' },
+            'learning-paths': { p: '0.9', f: 'weekly' },
+            faq: { p: '0.9', f: 'weekly' },
+            glossary: { p: '0.9', f: 'monthly' },
+            ratings: { p: '0.9', f: 'monthly' },
+            resources: { p: '0.85', f: 'weekly' },
+            'pro-players': { p: '0.85', f: 'monthly' },
+            game: { p: '0.8', f: 'monthly' },
+            scorer: { p: '0.75', f: 'monthly' },
+            about: { p: '0.7', f: 'monthly' },
+            newcomer: { p: '0.7', f: 'monthly' },
+        };
+
         let sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     <url>
         <loc>${BASE_URL}/</loc>
+        <lastmod>${today}</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>`;
 
         for (const route of Object.keys(pageSEO)) {
+            const meta = priorityMap[route] || { p: '0.7', f: 'monthly' };
             sitemapContent += `
     <url>
         <loc>${BASE_URL}/${route}</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <lastmod>${today}</lastmod>
+        <changefreq>${meta.f}</changefreq>
+        <priority>${meta.p}</priority>
     </url>`;
         }
 

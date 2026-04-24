@@ -3,48 +3,57 @@
 
 <head>
   <meta charset="UTF-8" />
+  <!-- Icons -->
   <link rel="icon" type="image/x-icon" href="/favicon-v2.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-v2-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-v2-16x16.png">
-  <link rel="preload" as="image" href="/logo.webp?v=2">
-  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-v2-192x192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- iOS PWA Support -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="匹克球計分器" />
+  <meta name="apple-mobile-web-app-title" content="Picklemaster TW" />
 
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
 
-  <!-- Cache Control for Safari/Mobile Fix -->
+  <!-- Cache Control -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
 
-  <!-- SEO Meta Tags -->
+  <!-- SEO Meta Tags (2026 Revision) -->
   <meta name="description"
-    content="匹克球台灣提供全台55+球場地圖、互動式規則教學、3D球場配置、專業裝備推薦。涵蓋台北、台中、高雄、台南等地區匹克球場資訊。從新手入門到進階技巧，完整學習路徑助你快速上手匹克球運動！" />
-  <meta name="keywords"
-    content="匹克球,台灣匹克球,匹克球台灣,pickleball taiwan,匹克球場地圖,匹克球教學,匹克球規則,匹克球裝備,台北匹克球,台中匹克球,高雄匹克球,台南匹克球,匹克球入門" />
+    content="匹克球台灣 Picklemaster Taiwan - 台灣最完整的匹克球權威資訊平台。2026 全台 60+ 球場地圖、CTPF 認證賽事總覽、DUPR 評級指南、3D 互動規則教學、術語字典與裝備選購。從新手到職業選手一站搞定。" />
+  <meta name="keywords" content="匹克球拍,pickleball paddle,匹克球裝備,球拍推薦,匹克球拍推薦,碳纖維球拍,玻璃纖維球拍,匹克球用品,匹克球裝備購買" />
   <meta name="author" content="Picklemaster Taiwan" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <meta name="geo.region" content="TW" />
   <meta name="geo.placename" content="Taiwan" />
+  <meta name="geo.position" content="23.5;121.0" />
+  <meta name="ICBM" content="23.5, 121.0" />
   <meta name="language" content="zh-TW" />
+  <meta name="revisit-after" content="3 days" />
+  <meta name="rating" content="general" />
+  <meta name="distribution" content="global" />
+  <!-- AI Crawler friendly hints -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://picklemastertw.site/equipment" />
   <meta property="og:title" content="匹克球拍怎麼選？2025 新手裝備懶人包：職業選手也推薦" />
-  <meta property="og:description"
-    content="匹克球台灣提供全台55+球場地圖、互動式規則教學、3D球場配置、專業裝備推薦。涵蓋台北、台中、高雄、台南等地區匹克球場資訊。從新手入門到進階技巧，完整學習路徑助你快速上手匹克球運動！" />
+  <meta property="og:description" content="買錯球拍最貴！完整匹克球拍材質分析（碳纖維 vs 玻璃纖維）、重量挑選指南。內含「球拍智能推薦系統」，30秒找出最適合你的命定球拍。" />
   <meta property="og:image" content="https://picklemastertw.site/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Picklemaster Taiwan - 台灣匹克球權威平台" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:site_name" content="Picklemaster Taiwan" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -52,19 +61,29 @@
   <meta name="twitter:title" content="匹克球拍怎麼選？2025 新手裝備懶人包：職業選手也推薦" />
   <meta name="twitter:description" content="買錯球拍最貴！完整匹克球拍材質分析（碳纖維 vs 玻璃纖維）、重量挑選指南。內含「球拍智能推薦系統」，30秒找出最適合你的命定球拍。" />
   <meta name="twitter:image" content="https://picklemastertw.site/og-image.png" />
+  <meta name="twitter:image:alt" content="Picklemaster Taiwan" />
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://picklemastertw.site/equipment" />
 
-  <!-- Preconnect to external origins -->
+  <!-- Preconnect -->
   <link rel="preconnect" href="https://www.google.com">
   <link rel="preconnect" href="https://images.unsplash.com">
 
-  <!-- Google AdSense -->
-  <!-- AdSense script is loaded lazily after user interaction -->
+  <!-- JSON-LD Structured Data (2026 AI-Search Optimized) -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://picklemastertw.site/equipment#webpage","url":"https://picklemastertw.site/equipment","name":"匹克球拍選購指南","isPartOf":{"@id":"https://picklemastertw.site/#website"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://picklemastertw.site/"},{"@type":"ListItem","position":2,"name":"裝備指南","item":"https://picklemastertw.site/equipment"}]},{"@type":"ItemList","name":"匹克球拍選購指南","description":"專業匹克球拍推薦與選購指南，包含材質分析、重量選擇、價格範圍","numberOfItems":3,"itemListElement":[{"@type":"Product","position":1,"name":"入門級匹克球拍","description":"適合新手的複合材質匹克球拍，重量適中，價格實惠","category":"匹克球拍","offers":{"@type":"AggregateOffer","priceCurrency":"TWD","lowPrice":"2000","highPrice":"4000","availability":"https://schema.org/InStock"}},{"@type":"Product","position":2,"name":"中階級匹克球拍","description":"玻璃纖維材質，適合中級球員，提供良好的控球性和力量","category":"匹克球拍","offers":{"@type":"AggregateOffer","priceCurrency":"TWD","lowPrice":"4000","highPrice":"8000","availability":"https://schema.org/InStock"}},{"@type":"Product","position":3,"name":"高階級碳纖維匹克球拍","description":"職業級碳纖維材質，輕量化設計，提供最佳性能表現","category":"匹克球拍","offers":{"@type":"AggregateOffer","priceCurrency":"TWD","lowPrice":"8000","highPrice":"15000","availability":"https://schema.org/InStock"}}]}]}</script>
 
-  <!-- JSON-LD Structured Data -->
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"匹克球拍選購指南","description":"專業匹克球拍推薦與選購指南，包含材質分析、重量選擇、價格範圍","numberOfItems":3,"itemListElement":[{"@type":"Product","position":1,"name":"入門級匹克球拍","description":"適合新手的複合材質匹克球拍，重量適中，價格實惠","category":"匹克球拍","offers":{"@type":"AggregateOffer","priceCurrency":"TWD","lowPrice":"2000","highPrice":"4000","availability":"https://schema.org/InStock"}},{"@type":"Product","position":2,"name":"中階級匹克球拍","description":"玻璃纖維材質，適合中級球員，提供良好的控球性和力量","category":"匹克球拍","offers":{"@type":"AggregateOffer","priceCurrency":"TWD","lowPrice":"4000","highPrice":"8000","availability":"https://schema.org/InStock"}},{"@type":"Product","position":3,"name":"高階級碳纖維匹克球拍","description":"職業級碳纖維材質，輕量化設計，提供最佳性能表現","category":"匹克球拍","offers":{"@type":"AggregateOffer","priceCurrency":"TWD","lowPrice":"8000","highPrice":"15000","availability":"https://schema.org/InStock"}}]}</script>
+    <!-- Speakable Schema for AI voice readers -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["h1", "h2", ".speakable"]
+      }
+    }
+    </script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -77,11 +96,11 @@
   </noscript>
 
   <title>匹克球拍怎麼選？2025 新手裝備懶人包：職業選手也推薦</title>
-  <script type="module" crossorigin src="/assets/index-SapU3JEv.js"></script>
+  <script type="module" crossorigin src="/assets/index-CCR4r1Ze.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-DcHhgIUw.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-CDw6EIKg.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-framer-74RobQA8.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-DHxvMV4S.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-B6nFyhjV.css">
 </head>
 
 <body>

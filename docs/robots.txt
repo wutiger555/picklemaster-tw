@@ -1,26 +1,100 @@
+# Picklemaster Taiwan robots.txt
 # https://www.robotstxt.org/robotstxt.html
+# Updated: 2026-04-24 - AI-friendly for generative search (GEO)
 
-# 允許所有搜尋引擎爬取
+# ===== 一般搜尋引擎 =====
 User-agent: *
 Allow: /
 
-# 特別允許 Googlebot 爬取所有內容
+# Google
 User-agent: Googlebot
 Allow: /
 
-# 特別允許 Bingbot 爬取所有內容
+User-agent: Googlebot-Image
+Allow: /
+
+# Microsoft Bing
 User-agent: Bingbot
 Allow: /
 
-# 排除不重要的資源
+# ===== AI 搜尋引擎 / Generative AI Crawlers =====
+# 明確允許 AI 搜尋引擎抓取，讓內容更容易出現在 AI 答覆中
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+# ===== 排除不重要資源 =====
 Disallow: /api/
-Disallow: /*.json$
 Disallow: /service-worker.js
 
-# Sitemap 位置
+# ===== 資源宣告 =====
 Sitemap: https://picklemastertw.site/sitemap.xml
 
-# 重點頁面提示
-# 球場地圖: https://picklemastertw.site/courts
-# 規則教學: https://picklemastertw.site/rules
-# 裝備推薦: https://picklemastertw.site/equipment
+# AI Reference
+# llms.txt: https://picklemastertw.site/llms.txt
+# 重點頁面:
+#   /courts - 全台匹克球場地圖
+#   /tournaments - 2026 賽事總覽
+#   /rules - 互動規則教學
+#   /equipment - 球拍選購指南
+#   /glossary - 術語字典
+#   /ratings - DUPR 評級指南

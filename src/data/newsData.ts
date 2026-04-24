@@ -1,6 +1,128 @@
 import type { NewsItem } from '../types/news';
 
 export const NEWS_DATA: NewsItem[] = [
+  // ===== 2026 最新消息 =====
+  {
+    id: 'tw-202604-growth',
+    title: '台灣匹克球 2026 突破 120 萬人！亞洲成長最快運動',
+    summary: '根據中華民國匹克球協會 (CTPF) 最新統計，2026 年台灣匹克球人口預估突破 120 萬，較 2024 年 14 萬成長近 9 倍，成為亞洲成長最快的新興運動。',
+    content: `
+      <p>中華民國匹克球協會 (CTPF) 公布 2026 年度統計：台灣匹克球人口預估突破 120 萬，較 2024 年的 14 萬大幅成長近 9 倍。理事長陳朝鍵表示：「匹克球的低門檻、強社交特性，讓各年齡層都能輕易上手，是運動風潮席捲全台的核心原因。」</p>
+
+      <p>協會同時公布，全台已有 1,400 餘名通過認證的 C 級教練，且每次開班都於數秒內售罄。香港匹克球協會也在 CTPF 的協助下於 2018 年完成首批教練培訓，顯示台灣在亞洲匹克球發展中的樞紐地位。</p>
+
+      <p>展望 2026 年，CTPF 將舉辦超過 10 項全國性賽事，並爭取更多國際積分賽於台灣開打。NBA 球星林書豪的公開推廣，加上《全明星運動會》等節目曝光，讓匹克球成功從小眾運動走入大眾視野。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.gvm.com.tw/article/120290" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">遠見雜誌</a>、中華民國匹克球協會 (CTPF)</p>
+    `,
+    date: '2026-04-15',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1515523110800-9415d13b84a8?q=80&w=1974&auto=format&fit=crop',
+    source: '中華民國匹克球協會',
+    link: 'https://pickleball.org.tw/',
+    tags: ['Statistics', '2026', 'Growth']
+  },
+  {
+    id: 'tw-202603-napa',
+    title: '2026 NAPA 盃全國錦標賽圓滿落幕',
+    summary: '由中華民國匹克球協會主辦的 NAPA 盃於 2 月 28 日至 3 月 1 日舉行，吸引全台頂尖選手參與，北部選手囊括多項冠軍。',
+    content: `
+      <p>「2026 NAPA 盃全國匹克球錦標賽」於 2 月 28 日至 3 月 1 日圓滿落幕。本屆賽事是 CTPF 2026 年度行事曆中的指標賽事，吸引全台各地頂尖選手同場競技。</p>
+
+      <p>賽事採用最新 DUPR 評級分組制度，讓不同程度的球員都能找到合適對手。公開組競爭尤為激烈，多場決賽延續至搶 11 分的搶七局面，展現選手的極限狀態與心理素質。</p>
+
+      <p>協會表示，2026 年全年將有超過 10 場全國性與區域賽事，包含 4 月的港都盃（高雄）、6 月的中正盃（台北）、8 月的噶瑪蘭盃（宜蘭）等。選手可透過<a href="/tournaments" class="text-primary-600 hover:underline">賽事總覽頁</a>查詢完整行事曆。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：中華民國匹克球協會 (CTPF)</p>
+    `,
+    date: '2026-03-01',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=2070&auto=format&fit=crop',
+    source: '中華民國匹克球協會',
+    link: 'https://pickleball.org.tw/',
+    tags: ['Tournament', 'National', '2026']
+  },
+  {
+    id: 'tw-202602-taiwan-cup',
+    title: '2026 臺灣盃宜蘭開戰！6 組別全國精英齊聚',
+    summary: '運動部全民運動署補助的 2026 臺灣盃全國匹克球公開賽於 1 月 30 日至 2 月 1 日在國立宜蘭大學登場，涵蓋國小至教練組共 6 組別。',
+    content: `
+      <p>由運動部全民運動署補助、中華民國匹克球協會主辦的「2026 臺灣盃全國匹克球公開賽」於 1 月 30 日至 2 月 1 日在國立宜蘭大學體育館盛大登場。這是 2026 年度第一場大型全國賽，也是 CTPF 六大年度賽事之一。</p>
+
+      <p>本次賽事首次將組別細分為國小、國中、高中、大專、教職員與教練公開組等 6 大類別，強化校園匹克球推廣。國小與國中組更首度納入「校隊認證計畫」，未來將串聯高中、大專，打造完整的學生選手培育體系。</p>
+
+      <p>賽事期間同步舉辦「匹克球嘉年華」，提供民眾免費體驗與器材試用，並邀請 PPR 認證教練現場指導。CTPF 表示，希望透過賽事結合推廣的雙軌並進，讓更多家庭一起接觸這項運動。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.ctpf.org.tw/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Chinese Taipei Pickleball Federation</a></p>
+    `,
+    date: '2026-02-01',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1545809074-59472b3f5ecc?q=80&w=2070&auto=format&fit=crop',
+    source: 'CTPF',
+    link: 'https://www.ctpf.org.tw/',
+    tags: ['Tournament', 'Yilan', '2026']
+  },
+  {
+    id: 'courts-202604-taipei',
+    title: '台北 2026 匹克球場新風貌：20+ 場地全面升級',
+    summary: '從青年公園免費場到 DOPE 水獺綠洲高端會館，2026 年台北都會區匹克球場地突破 20 處，選擇多元，滿足從初學者到職業選手的所有需求。',
+    content: `
+      <p>2026 年 4 月最新盤點，大台北地區匹克球場已突破 20 處，形成完整的運動生態圈。<strong>免費戶外場</strong>包含青年公園、天母公園、明德匹克球場、華中河濱公園、至善羽球公園等。其中「新北大都會公園」擁有全台最大 8 面專用戶外場，夜間照明至 22:00。</p>
+
+      <p><strong>高端室內館</strong>方面，新莊 DOPE 水獺綠洲以精品會館定位吸引都會族群；淡水 P.dang 匹克球館擁有 6 面專用場地並定期舉辦 DUPR 認證賽；中和 Pickleday 匹克日俱樂部主打「初學者友善」課程。信義區 Pickle Day 快閃店營運至 2026 年 2 月結束後，協會正洽談長期場地。</p>
+
+      <p>桃園 Social N Pickle 提供 24 小時營業服務，是北台灣唯一夜貓子球員的選擇。宜蘭運動公園 6 面專用戶外場則為東部最佳選擇，適合辦比賽。</p>
+
+      <p>本站已同步更新<a href="/courts" class="text-primary-600 hover:underline">全台球場地圖</a>，支援 GPS 定位找最近球場、篩選室內/戶外/免費場地。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://freeshiuan.com/pickleball-court-taiwan/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">freeshiuan 球場全攻略</a></p>
+    `,
+    date: '2026-04-10',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts',
+    tags: ['Courts', 'Taipei', '2026']
+  },
+  {
+    id: 'int-202604-apg-2026',
+    title: '2026 亞洲匹克球運動會 (APG) 舉辦地確認中',
+    summary: 'AFP 亞洲匹克球聯合會確認 2026 年將舉辦第三屆 APG，上屆 2024 年於台中國際網球中心舉辦，共吸引 11 國 780 位選手。',
+    content: `
+      <p>亞洲匹克球聯合會 (Asia Federation of Pickleball, AFP) 已開始籌備 2026 年第三屆亞洲匹克球運動會 (APG)。首屆 APG 2024 年於台中國際網球中心舉辦，共吸引 11 國 780 位選手，為台灣迄今最大型國際匹克球賽事。</p>
+
+      <p>2025 年 APG 於日本舉辦，2026 年地點預計於 10 月前確認。AFP 表示，正積極評估台灣、越南、泰國等地，並將優先考慮場地設施、國際交通便利性等條件。台灣若再度爭取主辦，預計將於台北或高雄舉辦。</p>
+
+      <p>除了 APG，亞洲地區 2026 年重要賽事包含 PPA Asia 1000 系列（越南、泰國）、APUN 亞洲大學錦標賽等，匹克球在亞洲的職業化進程進入關鍵年度。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.afpickleball.org/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">AFPickleball</a></p>
+    `,
+    date: '2026-04-05',
+    category: 'International',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'AFPickleball',
+    link: 'https://www.afpickleball.org/',
+    tags: ['APG', 'International', '2026']
+  },
+  {
+    id: 'int-202603-dupr',
+    title: 'DUPR 評級成為 2026 全球標準！台灣選手如何取得？',
+    summary: '由 MLP 創辦人 Steve Kuhn 推動的 DUPR 動態評級系統，在 2026 年正式成為全球主要賽事報名依據。台灣選手可透過參加 CTPF 認證賽事累積評分。',
+    content: `
+      <p>2026 年起，<strong>DUPR (Dynamic Universal Pickleball Rating)</strong> 正式成為全球匹克球主要賽事的報名依據，包含 PPA Tour、MLP、APG 等國際賽事皆要求選手提供 DUPR 評分。評分範圍 1.0-8.0，職業選手約 6.0+，業餘中階為 3.5-4.5。</p>
+
+      <p>台灣選手取得 DUPR 評分的管道：(1) 參加 CTPF 認證的全國賽事，賽後由主辦單位上傳成績；(2) 參加 P.dang 等私人球館舉辦的 DUPR 認證賽；(3) 與已有 DUPR 評分的球友進行「Verified Match」。每場比賽結果都會即時影響評分。</p>
+
+      <p>這套系統的優勢在於透明、動態、跨國。未來報名國際賽事無需再經過繁複的資格認證程序，有助於台灣選手與國際接軌。完整介紹可參考<a href="/glossary#dupr" class="text-primary-600 hover:underline">本站術語表的 DUPR 條目</a>。</p>
+    `,
+    date: '2026-03-15',
+    category: 'International',
+    image: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=2070&auto=format&fit=crop',
+    source: 'DUPR',
+    link: 'https://mydupr.com/',
+    tags: ['DUPR', 'Rating', '2026']
+  },
+
   // Courts News
   {
     id: 'courts-202509-1',

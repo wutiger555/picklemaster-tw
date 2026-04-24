@@ -20,6 +20,9 @@ const Scorer = lazy(() => import('./pages/Scorer'));
 const Resources = lazy(() => import('./pages/Resources'));
 const About = lazy(() => import('./pages/About'));
 const FAQ = lazy(() => import('./pages/FAQ'));
+const Tournaments = lazy(() => import('./pages/Tournaments'));
+const Glossary = lazy(() => import('./pages/Glossary'));
+const Ratings = lazy(() => import('./pages/Ratings'));
 const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -74,6 +77,9 @@ function App() {
               <Route path={ROUTES.RESOURCES} element={<Resources />} />
               <Route path={ROUTES.ABOUT} element={<About />} />
               <Route path={ROUTES.FAQ} element={<FAQ />} />
+              <Route path={ROUTES.TOURNAMENTS} element={<Tournaments />} />
+              <Route path={ROUTES.GLOSSARY} element={<Glossary />} />
+              <Route path={ROUTES.RATINGS} element={<Ratings />} />
               <Route path={ROUTES.NEWS} element={<NewsDetail />} />
               <Route path={ROUTES.PRIVACY_POLICY} element={<PrivacyPolicy />} />
               <Route path={ROUTES.CONTACT} element={<Contact />} />

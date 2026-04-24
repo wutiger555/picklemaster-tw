@@ -4,7 +4,7 @@
 
 # 匹克大師台灣 | Picklemaster Taiwan
 
-### 台灣最完整的匹克球（Pickleball）學習平台
+### 台灣最完整的匹克球（Pickleball）權威資訊中心 · 2026 Edition
 
 [![Deploy to GitHub Pages](https://github.com/wutiger555/picklemaster-tw/actions/workflows/deploy.yml/badge.svg)](https://github.com/wutiger555/picklemaster-tw/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -25,10 +25,10 @@
 
 <div align="center">
 
-| 🗺️ 球場數量 | 🏓 球拍數據 | 📚 學習課程 |   ⚡ 技術棧   |
-| :--------: | :--------: | :--------: | :----------: |
-|  **55+**   |  **16款**  |  **40+**   | **React 19** |
-|  全台球場  |  9大品牌   |  教學單元  |  TypeScript  |
+| 🗺️ 球場數量 | 🏆 2026 賽事 | 📖 術語字典 | 📚 學習課程 |   ⚡ 技術棧   |
+| :--------: | :--------: | :--------: | :--------: | :----------: |
+|  **60+**   |  **11 場** |  **20+**   |  **40+**   | **React 19** |
+|  全台球場  |  CTPF 認證 |  中英對照  |  教學單元  |  TypeScript  |
 
 </div>
 
@@ -44,18 +44,17 @@
 
 ### ✨ 核心亮點
 
-🗺️ **全台 55+ 球場地圖**  
+🗺️ **全台 60+ 球場地圖**  
 涵蓋台北、台中、高雄、台南等全台各縣市
 
-🏆 **頂尖選手名人堂**  
-互動式球員卡，解析世界球王球后戰力與裝備
+🏆 **2026 賽事總覽**  
+CTPF 認證全年賽事、國際積分賽、分齡賽一次看
 
-📚 **系統化學習路徑**  
-新手 10 課、中階 5 課、進階 5 課，循序漸進
-優化版戰術板，精準演示雙打策略
+📖 **術語字典 + DUPR 評級**  
+中英對照匹克球權威字典、2026 全球通用評分系統
 
-🎮 **3D 球場配置**
-360° 檢視球場結構，深入了解站位
+🎮 **3D 互動學習**
+360° 球場、戰術板、球路模擬一次到位
 
 </td>
 <td width="50%">

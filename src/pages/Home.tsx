@@ -7,6 +7,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { useInView } from '../hooks/useInView';
 import SEOHead from '../components/common/SEOHead';
 import CourtSkeleton from '../components/hero/CourtSkeleton';
+import { getUpcomingTournaments, TAIWAN_PICKLEBALL_STATS_2026 } from '../data/tournamentsData';
 
 // Lazy load heavy sections including 3D components
 const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
@@ -139,24 +140,28 @@ const Home = () => {
                 </Link>
               </m.div>
 
-              {/* Stats - Minimal */}
+              {/* Stats 2026 - Enhanced */}
               <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                className="grid grid-cols-3 gap-8 max-w-lg mx-auto border-t border-neutral-100 pt-8"
+                className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-3xl mx-auto border-t border-neutral-100 pt-8"
               >
                 <div className="text-center">
-                  <div className="text-2xl font-black text-neutral-900">55+</div>
-                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Courts</div>
+                  <div className="text-2xl md:text-3xl font-black text-neutral-900">60+</div>
+                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider mt-1">球場</div>
                 </div>
-                <div className="text-center border-l border-neutral-100">
-                  <div className="text-2xl font-black text-neutral-900">3D</div>
-                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Learning</div>
+                <div className="text-center md:border-l border-neutral-100">
+                  <div className="text-2xl md:text-3xl font-black text-neutral-900">120<span className="text-sm">萬</span></div>
+                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider mt-1">2026 球友</div>
                 </div>
-                <div className="text-center border-l border-neutral-100">
-                  <div className="text-2xl font-black text-neutral-900">100%</div>
-                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Free</div>
+                <div className="text-center border-l border-neutral-100 border-t md:border-t-0 pt-4 md:pt-0">
+                  <div className="text-2xl md:text-3xl font-black text-neutral-900">10+</div>
+                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider mt-1">年度賽事</div>
+                </div>
+                <div className="text-center border-l border-neutral-100 border-t md:border-t-0 pt-4 md:pt-0">
+                  <div className="text-2xl md:text-3xl font-black text-neutral-900">100%</div>
+                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider mt-1">免費</div>
                 </div>
               </m.div>
 
@@ -174,6 +179,90 @@ const Home = () => {
         <LazySection className="bg-gradient-to-b from-white to-neutral-50/30 pt-8">
           <NewsSection />
         </LazySection>
+
+        {/* 2026 即將到來賽事 - Authority Section */}
+        <section className="py-16 md:py-20 bg-gradient-to-b from-neutral-50/30 via-white to-neutral-50/30">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <m.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="flex flex-col md:flex-row md:items-end md:justify-between mb-10 gap-4"
+            >
+              <div>
+                <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full mb-3">
+                  2026 Season · CTPF Official
+                </span>
+                <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight leading-tight">
+                  即將開打的賽事
+                </h2>
+                <p className="text-neutral-500 mt-2">掌握全台重點錦標賽與國際積分賽</p>
+              </div>
+              <Link
+                to={ROUTES.TOURNAMENTS}
+                className="group inline-flex items-center gap-2 text-sm font-semibold text-neutral-900 hover:text-emerald-600 transition-colors whitespace-nowrap"
+              >
+                查看全部 {TAIWAN_PICKLEBALL_STATS_2026.tournamentsYear} 場賽事
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
+            </m.div>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              {getUpcomingTournaments(3).map((t, i) => (
+                <m.div
+                  key={t.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Link
+                    to={ROUTES.TOURNAMENTS}
+                    className="block bg-white rounded-2xl border border-neutral-100 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{t.level}</span>
+                      {t.featured && <span className="text-xs">⭐</span>}
+                    </div>
+                    <h3 className="text-lg font-bold text-neutral-900 leading-tight mb-2 group-hover:text-emerald-600 transition-colors">
+                      {t.name}
+                    </h3>
+                    <div className="text-sm text-neutral-600 space-y-1 mt-3">
+                      <div>📅 {t.dateLabel}</div>
+                      <div>📍 {t.venue}</div>
+                    </div>
+                  </Link>
+                </m.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Authority Resources - Explore More */}
+        <section className="py-12 bg-neutral-900 text-white">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { to: ROUTES.GLOSSARY, label: '術語字典', desc: '中英對照權威詞彙', icon: '📖' },
+                { to: ROUTES.RATINGS, label: 'DUPR 評級', desc: '2026 全球評分系統', icon: '📊' },
+                { to: ROUTES.COURTS, label: '球場地圖', desc: '60+ 場地一鍵搜尋', icon: '🗺️' },
+              ].map(item => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="group bg-white/5 hover:bg-white/10 rounded-2xl p-6 border border-white/10 hover:border-emerald-400/50 transition-all"
+                >
+                  <div className="text-3xl mb-2">{item.icon}</div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-lg font-bold group-hover:text-emerald-400 transition-colors">{item.label}</h3>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
+                  <p className="text-sm text-neutral-400">{item.desc}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* 學習路徑 - 時間軸設計 */}
         <section className="py-16 sm:py-20 md:py-24 bg-gradient-to-b from-neutral-50/30 to-white relative overflow-hidden">

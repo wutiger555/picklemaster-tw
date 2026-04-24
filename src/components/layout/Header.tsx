@@ -22,12 +22,14 @@ const Header = () => {
         | { label: string; type: 'dropdown'; items: DropdownItem[] }
     > = [
             { path: ROUTES.COURTS, label: '找球場', type: 'link' },
+            { path: ROUTES.TOURNAMENTS, label: '賽事', type: 'link' },
             {
                 label: '新手專區',
                 type: 'dropdown',
                 items: [
                     { path: ROUTES.NEWCOMER_GUIDE, label: '新手懶人包', description: '費用、轉項分析、入門指引', badge: '必看' },
                     { path: ROUTES.RULES, label: '規則教學', description: '3D 互動式規則解說' },
+                    { path: ROUTES.GLOSSARY, label: '術語字典', description: '中英對照術語大全', badge: 'NEW' },
                     { path: ROUTES.FAQ, label: '常見問題', description: '解決你的所有疑問' },
                 ],
             },
@@ -38,6 +40,7 @@ const Header = () => {
                     { path: ROUTES.EQUIPMENT, label: '裝備指南', description: '球拍材質與選購建議' },
                     { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '世界冠軍的裝備與數據', badge: 'HOT' },
                     { path: ROUTES.LEARNING_PATHS, label: '學習路徑', description: '從入門到精通的系統化課程' },
+                    { path: ROUTES.RATINGS, label: 'DUPR 評級指南', description: '2026 全球通用評分系統', badge: 'NEW' },
                 ],
             },
             {

@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.3.0] - 2026 Authority & AI-Search Overhaul (2026-04-24)
+
+### 🎯 Mission
+將網站定位從「匹克球學習平台」升級為「台灣匹克球權威資訊中心」，對標國外專業運動站（如網球、padel 類）的內容深度與 UX 品質。全面擁抱 2026 AI 搜尋時代（GEO, Generative Engine Optimization）。
+
+### Featured Updates 🚀
+- **AI Search Ready**: 全站優化為 2026 AI 搜尋時代標準（GEO），包含 `llms.txt`、AI crawler 白名單、SportsEvent / DefinedTermSet / SportsOrganization 等進階 Schema
+- **3 個全新權威頁面**: 2026 賽事總覽、術語字典、DUPR 評級指南
+- **內容大規模更新**: 2026 最新新聞、CTPF 全年賽事資料、台灣匹克球 120 萬人口統計
+
+### Added
+
+#### 🏆 新頁面 (Authority Content)
+- **`/tournaments` 2026 賽事總覽**: 完整收錄 11 場 2026 台灣 + 亞洲重要賽事（臺灣盃、NAPA 盃、港都盃、中正盃、噶瑪蘭盃、臺北公開賽、APG 等），含等級/狀態/報名時間篩選。
+- **`/glossary` 術語字典**: 中英對照匹克球術語大全，涵蓋規則/技術/戰術/裝備/場地/賽制 6 大類。從 Dink、Third Shot Drop 到 ERNE、ATP、Shake & Bake 全收錄。
+- **`/ratings` DUPR 評級指南**: 2026 全球通用動態評分系統 1.0-8.0 完整對照表，包含技術重點、典型球員、台灣選手取得管道。
+
+#### 📰 內容更新
+- **2026 最新新聞**: 新增 6 則 2026 年度新聞（匹克球人口突破 120 萬、NAPA 盃落幕、DUPR 成為全球標準、APG 籌備等）
+- **賽事資料庫**: `src/data/tournamentsData.ts` 收錄 11 場 2026 賽事完整 metadata
+- **術語資料庫**: `src/data/glossaryData.ts` 20+ 個權威條目
+
+#### 🔍 AI 搜尋 / GEO 優化
+- **`public/llms.txt`**: 全新 LLM-友善索引檔，引導 AI 系統（ChatGPT、Claude、Perplexity、Gemini）引用本站內容
+- **`public/robots.txt`**: 明確白名單 16+ 個 AI crawler（GPTBot、ClaudeBot、PerplexityBot、Google-Extended 等）
+- **Structured Data 擴充**:
+  - `SportsEvent` Schema for 所有 2026 賽事
+  - `DefinedTermSet` for 術語字典與 DUPR 評級
+  - `SportsOrganization` 連結 CTPF
+  - `Speakable` Schema for AI 語音讀取
+  - `AboutPage` + `Sport` 主題知識圖譜
+- **FAQ 擴充**: 新增 5 題 2026 相關問答（DUPR、賽事、廚房區、第三球下切、人口統計）
+- **每頁 SEO**: Tournaments/Glossary/Ratings 三個新頁面各自有專屬 title/description/keywords
+
+#### 🏗️ 首頁改造
+- **2026 Stats**: 從 3 欄升級為 4 欄，加入「120 萬球友」「10+ 年度賽事」等權威數據
+- **即將開打賽事 Section**: 動態顯示接下來 3 場賽事卡片，連結至完整列表
+- **Authority Resources Bar**: 深色區塊直連術語字典、DUPR 評級、球場地圖三大支柱內容
+
+#### 🧭 導航升級
+- 主選單新增「賽事」頂層連結（提高曝光層級）
+- 新手專區下拉加入「術語字典」
+- 裝備與攻略下拉加入「DUPR 評級指南」
+
+### Changed
+
+- **`index.html`**: meta description 重寫納入 2026 關鍵字；OG image 加入尺寸與 alt；JSON-LD 從 3 個實體擴充至 6 個；加入 `geo.position`、`ICBM`、`referrer` 等進階 meta
+- **`sitemap.xml`**: 全站 lastmod 更新至 2026-04-24，新增 tournaments/glossary/ratings/newcomer-guide 四個路由
+- **`SEOHead.tsx`**: 支援新頁面的結構化資料注入；Home 頁也載入 FAQ schema 增加 AI Overview 曝光
+- **Breadcrumbs**: 包含所有新頁面
+
+### Technical Notes
+
+- **SEO 2026 Best Practices**: 遵循 searchengineland、Vercel、Google 2026 指引：內容以「chunks」組織、headings 階層清晰、scannable 格式、JSON-LD 為主要結構化資料格式
+- **AI Citation Optimization**: 根據研究，正確的 Schema 讓內容被 AI 引用機率提升 2.5 倍；清晰格式提升 28-40%
+
+### Fixed
+- Tournaments 頁面已過賽事自動隱藏（可用選單切換顯示）
+
+---
+
 ## [v1.2.0] - Visual & SEO Overhaul
 
 ### Featured Updates 🚀

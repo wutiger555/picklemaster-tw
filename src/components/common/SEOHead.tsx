@@ -6,7 +6,10 @@ import {
   equipmentProductData,
   courtsLocationData,
   learningCourseData,
-  faqStructuredData
+  faqStructuredData,
+  tournamentsEventData,
+  ratingsDefinedTermSet,
+  glossaryDefinedTermSet
 } from '../../utils/seo';
 
 interface SEOHeadProps {
@@ -143,6 +146,15 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription,
       addStructuredData(learningCourseData, 'learning');
     } else if (currentPage === 'faq') {
       addStructuredData(faqStructuredData, 'faq');
+    } else if (currentPage === 'tournaments') {
+      addStructuredData(tournamentsEventData, 'tournaments');
+    } else if (currentPage === 'ratings') {
+      addStructuredData(ratingsDefinedTermSet, 'ratings');
+    } else if (currentPage === 'glossary') {
+      addStructuredData(glossaryDefinedTermSet, 'glossary');
+    } else if (currentPage === 'home') {
+      // Home 頁也載入 FAQ 以增加 AI Overview 曝光
+      addStructuredData(faqStructuredData, 'faq-home');
     }
   }, [title, description, keywords, location.pathname, currentPage]);
 
@@ -166,7 +178,11 @@ const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> 
     'scorer': '計分器',
     'resources': '學習資源',
     'about': '關於我們',
-    'faq': '常見問題'
+    'faq': '常見問題',
+    'tournaments': '2026 賽事',
+    'glossary': '術語字典',
+    'ratings': 'DUPR 評級',
+    'newcomer-guide': '新手懶人包'
   };
 
   if (page !== 'home' && pageNames[page]) {

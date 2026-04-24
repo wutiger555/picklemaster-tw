@@ -23,6 +23,14 @@ const FAQ = lazy(() => import('./pages/FAQ'));
 const Tournaments = lazy(() => import('./pages/Tournaments'));
 const Glossary = lazy(() => import('./pages/Glossary'));
 const Ratings = lazy(() => import('./pages/Ratings'));
+const Techniques = lazy(() => import('./pages/Techniques'));
+const TechniqueDetail = lazy(() => import('./pages/TechniqueDetail'));
+const CourtDetail = lazy(() => import('./pages/CourtDetail'));
+const Tools = lazy(() => import('./pages/Tools'));
+const DuprSimulator = lazy(() => import('./pages/tools/DuprSimulator'));
+const RotationScheduler = lazy(() => import('./pages/tools/RotationScheduler'));
+const BracketGenerator = lazy(() => import('./pages/tools/BracketGenerator'));
+const CourtLinesGuide = lazy(() => import('./pages/tools/CourtLinesGuide'));
 const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -80,6 +88,14 @@ function App() {
               <Route path={ROUTES.TOURNAMENTS} element={<Tournaments />} />
               <Route path={ROUTES.GLOSSARY} element={<Glossary />} />
               <Route path={ROUTES.RATINGS} element={<Ratings />} />
+              <Route path={ROUTES.TECHNIQUES} element={<Techniques />} />
+              <Route path={ROUTES.TECHNIQUE_DETAIL} element={<TechniqueDetail />} />
+              <Route path={ROUTES.COURT_DETAIL} element={<CourtDetail />} />
+              <Route path={ROUTES.TOOLS} element={<Tools />} />
+              <Route path={ROUTES.TOOL_DUPR} element={<DuprSimulator />} />
+              <Route path={ROUTES.TOOL_ROTATION} element={<RotationScheduler />} />
+              <Route path={ROUTES.TOOL_BRACKET} element={<BracketGenerator />} />
+              <Route path={ROUTES.TOOL_COURT_LINES} element={<CourtLinesGuide />} />
               <Route path={ROUTES.NEWS} element={<NewsDetail />} />
               <Route path={ROUTES.PRIVACY_POLICY} element={<PrivacyPolicy />} />
               <Route path={ROUTES.CONTACT} element={<Contact />} />

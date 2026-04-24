@@ -30,12 +30,25 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
   - 伯朗盃 (11月, 宜蘭)
 
 ### 教學資源
+- [技巧百科](https://picklemastertw.site/techniques): 12+ 匹克球技巧深度教學頁（大陸式握拍、Dink、Third Shot Drop、正反手抽球、發球、接發球、截擊、Reset、Erne、ATP、疊站等），每則含步驟分解、常見錯誤、練習菜單、職業選手心法。
 - [新手懶人包](https://picklemastertw.site/newcomer-guide): 費用試算、轉項分析、裝備入門建議。
 - [3D 互動規則](https://picklemastertw.site/rules): 雙彈跳規則、廚房區（NVZ）、發球規則、計分制度。
 - [學習路徑](https://picklemastertw.site/learning-paths): 從握拍到 ERNE / ATP 進階技巧的系統化課程。
 - [技巧教學](https://picklemastertw.site/learning): 3D 戰術板、球路分析、站位教學。
 - [術語字典](https://picklemastertw.site/glossary): 中英對照匹克球術語大全，涵蓋規則、技術、戰術、裝備、場地、賽制。
 - [DUPR 評級指南](https://picklemastertw.site/ratings): 2026 全球通用動態評級系統 1.0-8.0 完整說明。
+
+### 實用工具
+- [工具箱總覽](https://picklemastertw.site/tools): 所有純前端工具入口。
+- [DUPR 模擬器](https://picklemastertw.site/tools/dupr-simulator): 預估下一場比賽對你 DUPR 的影響。
+- [雙打輪轉排程器](https://picklemastertw.site/tools/rotation): 5-16 人約球自動排輪次。
+- [比賽籤表產生器](https://picklemastertw.site/tools/bracket): 單淘汰、循環賽籤表自動生成。
+- [場地劃線指南](https://picklemastertw.site/tools/court-lines): 標準尺寸、羽球場改造方法。
+- [比賽計分器](https://picklemastertw.site/scorer): 單打/雙打即時計分。
+
+### 球場個別頁面
+每座球場都有獨立詳情頁：https://picklemastertw.site/courts/court-{id}
+含地址、開放時間、費用、設施、Google 導航連結、即時天氣（戶外球場）。
 
 ### 裝備指南
 - [球拍選購](https://picklemastertw.site/equipment): 材質比較、重量挑選、品牌分析，含智能推薦系統。

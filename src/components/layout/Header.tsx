@@ -24,30 +24,42 @@ const Header = () => {
             { path: ROUTES.COURTS, label: '找球場', type: 'link' },
             { path: ROUTES.TOURNAMENTS, label: '賽事', type: 'link' },
             {
-                label: '新手專區',
+                label: '學習',
                 type: 'dropdown',
                 items: [
+                    { path: ROUTES.TECHNIQUES, label: '技巧百科', description: '12+ 深度教學含步驟分解', badge: 'NEW' },
                     { path: ROUTES.NEWCOMER_GUIDE, label: '新手懶人包', description: '費用、轉項分析、入門指引', badge: '必看' },
                     { path: ROUTES.RULES, label: '規則教學', description: '3D 互動式規則解說' },
-                    { path: ROUTES.GLOSSARY, label: '術語字典', description: '中英對照術語大全', badge: 'NEW' },
+                    { path: ROUTES.LEARNING_PATHS, label: '學習路徑', description: '從入門到精通的系統化課程' },
+                    { path: ROUTES.GLOSSARY, label: '術語字典', description: '中英對照術語大全' },
                     { path: ROUTES.FAQ, label: '常見問題', description: '解決你的所有疑問' },
                 ],
             },
             {
-                label: '裝備與攻略',
+                label: '裝備選手',
                 type: 'dropdown',
                 items: [
                     { path: ROUTES.EQUIPMENT, label: '裝備指南', description: '球拍材質與選購建議' },
                     { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '世界冠軍的裝備與數據', badge: 'HOT' },
-                    { path: ROUTES.LEARNING_PATHS, label: '學習路徑', description: '從入門到精通的系統化課程' },
-                    { path: ROUTES.RATINGS, label: 'DUPR 評級指南', description: '2026 全球通用評分系統', badge: 'NEW' },
+                    { path: ROUTES.RATINGS, label: 'DUPR 評級指南', description: '2026 全球通用評分系統' },
+                ],
+            },
+            {
+                label: '工具',
+                type: 'dropdown',
+                items: [
+                    { path: ROUTES.TOOLS, label: '工具總覽', description: '所有實用工具一覽', badge: 'NEW' },
+                    { path: ROUTES.TOOL_DUPR, label: 'DUPR 模擬器', description: '預估下一場的評分變動' },
+                    { path: ROUTES.TOOL_ROTATION, label: '輪轉排程器', description: '約球輪次自動排程' },
+                    { path: ROUTES.TOOL_BRACKET, label: '籤表產生器', description: '單淘汰/循環賽籤表' },
+                    { path: ROUTES.TOOL_COURT_LINES, label: '場地劃線指南', description: '標準尺寸與改造教學' },
+                    { path: ROUTES.SCORER, label: '比賽計分器', description: '單打/雙打即時計分' },
                 ],
             },
             {
                 label: '更多',
                 type: 'dropdown',
                 items: [
-                    { path: ROUTES.SCORER, label: '計分器', description: '實用比賽計分工具' },
                     { path: ROUTES.RESOURCES, label: '資源中心', description: '影片、社團與書籍推薦' },
                     { path: ROUTES.ABOUT, label: '關於我們', description: 'Picklemaster 的故事' },
                 ],

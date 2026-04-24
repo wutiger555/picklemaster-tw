@@ -95,6 +95,36 @@ export const pageSEO: Record<string, SEOConfig> = {
     title: 'DUPR 評級指南 2026 | 全球通用匹克球動態評分系統完整解析',
     description: '2026 起 DUPR 成為全球匹克球賽事標準。1.0-8.0 評級意義、技術對照、典型球員、如何取得評分。台灣選手完整指南。',
     keywords: 'DUPR,DUPR評級,匹克球評分,匹克球等級,Dynamic Universal Pickleball Rating,匹克球 DUPR 台灣,pickleball rating'
+  },
+  techniques: {
+    title: '匹克球技巧百科 | 12+ 深度教學：Dink、Drop、Erne、ATP 一次掌握',
+    description: '從新手握拍到進階 ERNE/ATP，每個技巧都有完整步驟分解、常見錯誤修正、專屬練習菜單與職業選手心法。匹克球技術護城河內容。',
+    keywords: '匹克球技巧,pickleball techniques,匹克球教學,dink 教學,third shot drop,erne 教學,ATP 匹克球,匹克球練習,匹克球訓練,匹克球戰術'
+  },
+  tools: {
+    title: '匹克球工具箱 | DUPR 模擬器、輪轉排程、籤表、計分器',
+    description: '球友與教練的純前端工具集：DUPR 評分模擬、雙打輪轉排程器、比賽籤表產生器、場地劃線指南、計分器。免下載、免註冊。',
+    keywords: '匹克球工具,DUPR 模擬器,輪轉排程,籤表產生器,匹克球計分器,匹克球 App,pickleball tools'
+  },
+  'tool-dupr': {
+    title: 'DUPR 評分模擬器 | 預估下一場比賽對你的評分影響',
+    description: '輸入你與對手 DUPR 評分、比賽結果，即時預估你下一場的 DUPR 變動。純前端 Elo 簡化演算法，零後端、即時計算。',
+    keywords: 'DUPR 模擬器,DUPR 計算,匹克球評分預估,DUPR simulator,DUPR calculator'
+  },
+  'tool-rotation': {
+    title: '雙打輪轉排程器 | 5-16 人約球自動排輪次',
+    description: '球友約球不再手忙腳亂！輸入人數、場次、場地數，自動產生避免重複配對的雙打輪轉表，支援列印帶到球場用。',
+    keywords: '匹克球 輪轉,雙打輪轉,約球排程,pickleball rotation,匹克球 約球工具'
+  },
+  'tool-bracket': {
+    title: '比賽籤表產生器 | 單淘汰、循環賽 PDF 列印',
+    description: '辦球友聚會、社區小型賽事必備。自動生成單淘汰、循環賽籤表，支援列印。適合 4-32 人規模賽事。',
+    keywords: '比賽籤表,pickleball bracket generator,匹克球賽事,循環賽,單淘汰,匹克球小比賽'
+  },
+  'tool-court-lines': {
+    title: '匹克球場地劃線指南 | 標準尺寸 + 羽球場改造教學',
+    description: '完整場地尺寸（20×44 英尺）、廚房區位置、網高規範、場地材質建議。教你如何把羽毛球場改造為匹克球場。',
+    keywords: '匹克球 場地尺寸,pickleball court dimensions,羽球場 改 匹克球,匹克球 劃線,匹克球 場地建造'
   }
 };
 

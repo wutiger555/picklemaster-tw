@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CourtsData, Court } from '../types';
 import CourtMap from '../components/map/CourtMap';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { courtSlug } from '../utils/slugify';
 import SEOHead from '../components/common/SEOHead';
 
 // Pickleball Icon Component
@@ -422,9 +424,13 @@ const Courts = () => {
                           }`}
                       >
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className="font-semibold text-neutral-900 text-sm leading-tight">
+                          <Link
+                            to={`/courts/${courtSlug(court.id)}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="font-semibold text-neutral-900 text-sm leading-tight hover:text-emerald-600 hover:underline"
+                          >
                             {court.name}
-                          </h3>
+                          </Link>
                           {court.is_new && (
                             <span className="flex-shrink-0 px-1.5 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-semibold rounded">
                               NEW
@@ -484,9 +490,9 @@ const Courts = () => {
                   <div className="flex flex-col md:flex-row md:items-start gap-4">
                     <div className="flex-1">
                       <div className="flex items-start gap-3 mb-2">
-                        <h3 className="font-bold text-neutral-900 text-lg">
+                        <Link to={`/courts/${courtSlug(court.id)}`} className="font-bold text-neutral-900 text-lg hover:text-emerald-600 hover:underline">
                           {court.name}
-                        </h3>
+                        </Link>
                         {court.is_new && (
                           <span className="px-2 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-bold rounded">
                             NEW

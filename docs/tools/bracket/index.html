@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon-v2.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-v2-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-v2-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- iOS PWA Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Picklemaster TW" />
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#10b981" />
+
+  <!-- Cache Control -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <!-- SEO Meta Tags (2026 Revision) -->
+  <meta name="description"
+    content="匹克球台灣 Picklemaster Taiwan - 台灣最完整的匹克球權威資訊平台。2026 全台 60+ 球場地圖、CTPF 認證賽事總覽、DUPR 評級指南、3D 互動規則教學、術語字典與裝備選購。從新手到職業選手一站搞定。" />
+  <meta name="keywords" content="比賽籤表,pickleball bracket generator,匹克球賽事" />
+  <meta name="author" content="Picklemaster Taiwan" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="geo.region" content="TW" />
+  <meta name="geo.placename" content="Taiwan" />
+  <meta name="geo.position" content="23.5;121.0" />
+  <meta name="ICBM" content="23.5, 121.0" />
+  <meta name="language" content="zh-TW" />
+  <meta name="revisit-after" content="3 days" />
+  <meta name="rating" content="general" />
+  <meta name="distribution" content="global" />
+  <!-- AI Crawler friendly hints -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://picklemastertw.site/tools/bracket" />
+  <meta property="og:title" content="比賽籤表產生器 | 單淘汰、循環賽 PDF 列印" />
+  <meta property="og:description" content="自動生成單淘汰、循環賽籤表，支援列印。" />
+  <meta property="og:image" content="https://picklemastertw.site/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Picklemaster Taiwan - 台灣匹克球權威平台" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:site_name" content="Picklemaster Taiwan" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://picklemastertw.site/tools/bracket" />
+  <meta name="twitter:title" content="比賽籤表產生器 | 單淘汰、循環賽 PDF 列印" />
+  <meta name="twitter:description" content="自動生成單淘汰、循環賽籤表，支援列印。" />
+  <meta name="twitter:image" content="https://picklemastertw.site/og-image.png" />
+  <meta name="twitter:image:alt" content="Picklemaster Taiwan" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://picklemastertw.site/tools/bracket" />
+
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://www.google.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
+
+  <!-- JSON-LD Structured Data (2026 AI-Search Optimized) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://picklemastertw.site/#website",
+          "url": "https://picklemastertw.site/",
+          "name": "匹克大師台灣 | Picklemaster Taiwan",
+          "alternateName": ["Picklemaster TW", "匹克球台灣", "台灣匹克球"],
+          "description": "台灣最完整的匹克球權威資訊平台，提供 60+ 球場地圖、2026 賽事總覽、DUPR 評級、3D 互動規則、術語字典與裝備指南",
+          "inLanguage": "zh-TW",
+          "publisher": { "@id": "https://picklemastertw.site/#organization" },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://picklemastertw.site/?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://picklemastertw.site/#organization",
+          "name": "Picklemaster Taiwan",
+          "alternateName": "匹克大師台灣",
+          "url": "https://picklemastertw.site/",
+          "foundingDate": "2024-06",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://picklemastertw.site/android-chrome-v2-512x512.png",
+            "width": 512,
+            "height": 512
+          },
+          "image": "https://picklemastertw.site/og-image.png",
+          "description": "台灣匹克球權威資訊平台，涵蓋球場、賽事、教學、裝備、評級與術語。",
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "url": "https://picklemastertw.site/contact",
+            "availableLanguage": ["zh-TW", "en"]
+          },
+          "areaServed": {
+            "@type": "Country",
+            "name": "Taiwan"
+          },
+          "knowsAbout": [
+            "Pickleball", "匹克球", "匹克球規則", "匹克球場地", "DUPR 評級",
+            "匹克球裝備", "匹克球技巧", "匹克球戰術", "CTPF", "Taiwan Pickleball"
+          ],
+          "sameAs": [
+            "https://github.com/wutiger555/picklemaster-tw"
+          ]
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "@id": "https://picklemastertw.site/#navigation",
+          "name": ["球場地圖", "2026 賽事", "新手入門", "規則教學", "術語字典", "DUPR 評級", "裝備指南", "學習路徑"],
+          "url": [
+            "https://picklemastertw.site/courts",
+            "https://picklemastertw.site/tournaments",
+            "https://picklemastertw.site/newcomer-guide",
+            "https://picklemastertw.site/rules",
+            "https://picklemastertw.site/glossary",
+            "https://picklemastertw.site/ratings",
+            "https://picklemastertw.site/equipment",
+            "https://picklemastertw.site/learning-paths"
+          ]
+        },
+        {
+          "@type": "SportsOrganization",
+          "@id": "https://picklemastertw.site/#sports-info",
+          "name": "Taiwan Pickleball Information Hub",
+          "sport": "Pickleball",
+          "areaServed": { "@type": "Country", "name": "Taiwan" },
+          "parentOrganization": {
+            "@type": "SportsOrganization",
+            "name": "中華民國匹克球協會",
+            "alternateName": "Chinese Taipei Pickleball Federation (CTPF)",
+            "url": "https://www.ctpf.org.tw/"
+          }
+        },
+        {
+          "@type": "AboutPage",
+          "@id": "https://picklemastertw.site/#sport",
+          "about": {
+            "@type": "Sport",
+            "name": "匹克球 (Pickleball)",
+            "description": "結合網球、羽毛球與桌球特色的球拍運動，1965 年發源於美國華盛頓州。場地 20×44 英尺，使用實心球拍與有孔塑膠球。適合各年齡層，易學易玩。"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Speakable Schema for AI voice readers -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["h1", "h2", ".speakable"]
+      }
+    }
+    </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+  </noscript>
+
+  <title>比賽籤表產生器 | 單淘汰、循環賽 PDF 列印</title>
+  <script type="module" crossorigin src="/assets/index-B0xVhj42.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-Dv78CP3Y.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-Chj3G53z.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-BrpxdRLV.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-CENr1fap.css">
+</head>
+
+<body>
+  <!-- GitHub Pages SPA 路由恢復腳本 -->
+  <script>
+    // 檢查是否有從 404.html 重定向過來的路徑
+    (function () {
+      var redirect = sessionStorage.getItem('redirect');
+      if (redirect) {
+        sessionStorage.removeItem('redirect');
+        history.replaceState(null, '', redirect);
+      }
+    })();
+  </script>
+  <div id="root"></div>
+
+  <!-- Service Worker Registration for PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered:', registration);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+
+  <!-- Lazy Load Google AdSense -->
+  <script>
+    const loadAdSense = () => {
+      const script = document.createElement('script');
+      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      document.head.appendChild(script);
+
+      // Remove event listeners after loading the script
+      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
+        window.removeEventListener(event, loadAdSense, { once: true })
+      );
+    };
+
+    // Add event listeners to trigger AdSense loading on user interaction
+    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
+      window.addEventListener(event, loadAdSense, { once: true, passive: true })
+    );
+  </script>
+</body>
+
+</html>

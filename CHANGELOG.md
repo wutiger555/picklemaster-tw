@@ -7,6 +7,87 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.4.0] - Content Depth & Pure-Info Tools (2026-04-24)
+
+### 🎯 Mission
+深化內容護城河與實用工具，從「權威資訊中心」走向「匹克球界 Wikipedia + 工具箱」。全部純前端、零後端、零資料庫。
+
+### Featured Updates 🚀
+- **12 個技巧深度百科頁**：從握拍到 ATP，每頁 2000+ 字完整教學
+- **58 個球場獨立詳情頁**：自動生成，含即時天氣、Google 導航
+- **4 個純前端工具**：DUPR 模擬器、輪轉排程、籤表產生、場地劃線指南
+- **Open-Meteo 天氣整合**：戶外球場自動顯示當下適不適合打球
+
+### Added
+
+#### 📖 技巧百科（Techniques）
+- `/techniques` 索引頁：12 個技巧，可依分類（擊球/發球/網前/防守/戰術/步法）、等級（新手→高手）篩選
+- `/techniques/:slug` 每個技巧獨立深度頁，含：
+  - 關鍵要點、步驟分解、常見錯誤與修正、專屬練習菜單
+  - 職業選手心法、相關技巧、YouTube 搜尋建議
+  - HowTo Schema 結構化資料（AI 搜尋優化）
+- **12 個技巧**：Continental Grip、Dink、Third Shot Drop、Forehand/Backhand Drive、Serve、Return of Serve、Volley、Reset、Erne、ATP、Stacking
+
+#### 🗺️ 球場詳情頁（Court Detail）
+- `/courts/court-{id}` 每座球場獨立頁
+- 完整資訊表、設施清單、場地說明
+- Google 導航、地圖檢視、線上預約快速按鈕
+- **戶外球場自動顯示即時天氣**（Open-Meteo API，無需 key）
+- SportsActivityLocation JSON-LD 結構化資料
+- 58 座球場 = 58 個獨立 SEO 頁面
+
+#### 🛠️ 純前端工具箱（Tools）
+- `/tools` 工具總覽頁
+- `/tools/dupr-simulator` **DUPR 評分模擬器**
+  - 輸入你與對手 DUPR、比賽結果，預估下一場評分變動
+  - 採用簡化 Elo 演算法（實際 DUPR 用貝葉斯動態模型）
+- `/tools/rotation` **雙打輪轉排程器**
+  - 5-16 人自動排輪次，避免重複配對
+  - 可自訂球員名字、設定場次與場地數
+  - 支援列印帶到球場用
+- `/tools/bracket` **比賽籤表產生器**
+  - 單淘汰 + 循環賽兩種賽制
+  - 自動處理不完整人數（bye），列印友善
+- `/tools/court-lines` **場地劃線指南**
+  - 完整標準尺寸表、SVG 場地示意圖
+  - 羽球場改造匹克球場逐步教學
+  - 6 種場地材質比較
+
+#### 🌤️ 天氣整合
+- `WeatherWidget` 組件：Open-Meteo API（無 key、免費、商用可用）
+- 戶外球場詳情頁自動顯示：溫度、天氣代碼、風速、濕度、降雨
+- 自動判斷「適合打球」或「建議改期/改室內場」
+
+#### 🧭 導航大改
+- 選單重整為 5 大區塊：找球場、賽事、學習、裝備選手、工具、更多
+- 「學習」下拉含技巧百科、新手懶人包、規則、學習路徑、術語、FAQ
+- 「工具」下拉一鍵通達所有工具
+
+### Changed
+
+- **`llms.txt`** 大幅擴充：新增技巧百科、工具箱、球場個別頁描述
+- **Courts 頁**：列表與卡片的球場名稱改為連結，可點擊進入詳情
+- **靜態頁產生器**：
+  - 新增 12 條技巧路由 + 58 條球場路由的靜態 HTML 生成
+  - 每頁注入專屬 HowTo / SportsActivityLocation JSON-LD
+  - sitemap.xml 總 URL 從 18 增至 **88+**
+- **SEO**：seo.ts 新增 7 個頁面配置（techniques, tools, 4 tools, ...）
+
+### Technical Notes
+
+- **純前端實作**：所有工具使用 React state + localStorage（無後端、無 DB）
+- **Open-Meteo**：選用無 key、CORS 友善、Taiwan 時區支援的氣象 API
+- **SEO 爆發**：從 v1.3.0 的 ~20 條 URL → v1.4.0 的 ~88 條，每條都有獨特內容與 schema
+- **類型安全**：所有新頁面皆有完整 TypeScript 類型
+
+### Build Stats
+- 新增檔案：12 個 (data + pages + tools + component)
+- 技巧內容：~12,000 字中文深度教學
+- 總路由：16 → 28（+ 動態 slug 路由）
+- 靜態生成頁：16 → 88+
+
+---
+
 ## [v1.3.0] - 2026 Authority & AI-Search Overhaul (2026-04-24)
 
 ### 🎯 Mission

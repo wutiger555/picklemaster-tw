@@ -508,6 +508,55 @@ const pageSEO = {
             ]
         }
     },
+    techniques: {
+        title: '匹克球技巧百科 | 12+ 深度教學：Dink、Drop、Erne、ATP 一次掌握',
+        description: '從新手握拍到進階 ERNE/ATP，每個技巧都有完整步驟分解、常見錯誤修正、專屬練習菜單與職業選手心法。',
+        keywords: '匹克球技巧,pickleball techniques,dink 教學,third shot drop,erne,ATP 匹克球',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "匹克球技巧百科",
+            "description": "12+ 個匹克球技巧深度教學頁面",
+            "url": "https://picklemastertw.site/techniques"
+        }
+    },
+    tools: {
+        title: '匹克球工具箱 | DUPR 模擬器、輪轉排程、籤表、計分器',
+        description: '球友與教練的純前端工具集：DUPR 評分模擬、雙打輪轉排程器、比賽籤表產生器、場地劃線指南、計分器。',
+        keywords: '匹克球工具,DUPR 模擬器,輪轉排程,籤表產生器,匹克球計分器',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "匹克球工具箱"
+        }
+    },
+    'tools/dupr-simulator': {
+        title: 'DUPR 評分模擬器 | 預估下一場比賽對你的評分影響',
+        description: '輸入你與對手 DUPR、比賽結果，即時預估你下一場的 DUPR 變動。',
+        keywords: 'DUPR 模擬器,DUPR 計算,匹克球評分預估',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "DUPR Simulator",
+            "applicationCategory": "SportsApplication",
+            "operatingSystem": "Web"
+        }
+    },
+    'tools/rotation': {
+        title: '雙打輪轉排程器 | 5-16 人約球自動排輪次',
+        description: '球友約球自動排輪次，避免重複配對。',
+        keywords: '匹克球 輪轉,雙打輪轉,約球排程'
+    },
+    'tools/bracket': {
+        title: '比賽籤表產生器 | 單淘汰、循環賽 PDF 列印',
+        description: '自動生成單淘汰、循環賽籤表，支援列印。',
+        keywords: '比賽籤表,pickleball bracket generator,匹克球賽事'
+    },
+    'tools/court-lines': {
+        title: '匹克球場地劃線指南 | 標準尺寸 + 羽球場改造教學',
+        description: '完整場地尺寸、廚房區、網高規範、場地材質建議。',
+        keywords: '匹克球 場地尺寸,pickleball court dimensions,羽球場 改 匹克球'
+    },
     'newcomer-guide': {
         title: '第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南',
         description: '想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算、羽球轉匹克球技巧分析。',
@@ -569,6 +618,22 @@ const pageSEO = {
         }
     }
 };
+
+// Techniques (per-slug static pages) — mirror of src/data/techniquesData.ts (minimal subset for SEO)
+const TECHNIQUE_SLUGS = [
+    { slug: 'continental-grip', name: '大陸式握拍', nameEn: 'Continental Grip', tagline: '匹克球最通用的握拍法，一種握法應付所有球路' },
+    { slug: 'dink', name: '軟球', nameEn: 'Dink', tagline: '匹克球靈魂技巧 — 廚房戰的核心武器' },
+    { slug: 'third-shot-drop', name: '第三球下切', nameEn: 'Third Shot Drop', tagline: '從中階升級到進階的關鍵一球' },
+    { slug: 'forehand-drive', name: '正手抽球', nameEn: 'Forehand Drive', tagline: '進攻基石 — 快速、低平、有穿透力' },
+    { slug: 'backhand-drive', name: '反手抽球', nameEn: 'Backhand Drive', tagline: '業餘選手常輸的關鍵' },
+    { slug: 'serve', name: '發球', nameEn: 'Serve', tagline: '比賽唯一自己掌握節奏的一球' },
+    { slug: 'return-of-serve', name: '接發球', nameEn: 'Return of Serve', tagline: '打得深、跟上網前' },
+    { slug: 'volley', name: '截擊', nameEn: 'Volley', tagline: '網前致勝武器' },
+    { slug: 'reset', name: '重置球', nameEn: 'Reset', tagline: '被強攻？用軟球穩住戰局' },
+    { slug: 'erne', name: 'ERNE 繞邊跳擊', nameEn: 'Erne', tagline: '匹克球最帥的進階技巧' },
+    { slug: 'atp', name: 'ATP 繞網柱球', nameEn: 'Around The Post', tagline: '不過網、繞柱而擊' },
+    { slug: 'stacking', name: '疊站戰術', nameEn: 'Stacking', tagline: '雙打隱形武器' },
+];
 
 async function generateStaticPages() {
     try {
@@ -661,6 +726,66 @@ async function generateStaticPages() {
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
 
+        // ===== Generate per-technique pages =====
+        console.log('Generating technique detail pages...');
+        for (const t of TECHNIQUE_SLUGS) {
+            const dirPath = path.join(BUILD_DIR, 'techniques', t.slug);
+            fs.mkdirSync(dirPath, { recursive: true });
+            const title = `${t.name} (${t.nameEn}) 完整教學 | 匹克球技巧百科`;
+            const desc = `${t.tagline} — 深度步驟分解、常見錯誤、練習菜單與職業選手心法。`;
+            const canonical = `${BASE_URL}/techniques/${t.slug}`;
+            let content = template;
+            content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
+            content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+            content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+            content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+            content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+            content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+            const howTo = {
+                "@context": "https://schema.org", "@type": "HowTo",
+                "name": `如何學會${t.name}`,
+                "description": t.tagline,
+                "url": canonical
+            };
+            content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(howTo)}</script>`);
+            fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+        }
+
+        // ===== Generate per-court pages =====
+        console.log('Generating court detail pages...');
+        try {
+            const courtsData = JSON.parse(fs.readFileSync(path.join(BUILD_DIR, 'data', 'courts.json'), 'utf-8'));
+            for (const court of courtsData.courts) {
+                const slug = `court-${court.id}`;
+                const dirPath = path.join(BUILD_DIR, 'courts', slug);
+                fs.mkdirSync(dirPath, { recursive: true });
+                const title = `${court.name} | ${court.location.city}${court.location.district || ''}匹克球場資訊`;
+                const desc = `${court.name}位於${court.location.address}，${court.type === 'indoor' ? '室內' : '戶外'}場、${court.courts_count}面、${court.fee === 'free' ? '免費' : court.price || '付費'}。`;
+                const canonical = `${BASE_URL}/courts/${slug}`;
+                let content = template;
+                content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
+                content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+                content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+                content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+                const ldJson = {
+                    "@context": "https://schema.org", "@type": "SportsActivityLocation",
+                    "name": court.name, "sport": "Pickleball",
+                    "address": { "@type": "PostalAddress", "streetAddress": court.location.address, "addressLocality": court.location.district, "addressRegion": court.location.city, "addressCountry": "TW" },
+                    "geo": { "@type": "GeoCoordinates", "latitude": court.location.lat, "longitude": court.location.lng },
+                    "openingHours": court.opening_hours,
+                    "isAccessibleForFree": court.fee === 'free',
+                    "url": canonical
+                };
+                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(ldJson)}</script>`);
+                fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+            }
+            console.log(`  Generated ${courtsData.courts.length} court detail pages`);
+        } catch (e) {
+            console.warn('  Skip per-court generation:', e.message);
+        }
+
         // Generate Sitemap.xml (2026 enhanced)
         console.log('Generating sitemap.xml...');
         const today = new Date().toISOString().split('T')[0];
@@ -702,6 +827,31 @@ async function generateStaticPages() {
         <priority>${meta.p}</priority>
     </url>`;
         }
+
+        // Add per-technique URLs
+        for (const t of TECHNIQUE_SLUGS) {
+            sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/techniques/${t.slug}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.85</priority>
+    </url>`;
+        }
+
+        // Add per-court URLs
+        try {
+            const courtsData = JSON.parse(fs.readFileSync(path.join(BUILD_DIR, 'data', 'courts.json'), 'utf-8'));
+            for (const court of courtsData.courts) {
+                sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/courts/court-${court.id}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>`;
+            }
+        } catch (e) { /* skip if missing */ }
 
         sitemapContent += `
 </urlset>`;

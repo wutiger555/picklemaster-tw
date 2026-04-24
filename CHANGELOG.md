@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.6.0] - Players Database & History Timeline (2026-04-25)
+
+### 🎯 Mission
+深化權威內容最後一哩路：選手資料庫擴充 8x、加入 60 年匹克球編年史。每個選手名字、每個規則演變都是獨立 SEO 入口。
+
+### Featured Updates 🚀
+- **選手資料庫 3 → 25+ 位**（PPA Tour + MLP + 亞洲區 + 台灣）
+- **每位選手獨立詳情頁**：含完整戰績、裝備、打法分析
+- **匹克球 60 年編年史**：31 個關鍵事件 + 11 次規則演變
+- **Sitemap: 102 → 128 URLs**
+
+### Added
+
+#### 🏆 選手資料庫（Players Database）
+- `/pro-players` 重構，使用新資料源，25+ 位選手全部可連結到詳情頁
+- `/players/:slug` 每位選手獨立詳情頁：
+  - 基本資料（國籍、身高、慣用手、DUPR、打法）
+  - 戰力雷達（力量/控球/速度/戰術/經驗 5 維度）
+  - 生涯成就時間軸
+  - 使用裝備與贊助商
+  - 招牌技巧
+  - Person JSON-LD 結構化資料
+  - 相關選手推薦
+- **選手涵蓋**：
+  - **男子 Top 10**: Ben Johns, JW Johnson, Gabriel Tardio, Federico Staksrud, Tyson McGuffin, Christian Alshon, Riley Newman, Collin Johns, Dylan Frazier, Pablo Tellez
+  - **女子 Top 8**: Anna Leigh Waters, Catherine Parenteau, Anna Bright, Parris Todd, Jorja Johnson, Leigh Waters, Lea Jansen, Vivienne David
+  - **傳奇/轉項**: Jack Sock（前 ATP #8）、Simone Jardim（名人堂）
+  - **亞洲**: Daisuke Nakata（日本）、Nguyen Phuong（越南）、Paye Zhang（中國）
+  - **台灣**: 陳冠宇（男單）、林怡安（女單）
+
+#### 📅 匹克球編年史（History Timeline）
+- `/history` 完整 1965-2026 時間軸
+- **31 個關鍵事件**：
+  - 1965 誕生於華盛頓州
+  - 1976 首屆全美錦標賽
+  - 1984 USAPA 成立
+  - 2010 IFP 國際聯盟
+  - 2016 PPA 職業化
+  - **2017 CTPF 台灣協會成立**
+  - 2020 COVID 帶動爆發
+  - 2021 Drop Serve 合法化 + MLP 成立
+  - 2022 LeBron/Brady 投資
+  - **2024 APG 台中首屆亞洲運動會**
+  - 2026 台灣人口破 120 萬
+- **11 次規則演變史**：
+  - Drop Serve 合法化
+  - Let Serve 取消重發
+  - Rally Scoring 實驗
+  - 熱壓成型球拍規範
+  - DUPR 官方化
+  - 年齡組細化到 85+
+- 視覺化時間軸（里程碑事件金色突顯）
+- 可按類別篩選（全球/台灣/規則/賽事/科技）
+
+### Changed
+
+- **Header 導航**：「裝備選手」下拉新增「匹克球編年史」
+- **SEO**：新增 history 頁面配置、Person schema 注入、Article schema for history
+- **Static Generator**：
+  - 25 條選手路由 `/players/:slug` 靜態 HTML 生成
+  - history 頁面結構化資料
+  - Sitemap URLs: 102 → **128**（+26）
+
+### Technical Notes
+
+- **SEO 關鍵字覆蓋爆發**：25 位選手 × 平均 3 個長尾關鍵字 = 75+ 新入口（「Ben Johns paddle」「Anna Leigh Waters bio」等）
+- **權威內容**：歷史時間軸建立永久資產，不會過時
+- **Person JSON-LD**：每位選手的 Schema 含 nationality, award, sponsor 等欄位，有助於 Google Knowledge Graph
+
+### Build Stats
+- 新增檔案：4 個（playersData.ts, historyData.ts, PlayerDetail.tsx, History.tsx）
+- 修改：ProPlayers.tsx 大幅重構
+- 總頁面：102 → **128+**
+- 選手：3 → **25+**
+- 歷史事件：0 → **31 個**
+- 規則演變：0 → **11 次**
+
+---
+
 ## [v1.5.0] - Long-Form Content & AI-Overview Optimization (2026-04-25)
 
 ### 🎯 Mission

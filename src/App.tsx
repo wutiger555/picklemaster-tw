@@ -28,6 +28,8 @@ const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Techniques = lazy(() => import('./pages/Techniques'));
 const TechniqueDetail = lazy(() => import('./pages/TechniqueDetail'));
 const CourtDetail = lazy(() => import('./pages/CourtDetail'));
+const PlayerDetail = lazy(() => import('./pages/PlayerDetail'));
+const History = lazy(() => import('./pages/History'));
 const Tools = lazy(() => import('./pages/Tools'));
 const DuprSimulator = lazy(() => import('./pages/tools/DuprSimulator'));
 const RotationScheduler = lazy(() => import('./pages/tools/RotationScheduler'));
@@ -95,6 +97,8 @@ function App() {
               <Route path={ROUTES.TECHNIQUES} element={<Techniques />} />
               <Route path={ROUTES.TECHNIQUE_DETAIL} element={<TechniqueDetail />} />
               <Route path={ROUTES.COURT_DETAIL} element={<CourtDetail />} />
+              <Route path={ROUTES.PLAYER_DETAIL} element={<PlayerDetail />} />
+              <Route path={ROUTES.HISTORY} element={<History />} />
               <Route path={ROUTES.TOOLS} element={<Tools />} />
               <Route path={ROUTES.TOOL_DUPR} element={<DuprSimulator />} />
               <Route path={ROUTES.TOOL_ROTATION} element={<RotationScheduler />} />

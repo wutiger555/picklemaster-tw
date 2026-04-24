@@ -43,6 +43,7 @@ const Header = () => {
                     { path: ROUTES.EQUIPMENT, label: '裝備指南', description: '球拍材質與選購建議' },
                     { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '世界冠軍的裝備與數據', badge: 'HOT' },
                     { path: ROUTES.RATINGS, label: 'DUPR 評級指南', description: '2026 全球通用評分系統' },
+                    { path: ROUTES.HISTORY, label: '匹克球編年史', description: '1965-2026 全球與台灣大事記', badge: 'NEW' },
                 ],
             },
             {

@@ -44,6 +44,8 @@ export const ROUTES = {
   TECHNIQUES: '/techniques',
   TECHNIQUE_DETAIL: '/techniques/:slug',
   COURT_DETAIL: '/courts/:slug',
+  PLAYER_DETAIL: '/players/:slug',
+  HISTORY: '/history',
   TOOLS: '/tools',
   TOOL_DUPR: '/tools/dupr-simulator',
   TOOL_ROTATION: '/tools/rotation',

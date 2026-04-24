@@ -130,6 +130,11 @@ export const pageSEO: Record<string, SEOConfig> = {
     title: '匹克球深度專欄 | 器材評測、運動科學、族群指南一次看',
     description: '每篇 2000-3000 字深度長文。十大球拍評測、匹克球 vs 網球完整比較、傷害預防、銀髮族入門、營養體能訓練。',
     keywords: '匹克球長文,匹克球評測,匹克球科學,匹克球指南,pickleball article,匹克球教學文章'
+  },
+  history: {
+    title: '匹克球 60 年編年史 1965-2026 | 全球與台灣大事記、規則演變史',
+    description: '從 1965 年華盛頓州一個後院發明的遊戲，到 2026 年全球千萬人的運動。30+ 個關鍵事件 × 11 次規則演變完整記錄。',
+    keywords: '匹克球歷史,匹克球起源,Pickleball history,匹克球規則演變,CTPF 歷史,匹克球大事紀,匹克球編年史'
   }
 };
 

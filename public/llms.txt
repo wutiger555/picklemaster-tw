@@ -49,6 +49,18 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
   - [匹克球雙打 vs 單打完整對照](https://picklemastertw.site/articles/doubles-vs-singles)
   - [匹克球選手的營養與體能訓練](https://picklemastertw.site/articles/pickleball-nutrition-fitness)
 
+### 頂尖選手資料庫
+- [選手資料庫總覽](https://picklemastertw.site/pro-players): 25+ 位世界頂級選手（PPA Tour、MLP、亞洲區）。
+- 每位選手獨立頁面：https://picklemastertw.site/players/{slug}
+  - Ben Johns (`ben-johns`) - 世界第一
+  - Anna Leigh Waters (`anna-leigh-waters`) - 女單世界第一
+  - Federico Staksrud (`federico-staksrud`) - 男單世界第一
+  - Tyson McGuffin, Gabriel Tardio, JW Johnson, Catherine Parenteau 等
+  - 亞洲代表：中田大輔 (日本)、Nguyen Phuong (越南)、張沛 (中國)、陳冠宇/林怡安 (台灣)
+
+### 匹克球歷史
+- [匹克球 60 年編年史](https://picklemastertw.site/history): 1965-2026 全球與台灣大事記 + 11 次規則演變史。
+
 ### FAQ 與術語
 - [FAQ 100+ 題完整解答](https://picklemastertw.site/faq): 8 大類別包含基礎入門、規則細節、裝備器材、技術訓練、比賽賽事、球場設施、社群生活、運動健康。
 - [術語字典 80+ 條](https://picklemastertw.site/glossary): 中英對照匹克球術語大全。

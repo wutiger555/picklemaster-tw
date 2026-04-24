@@ -508,6 +508,19 @@ const pageSEO = {
             ]
         }
     },
+    history: {
+        title: '匹克球 60 年編年史 1965-2026 | 全球與台灣大事記',
+        description: '從 1965 年華盛頓州一個後院發明的遊戲，到 2026 年全球千萬人的運動。30+ 關鍵事件 + 11 次規則演變。',
+        keywords: '匹克球歷史,匹克球起源,匹克球規則演變,CTPF 歷史,匹克球編年史',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": "匹克球 60 年編年史 1965-2026",
+            "description": "匹克球運動從 1965 年誕生至今的完整編年史",
+            "datePublished": "2026-04-25",
+            "author": { "@type": "Organization", "name": "Picklemaster Taiwan" }
+        }
+    },
     articles: {
         title: '匹克球深度專欄 | 器材評測、運動科學、族群指南一次看',
         description: '每篇 2000-3000 字深度長文。十大球拍評測、匹克球 vs 網球完整比較、傷害預防、銀髮族入門、營養體能訓練。',
@@ -631,6 +644,35 @@ const pageSEO = {
     }
 };
 
+// Players (per-slug static pages) — minimal subset for SEO
+const PLAYER_SLUGS = [
+    { slug: 'ben-johns', name: 'Ben Johns', country: 'USA', bio: '匹克球界 GOAT，連續 5+ 年世界第一。' },
+    { slug: 'jw-johnson', name: 'JW Johnson', country: 'USA', bio: '20 歲出頭就登頂的年輕天才，身高臂長強攻打法。' },
+    { slug: 'gabriel-tardio', name: 'Gabriel Tardio', country: 'USA', bio: '天才少年，15 歲擊敗世界前 10。' },
+    { slug: 'federico-staksrud', name: 'Federico Staksrud', country: 'Argentina / USA', bio: '男單世界第一，阿根廷出生的全能型選手。' },
+    { slug: 'tyson-mcguffin', name: 'Tyson McGuffin', country: 'USA', bio: '匹克球界最具群眾魅力的明星。' },
+    { slug: 'christian-alshon', name: 'Christian Alshon', country: 'USA', bio: 'Selkirk 王牌，穩定的底線對抽。' },
+    { slug: 'riley-newman', name: 'Riley Newman', country: 'USA', bio: 'Newman 家族兄妹檔一員，頂尖雙打選手。' },
+    { slug: 'collin-johns', name: 'Collin Johns', country: 'USA', bio: 'Ben Johns 的親哥哥，前世界級桌球選手。' },
+    { slug: 'dylan-frazier', name: 'Dylan Frazier', country: 'USA', bio: '新世代左撇子代表。' },
+    { slug: 'pablo-tellez', name: 'Pablo Tellez', country: 'Colombia', bio: '哥倫比亞之光，強力底線抽球。' },
+    { slug: 'anna-leigh-waters', name: 'Anna Leigh Waters', country: 'USA', bio: '女子匹克球 GOAT，18 歲三冠王。' },
+    { slug: 'catherine-parenteau', name: 'Catherine Parenteau', country: 'Canada / USA', bio: '加拿大左撇子，精準控球大師。' },
+    { slug: 'anna-bright', name: 'Anna Bright', country: 'USA', bio: '前網球選手，強攻女子圈罕見。' },
+    { slug: 'parris-todd', name: 'Parris Todd', country: 'USA', bio: '前 WTA 選手，Vatic Pro 首席簽約。' },
+    { slug: 'jorja-johnson', name: 'Jorja Johnson', country: 'USA', bio: 'JW Johnson 妹妹，19 歲進前 5。' },
+    { slug: 'leigh-waters', name: 'Leigh Waters', country: 'USA', bio: 'Anna Leigh 母親，50+ 仍世界頂尖。' },
+    { slug: 'lea-jansen', name: 'Lea Jansen', country: 'USA', bio: '前排球選手轉項，網前威脅。' },
+    { slug: 'vivienne-david', name: 'Vivienne David', country: 'USA', bio: '混雙專家，與 Ben Johns 搭檔。' },
+    { slug: 'jack-sock', name: 'Jack Sock', country: 'USA', bio: '前 ATP #8，最具代表性轉項案例。' },
+    { slug: 'simone-jardim', name: 'Simone Jardim', country: 'Brazil / USA', bio: '匹克球名人堂，4 年女單世界第一。' },
+    { slug: 'daisuke-nakata', name: 'Daisuke Nakata 中田大輔', country: 'Japan', bio: '日本匹克球代表。' },
+    { slug: 'phuong-nguyen', name: 'Nguyen Phuong', country: 'Vietnam', bio: '越南匹克球之光，APG 銅牌。' },
+    { slug: 'paye-zhang', name: 'Paye Zhang 張沛', country: 'China', bio: '中國女子代表，前桌球國手。' },
+    { slug: 'taiwan-open-m1', name: '陳冠宇', country: 'Taiwan', bio: '台灣男單第一，CTPF 國家隊主力。' },
+    { slug: 'taiwan-open-w1', name: '林怡安', country: 'Taiwan', bio: '台灣女單第一，精準控球。' },
+];
+
 // Articles (per-slug static pages) — mirror of src/data/articlesData.ts metadata only
 const ARTICLE_SLUGS = [
     { slug: '2026-best-pickleball-paddles', title: '2026 十大匹克球拍完整評測', summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro IV、Selkirk Labs Project 002、Paddletek Bantam TS-5 等頂級選手愛用款。', category: '器材評測' },
@@ -749,6 +791,32 @@ async function generateStaticPages() {
             // Write file
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
+
+        // ===== Generate per-player pages =====
+        console.log('Generating player detail pages...');
+        for (const p of PLAYER_SLUGS) {
+            const dirPath = path.join(BUILD_DIR, 'players', p.slug);
+            fs.mkdirSync(dirPath, { recursive: true });
+            const title = `${p.name} 完整資料 | 球拍、戰績、打法 | 匹克球選手資料庫`;
+            const desc = `${p.name} - ${p.country} 匹克球職業選手。${p.bio}`;
+            const canonical = `${BASE_URL}/players/${p.slug}`;
+            let content = template;
+            content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
+            content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+            content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+            content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+            content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+            content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+            const playerSchema = {
+                "@context": "https://schema.org", "@type": "Person",
+                "name": p.name, "nationality": p.country,
+                "jobTitle": "Professional Pickleball Player",
+                "description": p.bio, "url": canonical
+            };
+            content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(playerSchema)}</script>`);
+            fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+        }
+        console.log(`  Generated ${PLAYER_SLUGS.length} player detail pages`);
 
         // ===== Generate per-article pages =====
         console.log('Generating article detail pages...');
@@ -879,6 +947,17 @@ async function generateStaticPages() {
         <lastmod>${today}</lastmod>
         <changefreq>${meta.f}</changefreq>
         <priority>${meta.p}</priority>
+    </url>`;
+        }
+
+        // Add per-player URLs
+        for (const p of PLAYER_SLUGS) {
+            sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/players/${p.slug}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.85</priority>
     </url>`;
         }
 

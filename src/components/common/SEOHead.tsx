@@ -185,7 +185,8 @@ const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> 
     'newcomer-guide': '新手懶人包',
     'techniques': '技巧百科',
     'articles': '深度專欄',
-    'tools': '工具箱'
+    'tools': '工具箱',
+    'history': '編年史'
   };
 
   if (page !== 'home' && pageNames[page]) {

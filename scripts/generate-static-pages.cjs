@@ -508,6 +508,29 @@ const pageSEO = {
             ]
         }
     },
+    paddles: {
+        title: '匹克球拍完整資料庫 | 40+ 款規格對照、價格、評分',
+        description: 'JOOLA、Selkirk、Paddletek、CRBN 等 12 大品牌 25+ 款球拍規格完整對照。',
+        keywords: '匹克球拍資料庫,球拍規格,JOOLA Perseus,Selkirk Labs,Paddletek Bantam',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "匹克球拍完整資料庫",
+            "description": "25+ 款熱門匹克球拍完整規格對照",
+            "url": "https://picklemastertw.site/paddles"
+        }
+    },
+    videos: {
+        title: '匹克球教學影片中心 | 20+ 支精選 YouTube 國際名師',
+        description: 'Briones、Pickleball University、Enhance Pickleball 等頂級頻道精選教學。每支附中文解說與推薦理由。',
+        keywords: '匹克球影片,匹克球教學影片,pickleball tutorial,Briones Pickleball',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "匹克球教學影片中心",
+            "url": "https://picklemastertw.site/videos"
+        }
+    },
     history: {
         title: '匹克球 60 年編年史 1965-2026 | 全球與台灣大事記',
         description: '從 1965 年華盛頓州一個後院發明的遊戲，到 2026 年全球千萬人的運動。30+ 關鍵事件 + 11 次規則演變。',

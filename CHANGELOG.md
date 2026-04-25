@@ -7,6 +7,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.7.0] - Paddle Database & Video Hub (2026-04-25)
+
+### 🎯 Mission
+裝備與教學內容深化：球拍規格資料庫 + YouTube 國際名師精選聚合。讓「想買球拍」、「想看教學」的搜尋者最終都來這裡。
+
+### Featured Updates 🚀
+- **球拍資料庫**：25+ 款熱門球拍完整規格對照
+- **影片教學中心**：20+ 支國際頂級 YouTube 教學精選
+- **Sitemap: 128 → 130 URLs**
+
+### Added
+
+#### 🏓 球拍完整資料庫（`/paddles`）
+- 12 大品牌 25+ 款球拍規格對照
+- 涵蓋 JOOLA、Selkirk、Paddletek、Six Zero、Engage、Franklin、CRBN、Gearbox、PROLITE、Vatic Pro、Electrum、Onix
+- 每款資料包含：
+  - 重量、厚度、核心類型、面板材質
+  - 握把長度與尺寸
+  - 4 維度評分（力量/控球/旋轉/容錯）
+  - 代言選手、產品特色、適合族群、缺點
+  - USAP 認證狀態、台幣價格
+- **依品牌、等級篩選 + 排序**（評分高至低 / 價格低至高 / 高至低）
+- ItemList JSON-LD schema
+
+**精選球拍**：
+- 職業：JOOLA Perseus Pro IV (16mm/14mm), Selkirk Labs Project 002, CRBN Truefoam, Bantam ALW-C
+- 進階：JOOLA Hyperion CFS, Scorpeus Pro IV, Magnus 3, Vanguard Power Air, Six Zero DBD, Bantam TS-5, Six Zero Ruby, CRBN 1X, Vatic Pro Flash, Electrum Model E
+- 中階：Engage Pursuit Pro1, Franklin Ben Johns Signature, Carbon STK, Onix Evoke
+- 新手：PROLITE Titan Pro, Selkirk Amped S2
+
+#### 📺 教學影片中心（`/videos`）
+- 20 支精選 YouTube 國際名師教學
+- 6 大類別：基礎、技術、戰術、裝備、比賽分析、心理
+- 涵蓋頻道：
+  - **Briones Pickleball** (140 萬訂閱)
+  - **Pickleball University**
+  - **Enhance Pickleball**
+  - **JOOLA 官方頻道**
+- 每支影片附：
+  - 中文解說
+  - 「為什麼推薦」理由
+  - 適合等級
+  - 預估觀看次數
+- 分類與等級雙重篩選
+
+**精選影片**：
+- 新手：3 分鐘搞懂規則、握拍教學、新手 10 大錯誤
+- 技術：Master the Dink、Third Shot Drop、Volley、Reset、Erne、Topspin Drive
+- 戰術：雙打站位、Stacking、單打戰術、中間球戰術
+- 裝備：2026 球拍購買指南、熱壓成型解析
+- 比賽分析：Ben Johns 為什麼這麼強、ALW 反手秘密
+- 心理：心理素質、賽前準備
+
+### Changed
+
+- **Header 導航**：
+  - 「裝備選手」加入「球拍資料庫」（NEW badge）
+  - 「裝備選手」加入「教學影片中心」（NEW badge）
+- **靜態頁產生器**：新增 paddles + videos 路由
+- **llms.txt**：完整列出新內容
+- **Sitemap URLs**: 128 → **130**
+
+### Build Stats
+- 新增檔案：4 個（paddleDatabase.ts, videosData.ts, PaddleDatabase.tsx, Videos.tsx）
+- 球拍資料：25 款
+- 影片精選：20 支
+- 總頁面：128 → **130+**
+
+---
+
 ## [v1.6.0] - Players Database & History Timeline (2026-04-25)
 
 ### 🎯 Mission

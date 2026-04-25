@@ -41,9 +41,11 @@ const Header = () => {
                 type: 'dropdown',
                 items: [
                     { path: ROUTES.EQUIPMENT, label: '裝備指南', description: '球拍材質與選購建議' },
-                    { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '世界冠軍的裝備與數據', badge: 'HOT' },
+                    { path: ROUTES.PADDLE_DATABASE, label: '球拍資料庫', description: '40+ 款球拍規格完整對照', badge: 'NEW' },
+                    { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '25+ 位世界冠軍資料庫' },
                     { path: ROUTES.RATINGS, label: 'DUPR 評級指南', description: '2026 全球通用評分系統' },
-                    { path: ROUTES.HISTORY, label: '匹克球編年史', description: '1965-2026 全球與台灣大事記', badge: 'NEW' },
+                    { path: ROUTES.HISTORY, label: '匹克球編年史', description: '1965-2026 大事記' },
+                    { path: ROUTES.VIDEOS, label: '教學影片中心', description: '20+ 國際名師精選', badge: 'NEW' },
                 ],
             },
             {

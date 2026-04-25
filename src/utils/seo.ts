@@ -135,6 +135,16 @@ export const pageSEO: Record<string, SEOConfig> = {
     title: '匹克球 60 年編年史 1965-2026 | 全球與台灣大事記、規則演變史',
     description: '從 1965 年華盛頓州一個後院發明的遊戲，到 2026 年全球千萬人的運動。30+ 個關鍵事件 × 11 次規則演變完整記錄。',
     keywords: '匹克球歷史,匹克球起源,Pickleball history,匹克球規則演變,CTPF 歷史,匹克球大事紀,匹克球編年史'
+  },
+  'paddle-database': {
+    title: '匹克球拍完整資料庫 | 40+ 款規格對照、價格、評分',
+    description: 'JOOLA、Selkirk、Paddletek、CRBN 等 12 大品牌 25+ 款球拍規格完整對照。重量、厚度、核心、面板、握把、價格一次查詢。',
+    keywords: '匹克球拍資料庫,球拍規格,JOOLA Perseus,Selkirk Labs,Paddletek Bantam,Six Zero,匹克球拍比較,pickleball paddle database'
+  },
+  videos: {
+    title: '匹克球教學影片中心 | 20+ 支精選 YouTube 國際名師',
+    description: 'Briones、Pickleball University、Enhance Pickleball 等頂級頻道精選教學。從新手規則到進階 ERNE，每支附中文解說與推薦理由。',
+    keywords: '匹克球影片,匹克球教學影片,pickleball tutorial,Briones Pickleball,Pickleball University,Enhance Pickleball,匹克球 YouTube'
   }
 };
 

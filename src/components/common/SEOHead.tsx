@@ -186,7 +186,9 @@ const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> 
     'techniques': '技巧百科',
     'articles': '深度專欄',
     'tools': '工具箱',
-    'history': '編年史'
+    'history': '編年史',
+    'paddles': '球拍資料庫',
+    'videos': '影片中心'
   };
 
   if (page !== 'home' && pageNames[page]) {

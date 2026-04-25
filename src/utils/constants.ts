@@ -46,6 +46,8 @@ export const ROUTES = {
   COURT_DETAIL: '/courts/:slug',
   PLAYER_DETAIL: '/players/:slug',
   HISTORY: '/history',
+  PADDLE_DATABASE: '/paddles',
+  VIDEOS: '/videos',
   TOOLS: '/tools',
   TOOL_DUPR: '/tools/dupr-simulator',
   TOOL_ROTATION: '/tools/rotation',

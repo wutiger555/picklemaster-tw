@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import CourtSkeleton from './CourtSkeleton';
 
 // Lazy load the heavy 3D component
@@ -7,19 +7,61 @@ const HeroCourt3D = lazy(() => import('./HeroCourt3D'));
 const HeroCourtPreview = () => {
   const [shouldLoad, setShouldLoad] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const idleHandleRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Defer loading to reduce initial TBT and improve LCP
-    // Wait for 3.5 seconds (after main content is likely loaded and user has oriented)
-    const timer = setTimeout(() => {
-      setShouldLoad(true);
-    }, 3500);
+    // Strategy: load 3D only when (a) browser is idle AND (b) hero is in viewport
+    // This dramatically reduces initial JS load without changing visuals
 
-    return () => clearTimeout(timer);
+    let observer: IntersectionObserver | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    const triggerLoad = () => setShouldLoad(true);
+
+    const scheduleIdleLoad = () => {
+      // Use requestIdleCallback if available (Chrome/Edge/Firefox), else setTimeout
+      const win = window as Window & {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+        cancelIdleCallback?: (id: number) => void;
+      };
+      if (typeof win.requestIdleCallback === 'function') {
+        idleHandleRef.current = win.requestIdleCallback(triggerLoad, { timeout: 4000 });
+      } else {
+        timeoutId = setTimeout(triggerLoad, 2500);
+      }
+    };
+
+    if (!containerRef.current) return;
+
+    if ('IntersectionObserver' in window) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) {
+            scheduleIdleLoad();
+            observer?.disconnect();
+          }
+        },
+        { rootMargin: '200px' } // start loading 200px before scrolling into view
+      );
+      observer.observe(containerRef.current);
+    } else {
+      scheduleIdleLoad();
+    }
+
+    return () => {
+      observer?.disconnect();
+      if (timeoutId) clearTimeout(timeoutId);
+      if (idleHandleRef.current !== null) {
+        const win = window as Window & { cancelIdleCallback?: (id: number) => void };
+        win.cancelIdleCallback?.(idleHandleRef.current);
+      }
+    };
   }, []);
 
   return (
     <div
+      ref={containerRef}
       className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

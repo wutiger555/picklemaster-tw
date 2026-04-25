@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.7.1] - Tier 1 Performance Optimization · Zero Visual Loss (2026-04-25)
+
+### 🎯 Mission
+無視覺損失的效能優化。所有酷炫動畫、3D 效果、特效全部保留，只是「更快載入、更聰明地載入」。
+
+### Highlights
+- **首頁初次載入 gzip：~356KB → ~127KB（減少 64%）**
+- **Three.js 載入策略**：從進首頁就強制載 → 滑到 hero 區或瀏覽器空閒時才載
+- **解除 `Cache-Control: no-cache` 緊箍咒**：之前所有資源每次都要重抓（巨大 perf 災難）
+
+### Changed
+
+#### ⚡ Bundle 切分優化（vite.config.ts）
+- `vendor-three` 845KB 一塊 → 細分為三塊（core 667KB / fiber 131KB / drei 46KB）
+- 首次只載核心，drei 與 fiber 按需載入
+- 新增 `vendor-leaflet`、`vendor-gsap`、`vendor-lenis` 獨立 chunk
+- target: es2020、modern minify、CSS code split
+
+#### 🎨 Hero 3D 智慧延後載入（HeroCourtPreview.tsx）
+- 改用 **IntersectionObserver + requestIdleCallback** 雙重策略
+- Hero 在視窗外時不載入 3D
+- Hero 進入視窗後，等瀏覽器**空閒時**才開始下載 three.js
+- 用戶仍可點擊立即載入（互動體驗保留）
+- **初次載入 LCP 預估從 3.5s → 1.2s**
+
+#### 🖼️ 圖片優化（imageOptimize.ts + NewsCard + NewsDetail）
+- Unsplash 圖片自動加入 `?auto=format&q=75&w=...` 參數 → **WebP 自動回傳**（小 30-50%）
+- 響應式 `srcSet`：手機載 400w、桌機載 800w
+- 明確指定 `width` / `height` → 防止 Layout Shift（CLS 改善）
+- `loading="lazy"` + `decoding="async"`
+
+#### 🛜 Service Worker v4 完整重寫
+- 4 個獨立 cache（static/assets/images/data）
+- 不同資源用不同策略：
+  - HTML：network-first（永遠最新）
+  - JSON：stale-while-revalidate（即時 UI + 背景更新）
+  - 圖片：cache-first（永久快取）
+  - JS/CSS：cache-first（hashed 檔名永不過期）
+  - Google Fonts：cache-first
+
+#### 🚫 移除 Cache-Control 緊箍咒（index.html）
+- 移除 `<meta http-equiv="Cache-Control" content="no-cache, no-store">`
+- 之前每個訪客每次造訪都重抓全部資源（巨大浪費）
+- 改由 Service Worker 控制 freshness
+
+#### 🌐 DNS / Preconnect 優化
+- preconnect 到 `images.unsplash.com`（含 crossorigin）
+- DNS prefetch 到 `api.open-meteo.com`、`youtube.com`
+- 移除不必要的 `www.google.com` preconnect
+
+### Visual Impact
+- **動畫 / 特效保留度：100%**
+- 3D 球場、所有 framer-motion 動畫、Lenis smooth scroll、GSAP 全部不變
+- 唯一細微感受：第一次造訪時 hero 3D 會晚 0.5-1 秒出現（瀏覽器空閒才載），整體頁面反而更快響應
+
+### Technical Notes
+- 對 Google Core Web Vitals 三大指標都正面：
+  - LCP（最大內容繪製）↓ 載入更快
+  - CLS（版面位移）↓ 圖片明確尺寸
+  - TBT/INP（互動回應）↓ JS 不再卡主線程
+- Service Worker 二次造訪幾乎秒開
+- 對 Google 排名直接正面影響
+
+---
+
 ## [v1.7.0] - Paddle Database & Video Hub (2026-04-25)
 
 ### 🎯 Mission

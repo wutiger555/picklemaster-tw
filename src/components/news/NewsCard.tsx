@@ -4,6 +4,7 @@ import type { NewsItem } from '../../types/news';
 import GlassCard from '../common/GlassCard';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
+import { optimizeImage, unsplashSrcSet } from '../../utils/imageOptimize';
 
 interface NewsCardProps {
     news: NewsItem;
@@ -81,11 +82,16 @@ const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
                     <motion.img
                         whileHover={{ scale: 1.05 }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
-                        src={news.image}
+                        src={optimizeImage(news.image, { width: 600 })}
+                        srcSet={unsplashSrcSet(news.image, [400, 600, 800])}
+                        sizes="(max-width: 768px) 100vw, 400px"
                         alt={news.title}
+                        width={600}
+                        height={300}
                         className="w-full h-full object-cover"
                         onError={() => setImageError(true)}
                         loading="lazy"
+                        decoding="async"
                     />
                 ) : (
                     // Fallback Design: Beautiful Gradient + Icon

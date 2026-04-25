@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { NEWS_DATA } from '../data/newsData';
+import { optimizeImage, unsplashSrcSet } from '../utils/imageOptimize';
 import SEOHead from '../components/common/SEOHead';
 import { ROUTES } from '../utils/constants';
 
@@ -97,10 +98,16 @@ const NewsDetail = () => {
                     <div className={`relative aspect-video w-full overflow-hidden rounded-2xl shadow-xl mb-10 ${imageError ? `bg-gradient-to-br ${fallbackGradients[newsItem.category] || 'from-gray-400 to-gray-500'}` : 'bg-neutral-200'}`}>
                         {!imageError ? (
                             <img
-                                src={newsItem.image}
+                                src={optimizeImage(newsItem.image, { width: 1200 })}
+                                srcSet={unsplashSrcSet(newsItem.image, [600, 1200, 1600])}
+                                sizes="(max-width: 768px) 100vw, 1200px"
                                 alt={newsItem.title}
+                                width={1200}
+                                height={675}
                                 className="w-full h-full object-cover"
                                 onError={() => setImageError(true)}
+                                loading="eager"
+                                decoding="async"
                             />
                         ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden text-white">

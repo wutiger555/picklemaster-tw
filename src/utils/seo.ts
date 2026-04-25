@@ -145,6 +145,21 @@ export const pageSEO: Record<string, SEOConfig> = {
     title: '匹克球教學影片中心 | 20+ 支精選 YouTube 國際名師',
     description: 'Briones、Pickleball University、Enhance Pickleball 等頂級頻道精選教學。從新手規則到進階 ERNE，每支附中文解說與推薦理由。',
     keywords: '匹克球影片,匹克球教學影片,pickleball tutorial,Briones Pickleball,Pickleball University,Enhance Pickleball,匹克球 YouTube'
+  },
+  'training-programs': {
+    title: '匹克球系統訓練菜單 | 8 套週日進度，從新手 8 週到進階 Reset 大師',
+    description: '8 套系統化匹克球訓練菜單：新手 8 週入門、Dink 4 週特訓、Third Shot Drop 4 週、銀髮族 12 週、雙打配合 6 週等。每套含逐週逐日具體練習。',
+    keywords: '匹克球訓練菜單,匹克球練習,匹克球新手菜單,匹克球進階,pickleball training program,匹克球訓練計劃,匹克球練習表'
+  },
+  playbook: {
+    title: '匹克球戰術劇本庫 | 30+ 情境戰術對照「對方做 X 我該怎麼辦」',
+    description: '30+ 比賽情境戰術速查：對方深發球、被連續強攻、搭檔失誤、心理崩盤等。每個情境含為什麼發生、最佳回應、替代方案、職業案例。',
+    keywords: '匹克球戰術,匹克球戰略,匹克球比賽戰術,雙打戰術,單打戰術,匹克球策略,pickleball tactics,匹克球比賽應對'
+  },
+  'hall-of-fame': {
+    title: '匹克球名人堂 | 1965 創辦人、傳奇選手、台灣推廣者',
+    description: '從 1965 三位後院父親 Joel Pritchard、Bill Bell、Barney McCallum，到 Ben Johns、Anna Leigh Waters 等當代傳奇。台灣 CTPF 陳朝鍵與推廣者也收錄。',
+    keywords: '匹克球名人堂,匹克球發明人,Joel Pritchard,Bill Bell,Barney McCallum,USAPA Hall of Fame,匹克球創辦人,陳朝鍵 CTPF,pickleball hall of fame'
   }
 };
 

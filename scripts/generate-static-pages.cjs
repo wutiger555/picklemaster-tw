@@ -508,6 +508,38 @@ const pageSEO = {
             ]
         }
     },
+    'training-programs': {
+        title: '匹克球系統訓練菜單 | 8 套週日進度，從新手 8 週到進階 Reset 大師',
+        description: '8 套系統化匹克球訓練菜單：新手 8 週入門、Dink 4 週特訓、銀髮族 12 週、雙打配合 6 週等。',
+        keywords: '匹克球訓練菜單,匹克球練習,匹克球新手菜單,pickleball training program',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "匹克球系統訓練菜單",
+            "url": "https://picklemastertw.site/training-programs"
+        }
+    },
+    playbook: {
+        title: '匹克球戰術劇本庫 | 30+ 情境戰術對照',
+        description: '30+ 比賽情境戰術速查：對方深發球、被連續強攻、搭檔失誤等。',
+        keywords: '匹克球戰術,匹克球戰略,匹克球比賽戰術,pickleball tactics',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "匹克球戰術劇本庫"
+        }
+    },
+    'hall-of-fame': {
+        title: '匹克球名人堂 | 1965 創辦人、傳奇選手、台灣推廣者',
+        description: '從 1965 三位後院父親 Joel Pritchard、Bill Bell、Barney McCallum，到 Ben Johns 等當代傳奇。',
+        keywords: '匹克球名人堂,匹克球發明人,Joel Pritchard,USAPA Hall of Fame,陳朝鍵',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "匹克球名人堂",
+            "url": "https://picklemastertw.site/hall-of-fame"
+        }
+    },
     paddles: {
         title: '匹克球拍完整資料庫 | 40+ 款規格對照、價格、評分',
         description: 'JOOLA、Selkirk、Paddletek、CRBN 等 12 大品牌 25+ 款球拍規格完整對照。',
@@ -667,6 +699,18 @@ const pageSEO = {
     }
 };
 
+// Training programs (per-slug static pages)
+const PROGRAM_SLUGS = [
+    { slug: 'beginner-8-week', title: '新手 8 週入門完整菜單', subtitle: '從 0 開始，8 週後能輕鬆下場打雙打' },
+    { slug: 'dink-master-4-week', title: 'Dink 軟球 4 週特訓菜單', subtitle: '從不敢打軟球到 Dink 對戰王者' },
+    { slug: 'drop-master-4-week', title: 'Third Shot Drop 4 週特訓', subtitle: '從中階升進階的關鍵技術' },
+    { slug: 'senior-12-week', title: '50+ 銀髮族 12 週入門菜單', subtitle: '安全溫和、循序漸進' },
+    { slug: 'doubles-partnership-6-week', title: '雙打配合 6 週默契養成', subtitle: '與固定搭檔的進階配合菜單' },
+    { slug: 'singles-fitness-6-week', title: '單打體能 6 週菜單', subtitle: '提升心肺、爆發力、橫向移動' },
+    { slug: 'backhand-master-4-week', title: '反手強化 4 週特訓', subtitle: '消除最大弱點 — 雙手反手養成' },
+    { slug: 'reset-master-4-week', title: 'Reset 防守大師 4 週特訓', subtitle: '從業餘升職業的最後一哩路' },
+];
+
 // Players (per-slug static pages) — minimal subset for SEO
 const PLAYER_SLUGS = [
     { slug: 'ben-johns', name: 'Ben Johns', country: 'USA', bio: '匹克球界 GOAT，連續 5+ 年世界第一。' },
@@ -814,6 +858,30 @@ async function generateStaticPages() {
             // Write file
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
+
+        // ===== Generate per-program pages =====
+        console.log('Generating training program pages...');
+        for (const p of PROGRAM_SLUGS) {
+            const dirPath = path.join(BUILD_DIR, 'training-programs', p.slug);
+            fs.mkdirSync(dirPath, { recursive: true });
+            const title = `${p.title} | 匹克球訓練菜單`;
+            const desc = `${p.subtitle} - 系統化訓練計劃，每週逐日詳細安排，含進度追蹤。`;
+            const canonical = `${BASE_URL}/training-programs/${p.slug}`;
+            let content = template;
+            content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
+            content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+            content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+            content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+            content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+            content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+            const howToSchema = {
+                "@context": "https://schema.org", "@type": "HowTo",
+                "name": p.title, "description": p.subtitle, "url": canonical
+            };
+            content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(howToSchema)}</script>`);
+            fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+        }
+        console.log(`  Generated ${PROGRAM_SLUGS.length} training program pages`);
 
         // ===== Generate per-player pages =====
         console.log('Generating player detail pages...');
@@ -970,6 +1038,17 @@ async function generateStaticPages() {
         <lastmod>${today}</lastmod>
         <changefreq>${meta.f}</changefreq>
         <priority>${meta.p}</priority>
+    </url>`;
+        }
+
+        // Add per-program URLs
+        for (const p of PROGRAM_SLUGS) {
+            sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/training-programs/${p.slug}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.85</priority>
     </url>`;
         }
 

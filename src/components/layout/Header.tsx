@@ -28,7 +28,9 @@ const Header = () => {
                 type: 'dropdown',
                 items: [
                     { path: ROUTES.TECHNIQUES, label: '技巧百科', description: '12+ 深度教學含步驟分解' },
-                    { path: ROUTES.ARTICLES, label: '深度專欄', description: '器材評測、運動科學、族群指南', badge: 'NEW' },
+                    { path: ROUTES.TRAINING_PROGRAMS, label: '訓練菜單', description: '8 套系統化週日進度', badge: 'NEW' },
+                    { path: ROUTES.PLAYBOOK, label: '戰術劇本庫', description: '30+ 情境戰術對照', badge: 'NEW' },
+                    { path: ROUTES.ARTICLES, label: '深度專欄', description: '器材評測、運動科學、族群指南' },
                     { path: ROUTES.NEWCOMER_GUIDE, label: '新手懶人包', description: '費用、轉項分析、入門指引', badge: '必看' },
                     { path: ROUTES.RULES, label: '規則教學', description: '3D 互動式規則解說' },
                     { path: ROUTES.LEARNING_PATHS, label: '學習路徑', description: '從入門到精通的系統化課程' },
@@ -45,7 +47,8 @@ const Header = () => {
                     { path: ROUTES.PRO_PLAYERS, label: '頂尖選手', description: '25+ 位世界冠軍資料庫' },
                     { path: ROUTES.RATINGS, label: 'DUPR 評級指南', description: '2026 全球通用評分系統' },
                     { path: ROUTES.HISTORY, label: '匹克球編年史', description: '1965-2026 大事記' },
-                    { path: ROUTES.VIDEOS, label: '教學影片中心', description: '20+ 國際名師精選', badge: 'NEW' },
+                    { path: ROUTES.HALL_OF_FAME, label: '名人堂', description: '創辦人、傳奇、台灣推廣者', badge: 'NEW' },
+                    { path: ROUTES.VIDEOS, label: '教學影片中心', description: '20+ 國際名師精選' },
                 ],
             },
             {

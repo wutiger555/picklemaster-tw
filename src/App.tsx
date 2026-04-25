@@ -32,6 +32,10 @@ const PlayerDetail = lazy(() => import('./pages/PlayerDetail'));
 const History = lazy(() => import('./pages/History'));
 const PaddleDatabase = lazy(() => import('./pages/PaddleDatabase'));
 const Videos = lazy(() => import('./pages/Videos'));
+const TrainingPrograms = lazy(() => import('./pages/TrainingPrograms'));
+const TrainingProgramDetail = lazy(() => import('./pages/TrainingProgramDetail'));
+const Playbook = lazy(() => import('./pages/Playbook'));
+const HallOfFame = lazy(() => import('./pages/HallOfFame'));
 const Tools = lazy(() => import('./pages/Tools'));
 const DuprSimulator = lazy(() => import('./pages/tools/DuprSimulator'));
 const RotationScheduler = lazy(() => import('./pages/tools/RotationScheduler'));
@@ -103,6 +107,10 @@ function App() {
               <Route path={ROUTES.HISTORY} element={<History />} />
               <Route path={ROUTES.PADDLE_DATABASE} element={<PaddleDatabase />} />
               <Route path={ROUTES.VIDEOS} element={<Videos />} />
+              <Route path={ROUTES.TRAINING_PROGRAMS} element={<TrainingPrograms />} />
+              <Route path={ROUTES.TRAINING_PROGRAM_DETAIL} element={<TrainingProgramDetail />} />
+              <Route path={ROUTES.PLAYBOOK} element={<Playbook />} />
+              <Route path={ROUTES.HALL_OF_FAME} element={<HallOfFame />} />
               <Route path={ROUTES.TOOLS} element={<Tools />} />
               <Route path={ROUTES.TOOL_DUPR} element={<DuprSimulator />} />
               <Route path={ROUTES.TOOL_ROTATION} element={<RotationScheduler />} />

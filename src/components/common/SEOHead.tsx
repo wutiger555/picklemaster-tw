@@ -188,7 +188,10 @@ const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> 
     'tools': '工具箱',
     'history': '編年史',
     'paddles': '球拍資料庫',
-    'videos': '影片中心'
+    'videos': '影片中心',
+    'training-programs': '訓練菜單',
+    'playbook': '戰術劇本',
+    'hall-of-fame': '名人堂'
   };
 
   if (page !== 'home' && pageNames[page]) {

@@ -58,6 +58,11 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
   - Tyson McGuffin, Gabriel Tardio, JW Johnson, Catherine Parenteau 等
   - 亞洲代表：中田大輔 (日本)、Nguyen Phuong (越南)、張沛 (中國)、陳冠宇/林怡安 (台灣)
 
+### 訓練菜單與戰術
+- [系統訓練菜單](https://picklemastertw.site/training-programs): 8 套完整訓練計劃，從新手 8 週入門到 Reset 大師 4 週特訓。每套含逐週逐日具體練習項目、進度追蹤（localStorage）。
+- [戰術劇本庫](https://picklemastertw.site/playbook): 30+ 比賽情境戰術速查 — 「對方做 X，我該怎麼辦」式的實用對照表。
+- [名人堂](https://picklemastertw.site/hall-of-fame): 1965 創辦人 Joel Pritchard、Bill Bell、Barney McCallum + 當代傳奇 Ben Johns、Anna Leigh Waters + 台灣推廣者陳朝鍵等。
+
 ### 球拍資料庫
 - [球拍完整資料庫](https://picklemastertw.site/paddles): 25+ 款熱門匹克球拍規格對照（JOOLA、Selkirk、Paddletek、Six Zero、Engage、Franklin、CRBN、Gearbox、PROLITE、Vatic Pro、Electrum、Onix）。重量、厚度、核心、面板、握把、價格、評分一次查詢。
 

@@ -7,6 +7,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.8.0] - Training Programs · Tactical Playbook · Hall of Fame (2026-04-25)
+
+### 🎯 Mission
+從「資訊權威」進化為「實用工具站」。三大新內容讓球友從查資料 → 真正執行訓練 → 比賽應用 → 連結歷史傳承。
+
+### Featured Updates 🚀
+- **8 套系統化訓練菜單**（含進度追蹤 localStorage）
+- **30+ 比賽情境戰術劇本**
+- **匹克球名人堂**（從 1965 創辦人到台灣推廣者）
+- **Sitemap: 130 → 141 URLs**
+
+### Added
+
+#### 🏋️ 系統化訓練菜單（`/training-programs`）
+- 8 套完整訓練計劃，每套含逐週逐日具體練習項目
+- 索引頁支援等級 + 專注領域雙重篩選
+- 詳情頁特色：
+  - 週數選擇器（黏性 sticky）
+  - 每日練習可勾選打勾，**進度自動儲存（localStorage）**
+  - 視覺化進度條
+  - HowTo JSON-LD schema
+- **8 套菜單**：
+  1. 新手 8 週入門完整菜單
+  2. Dink 軟球 4 週特訓
+  3. Third Shot Drop 4 週特訓
+  4. 50+ 銀髮族 12 週入門
+  5. 雙打配合 6 週默契養成
+  6. 單打體能 6 週菜單
+  7. 反手強化 4 週特訓
+  8. Reset 防守大師 4 週特訓
+
+#### 📋 戰術劇本庫（`/playbook`）
+- 30+ 比賽情境 × 最佳回應對照
+- 6 大分類：開局戰術、網前對戰、防守反擊、心理戰、雙打配合、單打應變
+- 每則含：情境描述、為什麼發生、最佳回應、替代方案、職業案例
+- 3 等級標記：新手必備、中階關鍵、進階武器
+- 搜尋 + 雙重篩選
+
+**精選情境**：
+- 對方深發球壓底線
+- 廚房 Dink Rally 中對方 Speed-up
+- 被連續扣殺到腳邊
+- 雙打搭檔失誤後的心理重置
+- 連失 4 球該叫暫停？
+- 一左一右搭檔的 Stacking 應用
+
+#### 🏆 匹克球名人堂（`/hall-of-fame`）
+- 4 大區塊：
+  1. **創辦人**：Joel Pritchard、Bill Bell、Barney McCallum（1965 後院父親）
+  2. **組織建設者**：David Lester、Sid Williams、Steve Wong
+  3. **當代傳奇**：Simone Jardim、Tyson McGuffin、Ben Johns
+  4. **台灣推廣者**：陳朝鍵 (CTPF)、CTPF 認證教練群、林書豪
+- 每位含貢獻、年代、入選名人堂年份
+- 與編年史、選手資料庫互相串連
+
+### Changed
+
+- **Header 導航**：
+  - 「學習」加入「訓練菜單」+「戰術劇本庫」（NEW badge）
+  - 「裝備選手」加入「名人堂」（NEW badge）
+- **Static Generator**：
+  - 新增 8 條訓練菜單詳情靜態頁
+  - 三個新索引頁（training-programs / playbook / hall-of-fame）
+  - Sitemap URLs: 130 → **141**
+- **llms.txt**：完整更新
+
+### Technical Notes
+
+- **Training Program 進度追蹤**：使用 localStorage 儲存（純客戶端，零後端）
+- **HowTo + CollectionPage Schema**：訓練菜單與戰術劇本都有結構化資料
+- **內容深度**：
+  - 訓練菜單總字數約 ~12,000 字
+  - 戰術劇本總字數約 ~8,000 字
+  - 名人堂約 ~3,000 字
+
+### Build Stats
+- 新增檔案：6 個（trainingProgramsData, playbookData, TrainingPrograms, TrainingProgramDetail, Playbook, HallOfFame）
+- 訓練菜單：8 套
+- 戰術情境：30 個
+- 名人堂條目：12 位
+- 總頁面：130 → **141+**
+- **總字數累計：~80,000 → ~103,000 中文字**
+
+---
+
 ## [v1.7.1] - Tier 1 Performance Optimization · Zero Visual Loss (2026-04-25)
 
 ### 🎯 Mission

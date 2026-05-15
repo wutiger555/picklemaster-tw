@@ -8,9 +8,9 @@ const BASE_URL = 'https://picklemastertw.site';
 // SEO Data (Copied from src/utils/seo.ts)
 const pageSEO = {
     courts: {
-        title: '全台匹克球場地圖 2025 » GPS 一鍵找球場、免費/室內場地查詢',
-        description: '不用再問哪裡可以打球了！收錄台灣 55+ 個匹克球場資訊。支援 GPS 定位搜尋最近球場，篩選室內冷氣、免費場地、風雨球場。台北、台中、高雄球場全收錄。',
-        keywords: '匹克球場,台灣匹克球場,匹克球場地圖,台北匹克球場,台中匹克球場,高雄匹克球場,台南匹克球場,新北匹克球場,桃園匹克球場,免費匹克球場,室內匹克球場,戶外匹克球場,匹克球場推薦,匹克球場預約,pickleball court taiwan,pickle day,社區匹克球場,河濱匹克球場,大安森林公園匹克球,匹克球場地,附近匹克球場,最近匹克球場',
+        title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 70+ 免費/室內/24H 場地',
+        description: '2026 全台最新匹克球場地圖！收錄 70+ 球場（含彰化大村/秀水/延平、竹北星空、台中 PICKZONE、北投樓下、台北網球中心、天母公園等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
+        keywords: '匹克球場,匹克球場地,皮克球場地,台灣匹克球場,匹克球場地圖,匹克球場推薦,匹克球場預約,戶外匹克球場,免費匹克球場,室內匹克球場,附近匹克球場,最近匹克球場,24小時匹克球場,台北匹克球場,新北匹克球場,桃園匹克球場地,新竹匹克球場,台中匹克球場,彰化匹克球場,嘉義匹克球場,台南匹克球場,高雄匹克球場,屏東匹克球場,宜蘭匹克球場,花蓮匹克球場,南投匹克球場,天母公園匹克球場,大村匹克球,竹北星空匹克球場,北投匹克球場,信義匹克球場,士林匹克球場,內湖匹克球場,大安匹克球場,松山匹克球場,中和匹克球場,新莊匹克球場,板橋匹克球場,淡水匹克球場,龜山匹克球場,中壢匹克球場,平鎮匹克球場,西屯匹克球場,南屯匹克球場,東區匹克球場,鳳山匹克球場,左營匹克球場,前金匹克球場,埔里匹克球場,大村匹克球場,秀水匹克球場,公園匹克球場,河濱匹克球場,學校匹克球場,運動中心匹克球,網球中心匹克球場,PICKZONE,Pickle Day,Downstairs Pickleball,Social N Pickle,P.dang,Seattle Pickleball,pickleball court taiwan,pickleball court taipei,pickleball court kaohsiung,pickleball court taichung,pickleball court taoyuan,pickleball court hsinchu,pickleball near me',
         structuredData: {
             "@context": "https://schema.org",
             "@graph": [
@@ -18,8 +18,8 @@ const pageSEO = {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.site/courts#webpage",
                     "url": "https://picklemastertw.site/courts",
-                    "name": "台灣匹克球場地圖 2025 | 全台 55+ 球場完整資訊",
-                    "description": "2025年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費場地。",
+                    "name": "台灣匹克球場地圖 2026 | 全台 70+ 球場完整資訊",
+                    "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
                     "isPartOf": { "@id": "https://picklemastertw.site/#website" },
                     "inLanguage": "zh-TW"
                 },
@@ -33,7 +33,7 @@ const pageSEO = {
                 {
                     "@type": "SportsActivityLocation",
                     "name": "台灣匹克球場地圖",
-                    "description": "提供全台灣超過55個匹克球場的詳細資訊與地圖",
+                    "description": "提供全台灣超過 70 個匹克球場的詳細資訊與地圖，涵蓋雙北、桃竹、中彰投、雲嘉南、高屏、宜花東",
                     "geo": { "@type": "GeoCoordinates", "latitude": "23.5", "longitude": "121.0" },
                     "address": { "@type": "PostalAddress", "addressCountry": "TW", "addressRegion": "台灣" }
                 },

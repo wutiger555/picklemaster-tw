@@ -11,15 +11,15 @@ export interface SEOConfig {
 // 頁面 SEO 配置
 export const pageSEO: Record<string, SEOConfig> = {
   home: {
-    title: '匹克球台灣 Picklemaster | 全台首選教學平台 & 55+ 球場地圖導航',
+    title: '匹克球台灣 Picklemaster | 全台首選教學平台 & 70+ 球場地圖導航',
     description: '想打匹克球？Picklemaster 提供 2025 最新全台球場地圖、3D 規則教學、裝備選購指南。新手入門必看，一站搞定所有匹克球資訊！立即探索。',
     keywords: '匹克球,台灣匹克球,匹克球台灣,pickleball taiwan,匹克球場地圖,匹克球教學,匹克球規則,匹克球裝備,台北匹克球,台中匹克球,高雄匹克球,台南匹克球,匹克球入門',
     ogImage: '/og-image.png'
   },
   courts: {
-    title: '全台匹克球場地圖 2025 » GPS 一鍵找球場、免費/室內場地查詢',
-    description: '不用再問哪裡可以打球了！收錄台灣 55+ 個匹克球場資訊。支援 GPS 定位搜尋最近球場，篩選室內冷氣、免費場地、風雨球場。台北、台中、高雄球場全收錄。',
-    keywords: '匹克球場,台灣匹克球場,匹克球場地圖,台北匹克球場,台中匹克球場,高雄匹克球場,台南匹克球場,新北匹克球場,桃園匹克球場,免費匹克球場,室內匹克球場,戶外匹克球場,匹克球場推薦,匹克球場預約,pickleball court taiwan,pickle day,社區匹克球場,河濱匹克球場,大安森林公園匹克球,匹克球場地,附近匹克球場,最近匹克球場'
+    title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 70+ 免費/室內/24H 場地',
+    description: '2026 全台最新匹克球場地圖！收錄 70+ 球場（含彰化大村/秀水/延平、竹北星空、台中 PICKZONE、北投樓下、台北網球中心、天母公園等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
+    keywords: '匹克球場,匹克球場地,皮克球場地,台灣匹克球場,匹克球場地圖,匹克球場推薦,匹克球場預約,戶外匹克球場,免費匹克球場,室內匹克球場,附近匹克球場,最近匹克球場,24小時匹克球場,台北匹克球場,新北匹克球場,桃園匹克球場地,新竹匹克球場,台中匹克球場,彰化匹克球場,嘉義匹克球場,台南匹克球場,高雄匹克球場,屏東匹克球場,宜蘭匹克球場,花蓮匹克球場,南投匹克球場,天母公園匹克球場,大村匹克球,竹北星空匹克球場,北投匹克球場,信義匹克球場,士林匹克球場,內湖匹克球場,大安匹克球場,松山匹克球場,中和匹克球場,新莊匹克球場,板橋匹克球場,淡水匹克球場,龜山匹克球場,中壢匹克球場,平鎮匹克球場,西屯匹克球場,南屯匹克球場,東區匹克球場,鳳山匹克球場,左營匹克球場,前金匹克球場,埔里匹克球場,大村匹克球場,秀水匹克球場,公園匹克球場,河濱匹克球場,學校匹克球場,運動中心匹克球,網球中心匹克球場,PICKZONE,Pickle Day,Downstairs Pickleball,Social N Pickle,P.dang,Seattle Pickleball,pickleball court taiwan,pickleball court taipei,pickleball court kaohsiung,pickleball court taichung,pickleball court taoyuan,pickleball court hsinchu,pickleball near me'
   },
   rules: {
     title: '3分鐘學會匹克球！超簡單 3D 互動規則教學 (雙彈跳/廚房區)',
@@ -196,7 +196,7 @@ export const faqStructuredData = {
       "name": "台灣哪裡可以打匹克球？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "台灣目前有超過55個匹克球場，分佈在台北、新北、台中、高雄、台南等主要城市。包括公園運動中心、學校操場、私人球館等。您可以使用我們的球場地圖功能，搜尋離您最近的匹克球場。"
+        "text": "台灣目前有超過 70 個匹克球場，分佈在台北、新北、桃園、新竹、台中、彰化、嘉義、台南、高雄、屏東、宜蘭、花蓮、南投等縣市。包括公園、河濱、運動中心、學校操場、24 小時室內專用館等。您可以使用我們的球場地圖功能，搜尋離您最近的匹克球場。"
       }
     },
     {
@@ -532,7 +532,7 @@ export const howToStructuredData = {
       "@type": "HowToStep",
       "position": 3,
       "name": "尋找附近球場",
-      "text": "使用我們的球場地圖功能，找到離您最近的匹克球場。台灣目前有55+個球場可供選擇。",
+      "text": "使用我們的球場地圖功能，找到離您最近的匹克球場。台灣目前有 70+ 個球場可供選擇。",
       "url": "https://picklemastertw.site/courts"
     },
     {
@@ -628,8 +628,8 @@ export const courtsLocationData = {
       "@type": "WebPage",
       "@id": "https://picklemastertw.site/courts#webpage",
       "url": "https://picklemastertw.site/courts",
-      "name": "台灣匹克球場地圖 2025 | 全台 55+ 球場完整資訊",
-      "description": "2025年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費場地。",
+      "name": "台灣匹克球場地圖 2026 | 全台 70+ 球場完整資訊",
+      "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
       "isPartOf": {
         "@id": "https://picklemastertw.site/#website"
       },
@@ -646,8 +646,8 @@ export const courtsLocationData = {
       "@type": "ItemList",
       "@id": "https://picklemastertw.site/courts#courtlist",
       "name": "台灣匹克球場完整列表",
-      "description": "收錄台北、新北、台中、高雄、台南、桃園等全台 55+ 個匹克球場的完整資訊",
-      "numberOfItems": 55,
+      "description": "收錄台北、新北、桃園、新竹、台中、彰化、嘉義、台南、高雄、屏東、宜蘭、花蓮、南投等全台 70+ 個匹克球場的完整資訊",
+      "numberOfItems": 72,
       "itemListElement": [
         {
           "@type": "SportsActivityLocation",

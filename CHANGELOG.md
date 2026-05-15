@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.8.1] - Courts Database Refresh · SEO Long-Tail Expansion (2026-05-15)
+
+### 🎯 Mission
+回應 Google Search Console 數據：`/courts` 曝光週成長 154%，熱門搜尋詞包含「戶外匹克球場」「桃園匹克球場地」「免費匹克球場」「天母公園匹克球場」「皮克球場地」。本次更新一次補滿全台新球場資料 + 大幅擴充長尾關鍵字命中。
+
+### Added — 14 座 2025-2026 新球場（58 → 72）
+- **台北**：樓下匹克球俱樂部 Downstairs（北投捷運石牌站 B1, 4 面）、青年公園、明德球場
+- **桃園**：YT SPORT 平鎮匹克球館（賦梅北路 400 號, 2 面）
+- **新竹**：竹北星空匹克球場（大新竹首座公立, 2026/3/27 啟用）、閃電匹克館 Inazuma（寶山）
+- **台中**：西雅圖室內匹克球俱樂部（東區環中東路五段 52 號, 06:00-23:00）、PICKZONE 凱旋館（南屯, 24h）、PICKZONE 朝馬館（西屯, 24h）
+- **彰化**：大村匹克球專用球場（彰化首座室內標準場）、秀水公園、延平公園
+- **嘉義**：嘉義高工
+- **南投**：埔里地理中心碑羽匹共用場
+
+### Changed — SEO 強化
+- Meta title / description / keywords 全面 2025 → 2026、55+ → 70+
+- 新增 14 縣市 + 各區域長尾關鍵字（含「皮克球場地」錯字版命中 GSC 數據）
+- 新增品牌名關鍵字：PICKZONE、Pickle Day、Downstairs Pickleball、Social N Pickle、P.dang、Seattle Pickleball
+- 新增情境關鍵字：24 小時匹克球場、公園/河濱/學校/運動中心/網球中心匹克球
+- 英文長尾擴充：pickleball court taipei/kaohsiung/taichung/taoyuan/hsinchu、pickleball near me
+- JSON-LD `numberOfItems` 55 → 72、FAQ 文案同步更新
+- 同步檔案：`src/utils/seo.ts`、`scripts/generate-static-pages.cjs`、`public/data/courts.json`、`docs/data/courts.json`
+
+### Fixed
+- 修復 `courts.json` 中重複的 ID 25、26（天母運動公園、宜蘭風雨多元運動球場 → 重新指派為 57、58），避免 React key 衝突與選取行為異常
+
 ## [v1.8.0] - Training Programs · Tactical Playbook · Hall of Fame (2026-04-25)
 
 ### 🎯 Mission

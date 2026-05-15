@@ -1,7 +1,7 @@
 {
   "name": "picklemaster-tw",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.8.1",
   "type": "module",
   "description": "台灣匹克球互動式學習平台 - 包含 3D 教學、球場地圖與學習路徑",
   "scripts": {

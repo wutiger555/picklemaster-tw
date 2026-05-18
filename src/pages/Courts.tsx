@@ -56,7 +56,7 @@ const Courts = () => {
     newCourts: courtsData?.courts.filter((c: Court) => c.is_new).length || 0,
   };
 
-  const filteredCourts = courtsData?.courts.filter((court: Court) => {
+  const filteredCourts = (courtsData?.courts.filter((court: Court) => {
     if (filterType !== 'all' && court.type !== filterType) return false;
     if (filterFee !== 'all' && court.fee !== filterFee) return false;
     if (filterOwnership !== 'all' && court.ownership !== filterOwnership) return false;
@@ -71,7 +71,16 @@ const Courts = () => {
       if (!matchName && !matchAddress && !matchCity && !matchFeatures) return false;
     }
     return true;
-  }) || [];
+  }) || []).slice().sort((a: Court, b: Court) => {
+    // 1. is_new desc — 真正新加入的球場優先
+    if (!!a.is_new !== !!b.is_new) return a.is_new ? -1 : 1;
+    // 2. added_date desc — 較新的先
+    const ad = (a as Court & { added_date?: string }).added_date || '';
+    const bd = (b as Court & { added_date?: string }).added_date || '';
+    if (ad !== bd) return bd.localeCompare(ad);
+    // 3. id asc — 穩定排序
+    return a.id - b.id;
+  });
 
   const typeLabels: Record<string, string> = { indoor: '室內', outdoor: '戶外', covered: '風雨' };
   const ownershipLabels: Record<string, string> = { public: '公營', private: '民營', school: '學校', community: '社區' };
@@ -402,9 +411,17 @@ const Courts = () => {
             >
               <div className="bg-white rounded-2xl shadow-lg shadow-neutral-900/5 border border-neutral-200/80 overflow-hidden">
                 <div className="p-4 border-b border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
-                  <h2 className="font-semibold text-neutral-900">球場列表</h2>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h2 className="font-semibold text-neutral-900">球場列表</h2>
+                    <span className="text-xs text-neutral-500">
+                      共 <span className="font-semibold text-neutral-700">{filteredCourts.length}</span> 座 · 新場優先
+                    </span>
+                  </div>
+                  {filteredCourts.length > 4 && (
+                    <p className="text-[11px] text-neutral-400 mt-1">↓ 滾動查看全部 {filteredCourts.length} 座球場</p>
+                  )}
                 </div>
-                <div className="max-h-[540px] overflow-y-auto">
+                <div className="max-h-[540px] lg:max-h-[640px] overflow-y-auto">
                   {filteredCourts.length === 0 ? (
                     <div className="p-8 text-center">
                       <PickleballIcon className="w-12 h-12 text-neutral-300 mx-auto mb-3" />

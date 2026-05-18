@@ -35,6 +35,7 @@ const Courts = () => {
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [showFilters, setShowFilters] = useState(false);
   const [collapsedCities, setCollapsedCities] = useState<Set<string>>(new Set());
+  const [playableNow, setPlayableNow] = useState(false);
 
   const toggleCity = (city: string) => {
     setCollapsedCities(prev => {
@@ -84,6 +85,17 @@ const Courts = () => {
     if (filterOwnership !== 'all' && court.ownership !== filterOwnership) return false;
     if (filterCity !== 'all' && court.location.city !== filterCity) return false;
     if (showNewOnly && !court.is_new) return false;
+    if (playableNow) {
+      // 室內 / 風雨永遠 OK；戶外要看天氣
+      if (court.type === 'outdoor') {
+        const w = weatherMap.get(weatherKey(court.location.lat, court.location.lng));
+        // 沒天氣資料時保守不過濾掉（避免使用者看不到任何戶外場）
+        if (w) {
+          if (w.isRaining) return false;
+          if (w.nextRainHours !== null && w.nextRainHours <= 2) return false;
+        }
+      }
+    }
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const matchName = court.name.toLowerCase().includes(query);
@@ -113,12 +125,13 @@ const Courts = () => {
     setFilterOwnership('all');
     setFilterCity('all');
     setShowNewOnly(false);
+    setPlayableNow(false);
     setSearchQuery('');
     setSelectedCourt(null);
   };
 
-  const hasActiveFilters = filterType !== 'all' || filterFee !== 'all' || filterOwnership !== 'all' || filterCity !== 'all' || showNewOnly || searchQuery;
-  const activeFilterCount = [filterType !== 'all', filterFee !== 'all', filterOwnership !== 'all', filterCity !== 'all', showNewOnly].filter(Boolean).length;
+  const hasActiveFilters = filterType !== 'all' || filterFee !== 'all' || filterOwnership !== 'all' || filterCity !== 'all' || showNewOnly || playableNow || searchQuery;
+  const activeFilterCount = [filterType !== 'all', filterFee !== 'all', filterOwnership !== 'all', filterCity !== 'all', showNewOnly, playableNow].filter(Boolean).length;
 
   if (loading) {
     return (
@@ -253,6 +266,22 @@ const Courts = () => {
                   </motion.button>
                 ))}
               </div>
+
+              <div className="w-px h-6 bg-neutral-200 flex-shrink-0" />
+
+              {/* Playable Now — weather-aware filter for outdoor courts */}
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setPlayableNow(v => !v)}
+                title="篩掉戶外正在下雨或 2 小時內會下雨的球場（室內/風雨場一律保留）"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 flex-shrink-0 ${playableNow
+                    ? 'bg-gradient-to-r from-sky-500 to-emerald-500 text-white shadow-md shadow-sky-500/25'
+                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
+              >
+                <span aria-hidden>{playableNow ? '✓' : '☔'}</span>
+                現在能打
+              </motion.button>
 
               <div className="w-px h-6 bg-neutral-200 flex-shrink-0" />
 
@@ -573,19 +602,32 @@ const Courts = () => {
                                 <p className="text-xs text-neutral-500 line-clamp-1 flex-1">
                                   {court.location.address}
                                 </p>
-                                <a
-                                  href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="flex-shrink-0 inline-flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 hover:underline font-medium"
-                                  title="用 Google Maps 導航到這座球場"
-                                >
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                                  </svg>
-                                  導航
-                                </a>
+                                <div className="flex-shrink-0 flex items-center gap-2">
+                                  <a
+                                    href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 hover:underline font-medium"
+                                    title="開車導航（Google Maps）"
+                                  >
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                    </svg>
+                                    導航
+                                  </a>
+                                  <a
+                                    href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}&travelmode=transit`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 hover:underline font-medium"
+                                    title="大眾運輸路線（含即時公車/捷運班次）"
+                                  >
+                                    <span aria-hidden>🚌</span>
+                                    公車
+                                  </a>
+                                </div>
                               </div>
                               <div className="flex flex-wrap items-center gap-1.5">
                                 <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.type === 'indoor' ? 'bg-blue-50 text-blue-600' :

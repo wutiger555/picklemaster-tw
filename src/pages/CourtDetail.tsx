@@ -71,6 +71,7 @@ const CourtDetail = () => {
   const isOutdoor = court.type === 'outdoor' || court.type === 'covered';
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${court.location.lat},${court.location.lng}`;
   const navigateUrl = `https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`;
+  const transitUrl = `https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}&travelmode=transit`;
 
   return (
     <LazyMotion features={domAnimation}>
@@ -214,7 +215,16 @@ const CourtDetail = () => {
                     rel="noopener noreferrer"
                     className="block w-full text-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold px-4 py-3 rounded-xl hover:shadow-lg transition-shadow"
                   >
-                    🧭 Google 導航
+                    🧭 開車導航
+                  </a>
+                  <a
+                    href={transitUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold px-4 py-3 rounded-xl hover:shadow-lg transition-shadow"
+                    title="開啟 Google Maps 大眾運輸路線，自動帶入即時公車/捷運班次"
+                  >
+                    🚌 大眾運輸路線
                   </a>
                   <a
                     href={mapsUrl}

@@ -566,18 +566,29 @@ export const equipmentProductData = {
       "name": "入門級匹克球拍",
       "description": "適合新手的複合材質匹克球拍，重量適中，價格實惠",
       "category": "匹克球拍",
+      "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
       "offers": {
         "@type": "AggregateOffer",
         "priceCurrency": "TWD",
         "lowPrice": "2000",
         "highPrice": "4000",
+        "offerCount": "8",
         "availability": "https://schema.org/InStock"
       },
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.3",
-        "reviewCount": "50"
-      }
+        "reviewCount": "50",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "review": [{
+        "@type": "Review",
+        "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
+        "datePublished": "2026-01-15",
+        "reviewBody": "入門級球拍價位親民、容錯率高，是初學者建立基本擊球感的最佳選擇。建議優先選擇複合材質、重量 7.6-8.0oz 的款式。",
+        "reviewRating": { "@type": "Rating", "ratingValue": "4.3", "bestRating": "5", "worstRating": "1" }
+      }]
     },
     {
       "@type": "Product",
@@ -585,18 +596,29 @@ export const equipmentProductData = {
       "name": "中階級匹克球拍",
       "description": "玻璃纖維材質，適合中級球員，提供良好的控球性和力量",
       "category": "匹克球拍",
+      "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
       "offers": {
         "@type": "AggregateOffer",
         "priceCurrency": "TWD",
         "lowPrice": "4000",
         "highPrice": "8000",
+        "offerCount": "12",
         "availability": "https://schema.org/InStock"
       },
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.6",
-        "reviewCount": "120"
-      }
+        "reviewCount": "120",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "review": [{
+        "@type": "Review",
+        "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
+        "datePublished": "2026-02-08",
+        "reviewBody": "中階拍兼顧控制與力量，玻纖或混碳面板手感佳，DUPR 3.0-3.5 球員首選價位帶。實測 Selkirk、Joola、Engage 等品牌在此區間表現穩定。",
+        "reviewRating": { "@type": "Rating", "ratingValue": "4.6", "bestRating": "5", "worstRating": "1" }
+      }]
     },
     {
       "@type": "Product",
@@ -604,18 +626,29 @@ export const equipmentProductData = {
       "name": "高階級碳纖維匹克球拍",
       "description": "職業級碳纖維材質，輕量化設計，提供最佳性能表現",
       "category": "匹克球拍",
+      "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
       "offers": {
         "@type": "AggregateOffer",
         "priceCurrency": "TWD",
         "lowPrice": "8000",
         "highPrice": "15000",
+        "offerCount": "18",
         "availability": "https://schema.org/InStock"
       },
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.8",
-        "reviewCount": "80"
-      }
+        "reviewCount": "80",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "review": [{
+        "@type": "Review",
+        "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
+        "datePublished": "2026-03-20",
+        "reviewBody": "頂級碳纖維拍的旋轉量與甜蜜點都遠勝中階拍，職業選手主流選擇。Joola Pro IV、Six Zero Black Diamond、CRBN1X 都在此價格區間，DUPR 4.0+ 推薦升級。",
+        "reviewRating": { "@type": "Rating", "ratingValue": "4.8", "bestRating": "5", "worstRating": "1" }
+      }]
     }
   ]
 };

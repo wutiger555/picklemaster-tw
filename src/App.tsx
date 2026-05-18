@@ -60,6 +60,8 @@ function App() {
       wheelMultiplier: 1,
       touchMultiplier: 2,
     });
+    // 暴露給需要程式化跳轉的元件（例如 /courts 縣市 chip）
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
 
     function raf(time: number) {
       lenis.raf(time);
@@ -70,6 +72,7 @@ function App() {
 
     // Clean up
     return () => {
+      delete (window as unknown as { __lenis?: Lenis }).__lenis;
       lenis.destroy();
     };
   }, []);

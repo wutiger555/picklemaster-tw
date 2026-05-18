@@ -399,11 +399,11 @@ const Courts = () => {
       <div className="container mx-auto px-4 py-6">
         {viewMode === 'map' ? (
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-            {/* Map */}
+            {/* Map — sticky on desktop so it stays visible while user scrolls the list */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-3 xl:col-span-3"
+              className="lg:col-span-3 xl:col-span-3 lg:sticky lg:top-44 lg:self-start"
             >
               <div className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-neutral-900/5 border border-neutral-200/80">
                 <CourtMap
@@ -423,12 +423,28 @@ const Courts = () => {
             >
               <div className="bg-white rounded-2xl shadow-lg shadow-neutral-900/5 border border-neutral-200/80 overflow-hidden">
                 <div className="p-4 border-b border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
-                  <div className="flex items-baseline justify-between gap-2 mb-3">
+                  <div className="flex items-baseline justify-between gap-2 mb-2">
                     <h2 className="font-semibold text-neutral-900">球場列表</h2>
                     <span className="text-xs text-neutral-500">
-                      共 <span className="font-semibold text-neutral-700">{filteredCourts.length}</span> 座 · 依縣市分組
+                      共 <span className="font-semibold text-neutral-700">{filteredCourts.length}</span> 座 · 依縣市
                     </span>
                   </div>
+                  {(() => {
+                    const allCities = [...new Set(filteredCourts.map((c: Court) => c.location.city || '其他'))];
+                    const allCollapsed = allCities.length > 0 && allCities.every(c => collapsedCities.has(c));
+                    return (
+                      <div className="flex items-center gap-3 mb-3 text-xs">
+                        <button
+                          onClick={() => setCollapsedCities(allCollapsed ? new Set() : new Set(allCities))}
+                          className="text-teal-600 hover:text-teal-700 font-medium"
+                        >
+                          {allCollapsed ? '展開全部' : '收合全部'}
+                        </button>
+                        <span className="text-neutral-400">·</span>
+                        <span className="text-neutral-500">點縣市標題可摺疊／點 chip 跳到該區</span>
+                      </div>
+                    );
+                  })()}
                   {/* 縣市數量總覽 chips */}
                   {(() => {
                     const counts: Record<string, number> = {};
@@ -446,26 +462,39 @@ const Courts = () => {
                     });
                     return (
                       <div className="flex flex-wrap gap-1.5">
-                        {orderedCities.map(city => {
-                          const isActive = filterCity === city;
-                          return (
-                            <button
-                              key={city}
-                              onClick={() => setFilterCity(isActive ? 'all' : city)}
-                              className={`px-2 py-0.5 text-xs font-medium rounded-full transition-colors ${isActive
-                                ? 'bg-teal-500 text-white'
-                                : 'bg-neutral-100 text-neutral-600 hover:bg-teal-50 hover:text-teal-700'
-                                }`}
-                            >
-                              {city} <span className="opacity-70">{counts[city]}</span>
-                            </button>
-                          );
-                        })}
+                        {orderedCities.map(city => (
+                          <button
+                            key={city}
+                            onClick={() => {
+                              // 1. 展開該縣市（如果摺疊中）
+                              setCollapsedCities(prev => {
+                                if (!prev.has(city)) return prev;
+                                const next = new Set(prev);
+                                next.delete(city);
+                                return next;
+                              });
+                              // 2. 等 React commit 後再跳轉，配合 Lenis 平滑捲動
+                              setTimeout(() => {
+                                const target = document.getElementById(`city-section-${city}`);
+                                if (!target) return;
+                                const lenis = (window as unknown as { __lenis?: { scrollTo: (t: Element, opts?: { offset?: number; duration?: number }) => void } }).__lenis;
+                                if (lenis?.scrollTo) {
+                                  lenis.scrollTo(target, { offset: -176, duration: 1.0 });
+                                } else {
+                                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                              }, 50);
+                            }}
+                            className="px-2 py-0.5 text-xs font-medium rounded-full transition-colors bg-neutral-100 text-neutral-600 hover:bg-teal-50 hover:text-teal-700"
+                          >
+                            {city} <span className="opacity-70">{counts[city]}</span>
+                          </button>
+                        ))}
                       </div>
                     );
                   })()}
                 </div>
-                <div className="max-h-[540px] lg:max-h-[720px] overflow-y-auto">
+                <div>
                   {filteredCourts.length === 0 ? (
                     <div className="p-8 text-center">
                       <PickleballIcon className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
@@ -491,10 +520,10 @@ const Courts = () => {
                       const cityCourts = groups[city];
                       const isCollapsed = collapsedCities.has(city);
                       return (
-                        <div key={city}>
+                        <div key={city} id={`city-section-${city}`} className="scroll-mt-44">
                           <button
                             onClick={() => toggleCity(city)}
-                            className="w-full flex items-center justify-between px-4 py-2.5 bg-neutral-50 border-b border-neutral-200 hover:bg-neutral-100 transition-colors sticky top-0 z-10"
+                            className="w-full flex items-center justify-between px-4 py-2.5 bg-neutral-50 border-b border-neutral-200 hover:bg-neutral-100 transition-colors"
                           >
                             <div className="flex items-center gap-2">
                               <svg

@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CourtsData, Court } from '../types';
 import CourtMap from '../components/map/CourtMap';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useCourtsWeather, weatherKey } from '../hooks/useCourtsWeather';
 import { courtSlug } from '../utils/slugify';
 import SEOHead from '../components/common/SEOHead';
+import WeatherBadge from '../components/court/WeatherBadge';
 
 // Pickleball Icon Component
 const PickleballIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
@@ -59,6 +61,14 @@ const Courts = () => {
   }, []);
 
   const cities = [...new Set(courtsData?.courts.map((c: Court) => c.location.city).filter(Boolean) || [])].sort();
+
+  // 戶外球場座標 → 天氣（Open-Meteo 多座標單次請求，30 分鐘 localStorage 快取）
+  const outdoorCoords = useMemo(() => {
+    return courtsData?.courts
+      .filter((c: Court) => c.type === 'outdoor')
+      .map((c: Court) => ({ lat: c.location.lat, lng: c.location.lng })) || [];
+  }, [courtsData]);
+  const weatherMap = useCourtsWeather(outdoorCoords);
 
   const stats = {
     total: courtsData?.courts.length || 0,
@@ -209,7 +219,7 @@ const Courts = () => {
       </header>
 
       {/* Toolbar */}
-      <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-neutral-200/80 shadow-sm">
+      <div className="sticky top-[88px] z-30 bg-white/90 backdrop-blur-md border-b border-neutral-200/80 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-col lg:flex-row lg:items-center gap-3">
             {/* Search */}
@@ -403,7 +413,7 @@ const Courts = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-3 xl:col-span-3 lg:sticky lg:top-44 lg:self-start"
+              className="lg:col-span-3 xl:col-span-3 lg:sticky lg:top-[170px] lg:self-start"
             >
               <div className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-neutral-900/5 border border-neutral-200/80">
                 <CourtMap
@@ -479,7 +489,7 @@ const Courts = () => {
                                 if (!target) return;
                                 const lenis = (window as unknown as { __lenis?: { scrollTo: (t: Element, opts?: { offset?: number; duration?: number }) => void } }).__lenis;
                                 if (lenis?.scrollTo) {
-                                  lenis.scrollTo(target, { offset: -176, duration: 1.0 });
+                                  lenis.scrollTo(target, { offset: -180, duration: 1.0 });
                                 } else {
                                   target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 }
@@ -520,7 +530,7 @@ const Courts = () => {
                       const cityCourts = groups[city];
                       const isCollapsed = collapsedCities.has(city);
                       return (
-                        <div key={city} id={`city-section-${city}`} className="scroll-mt-44">
+                        <div key={city} id={`city-section-${city}`} className="scroll-mt-[180px]">
                           <button
                             onClick={() => toggleCity(city)}
                             className="w-full flex items-center justify-between px-4 py-2.5 bg-neutral-50 border-b border-neutral-200 hover:bg-neutral-100 transition-colors"
@@ -559,10 +569,25 @@ const Courts = () => {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-neutral-500 mb-2.5 line-clamp-1">
-                                {court.location.address}
-                              </p>
-                              <div className="flex flex-wrap gap-1.5">
+                              <div className="flex items-center justify-between gap-2 mb-2.5">
+                                <p className="text-xs text-neutral-500 line-clamp-1 flex-1">
+                                  {court.location.address}
+                                </p>
+                                <a
+                                  href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="flex-shrink-0 inline-flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 hover:underline font-medium"
+                                  title="用 Google Maps 導航到這座球場"
+                                >
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                  </svg>
+                                  導航
+                                </a>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1.5">
                                 <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.type === 'indoor' ? 'bg-blue-50 text-blue-600' :
                                   court.type === 'covered' ? 'bg-purple-50 text-purple-600' :
                                     'bg-emerald-50 text-emerald-600'
@@ -576,6 +601,9 @@ const Courts = () => {
                                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
                                   {court.courts_count}面
                                 </span>
+                                {court.type === 'outdoor' && (
+                                  <WeatherBadge lat={court.location.lat} lng={court.location.lng} weather={weatherMap.get(weatherKey(court.location.lat, court.location.lng))} />
+                                )}
                               </div>
                             </div>
                           ))}

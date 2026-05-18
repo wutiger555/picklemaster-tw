@@ -279,8 +279,8 @@ const CourtMap = ({ courts, selectedCourt, onCourtSelect }: CourtMapProps) => {
     <div className="relative">
       <div ref={mapContainerRef} className="w-full h-[520px]" />
 
-      {/* Map Controls */}
-      <div className="absolute top-4 left-4 z-[1000] flex flex-col gap-2">
+      {/* Map Controls — top-right to avoid Leaflet zoom buttons (top-left), z below sticky bars (navbar=50, filter=30) */}
+      <div className="absolute top-4 right-4 z-[20] flex flex-col gap-2 items-end">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -326,8 +326,8 @@ const CourtMap = ({ courts, selectedCourt, onCourtSelect }: CourtMapProps) => {
         )}
       </div>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 right-4 z-[1000] bg-white/95 backdrop-blur-sm rounded-xl shadow-lg shadow-black/10 border border-neutral-100 px-4 py-3">
+      {/* Legend — z lowered below sticky bars to prevent bleed-through */}
+      <div className="absolute bottom-4 right-4 z-[20] bg-white/95 backdrop-blur-sm rounded-xl shadow-lg shadow-black/10 border border-neutral-100 px-4 py-3">
         <div className="flex items-center gap-5 text-xs font-medium text-neutral-600">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 bg-blue-500 rounded-full ring-2 ring-blue-300"></span>

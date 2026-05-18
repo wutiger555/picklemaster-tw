@@ -232,7 +232,7 @@ const Courts = () => {
       </header>
 
       {/* Toolbar */}
-      <div className="sticky top-[88px] z-30 bg-white/90 backdrop-blur-md border-b border-neutral-200/80 shadow-sm">
+      <div className="sticky top-[88px] z-30 bg-white border-b border-neutral-200/80 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-col lg:flex-row lg:items-center gap-3">
             {/* Search */}
@@ -442,7 +442,7 @@ const Courts = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-3 xl:col-span-3 lg:sticky lg:top-[170px] lg:self-start"
+              className="lg:col-span-3 xl:col-span-3 lg:sticky lg:top-[170px] lg:self-start isolate"
             >
               <div className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-neutral-900/5 border border-neutral-200/80">
                 <CourtMap

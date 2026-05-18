@@ -74,9 +74,9 @@ const Header = () => {
         ];
 
     return (
-        <header className="sticky top-0 z-50 shadow-lg">
-            {/* Layered Background with Pickleball Court Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
+        <header className="sticky top-0 z-50 shadow-lg bg-white">
+            {/* Layered Background with Pickleball Court Pattern (now atop solid bg-white to prevent bleed-through on sticky scroll) */}
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50">
                 {/* Subtle court grid pattern */}
                 <div
                     className="absolute inset-0 opacity-[0.03]"

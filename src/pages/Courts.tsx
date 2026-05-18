@@ -32,6 +32,18 @@ const Courts = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [showFilters, setShowFilters] = useState(false);
+  const [collapsedCities, setCollapsedCities] = useState<Set<string>>(new Set());
+
+  const toggleCity = (city: string) => {
+    setCollapsedCities(prev => {
+      const next = new Set(prev);
+      if (next.has(city)) next.delete(city); else next.add(city);
+      return next;
+    });
+  };
+
+  // 縣市顯示順序：由北至南，讓總覽呈現地理直覺
+  const CITY_ORDER = ['台北市', '新北市', '基隆市', '桃園市', '新竹縣', '新竹市', '苗栗縣', '台中市', '彰化縣', '南投縣', '雲林縣', '嘉義市', '嘉義縣', '台南市', '高雄市', '屏東縣', '宜蘭縣', '花蓮縣', '台東縣'];
 
   useEffect(() => {
     fetch('/data/courts.json')
@@ -411,70 +423,137 @@ const Courts = () => {
             >
               <div className="bg-white rounded-2xl shadow-lg shadow-neutral-900/5 border border-neutral-200/80 overflow-hidden">
                 <div className="p-4 border-b border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
-                  <div className="flex items-baseline justify-between gap-2">
+                  <div className="flex items-baseline justify-between gap-2 mb-3">
                     <h2 className="font-semibold text-neutral-900">球場列表</h2>
                     <span className="text-xs text-neutral-500">
-                      共 <span className="font-semibold text-neutral-700">{filteredCourts.length}</span> 座 · 新場優先
+                      共 <span className="font-semibold text-neutral-700">{filteredCourts.length}</span> 座 · 依縣市分組
                     </span>
                   </div>
-                  {filteredCourts.length > 4 && (
-                    <p className="text-[11px] text-neutral-400 mt-1">↓ 滾動查看全部 {filteredCourts.length} 座球場</p>
-                  )}
+                  {/* 縣市數量總覽 chips */}
+                  {(() => {
+                    const counts: Record<string, number> = {};
+                    filteredCourts.forEach((c: Court) => {
+                      const k = c.location.city || '其他';
+                      counts[k] = (counts[k] || 0) + 1;
+                    });
+                    const orderedCities = Object.keys(counts).sort((a, b) => {
+                      const ai = CITY_ORDER.indexOf(a);
+                      const bi = CITY_ORDER.indexOf(b);
+                      if (ai === -1 && bi === -1) return a.localeCompare(b);
+                      if (ai === -1) return 1;
+                      if (bi === -1) return -1;
+                      return ai - bi;
+                    });
+                    return (
+                      <div className="flex flex-wrap gap-1.5">
+                        {orderedCities.map(city => {
+                          const isActive = filterCity === city;
+                          return (
+                            <button
+                              key={city}
+                              onClick={() => setFilterCity(isActive ? 'all' : city)}
+                              className={`px-2 py-0.5 text-xs font-medium rounded-full transition-colors ${isActive
+                                ? 'bg-teal-500 text-white'
+                                : 'bg-neutral-100 text-neutral-600 hover:bg-teal-50 hover:text-teal-700'
+                                }`}
+                            >
+                              {city} <span className="opacity-70">{counts[city]}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                 </div>
-                <div className="max-h-[540px] lg:max-h-[640px] overflow-y-auto">
+                <div className="max-h-[540px] lg:max-h-[720px] overflow-y-auto">
                   {filteredCourts.length === 0 ? (
                     <div className="p-8 text-center">
                       <PickleballIcon className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
                       <p className="text-neutral-500">沒有符合條件的球場</p>
                     </div>
-                  ) : (
-                    filteredCourts.map((court: Court, index: number) => (
-                      <motion.div
-                        key={court.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.03 }}
-                        onClick={() => setSelectedCourt(court)}
-                        className={`p-4 border-b border-neutral-100 cursor-pointer transition-all hover:bg-teal-50/50 ${selectedCourt?.id === court.id
-                            ? 'bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-l-teal-500'
-                            : ''
-                          }`}
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <Link
-                            to={`/courts/${courtSlug(court.id)}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="font-semibold text-neutral-900 text-sm leading-tight hover:text-emerald-600 hover:underline"
+                  ) : (() => {
+                    // 依縣市分組
+                    const groups: Record<string, Court[]> = {};
+                    filteredCourts.forEach((c: Court) => {
+                      const k = c.location.city || '其他';
+                      if (!groups[k]) groups[k] = [];
+                      groups[k].push(c);
+                    });
+                    const orderedCities = Object.keys(groups).sort((a, b) => {
+                      const ai = CITY_ORDER.indexOf(a);
+                      const bi = CITY_ORDER.indexOf(b);
+                      if (ai === -1 && bi === -1) return a.localeCompare(b);
+                      if (ai === -1) return 1;
+                      if (bi === -1) return -1;
+                      return ai - bi;
+                    });
+                    return orderedCities.map(city => {
+                      const cityCourts = groups[city];
+                      const isCollapsed = collapsedCities.has(city);
+                      return (
+                        <div key={city}>
+                          <button
+                            onClick={() => toggleCity(city)}
+                            className="w-full flex items-center justify-between px-4 py-2.5 bg-neutral-50 border-b border-neutral-200 hover:bg-neutral-100 transition-colors sticky top-0 z-10"
                           >
-                            {court.name}
-                          </Link>
-                          {court.is_new && (
-                            <span className="flex-shrink-0 px-1.5 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-semibold rounded">
-                              NEW
-                            </span>
-                          )}
+                            <div className="flex items-center gap-2">
+                              <svg
+                                className={`w-3.5 h-3.5 text-neutral-500 transition-transform ${isCollapsed ? '' : 'rotate-90'}`}
+                                viewBox="0 0 20 20" fill="currentColor"
+                              >
+                                <path fillRule="evenodd" d="M6 4l8 6-8 6V4z" clipRule="evenodd" />
+                              </svg>
+                              <span className="font-semibold text-sm text-neutral-800">{city}</span>
+                              <span className="text-xs text-neutral-500">{cityCourts.length} 座</span>
+                            </div>
+                          </button>
+                          {!isCollapsed && cityCourts.map((court: Court) => (
+                            <div
+                              key={court.id}
+                              onClick={() => setSelectedCourt(court)}
+                              className={`p-4 border-b border-neutral-100 cursor-pointer transition-all hover:bg-teal-50/50 ${selectedCourt?.id === court.id
+                                ? 'bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-l-teal-500'
+                                : ''
+                                }`}
+                            >
+                              <div className="flex items-start justify-between gap-2 mb-2">
+                                <Link
+                                  to={`/courts/${courtSlug(court.id)}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="font-semibold text-neutral-900 text-sm leading-tight hover:text-emerald-600 hover:underline"
+                                >
+                                  {court.name}
+                                </Link>
+                                {court.is_new && (
+                                  <span className="flex-shrink-0 px-1.5 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-semibold rounded">
+                                    NEW
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-neutral-500 mb-2.5 line-clamp-1">
+                                {court.location.address}
+                              </p>
+                              <div className="flex flex-wrap gap-1.5">
+                                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.type === 'indoor' ? 'bg-blue-50 text-blue-600' :
+                                  court.type === 'covered' ? 'bg-purple-50 text-purple-600' :
+                                    'bg-emerald-50 text-emerald-600'
+                                  }`}>
+                                  {typeLabels[court.type] || '戶外'}
+                                </span>
+                                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.fee === 'free' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'
+                                  }`}>
+                                  {court.fee === 'free' ? '免費' : '付費'}
+                                </span>
+                                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
+                                  {court.courts_count}面
+                                </span>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        <p className="text-xs text-neutral-500 mb-2.5 line-clamp-1">
-                          {court.location.address}
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.type === 'indoor' ? 'bg-blue-50 text-blue-600' :
-                              court.type === 'covered' ? 'bg-purple-50 text-purple-600' :
-                                'bg-emerald-50 text-emerald-600'
-                            }`}>
-                            {typeLabels[court.type] || '戶外'}
-                          </span>
-                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.fee === 'free' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'
-                            }`}>
-                            {court.fee === 'free' ? '免費' : '付費'}
-                          </span>
-                          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
-                            {court.courts_count}面
-                          </span>
-                        </div>
-                      </motion.div>
-                    ))
-                  )}
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             </motion.div>

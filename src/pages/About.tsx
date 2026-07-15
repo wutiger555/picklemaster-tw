@@ -349,10 +349,10 @@ const About = () => {
                   viewport={{ once: true }}
                 >
                   {[
-                    { number: '55+', label: '台灣球場數', icon: '🏟️', variant: 'secondary' as const },
+                    { number: '125+', label: '台灣球場數', icon: '🏟️', variant: 'secondary' as const },
                     { number: '158%', label: '三年成長率', icon: '📈', variant: 'primary' as const },
                     { number: '70+', label: '普及國家數', icon: '🌏', variant: 'accent' as const },
-                    { number: '2025', label: '持續成長中', icon: '🚀', variant: 'primary' as const }
+                    { number: '2026', label: '持續成長中', icon: '🚀', variant: 'primary' as const }
                   ].map((stat) => (
                     <motion.div key={stat.label} variants={staggerItem}>
                       <GlassCard

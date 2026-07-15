@@ -238,6 +238,21 @@ export const HISTORY_TIMELINE: HistoryEvent[] = [
     icon: '🔧',
   },
   {
+    year: '2026-05',
+    title: '華爾街資本進場：Apollo 投資 2.25 億美元',
+    description: 'Apollo Sports Capital 領投 Pickleball Inc.（PPA Tour 與 MLP 母公司），估值達 7.5 億美元，匹克球邁向成熟職業運動。',
+    category: '全球',
+    icon: '💰',
+  },
+  {
+    year: '2026-05',
+    title: '台灣首個職業聯賽 AEPL 成立',
+    description: '亞洲菁英匹克球聯盟（AEPL）宣布成立，首賽季 8 月開打：6 支球隊、全台 8 站分站賽、總獎金 100 萬元，台灣匹克球正式職業化。',
+    category: '台灣',
+    icon: '🏅',
+    milestone: true,
+  },
+  {
     year: '2028 (預期)',
     title: '洛杉磯奧運評估',
     description: 'IFP 持續推動匹克球納入 2028 洛杉磯奧運表演項目。全球會員國已達 80+，接近奧運門檻。',

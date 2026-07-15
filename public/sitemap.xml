@@ -8,7 +8,7 @@
   <!-- 首頁 -->
   <url>
     <loc>https://picklemastertw.site/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -20,7 +20,7 @@
   <!-- 球場地圖 - 重點頁面 -->
   <url>
     <loc>https://picklemastertw.site/courts</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -33,7 +33,7 @@
   <!-- 2026 賽事總覽 -->
   <url>
     <loc>https://picklemastertw.site/tournaments</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -45,7 +45,7 @@
   <!-- 術語字典 -->
   <url>
     <loc>https://picklemastertw.site/glossary</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -53,7 +53,7 @@
   <!-- DUPR 評級指南 -->
   <url>
     <loc>https://picklemastertw.site/ratings</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -61,7 +61,7 @@
   <!-- 新手懶人包 -->
   <url>
     <loc>https://picklemastertw.site/newcomer-guide</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
@@ -69,7 +69,7 @@
   <!-- 裝備推薦 -->
   <url>
     <loc>https://picklemastertw.site/equipment</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
     <image:image>
@@ -81,7 +81,7 @@
   <!-- 技巧教學 -->
   <url>
     <loc>https://picklemastertw.site/learning</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
@@ -89,7 +89,7 @@
   <!-- 規則教學 -->
   <url>
     <loc>https://picklemastertw.site/rules</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -97,7 +97,7 @@
   <!-- 學習路徑 -->
   <url>
     <loc>https://picklemastertw.site/learning-paths</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -105,7 +105,7 @@
   <!-- FAQ -->
   <url>
     <loc>https://picklemastertw.site/faq</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -113,7 +113,7 @@
   <!-- 學習資源 -->
   <url>
     <loc>https://picklemastertw.site/resources</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -121,7 +121,7 @@
   <!-- 互動遊戲 -->
   <url>
     <loc>https://picklemastertw.site/game</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -129,7 +129,7 @@
   <!-- 計分器 -->
   <url>
     <loc>https://picklemastertw.site/scorer</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -137,7 +137,7 @@
   <!-- 關於我們 -->
   <url>
     <loc>https://picklemastertw.site/about</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -145,7 +145,7 @@
   <!-- 聯絡我們 -->
   <url>
     <loc>https://picklemastertw.site/contact</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -153,7 +153,7 @@
   <!-- 隱私政策 -->
   <url>
     <loc>https://picklemastertw.site/privacy-policy</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

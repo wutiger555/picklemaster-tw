@@ -7,6 +7,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.9.0] - 2026 H1 Content Refresh · Courts / Tournaments / News 全面更新 (2026-07-14)
+
+### 🎯 Mission
+全站資訊時效稽核：球場、賽事、新聞、歷史時間軸全面對齊 2026-07-14 現況。資料來源：CTPF 總會 2026-07-11 版行事曆、各場館官方公告與新聞報導（每筆均附來源查證）。
+
+### Added — 7 座 2026 上半年新球場（72 → 79）
+- **台北**：花博 MAJI 匹克庭園（中山區，全台唯一粉紅球場、澳網大滿貫級地板，2/27 開幕）、PicklePickle 匹克匹克（內湖堤頂大道，24h 無人智慧場館）
+- **新北**：淡水國民運動中心（整修後 8 面羽匹共用，1 月重啟）、新店國民運動中心（4F 綜合球場，5/1 起開放租用）
+- **高雄**：楠仔坑運動中心（楠梓旗楠路，6/8 起試營運，300 席看台可辦賽事）
+- **新竹**：PPClub 酸黃瓜匹克球場（寶山，24h 智能球場）
+- **彰化**：OH9 黑狗兄綜合球館（社頭，7 月試營運）
+
+### Changed — 球場資料
+- `is_new` 標籤重整：2026-04 前加入的 9 座取消 NEW 標籤，現為 9 座（含 7 座新增）
+- 景美河濱球場：補註 3/16 起 2 號羽球場改為羽匹共用
+- 宜蘭運動公園：補註縣府增建 1,500㎡ 風雨球場（至少 6 面，預計 2026 年底完工）
+- 閃電匹克館 Inazuma：更新 6/6 正式開幕資訊
+- `docs/data/courts.json` 同步
+
+### Changed — 賽事行事曆（11 → 19 場，依 CTPF 7/11 版行事曆）
+- 港都盃改為已完賽（實際 4/18-19 樹德科大，附成績頁連結）；中正盃改為已完賽（實際 6/18-21 大安運動中心）
+- 臺北公開賽 9 月 → 11 月（日期地點待定）；星動盃 11 月 → 12/6 臺北體育館；屏東邀請賽併入 9/12 國民體育日系列；國體日活動更正為 9/6、9/12、9/13 三場；APG 2026 標註 AFP 尚未公告
+- 新增 8 場：AEPL 職業聯賽賽季（8-11 月）、新北金碧盃（8/14-16，報名中）、新竹縣長盃（8/29-30）、臺灣女子公開賽（10 月）、全國共融盃（12/10-13）、TMLP 巡迴賽新竹/新北/台北三站
+- `TAIWAN_PICKLEBALL_STATS_2026`：knownCourts 60 → 79
+
+### Added — 新聞 7 則（2026-05 ～ 2026-07）
+- 台灣：AEPL 職業聯盟成立（5/22）、彰化市長盃（7/4）、上半年球場大爆發總結
+- 國際：Apollo 2.25 億美元投資 PPA/MLP（5/1）、匹克球 AI 能見度指數（6/9）、PPA Asia 東京站賽果與香港大滿貫預告（7/6）、MLP 季中錦標賽（7/8）
+- 歷史時間軸新增：AEPL 成立（台灣里程碑）、Apollo 投資
+
+### Added — 第二輪球場深挖：+50 座（79 → 129），17 縣市全覆蓋
+系統性掃描你來我網（196 筆 API 全量）、ipickleball（212 筆）、picklejo、88sport、freeshiuan、各縣市運動中心官網，交叉比對後收錄 50 座有可靠來源的新球場：
+- **零收錄縣市突破**：基隆（堵南國小）、雲林（PK Park 專用館 + 雲科大）、嘉義縣（水上全民運動館 + 朴子田徑場）、新竹市（西門國小委員會據點 + 三民國中）首批上線
+- **場館級新館**：Ahhh Social Hub（華山旁，3/18 開幕）、板橋國運（官方費率 3F+5F 露天）、Pickle Ing 泰山、中豐龍潭（4/11 開幕）、邷力豹蘆竹、YIYI 潭子（24H 4 面）、XC 沙鹿（24H）、LaLa Dink 南屯（6 面）、億源/Banger/PIKA PIKA（彰化）、PKing（花蓮首座室內館）等
+- **運動中心擴增**：中正、大同（台北）＋鶯歌、土城、三峽、蘆洲（新北）＋潭子、長春（台中）
+- **免費公園場 +19**：民族/東陽/紫陽公園、永和綠寶石（已劃廚房線）、鼓山專用場、橋頭公園等
+- 交叉查證排除重複與 AI 錯字來源（ipickleball 名稱錯誤率高，以 rallynow 為準）；資訊不全者標「依官方公告」
+- 城市 Hub 頁同步新增 4 頁（keelung/hsinchu-city/yunlin/chiayi-county，共 17 頁）；全站數字 75+ → 125+、JSON-LD 129；免費場 FAQ 25+ → 40+；嘉義市/花蓮城市導言更新
+
+### Added — 行動版球場快覽面板（Bottom Sheet）
+修正手機版 /courts 點列表「沒反應」的問題：原本點擊只會讓桌面版側邊地圖高亮，行動版（單欄、地圖在上）看不到任何回饋。
+- 新增 `CourtQuickSheet` 元件（lg 以下顯示）：點列表或地圖標記即從底部滑出快覽面板
+- 內容：名稱 + NEW 徽章、地址、型態/收費/面數/24H/即時天氣 chips、開放時間/費用/聯絡、特色標籤、三顆行動按鈕（詳細資訊/導航/大眾運輸）
+- 互動：spring 滑入動畫、背景 backdrop-blur 變暗、點背景或 X 關閉、面板內部可捲動（max 75vh）
+
+### Added — 13 個縣市球場 Hub 頁（SEO 最大機會項）
+競品研究顯示「匹克球 台北/台中/高雄」等城市詞全由部落格文章佔據、工具站缺席，新增城市 landing page：
+- 路由 `/courts/{city-slug}`（taipei、new-taipei、taoyuan、hsinchu、taichung、changhua、nantou、chiayi、tainan、kaohsiung、pingtung、yilan、hualien），由 `CourtSlugPage` 分派器與 court-{id} 詳細頁共用 `/courts/:slug`
+- 每頁含：城市導言（`src/utils/cityData.ts`）、室內/戶外/免費/24H 統計 chips、球場卡片（NEW 優先 → 免費 → 面數排序，附導航）、在地 FAQ（動態產生，與 FAQPage schema 同步）、其他縣市互鏈、新手 CTA
+- JSON-LD：ItemList（SportsActivityLocation）+ FAQPage + BreadcrumbList
+- 靜態化：generate-static-pages.cjs 自動從 courts.json 產出 13 頁（含 meta/canonical/JSON-LD）並加入 sitemap（priority 0.95）
+- /courts 列表每個縣市標題列新增「攻略 →」內鏈；llms.txt 收錄 13 個城市頁
+- 修正：24 小時判定改用 `/24\s*小時/`，避免誤判「06:00-24:00」營業時間
+- 視覺設計對齊站內最佳頁面水準：hero 漸層光暈背景 + City Guide 徽章（hover 旋轉）+ 漸層數字標題、backdrop-blur 統計 pills（24H 帶 pulse 動畫）、球場卡片頂部型態色條（室內綠/戶外藍/風雨紫）+ hover 浮起 + stagger 進場動畫、FAQ 手風琴（Q 漸層徽章、展開高亮）、縣市 chips 帶球場數、CTA 漸層區塊含裝飾光暈
+
+### Added — 2 篇零競爭關鍵字深度文章（8 → 10 篇）
+競品研究發現「匹克球 課程」SERP 被香港網站佔據、「球敘/Open Play」內容詞無人經營，新增：
+- 《台灣匹克球課程與教練完整指南》（/articles/taiwan-pickleball-lessons-guide）— CTPF C 級/PPR/IPTPA 認證差異、三種課程型態費用行情、各縣市找課管道、挑教練 6 檢查點
+- 《第一次參加匹克球球敘（Open Play）完整指南》（/articles/first-open-play-guide）— 四大找團管道、DUPR 程度自報、排拍輪場規矩、費用分攤、禮儀 8 條
+- 兩篇皆含 FAQPage schema 與內鏈（球場地圖/輪轉排程器/DUPR 指南/訓練菜單），同步 generate-static-pages.cjs 鏡像與 llms.txt
+
+### Changed — SEO 強化（結構化資料與長尾 FAQ）
+- 賽事 SportsEvent JSON-LD 從寫死的 8 場舊資料改為由 `TOURNAMENTS_2026` 動態產生（19 場自動同步，日期/地點不再脫鉤）
+- FAQ 新增 3 題 GSC 熱門搜尋導向問答（免費匹克球場、24 小時匹克球場、場地租金），faqData 頁面內容與 FAQPage schema 同步（符合 rich result 內容可見性要求）
+- 修正殘留的 2025 字樣：首頁 description「2025 最新」→ 2026、裝備頁 title、courts JSON-LD dateModified
+- 賽事頁 meta description/keywords 改為 2026 H2 陣容（AEPL、金碧盃、TMLP 等）
+- FAQ「台灣有多少匹克球場」答案更新至 79 座、「冬天下雨哪裡打」補新場館並導流「現在能打」天氣篩選
+
+### Changed — 全站數字與 SEO 同步
+- 球場數統一為 75+（Home、About、QuickNav、SearchBar、SportComparison、seo.ts、generate-static-pages.cjs、README、index.html、llms.txt），JSON-LD `numberOfItems` 72 → 79
+- 年度賽事數 10+/11 → 19；About「2025 持續成長中」→ 2026
+- llms.txt 賽事清單改為 2026 H2 現況（含已完賽標註）、資料更新日 2026-07-14；sitemap.xml lastmod 全數 → 2026-07-14
+
 ## [v1.8.1] - Courts Database Refresh · SEO Long-Tail Expansion (2026-05-15)
 
 ### 🎯 Mission

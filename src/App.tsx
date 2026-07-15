@@ -27,7 +27,7 @@ const Articles = lazy(() => import('./pages/Articles'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Techniques = lazy(() => import('./pages/Techniques'));
 const TechniqueDetail = lazy(() => import('./pages/TechniqueDetail'));
-const CourtDetail = lazy(() => import('./pages/CourtDetail'));
+const CourtSlugPage = lazy(() => import('./pages/CourtSlugPage'));
 const PlayerDetail = lazy(() => import('./pages/PlayerDetail'));
 const History = lazy(() => import('./pages/History'));
 const PaddleDatabase = lazy(() => import('./pages/PaddleDatabase'));
@@ -105,7 +105,7 @@ function App() {
               <Route path={ROUTES.ARTICLE_DETAIL} element={<ArticleDetail />} />
               <Route path={ROUTES.TECHNIQUES} element={<Techniques />} />
               <Route path={ROUTES.TECHNIQUE_DETAIL} element={<TechniqueDetail />} />
-              <Route path={ROUTES.COURT_DETAIL} element={<CourtDetail />} />
+              <Route path={ROUTES.COURT_DETAIL} element={<CourtSlugPage />} />
               <Route path={ROUTES.PLAYER_DETAIL} element={<PlayerDetail />} />
               <Route path={ROUTES.HISTORY} element={<History />} />
               <Route path={ROUTES.PADDLE_DATABASE} element={<PaddleDatabase />} />

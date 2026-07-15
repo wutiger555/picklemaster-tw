@@ -1,3 +1,5 @@
+import { TOURNAMENTS_2026 } from '../data/tournamentsData';
+
 // SEO 元數據配置
 export interface SEOConfig {
   title: string;
@@ -11,14 +13,14 @@ export interface SEOConfig {
 // 頁面 SEO 配置
 export const pageSEO: Record<string, SEOConfig> = {
   home: {
-    title: '匹克球台灣 Picklemaster | 全台首選教學平台 & 70+ 球場地圖導航',
-    description: '想打匹克球？Picklemaster 提供 2025 最新全台球場地圖、3D 規則教學、裝備選購指南。新手入門必看，一站搞定所有匹克球資訊！立即探索。',
+    title: '匹克球台灣 Picklemaster | 全台首選教學平台 & 125+ 球場地圖導航',
+    description: '想打匹克球？Picklemaster 提供 2026 最新全台球場地圖、3D 規則教學、裝備選購指南。新手入門必看，一站搞定所有匹克球資訊！立即探索。',
     keywords: '匹克球,台灣匹克球,匹克球台灣,pickleball taiwan,匹克球場地圖,匹克球教學,匹克球規則,匹克球裝備,台北匹克球,台中匹克球,高雄匹克球,台南匹克球,匹克球入門',
     ogImage: '/og-image.png'
   },
   courts: {
-    title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 70+ 免費/室內/24H 場地',
-    description: '2026 全台最新匹克球場地圖！收錄 70+ 球場（含彰化大村/秀水/延平、竹北星空、台中 PICKZONE、北投樓下、台北網球中心、天母公園等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
+    title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 125+ 免費/室內/24H 場地',
+    description: '2026 全台最新匹克球場地圖！收錄 125+ 球場，17 縣市全覆蓋（含花博 MAJI、內湖 PicklePickle、板橋國運、台中 YIYI、雲林 PK Park、花蓮 PKing 等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
     keywords: '匹克球場,匹克球場地,皮克球場地,台灣匹克球場,匹克球場地圖,匹克球場推薦,匹克球場預約,戶外匹克球場,免費匹克球場,室內匹克球場,附近匹克球場,最近匹克球場,24小時匹克球場,台北匹克球場,新北匹克球場,桃園匹克球場地,新竹匹克球場,台中匹克球場,彰化匹克球場,嘉義匹克球場,台南匹克球場,高雄匹克球場,屏東匹克球場,宜蘭匹克球場,花蓮匹克球場,南投匹克球場,天母公園匹克球場,大村匹克球,竹北星空匹克球場,北投匹克球場,信義匹克球場,士林匹克球場,內湖匹克球場,大安匹克球場,松山匹克球場,中和匹克球場,新莊匹克球場,板橋匹克球場,淡水匹克球場,龜山匹克球場,中壢匹克球場,平鎮匹克球場,西屯匹克球場,南屯匹克球場,東區匹克球場,鳳山匹克球場,左營匹克球場,前金匹克球場,埔里匹克球場,大村匹克球場,秀水匹克球場,公園匹克球場,河濱匹克球場,學校匹克球場,運動中心匹克球,網球中心匹克球場,PICKZONE,Pickle Day,Downstairs Pickleball,Social N Pickle,P.dang,Seattle Pickleball,pickleball court taiwan,pickleball court taipei,pickleball court kaohsiung,pickleball court taichung,pickleball court taoyuan,pickleball court hsinchu,pickleball near me'
   },
   rules: {
@@ -27,7 +29,7 @@ export const pageSEO: Record<string, SEOConfig> = {
     keywords: '匹克球規則,pickleball rules,匹克球雙彈跳,匹克球廚房區,匹克球發球規則,匹克球計分,匹克球界線,匹克球教學,匹克球入門'
   },
   equipment: {
-    title: '匹克球拍怎麼選？2025 新手裝備懶人包：職業選手也推薦',
+    title: '匹克球拍怎麼選？2026 新手裝備懶人包：職業選手也推薦',
     description: '買錯球拍最貴！完整匹克球拍材質分析（碳纖維 vs 玻璃纖維）、重量挑選指南。內含「球拍智能推薦系統」，30秒找出最適合你的命定球拍。',
     keywords: '匹克球拍,pickleball paddle,匹克球裝備,球拍推薦,匹克球拍推薦,碳纖維球拍,玻璃纖維球拍,匹克球用品,匹克球裝備購買'
   },
@@ -83,8 +85,8 @@ export const pageSEO: Record<string, SEOConfig> = {
   },
   tournaments: {
     title: '2026 台灣匹克球賽事總覽 | CTPF 全年認證賽、國際積分賽',
-    description: '完整掌握 2026 台灣匹克球賽事：臺灣盃、NAPA 盃、港都盃、中正盃、噶瑪蘭盃、臺北公開賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
-    keywords: '2026匹克球賽事,台灣匹克球比賽,CTPF賽事,臺灣盃匹克球,NAPA盃,港都盃,中正盃,噶瑪蘭盃,臺北匹克球公開賽,APG 亞洲匹克球運動會,匹克球錦標賽,匹克球報名'
+    description: '完整掌握 2026 台灣匹克球 19 場賽事：AEPL 職業聯賽、金碧盃、新竹縣長盃、女子公開賽、臺北公開賽、星動盃、共融盃、TMLP 積分巡迴賽。報名時間、場地、組別一次看。',
+    keywords: '2026匹克球賽事,台灣匹克球比賽,CTPF賽事,AEPL,亞洲菁英匹克球聯盟,金碧盃,新竹縣長盃,TMLP,臺灣盃匹克球,NAPA盃,港都盃,中正盃,噶瑪蘭盃,臺北匹克球公開賽,星動盃,共融盃,匹克球錦標賽,匹克球報名,匹克球職業聯賽'
   },
   glossary: {
     title: '匹克球術語大全 | 中英對照字典 - Dink, Erne, ATP 全收錄',
@@ -196,7 +198,31 @@ export const faqStructuredData = {
       "name": "台灣哪裡可以打匹克球？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "台灣目前有超過 70 個匹克球場，分佈在台北、新北、桃園、新竹、台中、彰化、嘉義、台南、高雄、屏東、宜蘭、花蓮、南投等縣市。包括公園、河濱、運動中心、學校操場、24 小時室內專用館等。您可以使用我們的球場地圖功能，搜尋離您最近的匹克球場。"
+        "text": "台灣目前有超過 125 個匹克球場，分佈於全台 17 個縣市（台北、新北、基隆、桃園、新竹、台中、彰化、南投、雲林、嘉義、台南、高雄、屏東、宜蘭、花蓮）。包括公園、河濱、運動中心、學校操場、24 小時室內專用館等。您可以使用我們的球場地圖功能，搜尋離您最近的匹克球場。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "哪裡有免費的匹克球場？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "全台有 40 座以上免費公共匹克球場，多為公園與河濱場地：台北青年公園、天母運動公園（17 面）、華中/景美/龍山河濱公園；新北大都會公園河濱匹克球中心（8 面）；竹北星空匹克球場、彰化秀水/延平公園、宜蘭運動公園等。免費場通常先到先打，熱門時段需排隊輪場。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "台灣有 24 小時匹克球場嗎？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "有，目前至少 4 處 24 小時匹克球場：桃園 Social N Pickle（龜山）、台中 PICKZONE 凱旋館與朝馬館、台北內湖 PicklePickle 無人智慧場館、新竹寶山 PPClub。多採線上預約與智能門禁，適合夜間與輪班族球友。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "匹克球場地租金大概多少錢？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "公園與河濱戶外場免費；公立運動中心約每小時 NT$300-700；私人室內館約每小時 NT$800-1,500。以 4 人分攤計算，每人每次約 NT$100-300，是門檻相當低的運動。"
       }
     },
     {
@@ -284,112 +310,40 @@ export const faqStructuredData = {
       "name": "台灣匹克球有多少人在玩？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "根據中華民國匹克球協會 (CTPF) 統計，台灣匹克球人口從 2024 年的 14 萬、2025 年的 50 萬，2026 年預估突破 120 萬人。全台已認證教練超過 1,400 人，球場數量已達 60+ 處。匹克球是目前台灣成長最快的新興運動。"
+        "text": "根據中華民國匹克球協會 (CTPF) 統計，台灣匹克球人口從 2024 年的 14 萬、2025 年的 50 萬，2026 年預估突破 120 萬人。全台已認證教練超過 1,400 人，球場數量已達 125+ 處。匹克球是目前台灣成長最快的新興運動。"
       }
     }
   ]
 };
 
 // SportsEvent Schema for 2026 tournaments (AI Search Overview 優化)
+// 由 TOURNAMENTS_2026 動態產生，賽事資料更新時自動同步
 export const tournamentsEventData = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "ItemList",
       "name": "2026 台灣匹克球賽事總覽",
-      "description": "中華民國匹克球協會 (CTPF) 2026 年度認證賽事與國際積分賽完整列表",
-      "numberOfItems": 11,
-      "itemListElement": [
-        {
-          "@type": "SportsEvent",
-          "position": 1,
-          "name": "2026 臺灣盃全國匹克球公開賽",
-          "alternateName": "Taiwan Cup National Pickleball Open 2026",
-          "sport": "Pickleball",
-          "startDate": "2026-01-30",
-          "endDate": "2026-02-01",
-          "eventStatus": "https://schema.org/EventPostponed",
-          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-          "location": {
-            "@type": "Place",
-            "name": "國立宜蘭大學體育館",
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "神農路一段 1 號",
-              "addressLocality": "宜蘭市",
-              "addressRegion": "宜蘭縣",
-              "addressCountry": "TW"
-            }
-          },
-          "organizer": {
-            "@type": "SportsOrganization",
-            "name": "中華民國匹克球協會 (CTPF)",
-            "url": "https://www.ctpf.org.tw/"
-          }
+      "description": "中華民國匹克球總會 (CTPF) 2026 年度認證賽事、職業聯賽與國際賽事完整列表",
+      "numberOfItems": TOURNAMENTS_2026.length,
+      "itemListElement": TOURNAMENTS_2026.map((t, i) => ({
+        "@type": "SportsEvent",
+        "position": i + 1,
+        "name": t.name,
+        ...(t.nameEn ? { "alternateName": t.nameEn } : {}),
+        "sport": "Pickleball",
+        "startDate": t.date,
+        ...(t.endDate ? { "endDate": t.endDate } : {}),
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": {
+          "@type": "Place",
+          "name": t.venue,
+          "address": { "@type": "PostalAddress", "addressLocality": t.city, "addressCountry": "TW" }
         },
-        {
-          "@type": "SportsEvent",
-          "position": 2,
-          "name": "2026 NAPA 盃全國匹克球錦標賽",
-          "sport": "Pickleball",
-          "startDate": "2026-02-28",
-          "endDate": "2026-03-01",
-          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-          "location": { "@type": "Place", "name": "待公告", "address": { "@type": "PostalAddress", "addressCountry": "TW" } },
-          "organizer": { "@type": "SportsOrganization", "name": "中華民國匹克球協會 (CTPF)" }
-        },
-        {
-          "@type": "SportsEvent",
-          "position": 3,
-          "name": "2026 港都盃全國匹克球錦標賽",
-          "sport": "Pickleball",
-          "startDate": "2026-04-18",
-          "location": { "@type": "Place", "name": "樹德科技大學", "address": { "@type": "PostalAddress", "addressLocality": "高雄市", "addressCountry": "TW" } }
-        },
-        {
-          "@type": "SportsEvent",
-          "position": 4,
-          "name": "2026 全國中正盃匹克球錦標賽",
-          "sport": "Pickleball",
-          "startDate": "2026-06-20",
-          "location": { "@type": "Place", "name": "台北市大安運動中心", "address": { "@type": "PostalAddress", "addressLocality": "台北市", "addressCountry": "TW" } }
-        },
-        {
-          "@type": "SportsEvent",
-          "position": 5,
-          "name": "2026 噶瑪蘭盃匹克球錦標賽",
-          "sport": "Pickleball",
-          "startDate": "2026-08-15",
-          "location": { "@type": "Place", "name": "宜蘭運動公園", "address": { "@type": "PostalAddress", "addressLocality": "宜蘭縣", "addressCountry": "TW" } }
-        },
-        {
-          "@type": "SportsEvent",
-          "position": 6,
-          "name": "2026 臺北匹克球公開賽",
-          "sport": "Pickleball",
-          "startDate": "2026-09-12",
-          "location": { "@type": "Place", "name": "臺北體育館", "address": { "@type": "PostalAddress", "addressLocality": "台北市", "addressCountry": "TW" } },
-          "organizer": { "@type": "SportsOrganization", "name": "臺北市政府體育局" }
-        },
-        {
-          "@type": "SportsEvent",
-          "position": 7,
-          "name": "2026 亞洲匹克球運動會 (APG)",
-          "sport": "Pickleball",
-          "startDate": "2026-10-15",
-          "location": { "@type": "Place", "name": "亞洲輪值", "address": { "@type": "PostalAddress", "addressCountry": "Asia" } },
-          "organizer": { "@type": "SportsOrganization", "name": "Asia Federation of Pickleball", "url": "https://www.afpickleball.org/" }
-        },
-        {
-          "@type": "SportsEvent",
-          "position": 8,
-          "name": "2026 伯朗盃匹克球公開賽",
-          "sport": "Pickleball",
-          "startDate": "2026-11-07",
-          "location": { "@type": "Place", "name": "宜蘭縣羅東運動公園", "address": { "@type": "PostalAddress", "addressLocality": "宜蘭縣", "addressCountry": "TW" } },
-          "organizer": { "@type": "SportsOrganization", "name": "金車伯朗" }
-        }
-      ]
+        "organizer": { "@type": "SportsOrganization", "name": t.organizer },
+        ...(t.officialUrl ? { "url": t.officialUrl } : {}),
+      })),
     }
   ]
 };
@@ -532,7 +486,7 @@ export const howToStructuredData = {
       "@type": "HowToStep",
       "position": 3,
       "name": "尋找附近球場",
-      "text": "使用我們的球場地圖功能，找到離您最近的匹克球場。台灣目前有 70+ 個球場可供選擇。",
+      "text": "使用我們的球場地圖功能，找到離您最近的匹克球場。台灣目前有 125+ 個球場可供選擇。",
       "url": "https://picklemastertw.site/courts"
     },
     {
@@ -661,7 +615,7 @@ export const courtsLocationData = {
       "@type": "WebPage",
       "@id": "https://picklemastertw.site/courts#webpage",
       "url": "https://picklemastertw.site/courts",
-      "name": "台灣匹克球場地圖 2026 | 全台 70+ 球場完整資訊",
+      "name": "台灣匹克球場地圖 2026 | 全台 125+ 球場完整資訊",
       "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
       "isPartOf": {
         "@id": "https://picklemastertw.site/#website"
@@ -673,14 +627,14 @@ export const courtsLocationData = {
       },
       "inLanguage": "zh-TW",
       "datePublished": "2024-01-01",
-      "dateModified": "2025-12-10"
+      "dateModified": "2026-07-14"
     },
     {
       "@type": "ItemList",
       "@id": "https://picklemastertw.site/courts#courtlist",
       "name": "台灣匹克球場完整列表",
-      "description": "收錄台北、新北、桃園、新竹、台中、彰化、嘉義、台南、高雄、屏東、宜蘭、花蓮、南投等全台 70+ 個匹克球場的完整資訊",
-      "numberOfItems": 72,
+      "description": "收錄台北、新北、基隆、桃園、新竹、台中、彰化、南投、雲林、嘉義、台南、高雄、屏東、宜蘭、花蓮等 17 縣市全台 125+ 個匹克球場的完整資訊",
+      "numberOfItems": 129,
       "itemListElement": [
         {
           "@type": "SportsActivityLocation",

@@ -1,7 +1,149 @@
 import type { NewsItem } from '../types/news';
 
 export const NEWS_DATA: NewsItem[] = [
-  // ===== 2026 最新消息 =====
+  // ===== 2026 Q3 最新消息 =====
+  {
+    id: 'courts-202607-boom',
+    title: '2026 上半年球場大爆發！本站收錄突破 125 座，雲嘉基隆全上線',
+    summary: '從台北花博 MAJI 粉紅球場、雲林首座專用館 PK Park 到高雄楠仔坑運動中心，2026 上半年全台匹克球場遍地開花。本站球場地圖收錄數達 129 座、17 縣市全覆蓋。',
+    content: `
+      <p>2026 上半年台灣匹克球場地呈現爆發式成長。本站球場地圖大規模擴充至 129 座、17 縣市全覆蓋：雲林迎來首座專用館 <strong>PK Park</strong>（虎尾，4 面標準場）、基隆、嘉義縣、新竹市也收錄首批場地。台北亮點包括<strong>花博 MAJI 匹克庭園</strong>（全台唯一粉紅色球場、澳網大滿貫級地板，2/27 開幕）、<strong>PicklePickle 匹克匹克</strong>（內湖 24 小時無人智慧場館）、<strong>淡水國民運動中心</strong>（整修後 8 面羽匹共用場）、<strong>新店國民運動中心</strong>（5 月起開放租用）、<strong>高雄楠仔坑運動中心</strong>（6 月試營運）、新竹寶山 <strong>PPClub 酸黃瓜</strong>與彰化 <strong>OH9 黑狗兄綜合球館</strong>（7 月試營運）。</p>
+
+      <p>上半年的發展呈現三大趨勢：一是<strong>民營室內專用館爆發</strong>，從雙北延伸到新竹、彰化，「24 小時無人智慧場館」成為新商業模式；二是<strong>公部門大量將既有設施轉為匹克球共用</strong>，運動中心與河濱羽球場紛紛劃線開放（景美河濱 2 號球場 3/16 起改為羽匹共用）；三是場地走向<strong>高規格化與社交化</strong>，大滿貫級地板、DUPR 積分據點、會員制俱樂部陸續出現。</p>
+
+      <p>下半年還有更多大型場館待開：信義區<strong>台北匹克球俱樂部 TPC</strong>（9 面室內專業場、千坪空間）預計 Q4 開幕，宜蘭運動公園也將增建至少 6 面的風雨多元球場（預計 2026 年底完工）。用<a href="/courts" class="text-primary-600 hover:underline">球場地圖</a>的 GPS 定位，找到離你最近的球場吧！</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：各場館官方公告、<a href="https://freeshiuan.com/pickleball-court-taiwan/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">freeshiuan 球場全攻略</a>、自由時報</p>
+    `,
+    date: '2026-07-14',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts',
+    tags: ['Courts', 'Taiwan', '2026']
+  },
+  {
+    id: 'int-202607-mlp-midseason',
+    title: 'MLP 季中錦標賽登場！20 隊全員到齊再加 4 支國際隊',
+    summary: 'Major League Pickleball 2026 季中錦標賽於 7 月 8 日至 12 日在美國密西根州大急流城舉行，20 支 MLP 隊伍全數參戰，並首度加入澳洲、加拿大、歐洲與大學明星共 4 支特別隊伍。',
+    content: `
+      <p>Major League Pickleball（MLP）2026 Edward Jones 季中錦標賽於 7 月 8 日至 12 日在美國密西根州大急流城（Grand Rapids）舉行。全部 20 支 MLP 隊伍到齊，另加入澳洲隊、加拿大隊、歐洲隊與大學明星隊共 4 支特別隊伍，以雙敗淘汰制爭奪積分、獎金與下半季氣勢。</p>
+
+      <p>同期間，MLP 2026 年第二個交易窗口（3 月 2 日開啟）於 7 月 12 日關閉，季中錦標賽前後的球員異動成為聯盟焦點。</p>
+
+      <p>這也是 Apollo Sports Capital 注資 2.25 億美元、Pickleball Inc. 成為 PPA Tour 與 MLP 新母公司後，MLP 的首個大型指標賽事，職業匹克球的商業能量持續升溫。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://majorleaguepickleball.co/news-updates/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Major League Pickleball</a></p>
+    `,
+    date: '2026-07-08',
+    category: 'International',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Major League Pickleball',
+    link: 'https://majorleaguepickleball.co/news-updates/',
+    tags: ['MLP', 'International', '2026']
+  },
+  {
+    id: 'int-202607-ppa-asia-tokyo',
+    title: 'PPA Asia 東京公開賽落幕！10 月香港大滿貫獎金破百萬美元',
+    summary: 'PPA Tour Asia 500 等級的 Sansan 東京公開賽於 7 月 1 至 4 日舉行，日本好手島袋 Tama 與 Sahra Dennehy 各奪雙金。賽季壓軸香港大滿貫（10/19-25）總獎金最高達 110 萬美元，將是亞洲史上最大職業匹克球賽事。',
+    content: `
+      <p>PPA Tour Asia 500 等級的「Sansan Tokyo Open」於 7 月 1 至 4 日在東京立川立飛競技場（Arena Tachikawa Tachihi）舉行，是 PPA 亞洲巡迴賽 2026 年賽季（全年 10 站、橫跨 7 個市場）的日本站。</p>
+
+      <p>日本好手島袋 Tama（Tama Shimabukuro）與 Sahra Dennehy 各自奪下雙金成為最大贏家；男雙由船水雄太／島袋 Tama 組合以 11-3、11-8 擊敗吉田優太／黑澤陸斗奪冠，男單則由香港選手 Hong Kit Wong 未失一局封王。</p>
+
+      <p>PPA Tour Asia 2026 賽季首度與美國 Carvana PPA Tour 積分系統整合，選手積分可計入世界排名。賽季壓軸為 10 月 19 至 25 日的香港大滿貫（Hong Kong Slam），總獎金最高達 110 萬美元，將是亞洲史上最大的職業匹克球賽事，也是台灣選手爭取世界排名積分的絕佳舞台。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.forbes.com/sites/toddboss/2026/07/06/shimabukuro-and-dennehy-take-double-gold-at-2026-pro-pickleball-association-sansan-tokyo-open/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Forbes</a>、<a href="https://www.ppatour-asia.com/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">PPA Tour Asia</a></p>
+    `,
+    date: '2026-07-06',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=2070&auto=format&fit=crop',
+    source: 'PPA Tour Asia',
+    link: 'https://www.ppatour-asia.com/',
+    tags: ['PPA', 'Asia', 'Tournament', '2026']
+  },
+  {
+    id: 'tw-202607-changhua-mayor-cup',
+    title: '彰化市長盃匹克球開打：8 歲童與 78 歲阿公同場尬球',
+    summary: '彰化市公所主辦的市長盃匹克球錦標賽於 7 月 4 日在寶廍籃球場開打，48 隊、96 名隊職員參賽。最年長選手 78 歲、最年幼 8 歲，展現匹克球全齡運動特性。',
+    content: `
+      <p>彰化市公所主辦、彰化市體育會匹克球委員會承辦的「市長盃匹克球錦標賽」於 7 月 4 日在寶廍籃球場開打，共 48 支隊伍、96 名隊職員參賽，進行 96 場賽事、角逐 36 面獎牌。</p>
+
+      <p>本屆賽事限球齡半年以內的新手參加，最年長選手為 78 歲的陳美賢、最年幼為 8 歲的楊士逸，充分展現匹克球「全齡運動」的特性。彰化市長林世賢表示，匹克球是結合網球、羽球和桌球的新興混合運動，易於上手且運動傷害較少。</p>
+
+      <p>這類基層縣市賽事的興起，反映匹克球熱潮正從雙北向全台各縣市擴散。彰化縣目前已有大村室內標準場、秀水公園、延平公園等多處場地，可於<a href="/courts" class="text-primary-600 hover:underline">球場地圖</a>查詢。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://news.ltn.com.tw/news/life/breakingnews/5493944" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由時報</a></p>
+    `,
+    date: '2026-07-04',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop',
+    source: '自由時報',
+    link: 'https://news.ltn.com.tw/news/life/breakingnews/5493944',
+    tags: ['Taiwan', 'Changhua', 'Tournament', '2026']
+  },
+  {
+    id: 'int-202606-ai-visibility',
+    title: '首屆「匹克球 AI 能見度指數」出爐：Selkirk、JOOLA、Paddletek 前三',
+    summary: '公關公司 5W 發布首份 Pickleball AI Visibility Index，分析生成式 AI 如何向 4,000 萬美國球友推薦品牌。Selkirk、JOOLA、Paddletek 居前三，Wilson 與 Babolat 反而跌出前 15。',
+    content: `
+      <p>公關公司 5W 於 6 月發布首份「Pickleball AI Visibility Index 2026」，這是第一份針對生成式 AI 引擎（如 ChatGPT 等）如何向全美約 4,000 萬匹克球人口推薦品牌的研究型排名。</p>
+
+      <p>前十名依 AI 引用份額排序為：Selkirk、JOOLA、Paddletek、Engage、CRBN、Six Zero、ProKennex、Vatic Pro、Gearbox、Diadem。值得注意的是，網球器材巨頭 Wilson 與 Babolat 雖擁有最強的零售通路，卻排在 15 名之外。</p>
+
+      <p>報告指出，AI 引用份額前 10 名的品牌，其非付費流量的電商轉換率平均比第 11 至 25 名高出 47%，顯示 AI 能見度已成為器材品牌的新戰場。想了解各品牌球拍規格，可參考本站<a href="/equipment/paddles" class="text-primary-600 hover:underline">球拍資料庫</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://pickleball.com/news/selkirk-joola-paddletek-top-first-ever-pickleball-ai-visibility-index" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Pickleball.com</a></p>
+    `,
+    date: '2026-06-09',
+    category: 'Equipment',
+    image: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=2070&auto=format&fit=crop',
+    source: 'Pickleball.com',
+    link: 'https://pickleball.com/news/selkirk-joola-paddletek-top-first-ever-pickleball-ai-visibility-index',
+    tags: ['Gear', 'AI', 'Brands', '2026']
+  },
+  {
+    id: 'tw-202605-aepl',
+    title: '台灣匹克球職業化！亞洲菁英聯盟 AEPL 成立，8 月開打',
+    summary: '台灣第一個匹克球職業聯賽「亞洲菁英匹克球聯盟」（AEPL）於 5 月 22 日宣布成立，賽季 8 月展開，規劃 6 支球隊、全台 8 站分站賽，11 月總決賽，總獎金新台幣 100 萬元。',
+    content: `
+      <p>亞洲菁英匹克球股份有限公司於 5 月 22 日召開記者會，宣布成立「亞洲菁英匹克球聯盟」（Asia Elite Pickleball League, AEPL），為台灣第一個匹克球職業聯賽。執行長張智維表示，賽季將於 2026 年 8 月正式展開，初步規劃 6 支球隊，預計在全台舉辦 8 站分站賽事，11 月進行總決賽，聯賽總獎金達新台幣 100 萬元。</p>
+
+      <p>張智維指出，2026 年全台接觸過匹克球的民眾預估將達 120 萬人，許多台灣好手已投入亞洲職業賽事，AEPL 的成立讓台灣選手「不用出國就有舞台」。目前已收到 4、5 間企業的組隊徵詢。台灣選手鍾振煒也表態樂見台灣有自己的職業賽事。</p>
+
+      <p>聯盟規劃 2027 年賽季加入新加坡、馬來西亞、香港與澳門隊伍，2029 年再納入更多亞洲球隊，以台灣為基地逐步打造亞洲職業匹克球版圖。這是繼 2024 年 APG 亞洲匹克球運動會在台中舉辦後，台灣匹克球邁向職業化的最重要里程碑。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.cna.com.tw/news/aspt/202605220167.aspx" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中央社 CNA</a>、<a href="https://udn.com/news/story/7001/9519416" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a></p>
+    `,
+    date: '2026-05-22',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1515523110800-9415d13b84a8?q=80&w=1974&auto=format&fit=crop',
+    source: '中央社 CNA',
+    link: 'https://www.cna.com.tw/news/aspt/202605220167.aspx',
+    tags: ['AEPL', 'Professional', 'Taiwan', '2026']
+  },
+  {
+    id: 'int-202605-apollo',
+    title: 'Apollo 領投 2.25 億美元！PPA Tour 與 MLP 迎來新母公司',
+    summary: 'Apollo Sports Capital 與 Tom Dundon 共同對 Pickleball Inc. 投資 2.25 億美元，後者正式成為 PPA Tour 與 MLP 的母公司，估值達 7.5 億美元，打造全球最大匹克球生態系。',
+    content: `
+      <p>Apollo（NYSE: APO）旗下運動投資平台 Apollo Sports Capital 與億萬富豪 Tom Dundon 的 Dundon Capital Partners，於 5 月共同對 Pickleball Inc. 進行 2.25 億美元的結構性投資。Pickleball Inc. 正式成為 Carvana PPA Tour 與 Major League Pickleball（MLP）的新母公司，累計融資達 3.15 億美元，公司估值達 7.5 億美元。</p>
+
+      <p>這筆交易打造了目前全球規模最大的單一營運匹克球生態系，整合職業與業餘賽事、科技、零售與場館基礎設施平台；旗下合併業務 2025 年營收超過 1.4 億美元。資金將用於內容、媒體及賽事基礎設施等擴張。</p>
+
+      <p>華爾街資本大舉進場，被視為匹克球從「成長最快運動」邁向「成熟職業運動」的關鍵訊號，也將加速 PPA 於亞洲市場（含 PPA Tour Asia）的布局。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.cnbc.com/2026/05/01/apollo-sports-capital-tom-dundon-pickleball-investment.html" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">CNBC</a>、<a href="https://majorleaguepickleball.co/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">MLP</a></p>
+    `,
+    date: '2026-05-01',
+    category: 'International',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'CNBC',
+    link: 'https://www.cnbc.com/2026/05/01/apollo-sports-capital-tom-dundon-pickleball-investment.html',
+    tags: ['PPA', 'MLP', 'Investment', '2026']
+  },
+
+  // ===== 2026 上半年 =====
   {
     id: 'tw-202604-growth',
     title: '台灣匹克球 2026 突破 120 萬人！亞洲成長最快運動',

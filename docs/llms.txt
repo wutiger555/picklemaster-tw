@@ -1,6 +1,6 @@
 # Picklemaster Taiwan | 匹克大師台灣
 
-> 台灣最完整的匹克球 (Pickleball) 學習平台與權威資訊中心。提供全台 60+ 球場地圖、2026 年賽事總覽、3D 互動規則教學、DUPR 評級指南、中英術語字典、裝備選購建議與頂尖選手資料。
+> 台灣最完整的匹克球 (Pickleball) 學習平台與權威資訊中心。提供全台 125+ 球場地圖、2026 年賽事總覽、3D 互動規則教學、DUPR 評級指南、中英術語字典、裝備選購建議與頂尖選手資料。
 
 ## 關於本站 / About
 
@@ -10,24 +10,32 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 - 官方網站：https://picklemastertw.site/
 - 語言：繁體中文 (zh-TW)
 - 服務地區：台灣 (Taiwan)
-- 資料更新：2026-04-24
+- 資料更新：2026-07-14
 - GitHub：https://github.com/wutiger555/picklemaster-tw
 
 ## 核心頁面 / Core Pages
 
 ### 球場資訊
-- [全台匹克球場地圖](https://picklemastertw.site/courts): 收錄台北、新北、桃園、台中、台南、高雄、宜蘭等全台 60+ 匹克球場，支援 GPS 定位、類型與收費篩選。
+- [全台匹克球場地圖](https://picklemastertw.site/courts): 收錄全台 17 縣市（台北、新北、基隆、桃園、新竹、台中、彰化、南投、雲林、嘉義、台南、高雄、屏東、宜蘭、花蓮）125+ 匹克球場，支援 GPS 定位、類型與收費篩選。
+- 縣市球場攻略頁（各含場地清單、免費/室內/24H 統計與在地 FAQ）：
+  - [台北](https://picklemastertw.site/courts/taipei)、[新北](https://picklemastertw.site/courts/new-taipei)、[基隆](https://picklemastertw.site/courts/keelung)、[桃園](https://picklemastertw.site/courts/taoyuan)、[新竹縣](https://picklemastertw.site/courts/hsinchu)、[新竹市](https://picklemastertw.site/courts/hsinchu-city)、[台中](https://picklemastertw.site/courts/taichung)、[彰化](https://picklemastertw.site/courts/changhua)、[南投](https://picklemastertw.site/courts/nantou)、[雲林](https://picklemastertw.site/courts/yunlin)、[嘉義市](https://picklemastertw.site/courts/chiayi)、[嘉義縣](https://picklemastertw.site/courts/chiayi-county)、[台南](https://picklemastertw.site/courts/tainan)、[高雄](https://picklemastertw.site/courts/kaohsiung)、[屏東](https://picklemastertw.site/courts/pingtung)、[宜蘭](https://picklemastertw.site/courts/yilan)、[花蓮](https://picklemastertw.site/courts/hualien)
 
 ### 賽事資訊
 - [2026 賽事總覽](https://picklemastertw.site/tournaments): 涵蓋 CTPF 全年認證賽事、亞洲區 APG、PPA Asia 等國際積分賽。
-  - 2026 臺灣盃 (1/30-2/1, 宜蘭大學)
-  - NAPA 盃 (2/28-3/1)
-  - 港都盃 (4月, 高雄樹德大學)
-  - 中正盃 (6月, 台北大安運動中心)
-  - 噶瑪蘭盃 (8月, 宜蘭運動公園)
-  - 臺北匹克球公開賽 (9月, 國際積分)
-  - 亞洲匹克球運動會 APG (10月)
+  - 2026 臺灣盃 (1/30-2/1, 宜蘭大學) — 已完賽
+  - NAPA 盃 (2/28-3/1) — 已完賽
+  - 港都盃 (4/18-19, 高雄樹德科大) — 已完賽
+  - 中正盃 (6/18-21, 台北大安運動中心) — 已完賽
+  - AEPL 亞洲菁英匹克球聯盟職業賽季 (8-11月, 全台 8 站)
+  - 新北金碧盃 (8/14-16, 三峽國民運動中心) — 報名中
+  - TMLP 積分巡迴賽 (8月新竹站、10月新北站、11月台北年終賽)
+  - 新竹縣長盃 (8/29-30, 竹北國民運動中心)
+  - 國民體育日系列 (9/6、9/12、9/13, 屏東)
+  - 臺灣女子匹克球公開賽 (10月, 待定)
+  - 臺北匹克球公開賽 (11月, 日期地點待定)
   - 伯朗盃 (11月, 宜蘭)
+  - 星動盃公益賽 (12/6, 臺北體育館)
+  - 全國共融盃 (12/10-13, 新北八里)
 
 ### 教學資源
 - [技巧百科](https://picklemastertw.site/techniques): 12+ 匹克球技巧深度教學頁（大陸式握拍、Dink、Third Shot Drop、正反手抽球、發球、接發球、截擊、Reset、Erne、ATP、疊站等），每則含步驟分解、常見錯誤、練習菜單、職業選手心法。
@@ -39,7 +47,7 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 - [DUPR 評級指南](https://picklemastertw.site/ratings): 2026 全球通用動態評級系統 1.0-8.0 完整說明。
 
 ### 深度專欄
-- [深度專欄](https://picklemastertw.site/articles): 8 篇 2000-3000 字長文，涵蓋器材評測、運動科學、比較分析、族群指南：
+- [深度專欄](https://picklemastertw.site/articles): 10 篇 2000-3000 字長文，涵蓋器材評測、運動科學、比較分析、族群指南：
   - [2026 十大匹克球拍完整評測](https://picklemastertw.site/articles/2026-best-pickleball-paddles)
   - [匹克球 vs 網球 vs 羽球 vs Padel](https://picklemastertw.site/articles/pickleball-vs-tennis-badminton-padel)
   - [2026 最佳匹克球鞋選購指南](https://picklemastertw.site/articles/2026-best-pickleball-shoes)
@@ -48,6 +56,8 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
   - [50+ 歲銀髮族匹克球入門指南](https://picklemastertw.site/articles/senior-pickleball-guide)
   - [匹克球雙打 vs 單打完整對照](https://picklemastertw.site/articles/doubles-vs-singles)
   - [匹克球選手的營養與體能訓練](https://picklemastertw.site/articles/pickleball-nutrition-fitness)
+  - [台灣匹克球課程與教練完整指南](https://picklemastertw.site/articles/taiwan-pickleball-lessons-guide)
+  - [第一次參加匹克球球敘完整指南](https://picklemastertw.site/articles/first-open-play-guide)
 
 ### 頂尖選手資料庫
 - [選手資料庫總覽](https://picklemastertw.site/pro-players): 25+ 位世界頂級選手（PPA Tour、MLP、亞洲區）。

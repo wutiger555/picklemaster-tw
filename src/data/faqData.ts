@@ -384,7 +384,26 @@ export const FAQ_DATA: FAQItem[] = [
   {
     category: '球場設施',
     question: '台灣有多少匹克球場？',
-    answer: '2026 年 4 月已超過 60 座，涵蓋全台各縣市。其中台北新北約 30 座、中部 10+ 座、南部 10+ 座、宜蘭 5 座。本站《球場地圖》收錄 58 座完整資訊。',
+    answer: '2026 年 7 月本站《球場地圖》已收錄 129 座，覆蓋全台 17 個縣市（含共用場地全台估計超過 200 處）。其中台北 32 座、新北 22 座、台中 16 座、桃園 11 座，雲林、嘉義縣、基隆、新竹市也在 2026 年迎來首批場地。',
+    relatedLinks: [{ text: '全台球場地圖', url: '/courts' }],
+  },
+  {
+    category: '球場設施',
+    question: '哪裡有免費的匹克球場？',
+    answer: '全台有 40+ 座免費公共球場，多為公園與河濱場地：台北青年公園、天母運動公園（17 面）、華中/景美/龍山河濱；新北大都會公園（8 面）；竹北星空、彰化秀水/延平公園、宜蘭運動公園等。本站球場地圖可直接篩選「免費」場地。',
+    relatedLinks: [{ text: '篩選免費球場', url: '/courts' }],
+  },
+  {
+    category: '球場設施',
+    question: '台灣有 24 小時匹克球場嗎？',
+    answer: '有！目前至少 4 處：桃園 Social N Pickle（龜山）、台中 PICKZONE 凱旋館與朝馬館、台北內湖 PicklePickle（無人智慧場館）、新竹寶山 PPClub。多採線上預約、智能門禁，適合夜貓球友與輪班族。',
+    relatedLinks: [{ text: '找 24 小時球場', url: '/courts' }],
+  },
+  {
+    category: '球場設施',
+    question: '匹克球場地租金大概多少？',
+    answer: '公園與河濱戶外場免費；公立運動中心約 NT$300-700/小時（如新店國民運動中心 $700/面/小時）；私人室內館約 NT$800-1,500/小時，高端場館（如花博 MAJI）約 $770-980/小時起。分攤下來每人每次約 $100-300。',
+    relatedLinks: [{ text: '新手費用試算', url: '/newcomer-guide' }],
   },
   {
     category: '球場設施',
@@ -409,7 +428,8 @@ export const FAQ_DATA: FAQItem[] = [
   {
     category: '球場設施',
     question: '冬天下雨哪裡可以打？',
-    answer: '全台 20+ 座室內場可選：台北 DOPE 水獺、Pickle Day、臺北市網球中心；新北 P.dang、大都會公園（有風雨球場）；桃園 Social N Pickle（24 小時）；中南部各運動中心。',
+    answer: '全台 50+ 座室內/風雨場可選：台北 DOPE 水獺、Pickle Day、花博 MAJI（有遮陽）、臺北市網球中心；新北 P.dang、淡水/新店運動中心；桃園 Social N Pickle（24 小時）；中南部各運動中心與 PICKZONE。球場地圖可篩選「室內」與「現在能打」（依即時天氣）。',
+    relatedLinks: [{ text: '篩選室內球場', url: '/courts' }],
   },
   {
     category: '球場設施',

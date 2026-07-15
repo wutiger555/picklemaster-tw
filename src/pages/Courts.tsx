@@ -6,8 +6,10 @@ import CourtMap from '../components/map/CourtMap';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useCourtsWeather, weatherKey } from '../hooks/useCourtsWeather';
 import { courtSlug } from '../utils/slugify';
+import { getCityByName } from '../utils/cityData';
 import SEOHead from '../components/common/SEOHead';
 import WeatherBadge from '../components/court/WeatherBadge';
+import CourtQuickSheet from '../components/court/CourtQuickSheet';
 
 // Pickleball Icon Component
 const PickleballIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
@@ -560,11 +562,11 @@ const Courts = () => {
                       const isCollapsed = collapsedCities.has(city);
                       return (
                         <div key={city} id={`city-section-${city}`} className="scroll-mt-[180px]">
-                          <button
-                            onClick={() => toggleCity(city)}
-                            className="w-full flex items-center justify-between px-4 py-2.5 bg-neutral-50 border-b border-neutral-200 hover:bg-neutral-100 transition-colors"
-                          >
-                            <div className="flex items-center gap-2">
+                          <div className="flex items-center bg-neutral-50 border-b border-neutral-200">
+                            <button
+                              onClick={() => toggleCity(city)}
+                              className="flex-1 flex items-center gap-2 px-4 py-2.5 hover:bg-neutral-100 transition-colors"
+                            >
                               <svg
                                 className={`w-3.5 h-3.5 text-neutral-500 transition-transform ${isCollapsed ? '' : 'rotate-90'}`}
                                 viewBox="0 0 20 20" fill="currentColor"
@@ -573,8 +575,16 @@ const Courts = () => {
                               </svg>
                               <span className="font-semibold text-sm text-neutral-800">{city}</span>
                               <span className="text-xs text-neutral-500">{cityCourts.length} 座</span>
-                            </div>
-                          </button>
+                            </button>
+                            {getCityByName(city) && (
+                              <Link
+                                to={`/courts/${getCityByName(city)!.slug}`}
+                                className="px-3 py-2.5 text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:underline whitespace-nowrap"
+                              >
+                                攻略 →
+                              </Link>
+                            )}
+                          </div>
                           {!isCollapsed && cityCourts.map((court: Court) => (
                             <div
                               key={court.id}
@@ -792,6 +802,15 @@ const Courts = () => {
             )}
           </motion.div>
         )}
+      </div>
+
+      {/* 行動版底部快覽面板：桌面版由地圖 popup 呈現，lg 以上隱藏 */}
+      <div className="lg:hidden">
+        <CourtQuickSheet
+          court={selectedCourt}
+          weather={selectedCourt ? weatherMap.get(weatherKey(selectedCourt.location.lat, selectedCourt.location.lng)) : undefined}
+          onClose={() => setSelectedCourt(null)}
+        />
       </div>
     </div>
   );

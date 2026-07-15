@@ -13,7 +13,7 @@ interface SearchResult {
 const searchDatabase: SearchResult[] = [
   {
     title: '找球場',
-    description: '全台 55+ 匹克球場地圖與詳細資訊',
+    description: '全台 125+ 匹克球場地圖與詳細資訊',
     path: ROUTES.COURTS,
     category: '球場',
     keywords: ['球場', '地圖', '場地', '台北', '台中', '高雄', '台南', 'court', '找', '尋找']

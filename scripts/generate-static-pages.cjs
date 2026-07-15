@@ -8,8 +8,8 @@ const BASE_URL = 'https://picklemastertw.site';
 // SEO Data (Copied from src/utils/seo.ts)
 const pageSEO = {
     courts: {
-        title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 70+ 免費/室內/24H 場地',
-        description: '2026 全台最新匹克球場地圖！收錄 70+ 球場（含彰化大村/秀水/延平、竹北星空、台中 PICKZONE、北投樓下、台北網球中心、天母公園等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
+        title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 125+ 免費/室內/24H 場地',
+        description: '2026 全台最新匹克球場地圖！收錄 125+ 球場，17 縣市全覆蓋（含花博 MAJI、內湖 PicklePickle、板橋國運、台中 YIYI、雲林 PK Park、花蓮 PKing 等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
         keywords: '匹克球場,匹克球場地,皮克球場地,台灣匹克球場,匹克球場地圖,匹克球場推薦,匹克球場預約,戶外匹克球場,免費匹克球場,室內匹克球場,附近匹克球場,最近匹克球場,24小時匹克球場,台北匹克球場,新北匹克球場,桃園匹克球場地,新竹匹克球場,台中匹克球場,彰化匹克球場,嘉義匹克球場,台南匹克球場,高雄匹克球場,屏東匹克球場,宜蘭匹克球場,花蓮匹克球場,南投匹克球場,天母公園匹克球場,大村匹克球,竹北星空匹克球場,北投匹克球場,信義匹克球場,士林匹克球場,內湖匹克球場,大安匹克球場,松山匹克球場,中和匹克球場,新莊匹克球場,板橋匹克球場,淡水匹克球場,龜山匹克球場,中壢匹克球場,平鎮匹克球場,西屯匹克球場,南屯匹克球場,東區匹克球場,鳳山匹克球場,左營匹克球場,前金匹克球場,埔里匹克球場,大村匹克球場,秀水匹克球場,公園匹克球場,河濱匹克球場,學校匹克球場,運動中心匹克球,網球中心匹克球場,PICKZONE,Pickle Day,Downstairs Pickleball,Social N Pickle,P.dang,Seattle Pickleball,pickleball court taiwan,pickleball court taipei,pickleball court kaohsiung,pickleball court taichung,pickleball court taoyuan,pickleball court hsinchu,pickleball near me',
         structuredData: {
             "@context": "https://schema.org",
@@ -18,7 +18,7 @@ const pageSEO = {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.site/courts#webpage",
                     "url": "https://picklemastertw.site/courts",
-                    "name": "台灣匹克球場地圖 2026 | 全台 70+ 球場完整資訊",
+                    "name": "台灣匹克球場地圖 2026 | 全台 125+ 球場完整資訊",
                     "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
                     "isPartOf": { "@id": "https://picklemastertw.site/#website" },
                     "inLanguage": "zh-TW"
@@ -86,7 +86,7 @@ const pageSEO = {
         }
     },
     equipment: {
-        title: '匹克球拍怎麼選？2025 新手裝備懶人包：職業選手也推薦',
+        title: '匹克球拍怎麼選？2026 新手裝備懶人包：職業選手也推薦',
         description: '買錯球拍最貴！完整匹克球拍材質分析（碳纖維 vs 玻璃纖維）、重量挑選指南。內含「球拍智能推薦系統」，30秒找出最適合你的命定球拍。',
         keywords: '匹克球拍,pickleball paddle,匹克球裝備,球拍推薦,匹克球拍推薦,碳纖維球拍,玻璃纖維球拍,匹克球用品,匹克球裝備購買',
         structuredData: {
@@ -759,6 +759,29 @@ const ARTICLE_SLUGS = [
     { slug: 'senior-pickleball-guide', title: '50+ 歲銀髮族匹克球入門完全指南', summary: '50+ 歲銀髮族匹克球入門完全指南：健康好處、裝備選擇、運動頻率建議。', category: '族群指南' },
     { slug: 'doubles-vs-singles', title: '匹克球雙打 vs 單打完整對照', summary: '規則差異、站位、戰術、體能消耗、適合族群。95% 球友打雙打的真正原因。', category: '技術戰術' },
     { slug: 'pickleball-nutrition-fitness', title: '匹克球選手的營養與體能訓練', summary: '賽前吃什麼、補水策略、重訓菜單、職業選手作息範例。', category: '運動科學' },
+    { slug: 'taiwan-pickleball-lessons-guide', title: '台灣匹克球課程與教練完整指南', summary: 'CTPF C 級、PPR、IPTPA 教練認證差異、體驗課/團體班/私人教練費用行情、各縣市找課管道與挑教練檢查點。', category: '族群指南' },
+    { slug: 'first-open-play-guide', title: '第一次參加匹克球球敘（Open Play）完整指南', summary: '怎麼找球敘、DUPR 程度自報、排拍輪場規矩、費用分攤行情與球場禮儀 8 條。', category: '族群指南' },
+];
+
+// City hub pages — mirror of src/utils/cityData.ts
+const CITY_SLUG_MAP = [
+    { slug: 'taipei', city: '台北市' },
+    { slug: 'new-taipei', city: '新北市' },
+    { slug: 'keelung', city: '基隆市' },
+    { slug: 'taoyuan', city: '桃園市' },
+    { slug: 'hsinchu', city: '新竹縣' },
+    { slug: 'hsinchu-city', city: '新竹市' },
+    { slug: 'taichung', city: '台中市' },
+    { slug: 'changhua', city: '彰化縣' },
+    { slug: 'nantou', city: '南投縣' },
+    { slug: 'yunlin', city: '雲林縣' },
+    { slug: 'chiayi', city: '嘉義市' },
+    { slug: 'chiayi-county', city: '嘉義縣' },
+    { slug: 'tainan', city: '台南市' },
+    { slug: 'kaohsiung', city: '高雄市' },
+    { slug: 'pingtung', city: '屏東縣' },
+    { slug: 'yilan', city: '宜蘭縣' },
+    { slug: 'hualien', city: '花蓮縣' },
 ];
 
 // Techniques (per-slug static pages) — mirror of src/data/techniquesData.ts (minimal subset for SEO)
@@ -1004,6 +1027,41 @@ async function generateStaticPages() {
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
             }
             console.log(`  Generated ${courtsData.courts.length} court detail pages`);
+
+            // ===== Generate city hub pages =====
+            let cityPageCount = 0;
+            for (const { slug, city } of CITY_SLUG_MAP) {
+                const cityCourts = courtsData.courts.filter(c => c.location.city === city);
+                if (cityCourts.length === 0) continue;
+                const dirPath = path.join(BUILD_DIR, 'courts', slug);
+                fs.mkdirSync(dirPath, { recursive: true });
+                const free = cityCourts.filter(c => c.fee === 'free').length;
+                const indoor = cityCourts.filter(c => c.type === 'indoor').length;
+                const title = `${city}匹克球場地圖 2026｜${cityCourts.length} 座場地完整名單（免費/室內/收費）`;
+                const desc = `${city}匹克球場完整攻略：免費場 ${free} 座、室內場 ${indoor} 座，共 ${cityCourts.length} 座場地。地址、開放時間、費用、特色一次看，附 GPS 導航。`;
+                const canonical = `${BASE_URL}/courts/${slug}`;
+                let content = template;
+                content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
+                content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+                content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+                content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+                const ldJson = {
+                    "@context": "https://schema.org", "@type": "ItemList",
+                    "name": `${city}匹克球場完整列表`, "numberOfItems": cityCourts.length,
+                    "itemListElement": cityCourts.map((c, i) => ({
+                        "@type": "SportsActivityLocation", "position": i + 1, "name": c.name, "sport": "Pickleball",
+                        "address": { "@type": "PostalAddress", "streetAddress": c.location.address, "addressLocality": c.location.district, "addressRegion": c.location.city, "addressCountry": "TW" },
+                        "isAccessibleForFree": c.fee === 'free',
+                        "url": `${BASE_URL}/courts/court-${c.id}`
+                    }))
+                };
+                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(ldJson)}</script>`);
+                fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+                cityPageCount++;
+            }
+            console.log(`  Generated ${cityPageCount} city hub pages`);
         } catch (e) {
             console.warn('  Skip per-court generation:', e.message);
         }
@@ -1093,6 +1151,21 @@ async function generateStaticPages() {
         <priority>0.85</priority>
     </url>`;
         }
+
+        // Add city hub URLs
+        try {
+            const courtsData = JSON.parse(fs.readFileSync(path.join(BUILD_DIR, 'data', 'courts.json'), 'utf-8'));
+            for (const { slug, city } of CITY_SLUG_MAP) {
+                if (!courtsData.courts.some(c => c.location.city === city)) continue;
+                sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/courts/${slug}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>`;
+            }
+        } catch (e) { /* skip if missing */ }
 
         // Add per-court URLs
         try {

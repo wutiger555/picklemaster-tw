@@ -152,7 +152,7 @@ const SportComparison = () => {
                         <div className="text-4xl mb-3">🏟️</div>
                         <h4 className="text-xl font-bold text-emerald-700 mb-2">場地好找</h4>
                         <p className="text-sm text-neutral-700">
-                            球場只需網球場的 1/4，羽球場也能直接使用，在台灣已有 55+ 個場地
+                            球場只需網球場的 1/4，羽球場也能直接使用，在台灣已有 125+ 個場地
                         </p>
                     </motion.div>
                 </div>

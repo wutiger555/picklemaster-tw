@@ -1,10 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CourtsData, Court } from '../types';
-import CourtMap from '../components/map/CourtMap';
+import CourtMap, { type MapViewBounds } from '../components/map/CourtMap';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useCourtsWeather, weatherKey } from '../hooks/useCourtsWeather';
+import { useGeolocation } from '../hooks/useGeolocation';
+import { distanceKm, formatDistance } from '../utils/geo';
 import { courtSlug } from '../utils/slugify';
 import { getCityByName } from '../utils/cityData';
 import SEOHead from '../components/common/SEOHead';
@@ -23,21 +25,57 @@ const PickleballIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   </svg>
 );
 
+type SortBy = 'recommended' | 'distance';
+
+// 從網址還原篩選狀態（可分享的篩選連結）— 在 state 初始化當下讀取，支援 SPA 導航
+const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
+const pick = <T extends string>(key: string, allowed: readonly T[], fallback: T): T => {
+  const v = readParam(key);
+  return v && (allowed as readonly string[]).includes(v) ? (v as T) : fallback;
+};
+
 const Courts = () => {
   usePageTitle('全台匹克球場地圖');
   const [courtsData, setCourtsData] = useState<CourtsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
-  const [filterType, setFilterType] = useState<'all' | 'indoor' | 'outdoor' | 'covered'>('all');
-  const [filterFee, setFilterFee] = useState<'all' | 'free' | 'paid'>('all');
-  const [filterOwnership, setFilterOwnership] = useState<'all' | 'public' | 'private' | 'school' | 'community'>('all');
-  const [filterCity, setFilterCity] = useState<string>('all');
-  const [showNewOnly, setShowNewOnly] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+  const [filterType, setFilterType] = useState<'all' | 'indoor' | 'outdoor' | 'covered'>(() => pick('type', ['all', 'indoor', 'outdoor', 'covered'] as const, 'all'));
+  const [filterFee, setFilterFee] = useState<'all' | 'free' | 'paid'>(() => pick('fee', ['all', 'free', 'paid'] as const, 'all'));
+  const [filterOwnership, setFilterOwnership] = useState<'all' | 'public' | 'private' | 'school' | 'community'>(() => pick('own', ['all', 'public', 'private', 'school', 'community'] as const, 'all'));
+  const [filterCity, setFilterCity] = useState<string>(() => readParam('city') || 'all');
+  const [showNewOnly, setShowNewOnly] = useState(() => readParam('new') === '1');
+  const [searchQuery, setSearchQuery] = useState(() => readParam('q') || '');
+  const [viewMode, setViewMode] = useState<'map' | 'list'>(() => pick('view', ['map', 'list'] as const, 'map'));
   const [showFilters, setShowFilters] = useState(false);
   const [collapsedCities, setCollapsedCities] = useState<Set<string>>(new Set());
-  const [playableNow, setPlayableNow] = useState(false);
+  const [playableNow, setPlayableNow] = useState(() => readParam('now') === '1');
+  // court 參數要在首次 render 就抓住：URL 同步 effect 會在資料載入前先清掉它
+  const pendingCourtParam = useRef<string | null>(readParam('court'));
+  const [sortBy, setSortBy] = useState<SortBy>('recommended');
+  const [boundsFilter, setBoundsFilter] = useState(false);
+  const [mapBounds, setMapBounds] = useState<MapViewBounds | null>(null);
+  const [mapExpanded, setMapExpanded] = useState(false);
+
+  const { location: userLocation, isLocating, error: locationError, locate } = useGeolocation();
+
+  // 網址帶篩選（不含 court）進來 → 初次載入直接定位到篩選結果
+  const initialFit = useRef(
+    filterType !== 'all' || filterFee !== 'all' || filterOwnership !== 'all' ||
+    filterCity !== 'all' || showNewOnly || !!searchQuery
+  ).current;
+
+  // 地圖範圍暫存在 ref：「只看地圖範圍」關閉時，拖動地圖不觸發整頁重繪
+  const boundsRef = useRef<MapViewBounds | null>(null);
+  const boundsFilterRef = useRef(boundsFilter);
+  boundsFilterRef.current = boundsFilter;
+  const handleBoundsChange = useCallback((b: MapViewBounds) => {
+    boundsRef.current = b;
+    if (boundsFilterRef.current) setMapBounds(b);
+  }, []);
+  const handleBoundsFilterChange = useCallback((v: boolean) => {
+    setBoundsFilter(v);
+    setMapBounds(v ? boundsRef.current : null);
+  }, []);
 
   const toggleCity = (city: string) => {
     setCollapsedCities(prev => {
@@ -63,15 +101,66 @@ const Courts = () => {
       });
   }, []);
 
+  // 分享連結帶 court 參數 → 資料載入後自動選取該球場
+  useEffect(() => {
+    if (!courtsData || !pendingCourtParam.current) return;
+    const found = courtsData.courts.find((c: Court) => String(c.id) === pendingCourtParam.current);
+    pendingCourtParam.current = null;
+    if (found) setSelectedCourt(found);
+  }, [courtsData]);
+
+  // 篩選 / 選取狀態同步到網址（replaceState 不新增歷史紀錄）
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('q', searchQuery);
+    if (filterType !== 'all') params.set('type', filterType);
+    if (filterFee !== 'all') params.set('fee', filterFee);
+    if (filterOwnership !== 'all') params.set('own', filterOwnership);
+    if (filterCity !== 'all') params.set('city', filterCity);
+    if (showNewOnly) params.set('new', '1');
+    if (playableNow) params.set('now', '1');
+    if (viewMode !== 'map') params.set('view', viewMode);
+    if (selectedCourt) params.set('court', String(selectedCourt.id));
+    const qs = params.toString();
+    window.history.replaceState(null, '', qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
+  }, [searchQuery, filterType, filterFee, filterOwnership, filterCity, showNewOnly, playableNow, viewMode, selectedCourt]);
+
+  // 全螢幕地圖時鎖住頁面捲動（含 Lenis）
+  useEffect(() => {
+    const lenis = (window as unknown as { __lenis?: { stop?: () => void; start?: () => void } }).__lenis;
+    if (mapExpanded) {
+      lenis?.stop?.();
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      lenis?.start?.();
+      document.documentElement.style.overflow = '';
+    }
+    return () => {
+      lenis?.start?.();
+      document.documentElement.style.overflow = '';
+    };
+  }, [mapExpanded]);
+
+  // Esc：先退出全螢幕，再取消選取
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (mapExpanded) setMapExpanded(false);
+      else setSelectedCourt(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mapExpanded]);
+
   const cities = [...new Set(courtsData?.courts.map((c: Court) => c.location.city).filter(Boolean) || [])].sort();
 
-  // 戶外球場座標 → 天氣（Open-Meteo 多座標單次請求，30 分鐘 localStorage 快取）
-  const outdoorCoords = useMemo(() => {
+  // 戶外 + 風雨球場座標 → 天氣（Open-Meteo 多座標單次請求，30 分鐘 localStorage 快取）
+  const weatherCoords = useMemo(() => {
     return courtsData?.courts
-      .filter((c: Court) => c.type === 'outdoor')
+      .filter((c: Court) => c.type === 'outdoor' || c.type === 'covered')
       .map((c: Court) => ({ lat: c.location.lat, lng: c.location.lng })) || [];
   }, [courtsData]);
-  const weatherMap = useCourtsWeather(outdoorCoords);
+  const weatherMap = useCourtsWeather(weatherCoords);
 
   const stats = {
     total: courtsData?.courts.length || 0,
@@ -81,7 +170,8 @@ const Courts = () => {
     newCourts: courtsData?.courts.filter((c: Court) => c.is_new).length || 0,
   };
 
-  const filteredCourts = (courtsData?.courts.filter((court: Court) => {
+  // 非地圖範圍類篩選（地圖標記用這份，避免拖動地圖時標記自己消失）
+  const filteredCourts = useMemo(() => (courtsData?.courts.filter((court: Court) => {
     if (filterType !== 'all' && court.type !== filterType) return false;
     if (filterFee !== 'all' && court.fee !== filterFee) return false;
     if (filterOwnership !== 'all' && court.ownership !== filterOwnership) return false;
@@ -116,7 +206,33 @@ const Courts = () => {
     if (ad !== bd) return bd.localeCompare(ad);
     // 3. id asc — 穩定排序
     return a.id - b.id;
-  });
+  }), [courtsData, filterType, filterFee, filterOwnership, filterCity, showNewOnly, playableNow, searchQuery, weatherMap]);
+
+  // 列表用：再套「只看地圖範圍」與排序
+  const listCourts = useMemo(() => {
+    let list = filteredCourts;
+    if (boundsFilter && mapBounds) {
+      list = list.filter((c: Court) =>
+        c.location.lat <= mapBounds.north && c.location.lat >= mapBounds.south &&
+        c.location.lng <= mapBounds.east && c.location.lng >= mapBounds.west
+      );
+    }
+    if (sortBy === 'distance' && userLocation) {
+      list = list.slice().sort((a, b) =>
+        distanceKm(userLocation.lat, userLocation.lng, a.location.lat, a.location.lng) -
+        distanceKm(userLocation.lat, userLocation.lng, b.location.lat, b.location.lng)
+      );
+    }
+    return list;
+  }, [filteredCourts, boundsFilter, mapBounds, sortBy, userLocation]);
+
+  // 搜尋字 debounce 後才觸發地圖自動飛行，避免每個按鍵都飛一次
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(searchQuery), 450);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+  const fitSignature = `${filterType}|${filterFee}|${filterOwnership}|${filterCity}|${showNewOnly}|${playableNow}|${debouncedQuery}`;
 
   const typeLabels: Record<string, string> = { indoor: '室內', outdoor: '戶外', covered: '風雨' };
   const ownershipLabels: Record<string, string> = { public: '公營', private: '民營', school: '學校', community: '社區' };
@@ -132,8 +248,103 @@ const Courts = () => {
     setSelectedCourt(null);
   };
 
+  const handleSortDistance = () => {
+    if (sortBy === 'distance') { setSortBy('recommended'); return; }
+    if (userLocation) { setSortBy('distance'); return; }
+    locate(() => setSortBy('distance'));
+  };
+
+  const courtDistance = (court: Court): number | null =>
+    userLocation ? distanceKm(userLocation.lat, userLocation.lng, court.location.lat, court.location.lng) : null;
+
   const hasActiveFilters = filterType !== 'all' || filterFee !== 'all' || filterOwnership !== 'all' || filterCity !== 'all' || showNewOnly || playableNow || searchQuery;
   const activeFilterCount = [filterType !== 'all', filterFee !== 'all', filterOwnership !== 'all', filterCity !== 'all', showNewOnly, playableNow].filter(Boolean).length;
+
+  // 側欄球場卡片（縣市分組模式與距離排序模式共用）
+  const renderCourtCard = (court: Court) => {
+    const dist = courtDistance(court);
+    return (
+      <div
+        key={court.id}
+        onClick={() => setSelectedCourt(court)}
+        className={`p-4 border-b border-neutral-100 cursor-pointer transition-all hover:bg-teal-50/50 ${selectedCourt?.id === court.id
+          ? 'bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-l-teal-500'
+          : ''
+          }`}
+      >
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <Link
+            to={`/courts/${courtSlug(court.id)}`}
+            onClick={(e) => e.stopPropagation()}
+            className="font-semibold text-neutral-900 text-sm leading-tight hover:text-emerald-600 hover:underline"
+          >
+            {court.name}
+          </Link>
+          <div className="flex-shrink-0 flex items-center gap-1.5">
+            {dist !== null && (
+              <span className="px-1.5 py-0.5 bg-teal-50 border border-teal-100 text-teal-700 text-xs font-semibold rounded whitespace-nowrap">
+                {formatDistance(dist)}
+              </span>
+            )}
+            {court.is_new && (
+              <span className="px-1.5 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-semibold rounded">
+                NEW
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <p className="text-xs text-neutral-500 line-clamp-1 flex-1">
+            {court.location.address}
+          </p>
+          <div className="flex-shrink-0 flex items-center gap-2">
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 hover:underline font-medium"
+              title="開車導航（Google Maps）"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              導航
+            </a>
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}&travelmode=transit`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 hover:underline font-medium"
+              title="大眾運輸路線（含即時公車/捷運班次）"
+            >
+              <span aria-hidden>🚌</span>
+              公車
+            </a>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.type === 'indoor' ? 'bg-blue-50 text-blue-600' :
+            court.type === 'covered' ? 'bg-purple-50 text-purple-600' :
+              'bg-emerald-50 text-emerald-600'
+            }`}>
+            {typeLabels[court.type] || '戶外'}
+          </span>
+          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.fee === 'free' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'
+            }`}>
+            {court.fee === 'free' ? '免費' : '付費'}
+          </span>
+          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
+            {court.courts_count}面
+          </span>
+          {court.type === 'outdoor' && (
+            <WeatherBadge lat={court.location.lat} lng={court.location.lng} weather={weatherMap.get(weatherKey(court.location.lat, court.location.lng))} />
+          )}
+        </div>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -285,6 +496,24 @@ const Courts = () => {
                 現在能打
               </motion.button>
 
+              {/* Distance sort — triggers geolocation on first use */}
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSortDistance}
+                title="依你的位置由近到遠排序（首次使用會請求定位權限）"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 flex-shrink-0 ${sortBy === 'distance'
+                    ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md shadow-teal-500/25'
+                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
+              >
+                {isLocating ? (
+                  <span className="w-3.5 h-3.5 border-2 border-neutral-300 border-t-teal-500 rounded-full animate-spin" />
+                ) : (
+                  <span aria-hidden>📍</span>
+                )}
+                離我最近
+              </motion.button>
+
               <div className="w-px h-6 bg-neutral-200 flex-shrink-0" />
 
               {/* Fee Toggle */}
@@ -422,7 +651,13 @@ const Courts = () => {
           {/* Results Count */}
           <div className="flex items-center justify-between mt-3 text-sm">
             <span className="text-neutral-500">
-              找到 <span className="font-semibold text-neutral-900">{filteredCourts.length}</span> 座球場
+              找到 <span className="font-semibold text-neutral-900">{listCourts.length}</span> 座球場
+              {boundsFilter && (
+                <span className="ml-1.5 text-xs text-teal-600 font-medium">（限地圖範圍）</span>
+              )}
+              {sortBy === 'distance' && userLocation && (
+                <span className="ml-1.5 text-xs text-teal-600 font-medium">· 由近到遠</span>
+              )}
             </span>
             <a
               href="https://pickleball.org.tw/stadium/"
@@ -444,13 +679,29 @@ const Courts = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-3 xl:col-span-3 lg:sticky lg:top-[170px] lg:self-start isolate"
+              className={mapExpanded
+                ? 'fixed inset-0 z-[60]'
+                : 'lg:col-span-3 xl:col-span-3 lg:sticky lg:top-[170px] lg:self-start isolate'}
             >
-              <div className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-neutral-900/5 border border-neutral-200/80">
+              <div className={mapExpanded
+                ? 'w-full h-full bg-white'
+                : 'bg-white rounded-2xl overflow-hidden shadow-lg shadow-neutral-900/5 border border-neutral-200/80 h-[55vh] min-h-[380px] max-h-[560px] supports-[height:1dvh]:h-[55dvh] lg:h-[calc(100vh-210px)] lg:supports-[height:1dvh]:h-[calc(100dvh-210px)] lg:min-h-[480px] lg:max-h-none'}
+              >
                 <CourtMap
                   courts={filteredCourts}
                   selectedCourt={selectedCourt}
                   onCourtSelect={setSelectedCourt}
+                  userLocation={userLocation}
+                  isLocating={isLocating}
+                  locationError={locationError}
+                  onLocate={() => locate()}
+                  fitSignature={fitSignature}
+                  initialFit={initialFit}
+                  boundsFilter={boundsFilter}
+                  onBoundsFilterChange={handleBoundsFilterChange}
+                  onBoundsChange={handleBoundsChange}
+                  isExpanded={mapExpanded}
+                  onToggleExpand={() => setMapExpanded(v => !v)}
                 />
               </div>
             </motion.div>
@@ -467,11 +718,11 @@ const Courts = () => {
                   <div className="flex items-baseline justify-between gap-2 mb-2">
                     <h2 className="font-semibold text-neutral-900">球場列表</h2>
                     <span className="text-xs text-neutral-500">
-                      共 <span className="font-semibold text-neutral-700">{filteredCourts.length}</span> 座 · 依縣市
+                      共 <span className="font-semibold text-neutral-700">{listCourts.length}</span> 座 · {sortBy === 'distance' && userLocation ? '依距離' : '依縣市'}
                     </span>
                   </div>
-                  {(() => {
-                    const allCities = [...new Set(filteredCourts.map((c: Court) => c.location.city || '其他'))];
+                  {sortBy !== 'distance' && (() => {
+                    const allCities = [...new Set(listCourts.map((c: Court) => c.location.city || '其他'))];
                     const allCollapsed = allCities.length > 0 && allCities.every(c => collapsedCities.has(c));
                     return (
                       <div className="flex items-center gap-3 mb-3 text-xs">
@@ -487,9 +738,9 @@ const Courts = () => {
                     );
                   })()}
                   {/* 縣市數量總覽 chips */}
-                  {(() => {
+                  {sortBy !== 'distance' && (() => {
                     const counts: Record<string, number> = {};
-                    filteredCourts.forEach((c: Court) => {
+                    listCourts.forEach((c: Court) => {
                       const k = c.location.city || '其他';
                       counts[k] = (counts[k] || 0) + 1;
                     });
@@ -536,15 +787,33 @@ const Courts = () => {
                   })()}
                 </div>
                 <div>
-                  {filteredCourts.length === 0 ? (
+                  {listCourts.length === 0 ? (
                     <div className="p-8 text-center">
                       <PickleballIcon className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
-                      <p className="text-neutral-500">沒有符合條件的球場</p>
+                      <p className="text-neutral-500 mb-3">
+                        {boundsFilter ? '目前地圖範圍內沒有符合的球場' : '沒有符合條件的球場'}
+                      </p>
+                      {boundsFilter && (
+                        <button
+                          onClick={() => handleBoundsFilterChange(false)}
+                          className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+                        >
+                          關閉「只看地圖範圍」
+                        </button>
+                      )}
+                    </div>
+                  ) : sortBy === 'distance' && userLocation ? (
+                    /* 距離排序：攤平列表，由近到遠 */
+                    <div>
+                      <div className="px-4 py-2.5 bg-teal-50/60 border-b border-teal-100 text-xs font-semibold text-teal-700 flex items-center gap-1.5">
+                        <span aria-hidden>📍</span> 依你的位置由近到遠
+                      </div>
+                      {listCourts.map((court: Court) => renderCourtCard(court))}
                     </div>
                   ) : (() => {
                     // 依縣市分組
                     const groups: Record<string, Court[]> = {};
-                    filteredCourts.forEach((c: Court) => {
+                    listCourts.forEach((c: Court) => {
                       const k = c.location.city || '其他';
                       if (!groups[k]) groups[k] = [];
                       groups[k].push(c);
@@ -585,80 +854,7 @@ const Courts = () => {
                               </Link>
                             )}
                           </div>
-                          {!isCollapsed && cityCourts.map((court: Court) => (
-                            <div
-                              key={court.id}
-                              onClick={() => setSelectedCourt(court)}
-                              className={`p-4 border-b border-neutral-100 cursor-pointer transition-all hover:bg-teal-50/50 ${selectedCourt?.id === court.id
-                                ? 'bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-l-teal-500'
-                                : ''
-                                }`}
-                            >
-                              <div className="flex items-start justify-between gap-2 mb-2">
-                                <Link
-                                  to={`/courts/${courtSlug(court.id)}`}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="font-semibold text-neutral-900 text-sm leading-tight hover:text-emerald-600 hover:underline"
-                                >
-                                  {court.name}
-                                </Link>
-                                {court.is_new && (
-                                  <span className="flex-shrink-0 px-1.5 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-semibold rounded">
-                                    NEW
-                                  </span>
-                                )}
-                              </div>
-                              <div className="flex items-center justify-between gap-2 mb-2.5">
-                                <p className="text-xs text-neutral-500 line-clamp-1 flex-1">
-                                  {court.location.address}
-                                </p>
-                                <div className="flex-shrink-0 flex items-center gap-2">
-                                  <a
-                                    href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 hover:underline font-medium"
-                                    title="開車導航（Google Maps）"
-                                  >
-                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                                    </svg>
-                                    導航
-                                  </a>
-                                  <a
-                                    href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}&travelmode=transit`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 hover:underline font-medium"
-                                    title="大眾運輸路線（含即時公車/捷運班次）"
-                                  >
-                                    <span aria-hidden>🚌</span>
-                                    公車
-                                  </a>
-                                </div>
-                              </div>
-                              <div className="flex flex-wrap items-center gap-1.5">
-                                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.type === 'indoor' ? 'bg-blue-50 text-blue-600' :
-                                  court.type === 'covered' ? 'bg-purple-50 text-purple-600' :
-                                    'bg-emerald-50 text-emerald-600'
-                                  }`}>
-                                  {typeLabels[court.type] || '戶外'}
-                                </span>
-                                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${court.fee === 'free' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'
-                                  }`}>
-                                  {court.fee === 'free' ? '免費' : '付費'}
-                                </span>
-                                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
-                                  {court.courts_count}面
-                                </span>
-                                {court.type === 'outdoor' && (
-                                  <WeatherBadge lat={court.location.lat} lng={court.location.lng} weather={weatherMap.get(weatherKey(court.location.lat, court.location.lng))} />
-                                )}
-                              </div>
-                            </div>
-                          ))}
+                          {!isCollapsed && cityCourts.map((court: Court) => renderCourtCard(court))}
                         </div>
                       );
                     });
@@ -674,7 +870,7 @@ const Courts = () => {
             animate={{ opacity: 1 }}
             className="space-y-4"
           >
-            {filteredCourts.length === 0 ? (
+            {listCourts.length === 0 ? (
               <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200">
                 <PickleballIcon className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
                 <p className="text-neutral-500 text-lg">沒有符合條件的球場</p>
@@ -683,12 +879,12 @@ const Courts = () => {
                 </button>
               </div>
             ) : (
-              filteredCourts.map((court: Court, index: number) => (
+              listCourts.map((court: Court, index: number) => (
                 <motion.div
                   key={court.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ delay: Math.min(index * 0.05, 0.5) }}
                   whileHover={{ y: -2 }}
                   className="bg-white rounded-2xl border border-neutral-200 p-5 hover:shadow-lg hover:shadow-neutral-900/5 transition-all"
                 >
@@ -698,6 +894,11 @@ const Courts = () => {
                         <Link to={`/courts/${courtSlug(court.id)}`} className="font-bold text-neutral-900 text-lg hover:text-emerald-600 hover:underline">
                           {court.name}
                         </Link>
+                        {courtDistance(court) !== null && (
+                          <span className="px-2 py-0.5 bg-teal-50 border border-teal-100 text-teal-700 text-xs font-bold rounded whitespace-nowrap self-center">
+                            📍 {formatDistance(courtDistance(court)!)}
+                          </span>
+                        )}
                         {court.is_new && (
                           <span className="px-2 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-bold rounded">
                             NEW
@@ -809,6 +1010,7 @@ const Courts = () => {
         <CourtQuickSheet
           court={selectedCourt}
           weather={selectedCourt ? weatherMap.get(weatherKey(selectedCourt.location.lat, selectedCourt.location.lng)) : undefined}
+          distanceLabel={selectedCourt && courtDistance(selectedCourt) !== null ? formatDistance(courtDistance(selectedCourt)!) : undefined}
           onClose={() => setSelectedCourt(null)}
         />
       </div>

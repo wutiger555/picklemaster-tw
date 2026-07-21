@@ -8,6 +8,8 @@ import WeatherBadge from './WeatherBadge';
 interface Props {
   court: Court | null;
   weather?: CourtWeather;
+  /** 使用者已定位時傳入，例如「2.3 km」 */
+  distanceLabel?: string;
   onClose: () => void;
 }
 
@@ -18,7 +20,7 @@ const TYPE_LABEL: Record<string, { text: string; cls: string }> = {
 };
 
 // 行動版底部快覽面板：點列表 / 地圖標記即時顯示球場摘要
-export default function CourtQuickSheet({ court, weather, onClose }: Props) {
+export default function CourtQuickSheet({ court, weather, distanceLabel, onClose }: Props) {
   const t = court ? (TYPE_LABEL[court.type] || TYPE_LABEL.outdoor) : TYPE_LABEL.outdoor;
 
   return (
@@ -32,16 +34,22 @@ export default function CourtQuickSheet({ court, weather, onClose }: Props) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 z-40 bg-neutral-900/30 backdrop-blur-[2px]"
+            className="fixed inset-0 z-[70] bg-neutral-900/30 backdrop-blur-[2px]"
             aria-hidden
           />
-          {/* Sheet */}
+          {/* Sheet — 支援下滑手勢關閉，z 高於全螢幕地圖(z-60) */}
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-            className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl shadow-[0_-8px_40px_rgba(0,0,0,0.15)] max-h-[75vh] overflow-y-auto overscroll-contain"
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.5 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 90 || info.velocity.y > 500) onClose();
+            }}
+            className="fixed inset-x-0 bottom-0 z-[75] bg-white rounded-t-3xl shadow-[0_-8px_40px_rgba(0,0,0,0.15)] max-h-[75vh] overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]"
             role="dialog"
             aria-label={`${court.name} 快覽`}
           >
@@ -71,6 +79,11 @@ export default function CourtQuickSheet({ court, weather, onClose }: Props) {
             <div className="px-5 pb-6">
               {/* Chips */}
               <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                {distanceLabel && (
+                  <span className="px-2.5 py-1 text-xs font-bold rounded-full border bg-teal-50 text-teal-700 border-teal-200">
+                    📍 {distanceLabel}
+                  </span>
+                )}
                 <span className={`px-2.5 py-1 text-xs font-medium rounded-full border ${t.cls}`}>{t.text}</span>
                 <span className={`px-2.5 py-1 text-xs font-medium rounded-full border ${court.fee === 'free' ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-neutral-50 text-neutral-600 border-neutral-200'}`}>
                   {court.fee === 'free' ? '免費' : '付費'}

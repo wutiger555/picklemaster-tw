@@ -828,9 +828,9 @@ async function generateStaticPages() {
             // Replace Title
             content = content.replace(/<title>.*<\/title>/, `<title>${seo.title}</title>`);
 
-            // Replace Meta Description
+            // Replace Meta Description（tag 跨行，需匹配整個標籤）
             content = content.replace(
-                /<meta name="description" content=".*?" \/>/,
+                /<meta name="description"[^>]*>/,
                 `<meta name="description" content="${seo.description}" />`
             );
 
@@ -901,7 +901,7 @@ async function generateStaticPages() {
             const canonical = `${BASE_URL}/training-programs/${p.slug}`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
-            content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+            content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
             content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
             content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
             content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
@@ -925,7 +925,7 @@ async function generateStaticPages() {
             const canonical = `${BASE_URL}/players/${p.slug}`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
-            content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+            content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
             content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
             content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
             content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
@@ -951,7 +951,7 @@ async function generateStaticPages() {
             const canonical = `${BASE_URL}/articles/${a.slug}`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
-            content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+            content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
             content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
             content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
             content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
@@ -981,7 +981,7 @@ async function generateStaticPages() {
             const canonical = `${BASE_URL}/techniques/${t.slug}`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
-            content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+            content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
             content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
             content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
             content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
@@ -1000,30 +1000,169 @@ async function generateStaticPages() {
         console.log('Generating court detail pages...');
         try {
             const courtsData = JSON.parse(fs.readFileSync(path.join(BUILD_DIR, 'data', 'courts.json'), 'utf-8'));
+
+            // --- SEO helpers（球場頁：預渲染內容 + 結構化資料，讓不執行 JS 的爬蟲/AI 引擎也讀得到）---
+            const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            const typeLabelOf = (t) => t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外';
+            const ownLabelOf = (o) => ({ public: '公營', private: '民營', school: '學校', community: '社區' }[o] || o || '');
+            const courtIs24h = (h) => /24\s*小時/.test(h || '');
+            const citySlugOf = (cityName) => (CITY_SLUG_MAP.find(c => c.city === cityName) || {}).slug;
+
+            const buildCourtFaqs = (court) => {
+                const city = court.location.city || '';
+                const district = court.location.district || '';
+                const typeLabel = typeLabelOf(court.type);
+                const faqs = [];
+                faqs.push({
+                    q: `${court.name}在哪裡？怎麼前往？`,
+                    a: `${court.name}位於${court.location.address}（${city}${district}）。可用 Google 地圖開車導航，或查詢公車／捷運等大眾運輸即時路線前往。`,
+                });
+                faqs.push({
+                    q: `${court.name}要收費嗎？`,
+                    a: court.fee === 'free'
+                        ? `${court.name}為免費開放的匹克球場，通常先到先打，熱門時段可能需要排隊輪場。`
+                        : `${court.name}為收費球場，費用為${court.price || '依現場公告'}。建議事先確認時段與預約方式。`,
+                });
+                faqs.push({
+                    q: `${court.name}的開放時間是？`,
+                    a: `${court.name}的開放時間為${court.opening_hours || '依現場公告'}。${courtIs24h(court.opening_hours) ? '為 24 小時開放場地，深夜也能打球。' : ''}`.trim(),
+                });
+                faqs.push({
+                    q: `${court.name}有幾面球場？是室內還是戶外？`,
+                    a: `${court.name}共有 ${court.courts_count} 面球場，屬於${typeLabel}場地${court.surface ? `，場地材質為${court.surface}` : ''}。`,
+                });
+                if (court.facilities && court.facilities.length) {
+                    faqs.push({
+                        q: `${court.name}有哪些設施？`,
+                        a: `${court.name}提供的設施包含：${court.facilities.join('、')}。`,
+                    });
+                }
+                return faqs;
+            };
+
+            const courtPrerender = (court, siblings) => {
+                const city = court.location.city || '';
+                const district = court.location.district || '';
+                const citySlug = citySlugOf(city);
+                const typeLabel = typeLabelOf(court.type);
+                const ownLabel = ownLabelOf(court.ownership);
+                const feeText = court.fee === 'free' ? '免費' : (court.price || '付費');
+                const faqs = buildCourtFaqs(court);
+                const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`;
+                return `
+      <main style="max-width:960px;margin:0 auto;padding:24px 16px;font-family:system-ui,-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;color:#1f2937;line-height:1.7;">
+        <nav aria-label="breadcrumb" style="font-size:13px;color:#6b7280;margin-bottom:16px;">
+          <a href="/" style="color:#0d9488;text-decoration:none;">首頁</a> ›
+          <a href="/courts" style="color:#0d9488;text-decoration:none;">球場地圖</a> ›
+          ${citySlug ? `<a href="/courts/${citySlug}" style="color:#0d9488;text-decoration:none;">${esc(city)}匹克球場</a> ›` : ''}
+          <span>${esc(court.name)}</span>
+        </nav>
+        <h1 style="font-size:30px;font-weight:800;margin:0 0 8px;">${esc(court.name)}</h1>
+        <p style="color:#4b5563;margin:0 0 4px;">📍 ${esc(court.location.address)}</p>
+        <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">${esc(city)}${esc(district)}・${typeLabel}球場・${court.courts_count} 面・${esc(feeText)}${courtIs24h(court.opening_hours) ? '・24 小時開放' : ''}</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">基本資訊</h2>
+          <ul style="list-style:none;padding:0;margin:0;font-size:15px;">
+            <li><strong>地址：</strong>${esc(court.location.address)}</li>
+            <li><strong>開放時間：</strong>${esc(court.opening_hours || '依現場公告')}</li>
+            <li><strong>費用：</strong>${esc(feeText)}</li>
+            <li><strong>球場數：</strong>${court.courts_count} 面</li>
+            <li><strong>類型：</strong>${typeLabel}${court.surface ? `（${esc(court.surface)}）` : ''}</li>
+            ${ownLabel ? `<li><strong>經營類型：</strong>${esc(ownLabel)}</li>` : ''}
+            ${court.contact ? `<li><strong>聯絡電話：</strong>${esc(court.contact)}</li>` : ''}
+          </ul>
+        </section>
+        ${court.features && court.features.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">場地特色</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${court.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
+        </section>` : ''}
+        ${court.facilities && court.facilities.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">設施</h2>
+          <p style="font-size:15px;margin:0;">${court.facilities.map(esc).join('、')}</p>
+        </section>` : ''}
+        ${court.reviews ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">場地說明</h2>
+          <p style="font-size:15px;margin:0;">${esc(court.reviews)}</p>
+        </section>` : ''}
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">交通與導航</h2>
+          <p style="font-size:15px;margin:0;"><a href="${navUrl}" style="color:#0d9488;">開啟 Google 地圖導航前往 ${esc(court.name)}</a></p>
+        </section>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">常見問題</h2>
+          ${faqs.map(f => `<div style="margin-bottom:12px;"><h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">${esc(f.q)}</h3><p style="font-size:15px;margin:0;color:#4b5563;">${esc(f.a)}</p></div>`).join('')}
+        </section>
+        ${siblings && siblings.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(city)}其他匹克球場</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${siblings.map(s => `<li><a href="/courts/court-${s.id}" style="color:#0d9488;">${esc(s.name)}</a>（${typeLabelOf(s.type)}・${s.courts_count} 面・${s.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
+          ${citySlug ? `<p style="margin:12px 0 0;font-size:15px;"><a href="/courts/${citySlug}" style="color:#0d9488;font-weight:600;">查看${esc(city)}全部匹克球場 →</a></p>` : ''}
+        </section>` : ''}
+        <p style="font-size:14px;"><a href="/courts" style="color:#0d9488;">← 返回全台匹克球場地圖</a></p>
+      </main>`;
+            };
+
+            const courtStructured = (court) => {
+                const city = court.location.city || '';
+                const citySlug = citySlugOf(city);
+                const canonical = `${BASE_URL}/courts/court-${court.id}`;
+                const typeLabel = typeLabelOf(court.type);
+                const faqs = buildCourtFaqs(court);
+                const crumbs = [
+                    { "@type": "ListItem", "position": 1, "name": "首頁", "item": BASE_URL + "/" },
+                    { "@type": "ListItem", "position": 2, "name": "球場地圖", "item": BASE_URL + "/courts" },
+                ];
+                if (citySlug) crumbs.push({ "@type": "ListItem", "position": 3, "name": `${city}匹克球場`, "item": `${BASE_URL}/courts/${citySlug}` });
+                crumbs.push({ "@type": "ListItem", "position": crumbs.length + 1, "name": court.name, "item": canonical });
+                return {
+                    "@context": "https://schema.org",
+                    "@graph": [
+                        {
+                            "@type": "SportsActivityLocation",
+                            "@id": `${canonical}#place`,
+                            "name": court.name,
+                            "sport": "Pickleball",
+                            "description": `${court.name}是位於${city}${court.location.district || ''}的${typeLabel}匹克球場，共 ${court.courts_count} 面球場，${court.fee === 'free' ? '免費開放' : '收費'}。`,
+                            "address": { "@type": "PostalAddress", "streetAddress": court.location.address, "addressLocality": court.location.district, "addressRegion": city, "addressCountry": "TW" },
+                            "geo": { "@type": "GeoCoordinates", "latitude": court.location.lat, "longitude": court.location.lng },
+                            "openingHours": court.opening_hours,
+                            "isAccessibleForFree": court.fee === 'free',
+                            "priceRange": court.fee === 'free' ? '免費' : (court.price || '付費'),
+                            "url": canonical,
+                            "hasMap": `https://www.google.com/maps/search/?api=1&query=${court.location.lat},${court.location.lng}`,
+                            ...(court.contact ? { "telephone": court.contact } : {}),
+                            ...(court.facilities && court.facilities.length ? { "amenityFeature": court.facilities.map(f => ({ "@type": "LocationFeatureSpecification", "name": f, "value": true })) } : {}),
+                        },
+                        { "@type": "BreadcrumbList", "itemListElement": crumbs },
+                        { "@type": "FAQPage", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) },
+                    ],
+                };
+            };
+
             for (const court of courtsData.courts) {
                 const slug = `court-${court.id}`;
                 const dirPath = path.join(BUILD_DIR, 'courts', slug);
                 fs.mkdirSync(dirPath, { recursive: true });
-                const title = `${court.name} | ${court.location.city}${court.location.district || ''}匹克球場資訊`;
-                const desc = `${court.name}位於${court.location.address}，${court.type === 'indoor' ? '室內' : '戶外'}場、${court.courts_count}面、${court.fee === 'free' ? '免費' : court.price || '付費'}。`;
+                const city = court.location.city || '';
+                const district = court.location.district || '';
+                const typeLabel = typeLabelOf(court.type);
+                const feeLabel = court.fee === 'free' ? '免費' : '收費';
+                const siblings = courtsData.courts.filter(c => c.location.city === city && c.id !== court.id).slice(0, 6);
+                const title = `${court.name}｜${city}${district}匹克球場・${typeLabel}${court.courts_count}面${feeLabel} | 地址、開放時間、導航`;
+                const desc = `${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}提供 GPS 開車導航與大眾運輸路線，${city}打匹克球的完整場地資訊。`;
                 const canonical = `${BASE_URL}/courts/${slug}`;
                 let content = template;
-                content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
-                content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+                content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
+                content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(desc)}" />`);
                 content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
-                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
-                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${esc(title)}" />`);
+                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${esc(desc)}" />`);
                 content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
-                const ldJson = {
-                    "@context": "https://schema.org", "@type": "SportsActivityLocation",
-                    "name": court.name, "sport": "Pickleball",
-                    "address": { "@type": "PostalAddress", "streetAddress": court.location.address, "addressLocality": court.location.district, "addressRegion": court.location.city, "addressCountry": "TW" },
-                    "geo": { "@type": "GeoCoordinates", "latitude": court.location.lat, "longitude": court.location.lng },
-                    "openingHours": court.opening_hours,
-                    "isAccessibleForFree": court.fee === 'free',
-                    "url": canonical
-                };
-                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(ldJson)}</script>`);
+                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(courtStructured(court)).replace(/</g, '\\u003c')}</script>`);
+                content = content.replace('<div id="root"></div>', `<div id="root">${courtPrerender(court, siblings)}</div>`);
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
             }
             console.log(`  Generated ${courtsData.courts.length} court detail pages`);
@@ -1042,7 +1181,7 @@ async function generateStaticPages() {
                 const canonical = `${BASE_URL}/courts/${slug}`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
-                content = content.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+                content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
                 content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
                 content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
                 content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);

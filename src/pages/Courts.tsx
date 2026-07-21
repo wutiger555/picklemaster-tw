@@ -342,6 +342,16 @@ const Courts = () => {
             <WeatherBadge lat={court.location.lat} lng={court.location.lng} weather={weatherMap.get(weatherKey(court.location.lat, court.location.lng))} />
           )}
         </div>
+
+        {/* 明確的詳情入口：讓使用者知道每個球場有獨立介紹頁 */}
+        <Link
+          to={`/courts/${courtSlug(court.id)}`}
+          onClick={(e) => e.stopPropagation()}
+          className="mt-2.5 flex items-center justify-between gap-1 px-3 py-2 rounded-lg bg-neutral-50 hover:bg-teal-50 text-neutral-600 hover:text-teal-700 text-xs font-semibold transition-colors group/detail"
+        >
+          <span>查看場地介紹、費用與交通</span>
+          <svg className="w-3.5 h-3.5 group-hover/detail:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+        </Link>
       </div>
     );
   };
@@ -733,7 +743,7 @@ const Courts = () => {
                           {allCollapsed ? '展開全部' : '收合全部'}
                         </button>
                         <span className="text-neutral-400">·</span>
-                        <span className="text-neutral-500">點縣市標題可摺疊／點 chip 跳到該區</span>
+                        <span className="text-neutral-500">點球場看地圖，點「詳情」看完整介紹</span>
                       </div>
                     );
                   })()}
@@ -964,17 +974,22 @@ const Courts = () => {
                         </a>
                       )}
                       <div className="flex gap-2 flex-wrap md:flex-nowrap">
+                        <Link
+                          to={`/courts/${courtSlug(court.id)}`}
+                          className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-teal-500/25 transition-shadow"
+                        >
+                          場地詳情
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                        </Link>
                         {court.booking_url && (
-                          <motion.a
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                          <a
                             href={court.booking_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-teal-500/25 transition-shadow"
+                            className="px-4 py-2 border border-neutral-200 text-neutral-700 text-sm font-medium rounded-lg hover:bg-neutral-50 transition-colors"
                           >
-                            預約場地
-                          </motion.a>
+                            預約
+                          </a>
                         )}
                         {court.website && (
                           <a

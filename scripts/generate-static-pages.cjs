@@ -1008,6 +1008,74 @@ async function generateStaticPages() {
             const courtIs24h = (h) => /24\s*小時/.test(h || '');
             const citySlugOf = (cityName) => (CITY_SLUG_MAP.find(c => c.city === cityName) || {}).slug;
 
+            // 城市 hub：導言／簡稱取自 src/utils/cityData.ts（單一資料來源，避免重複維護）
+            const cityMeta = {};
+            try {
+                const cityDataSrc = fs.readFileSync(path.join(__dirname, '../src/utils/cityData.ts'), 'utf-8');
+                const re = /slug:\s*'([^']+)',\s*city:\s*'([^']+)',\s*shortName:\s*'([^']+)',\s*intro:\s*'((?:[^'\\]|\\.)*)'/g;
+                let mm;
+                while ((mm = re.exec(cityDataSrc)) !== null) {
+                    cityMeta[mm[2]] = { slug: mm[1], shortName: mm[3], intro: mm[4].replace(/\\'/g, "'") };
+                }
+            } catch (e) { /* 導言缺失不影響其他內容 */ }
+            const shortNameOf = (city) => (cityMeta[city] && cityMeta[city].shortName) || city.replace(/[市縣]$/, '');
+
+            const buildCityFaqs = (city, cityCourts) => {
+                const shortName = shortNameOf(city);
+                const indoor = cityCourts.filter(c => c.type === 'indoor').length;
+                const outdoor = cityCourts.filter(c => c.type !== 'indoor').length;
+                const freeCourts = cityCourts.filter(c => c.fee === 'free');
+                const indoorCourts = cityCourts.filter(c => c.type === 'indoor' || c.type === 'covered');
+                const faqs = [{
+                    q: `${shortName}有幾座匹克球場？`,
+                    a: `本站目前收錄${city} ${cityCourts.length} 座匹克球場（室內 ${indoor} 座、戶外/風雨 ${outdoor} 座），持續更新中。`,
+                }];
+                if (freeCourts.length) faqs.push({
+                    q: `${shortName}哪裡可以免費打匹克球？`,
+                    a: `${city}有 ${freeCourts.length} 座免費球場：${freeCourts.slice(0, 5).map(c => c.name).join('、')}${freeCourts.length > 5 ? ' 等' : ''}。免費場通常先到先打，熱門時段需排隊輪場。`,
+                });
+                if (indoorCourts.length) faqs.push({
+                    q: `${shortName}下雨天去哪打匹克球？`,
+                    a: `${city}有 ${indoorCourts.length} 座室內或風雨球場：${indoorCourts.slice(0, 5).map(c => c.name).join('、')}${indoorCourts.length > 5 ? ' 等' : ''}，不受天氣影響。`,
+                });
+                return faqs;
+            };
+
+            const cityPrerender = (city, cityCourts, faqs, otherCities) => {
+                const meta = cityMeta[city] || {};
+                const shortName = shortNameOf(city);
+                const free = cityCourts.filter(c => c.fee === 'free').length;
+                const indoor = cityCourts.filter(c => c.type === 'indoor').length;
+                const outdoor = cityCourts.filter(c => c.type !== 'indoor').length;
+                const open24 = cityCourts.filter(c => courtIs24h(c.opening_hours)).length;
+                return `
+      <main style="max-width:960px;margin:0 auto;padding:24px 16px;font-family:system-ui,-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;color:#1f2937;line-height:1.7;">
+        <nav aria-label="breadcrumb" style="font-size:13px;color:#6b7280;margin-bottom:16px;">
+          <a href="/" style="color:#0d9488;text-decoration:none;">首頁</a> ›
+          <a href="/courts" style="color:#0d9488;text-decoration:none;">球場地圖</a> ›
+          <span>${esc(city)}匹克球場</span>
+        </nav>
+        <h1 style="font-size:30px;font-weight:800;margin:0 0 8px;">${esc(city)}匹克球場地圖｜${cityCourts.length} 座場地</h1>
+        ${meta.intro ? `<p style="color:#4b5563;margin:0 0 12px;">${esc(meta.intro)}</p>` : ''}
+        <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">室內 ${indoor} 座・戶外/風雨 ${outdoor} 座・免費 ${free} 座${open24 ? `・24 小時 ${open24} 座` : ''}</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(city)}匹克球場完整名單</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${cityCourts.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${c.courts_count} 面・${c.fee === 'free' ? '免費' : '收費'}）— ${esc(c.location.address)}</li>`).join('')}</ul>
+        </section>
+        ${faqs.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(shortName)}匹克球常見問題</h2>
+          ${faqs.map(f => `<div style="margin-bottom:12px;"><h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">${esc(f.q)}</h3><p style="font-size:15px;margin:0;color:#4b5563;">${esc(f.a)}</p></div>`).join('')}
+        </section>` : ''}
+        ${otherCities.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">探索其他縣市球場</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${otherCities.map(o => `<li><a href="/courts/${o.slug}" style="color:#0d9488;">${esc(o.city)}匹克球場</a>（${o.count} 座）</li>`).join('')}</ul>
+        </section>` : ''}
+        <p style="font-size:14px;"><a href="/courts" style="color:#0d9488;">開啟全台匹克球場互動地圖（GPS 找最近球場、即時天氣）→</a></p>
+      </main>`;
+            };
+
             const buildCourtFaqs = (court) => {
                 const city = court.location.city || '';
                 const district = court.location.district || '';
@@ -1168,35 +1236,69 @@ async function generateStaticPages() {
             console.log(`  Generated ${courtsData.courts.length} court detail pages`);
 
             // ===== Generate city hub pages =====
+            // 各縣市球場數（供「其他縣市」內部連結顯示）
+            const cityCountMap = {};
+            for (const c of courtsData.courts) cityCountMap[c.location.city] = (cityCountMap[c.location.city] || 0) + 1;
+
             let cityPageCount = 0;
             for (const { slug, city } of CITY_SLUG_MAP) {
-                const cityCourts = courtsData.courts.filter(c => c.location.city === city);
+                // 與 CityCourts.tsx 一致的排序（新場 → 免費 → 場數多）
+                const cityCourts = courtsData.courts
+                    .filter(c => c.location.city === city)
+                    .sort((a, b) => {
+                        if (!!a.is_new !== !!b.is_new) return a.is_new ? -1 : 1;
+                        if ((a.fee === 'free') !== (b.fee === 'free')) return a.fee === 'free' ? -1 : 1;
+                        return b.courts_count - a.courts_count;
+                    });
                 if (cityCourts.length === 0) continue;
                 const dirPath = path.join(BUILD_DIR, 'courts', slug);
                 fs.mkdirSync(dirPath, { recursive: true });
                 const free = cityCourts.filter(c => c.fee === 'free').length;
                 const indoor = cityCourts.filter(c => c.type === 'indoor').length;
+                const open24 = cityCourts.filter(c => courtIs24h(c.opening_hours)).length;
+                const faqs = buildCityFaqs(city, cityCourts);
+                const otherCities = CITY_SLUG_MAP
+                    .filter(o => o.city !== city && (cityCountMap[o.city] || 0) > 0)
+                    .map(o => ({ slug: o.slug, city: o.city, count: cityCountMap[o.city] }));
                 const title = `${city}匹克球場地圖 2026｜${cityCourts.length} 座場地完整名單（免費/室內/收費）`;
-                const desc = `${city}匹克球場完整攻略：免費場 ${free} 座、室內場 ${indoor} 座，共 ${cityCourts.length} 座場地。地址、開放時間、費用、特色一次看，附 GPS 導航。`;
+                const desc = `${city}匹克球場完整攻略：免費場 ${free} 座、室內場 ${indoor} 座${open24 ? `、24 小時場 ${open24} 座` : ''}，共 ${cityCourts.length} 座場地。地址、開放時間、費用、特色一次看，附 GPS 導航。`;
                 const canonical = `${BASE_URL}/courts/${slug}`;
                 let content = template;
-                content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
-                content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
+                content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
+                content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(desc)}" />`);
                 content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
-                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
-                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${esc(title)}" />`);
+                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${esc(desc)}" />`);
                 content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
                 const ldJson = {
-                    "@context": "https://schema.org", "@type": "ItemList",
-                    "name": `${city}匹克球場完整列表`, "numberOfItems": cityCourts.length,
-                    "itemListElement": cityCourts.map((c, i) => ({
-                        "@type": "SportsActivityLocation", "position": i + 1, "name": c.name, "sport": "Pickleball",
-                        "address": { "@type": "PostalAddress", "streetAddress": c.location.address, "addressLocality": c.location.district, "addressRegion": c.location.city, "addressCountry": "TW" },
-                        "isAccessibleForFree": c.fee === 'free',
-                        "url": `${BASE_URL}/courts/court-${c.id}`
-                    }))
+                    "@context": "https://schema.org",
+                    "@graph": [
+                        {
+                            "@type": "ItemList",
+                            "name": `${city}匹克球場完整列表`, "numberOfItems": cityCourts.length,
+                            "itemListElement": cityCourts.map((c, i) => ({
+                                "@type": "SportsActivityLocation", "position": i + 1, "name": c.name, "sport": "Pickleball",
+                                "address": { "@type": "PostalAddress", "streetAddress": c.location.address, "addressLocality": c.location.district, "addressRegion": c.location.city, "addressCountry": "TW" },
+                                "isAccessibleForFree": c.fee === 'free',
+                                "url": `${BASE_URL}/courts/court-${c.id}`
+                            }))
+                        },
+                        {
+                            "@type": "BreadcrumbList",
+                            "itemListElement": [
+                                { "@type": "ListItem", "position": 1, "name": "首頁", "item": BASE_URL + "/" },
+                                { "@type": "ListItem", "position": 2, "name": "球場地圖", "item": BASE_URL + "/courts" },
+                                { "@type": "ListItem", "position": 3, "name": `${city}匹克球場`, "item": canonical },
+                            ]
+                        },
+                        {
+                            "@type": "FAQPage",
+                            "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })),
+                        },
+                    ],
                 };
-                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(ldJson)}</script>`);
+                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(ldJson).replace(/</g, '\\u003c')}</script>`);
+                content = content.replace('<div id="root"></div>', `<div id="root">${cityPrerender(city, cityCourts, faqs, otherCities)}</div>`);
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
                 cityPageCount++;
             }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getProgramBySlug } from '../data/trainingProgramsData';
+import { getProgramBySlug, TRAINING_PROGRAMS } from '../data/trainingProgramsData';
 import SEOHead from '../components/common/SEOHead';
 
 const TrainingProgramDetail = () => {
@@ -62,6 +62,16 @@ const TrainingProgramDetail = () => {
   const totalDrills = program.weeks.reduce((sum, w) => sum + w.days.reduce((s2, d) => s2 + d.drills.length, 0), 0);
   const completedCount = completed.size;
   const progressPct = totalDrills > 0 ? Math.round((completedCount / totalDrills) * 100) : 0;
+
+  // 同焦點/同程度優先的其他菜單（消除頁面死路、強化內部連結）
+  const otherPrograms = TRAINING_PROGRAMS
+    .filter(p => p.slug !== program.slug)
+    .sort((a, b) => {
+      const aRel = (a.focus === program.focus ? 2 : 0) + (a.level === program.level ? 1 : 0);
+      const bRel = (b.focus === program.focus ? 2 : 0) + (b.level === program.level ? 1 : 0);
+      return bRel - aRel;
+    })
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50/30 to-white">
@@ -244,6 +254,47 @@ const TrainingProgramDetail = () => {
             下一週 →
           </button>
         </div>
+
+        {/* 其他訓練菜單（內部連結，避免頁面死路） */}
+        {otherPrograms.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-xl font-bold text-neutral-900 mb-4">其他訓練菜單</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {otherPrograms.map(p => (
+                <Link
+                  key={p.slug}
+                  to={`/training-programs/${p.slug}`}
+                  className="group bg-white rounded-2xl border border-neutral-100 p-5 hover:border-emerald-200 hover:shadow-lg hover:shadow-emerald-900/5 transition-all"
+                >
+                  <div className="text-4xl mb-3">{p.emoji}</div>
+                  <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600">{p.level}</span>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600">⏱ {p.duration}</span>
+                  </div>
+                  <h3 className="font-bold text-neutral-900 leading-snug group-hover:text-emerald-700 transition-colors mb-1">{p.title}</h3>
+                  <p className="text-sm text-neutral-500 line-clamp-2">{p.subtitle}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 下一步：跨區導流 */}
+        <section className="mt-10 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl p-7 md:p-9 text-white">
+          <h2 className="text-2xl font-bold mb-2">練好了，找場地開打 🏓</h2>
+          <p className="text-emerald-50/90 mb-6 max-w-xl">把菜單練到位，就到球場實戰驗收。順便看看技巧百科與學習路徑，把每一球打得更扎實。</p>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/courts" className="px-5 py-2.5 bg-white text-teal-700 rounded-xl text-sm font-bold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all">
+              找附近球場
+            </Link>
+            <Link to="/techniques" className="px-5 py-2.5 bg-white/15 backdrop-blur-sm border border-white/30 rounded-xl text-sm font-bold hover:bg-white/25 transition-all">
+              技巧百科
+            </Link>
+            <Link to="/learning-paths" className="px-5 py-2.5 bg-white/15 backdrop-blur-sm border border-white/30 rounded-xl text-sm font-bold hover:bg-white/25 transition-all">
+              學習路徑
+            </Link>
+          </div>
+        </section>
       </div>
     </div>
   );

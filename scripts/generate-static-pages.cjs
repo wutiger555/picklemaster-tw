@@ -5,6 +5,28 @@ const path = require('path');
 const BUILD_DIR = path.join(__dirname, '../docs');
 const BASE_URL = 'https://picklemastertw.site';
 
+// HTML 逸出（供各詳情頁預渲染共用）
+const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// 詳情頁預渲染骨架：麵包屑 + h1 + 內文，注入靜態 HTML 的 #root，
+// 讓不執行 JS 的爬蟲/AI 引擎也讀得到內容（React createRoot 掛載時會自動替換）
+function prerenderShell({ crumbs, h1, bodyHtml }) {
+    const nav = crumbs.map((c, i) => (
+        i < crumbs.length - 1 && c.href
+            ? `<a href="${c.href}" style="color:#0d9488;text-decoration:none;">${esc(c.name)}</a> ›`
+            : `<span>${esc(c.name)}</span>`
+    )).join(' ');
+    return `
+      <main style="max-width:880px;margin:0 auto;padding:24px 16px;font-family:system-ui,-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;color:#1f2937;line-height:1.7;">
+        <nav aria-label="breadcrumb" style="font-size:13px;color:#6b7280;margin-bottom:16px;">${nav}</nav>
+        <h1 style="font-size:30px;font-weight:800;margin:0 0 12px;">${esc(h1)}</h1>
+        ${bodyHtml}
+      </main>`;
+}
+function injectPrerender(content, shellHtml) {
+    return content.replace('<div id="root"></div>', `<div id="root">${shellHtml}</div>`);
+}
+
 // SEO Data (Copied from src/utils/seo.ts)
 const pageSEO = {
     courts: {
@@ -911,6 +933,21 @@ async function generateStaticPages() {
                 "name": p.title, "description": p.subtitle, "url": canonical
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(howToSchema)}</script>`);
+            {
+                const others = PROGRAM_SLUGS.filter(x => x.slug !== p.slug).slice(0, 5);
+                const body = `
+        <p style="font-size:17px;color:#4b5563;margin:0 0 16px;">${esc(p.subtitle)}</p>
+        <p style="font-size:15px;margin:0 0 20px;">這份訓練菜單提供系統化、每週逐日的練習安排並可追蹤進度。跟著計畫穩定練習，逐步提升你的匹克球實力。</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他訓練菜單</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/training-programs/${o.slug}" style="color:#0d9488;">${esc(o.title)}</a> — ${esc(o.subtitle)}</li>`).join('')}</ul>
+        </section>
+        <p style="font-size:15px;"><a href="/training-programs" style="color:#0d9488;">所有訓練菜單</a>　·　<a href="/learning-paths" style="color:#0d9488;">學習路徑</a>　·　<a href="/courts" style="color:#0d9488;">找場地開練 →</a></p>`;
+                content = injectPrerender(content, prerenderShell({
+                    crumbs: [{ name: '首頁', href: '/' }, { name: '訓練菜單', href: '/training-programs' }, { name: p.title }],
+                    h1: p.title, bodyHtml: body,
+                }));
+            }
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
         console.log(`  Generated ${PROGRAM_SLUGS.length} training program pages`);
@@ -937,6 +974,21 @@ async function generateStaticPages() {
                 "description": p.bio, "url": canonical
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(playerSchema)}</script>`);
+            {
+                const others = PLAYER_SLUGS.filter(x => x.slug !== p.slug).slice(0, 8);
+                const body = `
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(p.country)} · 職業匹克球選手</p>
+        <p style="font-size:16px;margin:0 0 20px;">${esc(p.bio)}</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他職業選手</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/players/${o.slug}" style="color:#0d9488;">${esc(o.name)}</a>（${esc(o.country)}）</li>`).join('')}</ul>
+        </section>
+        <p style="font-size:15px;"><a href="/pro-players" style="color:#0d9488;">職業選手總覽</a>　·　<a href="/hall-of-fame" style="color:#0d9488;">名人堂</a></p>`;
+                content = injectPrerender(content, prerenderShell({
+                    crumbs: [{ name: '首頁', href: '/' }, { name: '職業選手', href: '/pro-players' }, { name: p.name }],
+                    h1: p.name, bodyHtml: body,
+                }));
+            }
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
         console.log(`  Generated ${PLAYER_SLUGS.length} player detail pages`);
@@ -967,6 +1019,21 @@ async function generateStaticPages() {
                 "datePublished": "2026-04-25"
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`);
+            {
+                const others = ARTICLE_SLUGS.filter(x => x.slug !== a.slug).slice(0, 6);
+                const body = `
+        <p style="font-size:14px;color:#6b7280;margin:0 0 12px;">${esc(a.category)}</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(a.summary)}</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">延伸閱讀</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li style="margin-bottom:6px;"><a href="/articles/${o.slug}" style="color:#0d9488;">${esc(o.title)}</a></li>`).join('')}</ul>
+        </section>
+        <p style="font-size:15px;"><a href="/articles" style="color:#0d9488;">所有深度專欄</a>　·　<a href="/courts" style="color:#0d9488;">找球場開打</a>　·　<a href="/newcomer-guide" style="color:#0d9488;">新手懶人包</a></p>`;
+                content = injectPrerender(content, prerenderShell({
+                    crumbs: [{ name: '首頁', href: '/' }, { name: '深度專欄', href: '/articles' }, { name: a.title }],
+                    h1: a.title, bodyHtml: body,
+                }));
+            }
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
         console.log(`  Generated ${ARTICLE_SLUGS.length} article detail pages`);
@@ -993,6 +1060,21 @@ async function generateStaticPages() {
                 "url": canonical
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(howTo)}</script>`);
+            {
+                const others = TECHNIQUE_SLUGS.filter(x => x.slug !== t.slug).slice(0, 8);
+                const body = `
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(t.nameEn)}</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(t.tagline)}</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他匹克球技巧</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/techniques/${o.slug}" style="color:#0d9488;">${esc(o.name)}</a>（${esc(o.nameEn)}）</li>`).join('')}</ul>
+        </section>
+        <p style="font-size:15px;"><a href="/techniques" style="color:#0d9488;">技巧百科總覽</a>　·　<a href="/learning" style="color:#0d9488;">3D 互動技巧教學</a>　·　<a href="/courts" style="color:#0d9488;">找場地練習 →</a></p>`;
+                content = injectPrerender(content, prerenderShell({
+                    crumbs: [{ name: '首頁', href: '/' }, { name: '技巧百科', href: '/techniques' }, { name: `${t.name}（${t.nameEn}）` }],
+                    h1: `${t.name}（${t.nameEn}）`, bodyHtml: body,
+                }));
+            }
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
 
@@ -1002,7 +1084,6 @@ async function generateStaticPages() {
             const courtsData = JSON.parse(fs.readFileSync(path.join(BUILD_DIR, 'data', 'courts.json'), 'utf-8'));
 
             // --- SEO helpers（球場頁：預渲染內容 + 結構化資料，讓不執行 JS 的爬蟲/AI 引擎也讀得到）---
-            const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
             const typeLabelOf = (t) => t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外';
             const ownLabelOf = (o) => ({ public: '公營', private: '民營', school: '學校', community: '社區' }[o] || o || '');
             const courtIs24h = (h) => /24\s*小時/.test(h || '');

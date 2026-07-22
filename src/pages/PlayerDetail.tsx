@@ -42,14 +42,29 @@ const PlayerDetail = () => {
       award: player.achievements.map(a => `${a.year} ${a.event}`),
       url: `https://picklemastertw.site/players/${player.slug}`,
     };
-    const old = document.querySelector('script[data-structured="player"]');
-    if (old) old.remove();
-    const s = document.createElement('script');
-    s.type = 'application/ld+json';
-    s.setAttribute('data-structured', 'player');
-    s.textContent = JSON.stringify(schema);
-    document.head.appendChild(s);
-    return () => { s.remove(); };
+    const base = 'https://picklemastertw.site';
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首頁', item: base + '/' },
+        { '@type': 'ListItem', position: 2, name: '職業選手', item: base + '/pro-players' },
+        { '@type': 'ListItem', position: 3, name: player.name, item: `${base}/players/${player.slug}` },
+      ],
+    };
+    const inject = (obj: object, key: string) => {
+      const old = document.querySelector(`script[data-structured="${key}"]`);
+      if (old) old.remove();
+      const s = document.createElement('script');
+      s.type = 'application/ld+json';
+      s.setAttribute('data-structured', key);
+      s.textContent = JSON.stringify(obj);
+      document.head.appendChild(s);
+      return s;
+    };
+    const s1 = inject(schema, 'player');
+    const s2 = inject(breadcrumbSchema, 'player-breadcrumb');
+    return () => { s1.remove(); s2.remove(); };
   }, [player]);
 
   if (!player) return <Navigate to="/pro-players" replace />;
@@ -76,12 +91,13 @@ const PlayerDetail = () => {
         />
 
         <div className="container mx-auto px-4 max-w-6xl relative z-10 pt-16 pb-10">
-          <Link
-            to="/pro-players"
-            className="inline-flex items-center gap-1 text-sm text-white/80 hover:text-white mb-6"
-          >
-            ← 返回選手列表
-          </Link>
+          <nav className="flex flex-wrap items-center gap-1.5 text-sm text-white/80 mb-6" aria-label="breadcrumb">
+            <Link to="/" className="hover:text-white transition-colors">首頁</Link>
+            <span className="text-white/40">/</span>
+            <Link to="/pro-players" className="hover:text-white transition-colors">職業選手</Link>
+            <span className="text-white/40">/</span>
+            <span className="text-white font-medium line-clamp-1">{player.name}</span>
+          </nav>
 
           <div className="grid md:grid-cols-5 gap-6 items-center">
             <div className="md:col-span-2 text-center">

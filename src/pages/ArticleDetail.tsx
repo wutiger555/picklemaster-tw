@@ -48,9 +48,20 @@ const ArticleDetail = () => {
       document.head.appendChild(s);
       return s;
     };
+    const base = 'https://picklemastertw.site';
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首頁', item: base + '/' },
+        { '@type': 'ListItem', position: 2, name: '深度專欄', item: base + '/articles' },
+        { '@type': 'ListItem', position: 3, name: article.title, item: `${base}/articles/${article.slug}` },
+      ],
+    };
     const s1 = inject(articleSchema, 'article');
     const s2 = inject(faqSchema, 'article-faq');
-    return () => { s1.remove(); s2.remove(); };
+    const s3 = inject(breadcrumbSchema, 'article-breadcrumb');
+    return () => { s1.remove(); s2.remove(); s3.remove(); };
   }, [article]);
 
   if (!article) return <Navigate to="/articles" replace />;
@@ -68,9 +79,13 @@ const ArticleDetail = () => {
         {/* Hero */}
         <section className="pt-16 pb-8 md:pt-24">
           <div className="container mx-auto px-4 max-w-4xl">
-            <Link to="/articles" className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-emerald-600 mb-6">
-              ← 返回專欄
-            </Link>
+            <nav className="flex flex-wrap items-center gap-1.5 text-sm text-neutral-500 mb-6" aria-label="breadcrumb">
+              <Link to="/" className="hover:text-emerald-600 transition-colors">首頁</Link>
+              <span className="text-neutral-300">/</span>
+              <Link to="/articles" className="hover:text-emerald-600 transition-colors">深度專欄</Link>
+              <span className="text-neutral-300">/</span>
+              <span className="text-neutral-700 font-medium line-clamp-1">{article.title}</span>
+            </nav>
 
             <div className="flex items-center gap-3 text-xs text-neutral-500 mb-3 flex-wrap">
               <span className="font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{article.category}</span>

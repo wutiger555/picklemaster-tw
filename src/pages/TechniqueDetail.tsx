@@ -33,14 +33,29 @@ const TechniqueDetail = () => {
         text: s.description,
       })),
     };
-    const old = document.querySelector('script[data-structured="technique-howto"]');
-    if (old) old.remove();
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.setAttribute('data-structured', 'technique-howto');
-    script.textContent = JSON.stringify(howToSchema);
-    document.head.appendChild(script);
-    return () => { script.remove(); };
+    const base = 'https://picklemastertw.site';
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首頁', item: base + '/' },
+        { '@type': 'ListItem', position: 2, name: '技巧百科', item: base + '/techniques' },
+        { '@type': 'ListItem', position: 3, name: `${technique.name}（${technique.nameEn}）`, item: `${base}/techniques/${technique.slug}` },
+      ],
+    };
+    const inject = (obj: object, key: string) => {
+      const old = document.querySelector(`script[data-structured="${key}"]`);
+      if (old) old.remove();
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-structured', key);
+      script.textContent = JSON.stringify(obj);
+      document.head.appendChild(script);
+      return script;
+    };
+    const s1 = inject(howToSchema, 'technique-howto');
+    const s2 = inject(breadcrumbSchema, 'technique-breadcrumb');
+    return () => { s1.remove(); s2.remove(); };
   }, [technique]);
 
   if (!technique) return <Navigate to="/techniques" replace />;
@@ -59,9 +74,13 @@ const TechniqueDetail = () => {
         {/* Hero */}
         <section className="pt-16 pb-8 md:pt-24 md:pb-12">
           <div className="container mx-auto px-4 max-w-4xl">
-            <Link to="/techniques" className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-emerald-600 mb-6 transition-colors">
-              ← 返回技巧百科
-            </Link>
+            <nav className="flex flex-wrap items-center gap-1.5 text-sm text-neutral-500 mb-6" aria-label="breadcrumb">
+              <Link to="/" className="hover:text-emerald-600 transition-colors">首頁</Link>
+              <span className="text-neutral-300">/</span>
+              <Link to="/techniques" className="hover:text-emerald-600 transition-colors">技巧百科</Link>
+              <span className="text-neutral-300">/</span>
+              <span className="text-neutral-700 font-medium line-clamp-1">{technique.name}</span>
+            </nav>
 
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{technique.level}</span>

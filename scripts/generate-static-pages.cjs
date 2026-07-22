@@ -1078,6 +1078,55 @@ async function generateStaticPages() {
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
 
+        // ===== 索引頁預渲染（將「索引 → 詳情」連結網寫進靜態 HTML）=====
+        console.log('Prerendering index/hub pages...');
+        const INDEX_PAGES = [
+            {
+                route: 'techniques', h1: '匹克球技巧百科', crumb: '技巧百科',
+                intro: '從握拍、發球到 Dink、第三球下切與進階戰術，完整收錄匹克球各項技巧的步驟拆解與練習要點。',
+                items: TECHNIQUE_SLUGS.map(t => ({ href: `/techniques/${t.slug}`, label: `${t.name}（${t.nameEn}）`, sub: t.tagline })),
+                foot: '<a href="/learning" style="color:#0d9488;">3D 互動技巧教學</a>　·　<a href="/training-programs" style="color:#0d9488;">訓練菜單</a>',
+            },
+            {
+                route: 'articles', h1: '匹克球深度專欄', crumb: '深度專欄',
+                intro: '器材評測、運動科學、技術戰術與族群指南 — 深入淺出的匹克球長文，幫你把每個主題一次搞懂。',
+                items: ARTICLE_SLUGS.map(a => ({ href: `/articles/${a.slug}`, label: a.title, sub: a.summary })),
+                foot: '<a href="/newcomer-guide" style="color:#0d9488;">新手懶人包</a>　·　<a href="/courts" style="color:#0d9488;">找球場開打</a>',
+            },
+            {
+                route: 'pro-players', h1: '職業匹克球選手', crumb: '職業選手',
+                intro: '世界頂尖匹克球選手資料庫：戰績、打法、慣用球拍與生涯成就一次掌握。',
+                items: PLAYER_SLUGS.map(p => ({ href: `/players/${p.slug}`, label: p.name, sub: `${p.country} · ${p.bio}` })),
+                foot: '<a href="/hall-of-fame" style="color:#0d9488;">名人堂</a>',
+            },
+            {
+                route: 'training-programs', h1: '匹克球訓練菜單', crumb: '訓練菜單',
+                intro: '系統化、每週逐日的匹克球訓練計畫，從新手入門到專項特訓，跟著練穩定進步。',
+                items: PROGRAM_SLUGS.map(p => ({ href: `/training-programs/${p.slug}`, label: p.title, sub: p.subtitle })),
+                foot: '<a href="/learning-paths" style="color:#0d9488;">學習路徑</a>　·　<a href="/courts" style="color:#0d9488;">找場地開練</a>',
+            },
+        ];
+        let indexPageCount = 0;
+        for (const page of INDEX_PAGES) {
+            const filePath = path.join(BUILD_DIR, page.route, 'index.html');
+            if (!fs.existsSync(filePath)) continue;
+            let content = fs.readFileSync(filePath, 'utf-8');
+            const body = `
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(page.intro)}</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">完整列表（${page.items.length}）</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${page.items.map(it => `<li style="margin-bottom:8px;"><a href="${it.href}" style="color:#0d9488;font-weight:600;">${esc(it.label)}</a>${it.sub ? `<br><span style="color:#6b7280;font-size:13px;">${esc(it.sub)}</span>` : ''}</li>`).join('')}</ul>
+        </section>
+        <p style="font-size:15px;">${page.foot}</p>`;
+            content = injectPrerender(content, prerenderShell({
+                crumbs: [{ name: '首頁', href: '/' }, { name: page.crumb }],
+                h1: page.h1, bodyHtml: body,
+            }));
+            fs.writeFileSync(filePath, content);
+            indexPageCount++;
+        }
+        console.log(`  Prerendered ${indexPageCount} index/hub pages`);
+
         // ===== Generate per-court pages =====
         console.log('Generating court detail pages...');
         try {

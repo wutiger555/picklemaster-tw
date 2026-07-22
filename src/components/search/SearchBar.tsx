@@ -1,80 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../utils/constants';
+import type { SearchEntry } from '../../data/searchFilter';
+import { searchEntries } from '../../data/searchFilter';
 
-interface SearchResult {
-  title: string;
-  description: string;
-  path: string;
-  category: string;
-  keywords: string[];
-}
-
-const searchDatabase: SearchResult[] = [
-  {
-    title: '找球場',
-    description: '全台 125+ 匹克球場地圖與詳細資訊',
-    path: ROUTES.COURTS,
-    category: '球場',
-    keywords: ['球場', '地圖', '場地', '台北', '台中', '高雄', '台南', 'court', '找', '尋找']
-  },
-  {
-    title: '匹克球規則',
-    description: '互動式學習匹克球規則與場地配置',
-    path: ROUTES.RULES,
-    category: '學習',
-    keywords: ['規則', 'rule', '雙彈跳', '廚房區', '發球', '計分', '教學']
-  },
-  {
-    title: '球拍裝備',
-    description: '球拍選購指南與專業推薦',
-    path: ROUTES.EQUIPMENT,
-    category: '裝備',
-    keywords: ['球拍', 'paddle', '裝備', '選購', '推薦', '材質', '重量', '購買']
-  },
-  {
-    title: '學習路徑',
-    description: '從新手到進階的完整學習系統',
-    path: ROUTES.LEARNING_PATHS,
-    category: '學習',
-    keywords: ['學習', 'learning', '新手', '進階', '課程', '訓練', '教學']
-  },
-  {
-    title: '技巧教學',
-    description: '3D 互動教學與技巧訓練',
-    path: ROUTES.LEARNING,
-    category: '學習',
-    keywords: ['技巧', '教學', '訓練', '3D', '互動', '發球', '截擊', '戰術']
-  },
-  {
-    title: '計分器',
-    description: '專業比賽計分工具',
-    path: ROUTES.SCORER,
-    category: '工具',
-    keywords: ['計分', 'scorer', '比賽', '裁判', '計時']
-  },
-  {
-    title: '互動遊戲',
-    description: '線上匹克球模擬遊戲',
-    path: ROUTES.GAME,
-    category: '工具',
-    keywords: ['遊戲', 'game', '練習', '模擬', '線上']
-  },
-  {
-    title: '資源中心',
-    description: '影片教學、文章與社群連結',
-    path: ROUTES.RESOURCES,
-    category: '資源',
-    keywords: ['資源', 'resources', '影片', 'youtube', '社群', '協會']
-  },
-  {
-    title: '常見問題',
-    description: '匹克球常見問題解答',
-    path: ROUTES.FAQ,
-    category: '幫助',
-    keywords: ['FAQ', '問題', '幫助', 'help', '新手', '入門']
-  }
-];
+type SearchResult = SearchEntry;
 
 interface SearchBarProps {
   variant?: 'header' | 'hero';
@@ -86,31 +15,37 @@ const SearchBar: React.FC<SearchBarProps> = ({ variant = 'header', onClose }) =>
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [index, setIndex] = useState<SearchEntry[] | null>(null);
+  const loadingRef = useRef(false);
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 搜尋邏輯
+  // 首次聚焦／輸入才動態載入完整索引（球場+選手+技巧+文章+術語），
+  // 讓大型資料檔 code-split，不打進每頁初始 bundle
+  const ensureIndex = useCallback(() => {
+    if (index || loadingRef.current) return;
+    loadingRef.current = true;
+    import('../../data/searchIndex')
+      .then(m => m.buildSearchIndex())
+      .then(setIndex)
+      .catch(() => { loadingRef.current = false; });
+  }, [index]);
+
+  // 搜尋邏輯（索引就緒後即時過濾；索引載入中會在 index 到位後自動重跑）
   useEffect(() => {
-    if (query.trim().length < 2) {
+    if (query.trim().length < 1) {
       setResults([]);
       setIsOpen(false);
       return;
     }
-
-    const searchQuery = query.toLowerCase();
-    const filtered = searchDatabase.filter(item => {
-      return (
-        item.title.toLowerCase().includes(searchQuery) ||
-        item.description.toLowerCase().includes(searchQuery) ||
-        item.keywords.some(keyword => keyword.toLowerCase().includes(searchQuery))
-      );
-    });
-
+    ensureIndex();
+    if (!index) return;
+    const filtered = searchEntries(index, query);
     setResults(filtered);
     setIsOpen(filtered.length > 0);
     setSelectedIndex(0);
-  }, [query]);
+  }, [query, index, ensureIndex]);
 
   // 點擊外部關閉
   useEffect(() => {
@@ -165,6 +100,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ variant = 'header', onClose }) =>
       '工具': 'bg-green-100 text-green-700',
       '資源': 'bg-pink-100 text-pink-700',
       '幫助': 'bg-gray-100 text-gray-700',
+      '選手': 'bg-rose-100 text-rose-700',
+      '技巧': 'bg-cyan-100 text-cyan-700',
+      '文章': 'bg-amber-100 text-amber-700',
+      '術語': 'bg-teal-100 text-teal-700',
+      '賽事': 'bg-indigo-100 text-indigo-700',
     };
     return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-700';
   };
@@ -184,7 +124,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ variant = 'header', onClose }) =>
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            onFocus={() => query.length >= 2 && setIsOpen(true)}
+            onFocus={() => { ensureIndex(); if (query.length >= 1) setIsOpen(true); }}
             placeholder="搜尋球場、規則、裝備..."
             className="w-full pl-14 pr-5 py-5 text-lg bg-white/95 backdrop-blur-sm border-2 border-gray-200 rounded-2xl focus:border-primary-500 focus:ring-4 focus:ring-primary-200 transition-all outline-none shadow-xl"
           />
@@ -253,7 +193,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ variant = 'header', onClose }) =>
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => query.length >= 2 && setIsOpen(true)}
+          onFocus={() => { ensureIndex(); if (query.length >= 1) setIsOpen(true); }}
           placeholder="搜尋..."
           className="w-48 pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none"
         />

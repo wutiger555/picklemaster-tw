@@ -1,9 +1,26 @@
 const fs = require('fs');
 const path = require('path');
+const { renderOg } = require('./og-image.cjs');
 
 // Configuration
 const BUILD_DIR = path.join(__dirname, '../docs');
 const BASE_URL = 'https://picklemastertw.site';
+
+// 為單頁產生專屬 OG 圖並替換 og:image / twitter:image；失敗則保留預設圖（優雅降級）
+let ogGenerated = 0;
+function applyOg(content, ogPathRel, opts) {
+    const png = renderOg(opts);
+    if (!png) return content;
+    const abs = path.join(BUILD_DIR, ogPathRel);
+    fs.mkdirSync(path.dirname(abs), { recursive: true });
+    fs.writeFileSync(abs, png);
+    const url = `${BASE_URL}/${ogPathRel}`;
+    content = content.replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${url}" />`);
+    content = content.replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${url}" />`);
+    content = content.replace(/<meta property="og:image:alt" content=".*?" \/>/, `<meta property="og:image:alt" content="${(opts.title || '').replace(/"/g, '&quot;')}" />`);
+    ogGenerated++;
+    return content;
+}
 
 // HTML 逸出（供各詳情頁預渲染共用）
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -947,6 +964,7 @@ async function generateStaticPages() {
                     crumbs: [{ name: '首頁', href: '/' }, { name: '訓練菜單', href: '/training-programs' }, { name: p.title }],
                     h1: p.title, bodyHtml: body,
                 }));
+                content = applyOg(content, `og/program-${p.slug}.png`, { title: p.title, subtitle: p.subtitle, badge: '訓練菜單', type: 'program' });
             }
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
@@ -988,6 +1006,7 @@ async function generateStaticPages() {
                     crumbs: [{ name: '首頁', href: '/' }, { name: '職業選手', href: '/pro-players' }, { name: p.name }],
                     h1: p.name, bodyHtml: body,
                 }));
+                content = applyOg(content, `og/player-${p.slug}.png`, { title: p.name, subtitle: `${p.country} · 職業匹克球選手`, badge: '選手', type: 'player' });
             }
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
@@ -1033,6 +1052,7 @@ async function generateStaticPages() {
                     crumbs: [{ name: '首頁', href: '/' }, { name: '深度專欄', href: '/articles' }, { name: a.title }],
                     h1: a.title, bodyHtml: body,
                 }));
+                content = applyOg(content, `og/article-${a.slug}.png`, { title: a.title, subtitle: a.category, badge: '深度專欄', type: 'article' });
             }
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
@@ -1074,6 +1094,7 @@ async function generateStaticPages() {
                     crumbs: [{ name: '首頁', href: '/' }, { name: '技巧百科', href: '/techniques' }, { name: `${t.name}（${t.nameEn}）` }],
                     h1: `${t.name}（${t.nameEn}）`, bodyHtml: body,
                 }));
+                content = applyOg(content, `og/technique-${t.slug}.png`, { title: t.name, subtitle: `${t.nameEn} · ${t.tagline}`, badge: '技巧', type: 'technique' });
             }
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
@@ -1361,6 +1382,10 @@ async function generateStaticPages() {
                 content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
                 content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(courtStructured(court)).replace(/</g, '\\u003c')}</script>`);
                 content = content.replace('<div id="root"></div>', `<div id="root">${courtPrerender(court, siblings)}</div>`);
+                content = applyOg(content, `og/court-${court.id}.png`, {
+                    title: court.name, type: 'court', badge: '球場',
+                    subtitle: `${city}${district} · ${typeLabel} · ${court.fee === 'free' ? '免費' : '付費'} · ${court.courts_count} 面`,
+                });
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
             }
             console.log(`  Generated ${courtsData.courts.length} court detail pages`);
@@ -1429,6 +1454,10 @@ async function generateStaticPages() {
                 };
                 content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(ldJson).replace(/</g, '\\u003c')}</script>`);
                 content = content.replace('<div id="root"></div>', `<div id="root">${cityPrerender(city, cityCourts, faqs, otherCities)}</div>`);
+                content = applyOg(content, `og/city-${slug}.png`, {
+                    title: `${city}匹克球場地圖`, type: 'city', badge: '城市',
+                    subtitle: `${cityCourts.length} 座場地 · 免費 ${free} · 室內 ${indoor}${open24 ? ` · 24H ${open24}` : ''}`,
+                });
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
                 cityPageCount++;
             }
@@ -1558,6 +1587,7 @@ async function generateStaticPages() {
         fs.writeFileSync(path.join(BUILD_DIR, 'sitemap.xml'), sitemapContent);
         console.log('sitemap.xml generated successfully!');
 
+        console.log(`  Generated ${ogGenerated} per-page OG images`);
         console.log('Static page generation completed successfully!');
     } catch (error) {
         console.error('Error generating static pages:', error);

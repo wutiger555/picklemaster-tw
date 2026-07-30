@@ -12,7 +12,7 @@ export type { SearchEntry } from './searchFilter';
 
 // 主要頁面（維持原本站內導覽的可搜尋性）
 const STATIC_PAGES: SearchEntry[] = [
-  { title: '找球場', description: '全台 129+ 匹克球場地圖與詳細資訊', path: ROUTES.COURTS, category: '球場', keywords: ['球場', '地圖', '場地', 'court', '找', '尋找', '附近'] },
+  { title: '找球場', description: '全台 130+ 匹克球場地圖與詳細資訊', path: ROUTES.COURTS, category: '球場', keywords: ['球場', '地圖', '場地', 'court', '找', '尋找', '附近'] },
   { title: '匹克球規則', description: '3D 互動式規則教學與場地配置', path: ROUTES.RULES, category: '學習', keywords: ['規則', 'rule', '雙彈跳', '廚房區', '發球', '計分'] },
   { title: '球拍裝備', description: '球拍選購指南與專業推薦', path: ROUTES.EQUIPMENT, category: '裝備', keywords: ['球拍', 'paddle', '裝備', '選購', '推薦', '材質'] },
   { title: '球拍資料庫', description: '各品牌球拍規格與比較', path: ROUTES.PADDLE_DATABASE, category: '裝備', keywords: ['球拍', 'paddle', '資料庫', '規格', '比較', 'JOOLA', 'Selkirk'] },

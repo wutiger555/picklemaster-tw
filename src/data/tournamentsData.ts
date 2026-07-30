@@ -377,9 +377,9 @@ export const getTournamentsByLevel = (level: TournamentLevel): Tournament[] => {
 export const TAIWAN_PICKLEBALL_STATS_2026 = {
   estimatedPlayers: 1_200_000,    // 預估 2026 年球友人數（遠見：2024=14萬, 2025=50萬, 2026=120萬）
   certifiedCoaches: 1400,          // CTPF 已認證 C 級教練
-  knownCourts: 129,                // 全台已知球場（本站收錄 129 座，持續新增）
+  knownCourts: 130,                // 全台已知球場（本站收錄 130 座，持續新增）
   tournamentsYear: TOURNAMENTS_2026.length,
   governingBody: '中華民國匹克球協會 (CTPF)',
   chairman: '陳朝鍵',
-  lastUpdated: '2026-07-14',
+  lastUpdated: '2026-07-22',
 };

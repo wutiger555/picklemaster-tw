@@ -853,7 +853,7 @@
       "surface": "concrete",
       "net_type": "permanent",
       "ownership": "public",
-      "opening_hours": "06:00-22:00",
+      "opening_hours": "06:00-24:00",
       "contact": "02-2303-2451",
       "facilities": [
         "飲水機",
@@ -865,7 +865,7 @@
         "河濱公園",
         "夜間照明佳"
       ],
-      "last_updated": "2025-12-10",
+      "last_updated": "2026-07-22",
       "reviews": "河濱公園球場，夜間照明佳，球友眾多"
     },
     {
@@ -4083,6 +4083,42 @@
       "added_date": "2026-07",
       "last_updated": "2026-07-14",
       "reviews": "七堵堵南國小風雨球場，晚間開放"
+    },
+    {
+      "id": 130,
+      "name": "PGC 匹克幫俱樂部 三重館",
+      "location": {
+        "address": "新北市三重區重新路五段326巷17號",
+        "lat": 25.0472,
+        "lng": 121.4738,
+        "city": "新北市",
+        "district": "三重區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "球敘約 NT$500/人；VIP 包場約 NT$3000/時（依 goBooking 公告）",
+      "courts_count": 2,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "24 小時（線上預約自助入場）",
+      "contact": "goBooking 線上預約（無人場館）",
+      "facilities": [
+        "冷氣",
+        "無人自助入場",
+        "智能預約系統"
+      ],
+      "features": [
+        "全台無人化科技示範場",
+        "USAP 標準球場",
+        "掃 QR code 自助入場",
+        "2026 年 4 月開幕"
+      ],
+      "is_new": true,
+      "added_date": "2026-04",
+      "last_updated": "2026-07-22",
+      "booking_url": "https://gobooking.tw/picklegang/pgc.html",
+      "reviews": "新北三重 24 小時無人化自助匹克球場，預約、付款、進場、燈控全自動化，2026 年 4 月開幕。全台最大匹克球社團營運的科技示範場。"
     }
   ]
 }

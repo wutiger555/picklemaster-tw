@@ -32,7 +32,7 @@ export const CITY_INFO: CityInfo[] = [
     slug: 'taoyuan',
     city: '桃園市',
     shortName: '桃園',
-    intro: '桃園是北台灣 24 小時匹克球的發源地：Social N Pickle 龜山場提供全天候智能場地，平鎮 YT SPORT、青埔與蘆竹運動中心也有穩定時段。科技業球友多、晚場需求旺，建議透過各館 LINE 預約。',
+    intro: '桃園的匹克球場以民營球館與運動中心為主：Social N Pickle 龜山（工業風專用場、線上預約）、龍潭 Loho 與中豐、蘆竹邷力豹，加上青埔、蘆竹運動中心與楊梅體育園區（室內 4 面）等場地時段穩定。科技業球友多、晚場需求旺，建議透過各館 LINE 或線上系統預約。',
   },
   {
     slug: 'hsinchu',

@@ -1802,41 +1802,6 @@
       "reviews": "信義區學校場地，下班後去打剛剛好"
     },
     {
-      "id": 56,
-      "name": "Social N Pickle 桃園龜山 24 小時場",
-      "location": {
-        "address": "桃園市龜山區",
-        "lat": 25.0301,
-        "lng": 121.3745,
-        "city": "桃園市",
-        "district": "龜山區"
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "場租 $800/小時起",
-      "courts_count": 2,
-      "surface": "synthetic",
-      "net_type": "permanent",
-      "ownership": "private",
-      "opening_hours": "24 小時營業",
-      "contact": "線上預約",
-      "facilities": [
-        "冷氣",
-        "24 小時開放",
-        "監視器",
-        "自助打卡"
-      ],
-      "features": [
-        "北台灣唯一 24 小時匹克球場",
-        "適合夜貓子與輪班族",
-        "線上自助預約"
-      ],
-      "is_new": false,
-      "added_date": "2025-10",
-      "last_updated": "2026-04-24",
-      "reviews": "全台少見 24 小時匹克球館，自由度高"
-    },
-    {
       "id": 59,
       "name": "樓下匹克球俱樂部 Downstairs Pickleball Club",
       "location": {
@@ -2211,38 +2176,6 @@
       "added_date": "2026-01",
       "last_updated": "2026-05-15",
       "reviews": "鄰近朝馬轉運站與逢甲商圈，PICKZONE 第二館 24 小時營業"
-    },
-    {
-      "id": 70,
-      "name": "YT SPORT 平鎮匹克球館",
-      "location": {
-        "address": "桃園市平鎮區賦梅北路400號",
-        "lat": 24.941,
-        "lng": 121.228,
-        "city": "桃園市",
-        "district": "平鎮區"
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "場租依時段（即將公告）",
-      "courts_count": 2,
-      "surface": "synthetic",
-      "net_type": "permanent",
-      "ownership": "private",
-      "opening_hours": "即將開幕",
-      "facilities": [
-        "冷氣",
-        "球具租借"
-      ],
-      "features": [
-        "平鎮新建室內館",
-        "桃園南區新選擇",
-        "2 面標準場"
-      ],
-      "is_new": true,
-      "added_date": "2026-05",
-      "last_updated": "2026-05-15",
-      "reviews": "桃園平鎮即將開幕的室內匹克球館，補足桃園南區場地"
     },
     {
       "id": 71,
@@ -4119,6 +4052,43 @@
       "last_updated": "2026-07-22",
       "booking_url": "https://gobooking.tw/picklegang/pgc.html",
       "reviews": "新北三重 24 小時無人化自助匹克球場，預約、付款、進場、燈控全自動化，2026 年 4 月開幕。全台最大匹克球社團營運的科技示範場。"
+    },
+    {
+      "id": 131,
+      "name": "楊梅體育園區 綜合球場",
+      "location": {
+        "address": "桃園市楊梅區裕成路（裕成路與中山北路二段口）",
+        "lat": 24.904,
+        "lng": 121.1628,
+        "city": "桃園市",
+        "district": "楊梅區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場地臨租／長租依官網公告；球拍租借 60-100 元/組",
+      "courts_count": 4,
+      "surface": "synthetic",
+      "net_type": "portable",
+      "ownership": "public",
+      "opening_hours": "06:00-22:00（除夕、初一休館）",
+      "contact": "依楊梅體育園區官網",
+      "facilities": [
+        "冷氣",
+        "停車場",
+        "器材租借",
+        "游泳池",
+        "體適能中心"
+      ],
+      "features": [
+        "室內 4 面匹克球場",
+        "綜合運動園區",
+        "提供籃／羽／匹克球課程"
+      ],
+      "is_new": false,
+      "added_date": "2026-07",
+      "last_updated": "2026-07-30",
+      "website": "https://ymscwdyg.com.tw/",
+      "reviews": "桃園規模最大的綜合體育園區，室內綜合球場設 4 面匹克球場，提供場地臨租、長租與課程，附游泳池、體適能中心與停車場。"
     }
   ]
 }

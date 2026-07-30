@@ -1136,7 +1136,7 @@
     },
     {
       "id": 58,
-      "name": "Upcoming: 宜蘭風雨多元運動球場",
+      "name": "宜蘭風雨多元運動球場",
       "location": {
         "address": "宜蘭縣宜蘭市中山路一段755號",
         "lat": 24.761,
@@ -1152,14 +1152,14 @@
       "net_type": "permanent",
       "ownership": "public",
       "is_upcoming": true,
-      "opening_hours": "興建規劃中，預計 2026 完工",
+      "opening_hours": "興建規劃中，預計 2026 年底完工",
       "contact": "宜蘭縣政府",
       "features": [
         "4500萬重點建設",
         "風雨球場設計",
         "羽匹共用多元規劃"
       ],
-      "last_updated": "2025-12-16",
+      "last_updated": "2026-07-30",
       "reviews": "宜蘭縣政府重點體育建設，免受風雨影響"
     },
     {

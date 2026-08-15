@@ -462,7 +462,7 @@ const pageSEO = {
     },
     tournaments: {
         title: '2026 台灣匹克球賽事總覽 | CTPF 全年認證賽、國際積分賽',
-        description: '完整掌握 2026 台灣匹克球賽事：臺灣盃、NAPA 盃、港都盃、中正盃、噶瑪蘭盃、臺北公開賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
+        description: '完整掌握 2026 台灣匹克球 23 場賽事：AEPL 職業聯賽、TCI APP ASIA TOUR 台北站、金碧盃、南華盃、臺北公開賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
         keywords: '2026匹克球賽事,台灣匹克球比賽,CTPF賽事,臺灣盃匹克球,NAPA盃,港都盃,中正盃,噶瑪蘭盃,臺北匹克球公開賽,APG 亞洲匹克球運動會,匹克球錦標賽,匹克球報名',
         structuredData: {
             "@context": "https://schema.org",

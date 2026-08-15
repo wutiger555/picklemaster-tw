@@ -3,6 +3,46 @@ import type { NewsItem } from '../types/news';
 export const NEWS_DATA: NewsItem[] = [
   // ===== 2026 Q3 最新消息 =====
   {
+    id: 'tw-202608-august-wave',
+    title: '8 月台灣賽事全面開打！AEPL 職業賽季啟動、金碧盃三峽登場',
+    summary: 'AEPL 亞洲菁英匹克球聯盟創始賽季 8 月正式開打（全台 8 站、總獎金百萬），尚騰汽車攜手寶嘉聯合加入創始球團。同週末新北金碧盃、TMLP 新竹站、噶瑪蘭盃接力登場，下半年還有 TCI APP ASIA TOUR 亞太巡迴賽 11 月落腳台北。',
+    content: `
+      <p>台灣匹克球 8 月進入賽事高峰。<strong>AEPL 亞洲菁英匹克球聯盟</strong>創始賽季正式開打——8 到 11 月全台 8 站分站賽加年終總決賽、總獎金新台幣 100 萬元。聯盟商業能量也持續擴大：8 月 11 日<strong>尚騰汽車集團攜手寶嘉聯合（Peugeot 總代理）宣布加入創始球團</strong>，台灣匹克球職業化再添指標性企業支持。</p>
+
+      <p>全國賽事同步接力：<strong>新北金碧盃</strong>（8/14-16，三峽國民運動中心）、<strong>TMLP 積分巡迴賽新竹站</strong>（8/15-16，竹科實驗高中）、宜蘭<strong>噶瑪蘭盃</strong>同週末開打，月底還有<strong>新竹縣長盃</strong>（8/29-30，竹北國民運動中心）。</p>
+
+      <p>下半年重頭戲已排上日程：依總會最新行事曆，<strong>TCI APP ASIA TOUR 亞太巡迴賽</strong>將於 11 月 12-15 日在臺北和平籃球館舉行，台灣選手可在主場爭取國際積分；9 月起還有南華盃青銀共融全國聯賽（9/12-11/15）、10 月全國社區運動聯賽分區預賽（總決賽 11/7-8 宜蘭大學）、11 月大專校院錦標賽（樹德科大）。完整賽程見<a href="/tournaments" class="text-primary-600 hover:underline">2026 賽事總覽</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.ctpf.org.tw/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中華民國匹克球總會行事曆</a>、聯合新聞網、車主充電站</p>
+    `,
+    date: '2026-08-14',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', 'AEPL', 'Tournament', '2026']
+  },
+  {
+    id: 'int-202608-mlp-playoffs',
+    title: 'MLP 季後賽開打！決賽首度移師紐約中央公園',
+    summary: 'Major League Pickleball 2026 季後賽 8 月 15-17 日於聖地牙哥 Barnes Tennis Center 開打，決賽 8 月 22-24 日首度移師紐約中央公園 Wollman Rink 的 CityPickle 球場，寫下職業匹克球地標性的一頁。',
+    content: `
+      <p>Major League Pickleball（MLP）2026 賽季進入最高潮。擴大為三週的季後賽由 <strong>Toray MLP Playoffs</strong> 揭幕，8 月 15 至 17 日在聖地牙哥 Barnes Tennis Center 開打；<strong>DoorDash MLP Finals</strong> 則於 8 月 22 至 24 日登場——地點是紐約<strong>中央公園 Wollman Rink 的 CityPickle 球場</strong>，職業匹克球決賽首度進駐這個世界級地標。</p>
+
+      <p>本季 MLP 全部賽事集中在 5 至 8 月進行，5 月下旬於達拉斯開季，7 月中旬完成季中錦標賽（大急流城，20 隊全員參戰＋4 支國際特別隊）。聯盟並宣布 2026 年擴編新軍<strong>棕櫚灘皇家（Palm Beach Royals）</strong>，由 Hyperspace Ventures 以聯盟史上最高估值入主。</p>
+
+      <p>在 Apollo Sports Capital 注資 2.25 億美元、Pickleball Inc. 整合 PPA Tour 與 MLP 之後，職業匹克球的版圖與商業能量持續擴張——中央公園決賽正是這波升級最具象徵性的一步。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://majorleaguepickleball.co/news-updates/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Major League Pickleball</a>、Forbes、pickleball.com</p>
+    `,
+    date: '2026-08-15',
+    category: 'International',
+    image: 'https://images.unsplash.com/photo-1502904550040-7534597429ae?q=80&w=2069&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/news/int-202608-mlp-playoffs',
+    tags: ['International', 'MLP', '2026']
+  },
+  {
     id: 'courts-202607-boom',
     title: '2026 上半年球場大爆發！本站收錄突破 125 座，雲嘉基隆全上線',
     summary: '從台北花博 MAJI 粉紅球場、雲林首座專用館 PK Park、三重 PGC 無人化自助場到高雄楠仔坑運動中心，2026 上半年全台匹克球場遍地開花。本站球場地圖收錄數達 129 座、17 縣市全覆蓋。',

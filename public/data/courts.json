@@ -2061,9 +2061,9 @@
         "新竹寶山室內館",
         "2026/6/6 正式開幕"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-04",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-08-15",
       "reviews": "新竹寶山鄉室內匹克球館，2026 年 6 月 6 日正式開幕"
     },
     {
@@ -4047,9 +4047,9 @@
         "掃 QR code 自助入場",
         "2026 年 4 月開幕"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-04",
-      "last_updated": "2026-07-22",
+      "last_updated": "2026-08-15",
       "booking_url": "https://gobooking.tw/picklegang/pgc.html",
       "reviews": "新北三重 24 小時無人化自助匹克球場，預約、付款、進場、燈控全自動化，2026 年 4 月開幕。全台最大匹克球社團營運的科技示範場。"
     },

@@ -1,6 +1,6 @@
 // 2026 台灣匹克球賽事資料
 // 資料來源：中華民國匹克球總會 (CTPF) 公開賽事行事曆（2026-08 版）、TMLP、AEPL
-// 最後更新：2026-08-15
+// 最後更新：2026-08-23
 
 export type TournamentLevel = '國際' | '全國' | '區域' | '公益' | '分齡';
 export type TournamentStatus = 'upcoming' | 'registration' | 'ongoing' | 'completed';
@@ -120,18 +120,18 @@ export const TOURNAMENTS_2026: Tournament[] = [
   },
   {
     id: 'aepl-2026',
-    name: '2026 AEPL 亞洲菁英匹克球聯盟賽季',
-    nameEn: 'Asia Elite Pickleball League 2026 Season',
-    date: '2026-08-01',
+    name: '2026 AEPL 亞洲菁英匹克球聯盟創始賽季',
+    nameEn: 'Asia Elite Pickleball League 2026 Inaugural Season',
+    date: '2026-08-29',
     endDate: '2026-11-30',
-    dateLabel: '2026 年 8 - 11 月（8 站分站賽 + 總決賽）',
-    venue: '全台 8 站分站',
+    dateLabel: '2026 年 8 月 29 日開幕（8 - 11 月，8 站分站賽 + 11 月總決賽）',
+    venue: '開幕戰：台中火車站空中廊道（後續巡迴雙北、桃園、新竹、宜蘭、台中、台南、高雄）',
     city: '全台',
     region: '全國',
     level: '全國',
-    status: 'ongoing',
+    status: 'upcoming',
     organizer: '亞洲菁英匹克球股份有限公司 (AEPL)',
-    summary: '台灣第一個匹克球職業聯賽，2026 年 5 月宣布成立。首賽季規劃 6 支球隊、全台 8 站分站賽，11 月總決賽，總獎金新台幣 100 萬元，讓台灣選手不用出國就有職業舞台。',
+    summary: '台灣第一個匹克球職業聯賽，2026 年 5 月宣布成立，創始賽季 8 月 29、30 日於台中火車站空中廊道開幕。已確定 5 支球隊參賽（桃園雲豹、尚騰集團、Ahhh、蘆沐、富瑞特科技，第 6 隊洽談中），賽季 8 至 11 月朝全台 8 站推進、11 月總決賽，總獎金新台幣 100 萬元。藝人林志穎擔任賽事大使。',
     categories: ['職業隊際賽'],
     featured: true,
   },
@@ -146,9 +146,9 @@ export const TOURNAMENTS_2026: Tournament[] = [
     city: '新北市',
     region: '北部',
     level: '全國',
-    status: 'ongoing',
+    status: 'completed',
     organizer: '中華民國匹克球總會 / 新北市',
-    summary: '暑假檔期的全國錦標賽，於三峽國民運動中心舉行。已開放報名並加開組別（加開組別報名至 7 月 15 日截止），詳情見總會公告。',
+    summary: '暑假檔期的全國錦標賽，已於 8 月 14 至 16 日在三峽國民運動中心圓滿落幕，賽前並加開組別因應報名熱潮。完整成績可於總會官網查詢。',
     categories: ['公開組', '分齡組', '雙打組'],
     registrationDeadline: '2026-07-15',
     registrationUrl: 'https://www.ctpf.org.tw/ctpf/news/zh-tw/detailed/2198',
@@ -165,9 +165,9 @@ export const TOURNAMENTS_2026: Tournament[] = [
     city: '新竹市',
     region: '北部',
     level: '區域',
-    status: 'ongoing',
+    status: 'completed',
     organizer: 'TMLP 台灣匹克球積分巡迴賽',
-    summary: 'TMLP 積分巡迴賽 2026 下半年首站，於竹科實驗高中開打，現正開放報名。巡迴賽採積分制，年終於台北舉行積分邀請賽。',
+    summary: 'TMLP 積分巡迴賽 2026 下半年首站，已於 8 月 15、16 日在竹科實驗高中完賽。巡迴賽採積分制，10 月新北站續戰、年終於台北舉行積分邀請賽。',
     categories: ['公開組', '積分組'],
     registrationUrl: 'https://www.tmlp.com.tw/events',
     officialUrl: 'https://www.tmlp.com.tw/',
@@ -199,7 +199,7 @@ export const TOURNAMENTS_2026: Tournament[] = [
     city: '宜蘭縣',
     region: '東部',
     level: '全國',
-    status: 'ongoing',
+    status: 'completed',
     organizer: '宜蘭縣政府 / 中華民國匹克球協會',
     summary: '位於宜蘭運動公園的夏季盛事。註：總會 7 月最新行事曆暫未列出本賽事，日期與是否舉辦請以官方公告為準。',
     categories: ['公開組', '業餘組', '親子組'],
@@ -445,9 +445,9 @@ export const getTournamentsByLevel = (level: TournamentLevel): Tournament[] => {
 export const TAIWAN_PICKLEBALL_STATS_2026 = {
   estimatedPlayers: 1_200_000,    // 預估 2026 年球友人數（遠見：2024=14萬, 2025=50萬, 2026=120萬）
   certifiedCoaches: 1400,          // CTPF 已認證 C 級教練
-  knownCourts: 129,                // 全台已知球場（本站收錄 129 座，持續新增）
+  knownCourts: 130,                // 全台已知球場（本站收錄 130 座，持續新增）
   tournamentsYear: TOURNAMENTS_2026.length,
   governingBody: '中華民國匹克球協會 (CTPF)',
   chairman: '陳朝鍵',
-  lastUpdated: '2026-08-15',
+  lastUpdated: '2026-08-23',
 };

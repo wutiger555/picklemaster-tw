@@ -1185,10 +1185,7 @@ export const BRAND_SHOP_AFFILIATES: Partial<Record<PaddleBrand, AffiliateOffer[]
     { shop: '力揚體育 · Perseus 3S DUAL', url: 'https://s.shopee.tw/6AkbS1pPpG', variant: '600121 / 600119 前代款' },
   ],
   Selkirk: [{ shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' }],
-  LUZZ: [
-    { shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' },
-    { shop: 'Vispinvo 賣場', url: 'https://s.shopee.tw/AAGkBZp2oh' },
-  ],
+  LUZZ: [{ shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' }],
   adidas: [{ shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' }],
 };
 

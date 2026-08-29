@@ -139,9 +139,9 @@ export const pageSEO: Record<string, SEOConfig> = {
     keywords: '匹克球歷史,匹克球起源,Pickleball history,匹克球規則演變,CTPF 歷史,匹克球大事紀,匹克球編年史'
   },
   'paddle-database': {
-    title: '匹克球拍完整資料庫 | 40+ 款規格對照、價格、評分',
-    description: 'JOOLA、Selkirk、Paddletek、CRBN 等 12 大品牌 25+ 款球拍規格完整對照。重量、厚度、核心、面板、握把、價格一次查詢。',
-    keywords: '匹克球拍資料庫,球拍規格,JOOLA Perseus,Selkirk Labs,Paddletek Bantam,Six Zero,匹克球拍比較,pickleball paddle database'
+    title: '匹克球拍完整資料庫 | 22 大品牌 36 款規格對照、並排比較',
+    description: 'JOOLA、Selkirk、Paddletek、Vatic Pro、Ronbus、Niupipo 等 22 大品牌 36 款球拍。小紅書熱門、高 CP 值新手拍完整收錄，支援 2-4 支規格並排比較。',
+    keywords: '匹克球拍資料庫,球拍規格,匹克球拍比較,匹克球拍推薦,新手匹克球拍,JOOLA Perseus,Vatic Pro,Ronbus,Niupipo,高CP值球拍,pickleball paddle database,paddle comparison'
   },
   videos: {
     title: '匹克球教學影片中心 | 20+ 支精選 YouTube 國際名師',

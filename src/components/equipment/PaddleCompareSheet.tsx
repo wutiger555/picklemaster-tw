@@ -291,11 +291,11 @@ const PaddleCompareSheet = ({ paddles, onClose, onRemove }: Props) => {
                               rel="noopener noreferrer nofollow"
                               title={c.note ?? c.label}
                               className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-full border transition ${
-                                c.type === 'tw-agent'
+                                c.type === 'tw-official'
                                   ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                                   : c.type === 'tw-store'
                                     ? 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
-                                    : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100'
+                                    : 'border-neutral-200 bg-neutral-50 text-neutral-500 hover:bg-neutral-100'
                               }`}
                             >
                               {CHANNEL_TYPE_META[c.type].icon} {c.label} <span className="opacity-50">↗</span>

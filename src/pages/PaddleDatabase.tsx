@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   PADDLE_DATABASE, PADDLE_BRANDS, PADDLE_LEVELS, PADDLE_TAGS, MAX_COMPARE, getPaddleBySlug,
   getPurchaseChannels, CHANNEL_TYPE_META,
-  type Paddle, type PaddleBrand, type PaddleLevel, type PaddleTag,
+  type Paddle, type PaddleBrand, type PaddleLevel, type PaddleTag, type PurchaseChannelType,
 } from '../data/paddleDatabase';
 import PaddleVisual from '../components/equipment/PaddleVisual';
 import PaddleCompareSheet from '../components/equipment/PaddleCompareSheet';
@@ -25,6 +25,12 @@ const TAG_COLORS: Record<PaddleTag, string> = {
   高顏值: 'bg-pink-50 text-pink-600',
   電商爆款: 'bg-amber-50 text-amber-600',
   經典長青: 'bg-neutral-100 text-neutral-600',
+};
+
+const CHANNEL_STYLES: Record<PurchaseChannelType, string> = {
+  'tw-official': 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+  'tw-store': 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100',
+  'global': 'border-neutral-200 bg-neutral-50 text-neutral-500 hover:bg-neutral-100',
 };
 
 const RATING_ORDER: { key: keyof Paddle['rating']; label: string; color: string }[] = [
@@ -93,6 +99,12 @@ const SCENARIOS: Scenario[] = [
     desc: 'Dink 與小球手感優先，網前戰術流的選擇',
     filter: p => p.rating.control >= 93,
     sort: (a, b) => b.rating.control - a.rating.control,
+  },
+  {
+    id: 'tw-buy', emoji: '🇹🇼', label: '台灣買得到',
+    desc: '台灣有官方或實體通路可購買，不必等海外集運、售後也好處理',
+    filter: p => getPurchaseChannels(p.brand).some(c => c.type !== 'global'),
+    sort: (a, b) => avgRating(b) - avgRating(a),
   },
 ];
 
@@ -217,26 +229,23 @@ const PaddleCard = ({
 
     {/* 正版購買管道 */}
     {getPurchaseChannels(p.brand).length > 0 && (
-      <div className="flex flex-wrap gap-1.5 mt-3">
-        {getPurchaseChannels(p.brand).slice(0, 2).map(c => (
-          <a
-            key={c.url}
-            href={c.url}
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            title={c.note ?? c.label}
-            className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-full border transition active:scale-95 ${
-              c.type === 'tw-agent'
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                : c.type === 'tw-store'
-                  ? 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
-                  : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100'
-            }`}
-          >
-            {CHANNEL_TYPE_META[c.type].icon} {c.label}
-            <span className="opacity-50">↗</span>
-          </a>
-        ))}
+      <div className="mt-3 pt-3 border-t border-dashed border-neutral-200">
+        <div className="text-[10px] font-bold text-neutral-400 mb-1.5">哪裡買得到正品</div>
+        <div className="flex flex-wrap gap-1.5">
+          {getPurchaseChannels(p.brand).map(c => (
+            <a
+              key={c.url}
+              href={c.url}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              title={c.note ?? c.label}
+              className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-full border transition active:scale-95 ${CHANNEL_STYLES[c.type]}`}
+            >
+              {CHANNEL_TYPE_META[c.type].icon} {c.label}
+              <span className="opacity-40">↗</span>
+            </a>
+          ))}
+        </div>
       </div>
     )}
   </motion.article>

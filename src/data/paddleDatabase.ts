@@ -919,6 +919,94 @@ export const PADDLE_DATABASE: Paddle[] = [
   },
 ];
 
+/* ===== 正版購買管道 =====
+ * 查證日期：2026-08-29。每筆均逐頁查證品牌官網／通路網站原文，連結皆實測可開啟。
+ *
+ * 判定原則（寧可保守，不誇大授權層級）：
+ *   tw-official 品牌在台灣的官方單位或其指定通路。目前僅 JOOLA 台灣（2022 年
+ *               設立台灣辦公室，官網 joola.tw 指定蝦皮商城為購買管道）符合此標準。
+ *   tw-store    台灣實體／網路匹克球通路，確認有販售該品牌，但站上未出現
+ *               「總代理／原廠授權」等正式字樣，故不宣稱其為代理商。
+ *   global      台灣查無販售管道，列品牌官網作為正版來源（多數美國新銳品牌
+ *               不直郵台灣，需透過集運或代購）。
+ *
+ * 註：台灣目前絕大多數匹克球拍品牌並無正式總代理，蝦皮上的多為水貨／代購。
+ */
+export type PurchaseChannelType = 'tw-official' | 'tw-store' | 'global';
+
+export interface PurchaseChannel {
+  type: PurchaseChannelType;
+  label: string;   // 顯示名稱
+  url: string;
+  note?: string;   // 補充說明（會顯示為 tooltip）
+}
+
+export const CHANNEL_TYPE_META: Record<PurchaseChannelType, { icon: string; badge: string }> = {
+  'tw-official': { icon: '✅', badge: '台灣官方' },
+  'tw-store': { icon: '🛒', badge: '台灣通路' },
+  'global': { icon: '🌐', badge: '品牌官網' },
+};
+
+const GLOBAL_ONLY = (label: string, url: string, note = '台灣查無販售管道，需自品牌官網海外購買（多數不直郵台灣，需集運或代購）'): PurchaseChannel[] =>
+  [{ type: 'global', label, url, note }];
+
+export const BRAND_PURCHASE: Partial<Record<PaddleBrand, PurchaseChannel[]>> = {
+  // 唯一查證到在台設有官方單位的品牌
+  JOOLA: [
+    { type: 'tw-official', label: 'JOOLA 台灣官方', url: 'https://joola.tw/', note: 'JOOLA 於 2022 年設立台灣辦公室，官網為繁中官方站' },
+    { type: 'tw-store', label: '官方蝦皮商城', url: 'https://shopee.tw/joolataiwanofficial', note: 'JOOLA 台灣官網指定的購買管道' },
+  ],
+
+  // 台灣有實際販售通路（未宣稱代理層級）
+  HEAD: [
+    { type: 'tw-store', label: 'HEAD 台灣運動網', url: 'https://www.headsports.com.tw/categories/head-pickleball', note: '由 INFIN SPORT TECHNOLOGY 經營的 HEAD 台灣銷售網站，設有匹克球專區' },
+    { type: 'global', label: 'HEAD 全球官網', url: 'https://www.head.com/', note: '品牌全球官網' },
+  ],
+  Selkirk: [
+    { type: 'tw-store', label: '匹克窩 Pickle Nest', url: 'https://picklenest.tw/collections/selkirk-sports', note: '台灣匹克球通路，設有 Selkirk 專區（非原廠授權標示）' },
+    { type: 'global', label: 'Selkirk 官網', url: 'https://www.selkirk.com/' },
+  ],
+  'SLK by Selkirk': [
+    { type: 'tw-store', label: '匹克窩 Pickle Nest', url: 'https://picklenest.tw/collections/selkirk-sports', note: 'SLK 為 Selkirk 副牌，可於此通路的 Selkirk 專區查詢' },
+    { type: 'global', label: 'Selkirk 官網', url: 'https://www.selkirk.com/' },
+  ],
+  Paddletek: [
+    { type: 'tw-store', label: '匹克窩 Pickle Nest', url: 'https://picklenest.tw/', note: '台灣匹克球通路，有販售 Paddletek（非原廠授權標示）' },
+    { type: 'global', label: 'Paddletek 官網', url: 'https://www.paddletek.com/' },
+  ],
+  ProKennex: [
+    { type: 'tw-store', label: '匹克窩 Pickle Nest', url: 'https://picklenest.tw/', note: 'ProKennex 母公司為台灣光男企業，台灣可於此通路購得匹克球拍' },
+    { type: 'global', label: 'ProKennex 官網', url: 'https://prokennex.com/collections/pickleball' },
+  ],
+  Honolulu: [
+    { type: 'tw-store', label: 'PicklePickle 台北', url: 'https://www.picklepickle.tw/', note: '台北內湖匹克球專賣店，自述為「美國專業匹克球拍品牌代理」（未見原廠授權字樣）' },
+    { type: 'global', label: 'Honolulu 官網', url: 'https://808pickle.com/', note: '官網幣別選單含 Taiwan (TWD)，直郵可能性高但無明文' },
+  ],
+  Friday: [
+    { type: 'tw-store', label: 'PicklePickle 台北', url: 'https://www.picklepickle.tw/', note: '台北內湖匹克球專賣店，販售 Friday 全系列（AURA/Fever/Original）' },
+    { type: 'global', label: 'Friday 官網', url: 'https://fridaypickle.com/', note: '官網 FAQ 明示僅寄送美國與加拿大，不直郵台灣' },
+  ],
+
+  // 台灣查無販售管道，僅列品牌官網
+  'Six Zero': GLOBAL_ONLY('Six Zero 官網', 'https://www.sixzeropickleball.com/'),
+  Engage: GLOBAL_ONLY('Engage 官網', 'https://engagepickleball.com/'),
+  Franklin: GLOBAL_ONLY('Franklin 官網', 'https://franklinsports.com/', '台灣曾有嘖嘖官方集資首賣，但無常態官方通路；蝦皮多為平行輸入'),
+  CRBN: GLOBAL_ONLY('CRBN 官網', 'https://crbnpickleball.com/'),
+  Gearbox: GLOBAL_ONLY('Gearbox 官網', 'https://gearboxsports.com/'),
+  PROLITE: GLOBAL_ONLY('PROLITE 官網', 'https://proliteusa.com/'),
+  'Vatic Pro': GLOBAL_ONLY('Vatic Pro 官網', 'https://vaticpro.com/'),
+  Electrum: GLOBAL_ONLY('Electrum 官網', 'https://www.electrumpickleball.com/'),
+  Onix: GLOBAL_ONLY('Onix 官網', 'https://www.onixpickleball.com/'),
+  Niupipo: GLOBAL_ONLY('Niupipo 官網', 'https://niupipo.com/', '官網運送政策僅限美國；台灣蝦皮所見多為第三方水貨／代購'),
+  '11SIX24': GLOBAL_ONLY('11SIX24 官網', 'https://11six24.com/'),
+  Ronbus: GLOBAL_ONLY('Ronbus 官網', 'https://ronbus.com/', '官網保固僅限美國境內出貨，海外需洽當地經銷（台灣查無）'),
+  'Bread & Butter': GLOBAL_ONLY('Bread & Butter 官網', 'https://www.bnbpickleball.com/', '品牌設有亞洲站，經銷集中於馬來西亞、新加坡'),
+  Volair: GLOBAL_ONLY('Volair 官網', 'https://volair.com/', '官網支援國際運送，運費於結帳時計算'),
+};
+
+export const getPurchaseChannels = (brand: PaddleBrand): PurchaseChannel[] =>
+  BRAND_PURCHASE[brand] ?? [];
+
 // 依品牌取得
 export const getPaddlesByBrand = (brand: PaddleBrand) =>
   PADDLE_DATABASE.filter(p => p.brand === brand);

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   PADDLE_DATABASE, PADDLE_BRANDS, PADDLE_LEVELS, PADDLE_TAGS, MAX_COMPARE, getPaddleBySlug,
+  getPurchaseChannels, CHANNEL_TYPE_META,
   type Paddle, type PaddleBrand, type PaddleLevel, type PaddleTag,
 } from '../data/paddleDatabase';
 import PaddleVisual from '../components/equipment/PaddleVisual';
@@ -213,6 +214,31 @@ const PaddleCard = ({
         {inCompare ? '✓ 已加入比較' : '＋ 比較'}
       </button>
     </div>
+
+    {/* 正版購買管道 */}
+    {getPurchaseChannels(p.brand).length > 0 && (
+      <div className="flex flex-wrap gap-1.5 mt-3">
+        {getPurchaseChannels(p.brand).slice(0, 2).map(c => (
+          <a
+            key={c.url}
+            href={c.url}
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            title={c.note ?? c.label}
+            className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-full border transition active:scale-95 ${
+              c.type === 'tw-agent'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                : c.type === 'tw-store'
+                  ? 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                  : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100'
+            }`}
+          >
+            {CHANNEL_TYPE_META[c.type].icon} {c.label}
+            <span className="opacity-50">↗</span>
+          </a>
+        ))}
+      </div>
+    )}
   </motion.article>
 );
 
@@ -508,7 +534,10 @@ const PaddleDatabasePage = () => {
 
         <div className="flex items-center justify-between mb-4">
           <div className="text-sm text-neutral-500 font-semibold">共 {filtered.length} 款</div>
-          <div className="text-[11px] text-neutral-400 text-right">價格為台灣行情參考 · 球拍圖為依規格繪製之示意圖</div>
+          <div className="text-[11px] text-neutral-400 text-right">
+            價格為台灣行情參考 · 球拍圖為依規格繪製之示意圖
+            <span className="hidden md:inline"> · 經銷資訊查證於 2026-08，購買前請以品牌官方公告為準</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-36">

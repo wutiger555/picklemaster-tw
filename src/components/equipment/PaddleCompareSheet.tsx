@@ -8,7 +8,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import type { Paddle } from '../../data/paddleDatabase';
+import { getPurchaseChannels, CHANNEL_TYPE_META, type Paddle } from '../../data/paddleDatabase';
 import PaddleVisual from './PaddleVisual';
 import PaddleRadar from './PaddleRadar';
 
@@ -269,6 +269,44 @@ const PaddleCompareSheet = ({ paddles, onClose, onRemove }: Props) => {
               <SpecRow label="適合" values={paddles.map(p => p.bestFor)} alwaysShow />
               <SpecRow label="注意" values={paddles.map(p => p.cons ?? '—')} />
               <SpecRow label="USAP" values={paddles.map(p => (p.usapApproved ? '✓ 認證' : '未認證'))} />
+
+              {/* 正版購買管道 */}
+              <tr>
+                <th className="sticky left-0 z-10 bg-white text-left text-xs font-bold text-neutral-400 py-3.5 pr-3 pl-5 align-top">
+                  正版購買
+                </th>
+                {paddles.map(p => {
+                  const channels = getPurchaseChannels(p.brand);
+                  return (
+                    <td key={p.slug} className="py-3.5 px-4 min-w-[168px] align-top">
+                      {channels.length === 0 ? (
+                        <span className="text-sm text-neutral-400">—</span>
+                      ) : (
+                        <div className="flex flex-col items-start gap-1.5">
+                          {channels.slice(0, 2).map(c => (
+                            <a
+                              key={c.url}
+                              href={c.url}
+                              target="_blank"
+                              rel="noopener noreferrer nofollow"
+                              title={c.note ?? c.label}
+                              className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-full border transition ${
+                                c.type === 'tw-agent'
+                                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                  : c.type === 'tw-store'
+                                    ? 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                                    : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100'
+                              }`}
+                            >
+                              {CHANNEL_TYPE_META[c.type].icon} {c.label} <span className="opacity-50">↗</span>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
 
               {/* 底部留白 */}
               <tr><td colSpan={paddles.length + 1} className="pb-10" /></tr>

@@ -919,6 +919,34 @@ export const PADDLE_DATABASE: Paddle[] = [
   },
 ];
 
+/* ===== 正版購買管道 =====
+ * 資料查證日期：2026-08（經銷資訊可能變動，購買前請以品牌官方公告為準）
+ * type 說明：
+ *   tw-agent  台灣總代理 / 官方代理商
+ *   tw-store  官方或授權的台灣電商通路（蝦皮商城旗艦店、momo 等）
+ *   global    品牌官網海外直購（台灣無正式代理時的正版管道）
+ */
+export type PurchaseChannelType = 'tw-agent' | 'tw-store' | 'global';
+
+export interface PurchaseChannel {
+  type: PurchaseChannelType;
+  label: string;   // 顯示名稱，如「台灣總代理 · ○○公司」
+  url: string;
+  note?: string;   // 補充，如「海外直購，關稅運費另計」
+}
+
+export const CHANNEL_TYPE_META: Record<PurchaseChannelType, { icon: string; badge: string }> = {
+  'tw-agent': { icon: '🏢', badge: '台灣代理' },
+  'tw-store': { icon: '🛒', badge: '官方通路' },
+  'global': { icon: '🌐', badge: '官網直購' },
+};
+
+// 於檔案下方填入各品牌經查證的購買管道
+export const BRAND_PURCHASE: Partial<Record<PaddleBrand, PurchaseChannel[]>> = {};
+
+export const getPurchaseChannels = (brand: PaddleBrand): PurchaseChannel[] =>
+  BRAND_PURCHASE[brand] ?? [];
+
 // 依品牌取得
 export const getPaddlesByBrand = (brand: PaddleBrand) =>
   PADDLE_DATABASE.filter(p => p.brand === brand);

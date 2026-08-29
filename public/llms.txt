@@ -10,7 +10,7 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 - 官方網站：https://picklemastertw.site/
 - 語言：繁體中文 (zh-TW)
 - 服務地區：台灣 (Taiwan)
-- 資料更新：2026-08-23
+- 資料更新：2026-08-29
 - GitHub：https://github.com/wutiger555/picklemaster-tw
 
 ## 核心頁面 / Core Pages
@@ -26,10 +26,10 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
   - NAPA 盃 (2/28-3/1) — 已完賽
   - 港都盃 (4/18-19, 高雄樹德科大) — 已完賽
   - 中正盃 (6/18-21, 台北大安運動中心) — 已完賽
-  - AEPL 亞洲菁英匹克球聯盟創始賽季 (8/29-30 台中火車站空中廊道開幕，8-11月全台 8 站) — 5 隊參戰、總獎金 100 萬、林志穎任賽事大使
+  - AEPL 亞洲菁英匹克球聯盟創始賽季 (8/29-30 台中火車站空中廊道開幕，8-11月全台 8 站) — 6 支企業隊參戰、總獎金 100 萬、林志穎任賽事大使（8/29 開打）
   - 新北金碧盃 (8/14-16, 三峽國民運動中心) — 已完賽
   - TMLP 積分巡迴賽 (8/15-16 新竹站已完賽、10月新北站、11月台北年終賽)
-  - 新竹縣長盃 (8/29-30, 竹北國民運動中心)
+  - 新竹縣長盃 (8/29-30, 竹北國民運動中心) — 進行中
   - 國民體育日系列 (9/6、9/12、9/13, 屏東)
   - 南華盃青銀共融全國聯賽 (9/12-11/15, 南華大學)
   - 臺灣女子匹克球公開賽 (10月, 待定)
@@ -51,7 +51,8 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 - [DUPR 評級指南](https://picklemastertw.site/ratings): 2026 全球通用動態評級系統 1.0-8.0 完整說明。
 
 ### 深度專欄
-- [深度專欄](https://picklemastertw.site/articles): 10 篇 2000-3000 字長文，涵蓋器材評測、運動科學、比較分析、族群指南：
+- [深度專欄](https://picklemastertw.site/articles): 11 篇 2000-3000 字長文，涵蓋器材評測、運動科學、比較分析、族群指南、產業動態：
+  - [台灣匹克球「職業元年」全解析：AEPL 開打，然後呢？](https://picklemastertw.site/articles/taiwan-pro-pickleball-2026)
   - [2026 十大匹克球拍完整評測](https://picklemastertw.site/articles/2026-best-pickleball-paddles)
   - [匹克球 vs 網球 vs 羽球 vs Padel](https://picklemastertw.site/articles/pickleball-vs-tennis-badminton-padel)
   - [2026 最佳匹克球鞋選購指南](https://picklemastertw.site/articles/2026-best-pickleball-shoes)

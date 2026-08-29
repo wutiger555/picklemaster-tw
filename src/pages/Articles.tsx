@@ -11,6 +11,7 @@ const CATEGORY_COLORS: Record<ArticleCategory, string> = {
   族群指南: 'bg-purple-100 text-purple-700',
   規則知識: 'bg-amber-100 text-amber-700',
   比較分析: 'bg-teal-100 text-teal-700',
+  產業動態: 'bg-indigo-100 text-indigo-700',
 };
 
 const Articles = () => {

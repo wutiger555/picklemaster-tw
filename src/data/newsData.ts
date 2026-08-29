@@ -3,25 +3,27 @@ import type { NewsItem } from '../types/news';
 export const NEWS_DATA: NewsItem[] = [
   // ===== 2026 Q3 最新消息 =====
   {
-    id: 'tw-202608-aepl-opening',
-    title: 'AEPL 8/29 台中開季！林志穎任大使，5 隊爭百萬獎金',
-    summary: '台灣首個匹克球職業聯盟 AEPL 創始賽季確定 8 月 29、30 日於台中火車站空中廊道開幕，藝人林志穎擔任賽事大使。已確定 5 支球隊參賽（桃園雲豹、尚騰集團、Ahhh、蘆沐、富瑞特科技），第 6 隊洽談中，賽季朝全台 8 站推進、總獎金新台幣 100 萬元。',
+    id: 'tw-202608-aepl-kickoff',
+    title: '職業元年正式啟動！AEPL 今日台中開打，6 支企業隊到齊',
+    summary: '台灣第一個匹克球職業聯賽 AEPL 亞洲菁英匹克球聯盟創始賽季，8 月 29、30 日在台中火車站空中廊道開幕。6 支企業隊到齊，最新成軍的台南旭日雷霆由尚騰汽車集團與寶嘉聯合共同成立，隊長蔡萱是打了 20 多年網球的轉項選手。',
     content: `
-      <p>台灣匹克球職業化邁出關鍵一步。<strong>AEPL 亞洲菁英匹克球聯盟</strong>創始賽季確定於 <strong>8 月 29、30 日在台中火車站空中廊道</strong>開幕——選擇車站地標而非傳統體育館，明顯要把這項運動推到一般民眾眼前。</p>
+      <p>台灣匹克球的「職業元年」正式啟動。<strong>AEPL 亞洲菁英匹克球聯盟</strong>創始賽季於 <strong>8 月 29、30 日在台中火車站空中廊道</strong>開幕——把職業賽事辦在車站而非體育館，明白宣示要把這項運動帶到一般民眾眼前。</p>
 
-      <p>目前已確定 <strong>5 支球隊</strong>參賽：桃園雲豹、尚騰集團、Ahhh、蘆沐與富瑞特科技，各隊約 6 至 10 名成員。執行長張智維透露還有<strong>第 6 支來自台中的球隊</strong>正在洽談加入。藝人<strong>林志穎</strong>擔任本季賽事大使，為聯盟帶來話題聲量。</p>
+      <p>創始賽季確定 <strong>6 支企業隊</strong>參戰，橫跨汽車、能源、科技產業。最新成軍的<strong>台南旭日雷霆</strong>由尚騰汽車集團與寶嘉聯合共同成立，是第一支繳交申請書的球隊，集團執行長<strong>吳睿弘</strong>親自擔任領隊：「除了拚成績，更希望把匹克球推廣到每個角落」，並看好這項運動「5 年後一定會非常興盛」。隊長<strong>蔡萱</strong>則是從小學三年級打網球、超過 20 年底子的轉項選手。</p>
 
-      <p>賽季規劃 8 月至 11 月進行，預計在<strong>雙北、桃園、新竹、宜蘭、台中、台南、高雄</strong>等地登場，朝全台 8 站的目標推進，11 月舉行總決賽，全季總獎金新台幣 <strong>100 萬元</strong>。對台灣選手而言，這是不必出國就能站上的職業舞台；對球迷來說，則是第一次能在自家縣市追一整季的職業匹克球。</p>
+      <p>賽季 8 月至 11 月進行，朝<strong>全台 8 個分站</strong>推進（雙北、桃園、新竹、宜蘭、台中、台南、高雄），11 月總決賽，總獎金新台幣 <strong>100 萬元</strong>，藝人<strong>林志穎</strong>擔任賽事大使。</p>
 
-      <p>想追賽季行程，可看<a href="/tournaments" class="text-primary-600 hover:underline">2026 賽事總覽</a>；想找場地練球，用<a href="/courts" class="text-primary-600 hover:underline">全台球場地圖</a>的 GPS 定位找離你最近的球場。</p>
+      <p>對台灣選手而言，這代表不必再為了維持比賽節奏而持續自費出國。26 歲的職業選手鍾振煒說得直接：過去每月得參加 2 至 3 站國外賽事、「每一站成本至少要 3 萬起跳」，如今「終於不用一直飛到國外參賽了」。</p>
 
-      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.cna.com.tw/news/aspt/202608170172.aspx" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中央社</a>、自由體育、聯合新聞網、Newtalk</p>
+      <p>想完整理解這波職業化的來龍去脈——6 支企業隊背後的產業版圖、選手經濟學、以及 2027 年東南亞、2028 年亞洲巡迴的時程，可讀本站深度專欄：<a href="/articles/taiwan-pro-pickleball-2026" class="text-primary-600 hover:underline">台灣匹克球「職業元年」全解析：AEPL 開打，然後呢？</a></p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.cna.com.tw/news/aspt/202608170172.aspx" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中央社</a>、<a href="https://newtalk.tw/news/view/2026-08-25/1055638" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Newtalk</a>、聯合新聞網、自由體育</p>
     `,
-    date: '2026-08-17',
+    date: '2026-08-29',
     category: 'Taiwan',
     image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
     source: 'Picklemaster Taiwan',
-    link: '/tournaments',
+    link: '/articles/taiwan-pro-pickleball-2026',
     tags: ['Taiwan', 'AEPL', '職業聯賽', '2026']
   },
   {

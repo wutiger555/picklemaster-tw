@@ -790,6 +790,7 @@ const PLAYER_SLUGS = [
 
 // Articles (per-slug static pages) — mirror of src/data/articlesData.ts metadata only
 const ARTICLE_SLUGS = [
+    { slug: 'taiwan-pro-pickleball-2026', title: '台灣匹克球「職業元年」全解析：AEPL 開打，然後呢？', summary: '2026 年 8 月 29 日，AEPL 亞洲菁英匹克球聯盟在台中火車站空中廊道開打，台灣有了第一個匹克球職業聯賽。本文拆解 6 支企業隊背後的產業版圖、選手為何說「終於不用一直飛國外」、聯盟制度設計與國際接軌時程。', category: '產業動態' },
     { slug: '2026-best-pickleball-paddles', title: '2026 十大匹克球拍完整評測', summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro IV、Selkirk Labs Project 002、Paddletek Bantam TS-5 等頂級選手愛用款。', category: '器材評測' },
     { slug: 'pickleball-vs-tennis-badminton-padel', title: '匹克球 vs 網球 vs 羽球 vs Padel 完整比較', summary: '四大拍類運動一次看懂：場地、難度、體能、社群文化。', category: '比較分析' },
     { slug: '2026-best-pickleball-shoes', title: '2026 最佳匹克球鞋選購指南', summary: '匹克球專用鞋 vs 網球鞋 vs 羽球鞋完整比較。2026 Top 8 匹克球鞋實測。', category: '器材評測' },

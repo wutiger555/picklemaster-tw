@@ -26,27 +26,29 @@ const esc = (s) => String(s == null ? '' : s)
 
 // 依 CJK/半形估算寬度做斷行（resvg 不會自動換行）；超過 maxLines 則在末行截斷加省略號
 function wrapTitle(title, fontSize, maxWidth, maxLines) {
-  const chars = [...String(title)];
-  const widthOf = (ch) => (/[\x00-\xff]/.test(ch) ? 0.56 : 1) * fontSize;
+  // 以「詞」為斷行單位：連續的半形字母/數字（如 AEPL、MLP、2026）視為一個不可拆的 token，
+  // CJK 則逐字可斷，避免英文單字被從中切斷
+  const tokens = String(title).match(/[A-Za-z0-9][A-Za-z0-9.'-]*|\s+|[\s\S]/g) || [];
+  const widthOf = (t) => [...t].reduce((sum, ch) => sum + (/[\x00-\xff]/.test(ch) ? 0.56 : 1) * fontSize, 0);
   const lines = [];
   let cur = '';
   let curW = 0;
-  for (const ch of chars) {
-    const w = widthOf(ch);
+  for (const tk of tokens) {
+    const w = widthOf(tk);
     if (curW + w > maxWidth && cur) {
       if (lines.length === maxLines - 1) {
-        // 已在最後一行且還放不下 → 截斷
-        cur = cur.slice(0, -1) + '…';
+        cur = cur.replace(/\s+$/, '').slice(0, -1) + '…';
         break;
       }
-      lines.push(cur);
+      lines.push(cur.replace(/\s+$/, ''));
       cur = '';
       curW = 0;
+      if (/^\s+$/.test(tk)) continue; // 行首不留空白
     }
-    cur += ch;
+    cur += tk;
     curW += w;
   }
-  if (cur && lines.length < maxLines) lines.push(cur);
+  if (cur.trim() && lines.length < maxLines) lines.push(cur.replace(/\s+$/, ''));
   return lines;
 }
 

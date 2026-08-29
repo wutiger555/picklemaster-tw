@@ -23,6 +23,7 @@ const Header = () => {
     > = [
             { path: ROUTES.COURTS, label: '找球場', type: 'link' },
             { path: ROUTES.TOURNAMENTS, label: '賽事', type: 'link' },
+            { path: ROUTES.AEPL, label: 'AEPL 職業聯賽', type: 'link' },
             {
                 label: '學習',
                 type: 'dropdown',

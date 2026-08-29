@@ -20,6 +20,7 @@ const STATIC_PAGES: SearchEntry[] = [
   { title: '技巧教學', description: '3D 互動教學與技巧訓練', path: ROUTES.LEARNING, category: '學習', keywords: ['技巧', '教學', '訓練', '3D', '互動'] },
   { title: '訓練菜單', description: '系統化每週逐日訓練計畫', path: ROUTES.TRAINING_PROGRAMS, category: '學習', keywords: ['訓練', '菜單', '課表', '練習', 'program'] },
   { title: '2026 賽事', description: '全台匹克球賽事總覽與行事曆', path: ROUTES.TOURNAMENTS, category: '賽事', keywords: ['賽事', '比賽', '報名', 'tournament', '賽程'] },
+  { title: 'AEPL 職業聯賽專區', description: '台灣首個職業聯賽：6 隊戰力卡、8 站賽程、賽前分析', path: ROUTES.AEPL, category: '賽事', keywords: ['AEPL', '職業聯賽', '職業', '雲豹', '旭日雷霆', 'Ahhh', '林志穎', '聯盟'] },
   { title: 'DUPR 評級', description: 'DUPR 評級制度與查詢指南', path: ROUTES.RATINGS, category: '學習', keywords: ['DUPR', '評級', '分級', 'rating', '積分'] },
   { title: '術語字典', description: '匹克球術語完整解釋', path: ROUTES.GLOSSARY, category: '術語', keywords: ['術語', '字典', '名詞', 'glossary'] },
   { title: '職業選手', description: '世界頂尖匹克球選手資料庫', path: ROUTES.PRO_PLAYERS, category: '選手', keywords: ['選手', '職業', 'player', 'pro'] },

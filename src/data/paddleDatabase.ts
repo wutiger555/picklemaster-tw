@@ -6,7 +6,8 @@ export type PaddleBrand =
   | 'JOOLA' | 'Selkirk' | 'SLK by Selkirk' | 'Paddletek' | 'Six Zero' | 'Engage'
   | 'Franklin' | 'CRBN' | 'Gearbox' | 'PROLITE' | 'Vatic Pro' | 'Electrum'
   | 'Onix' | 'HEAD' | 'Niupipo' | '11SIX24' | 'Ronbus' | 'Friday'
-  | 'Bread & Butter' | 'Volair' | 'Honolulu' | 'ProKennex';
+  | 'Bread & Butter' | 'Volair' | 'Honolulu' | 'ProKennex' | 'LUZZ'
+  | 'adidas' | 'RPM';
 
 export type PaddleShape = '寬型 Widebody' | '長型 Elongated' | '混合 Hybrid';
 export type CoreType = 'Polymer 聚合物' | 'Carbon 碳芯' | 'Foam 發泡芯' | 'Nomex 紙蜂窩' | 'Thermoformed 熱壓' | 'Kinetic 動能避震';
@@ -51,23 +52,23 @@ export interface Paddle {
 export const PADDLE_DATABASE: Paddle[] = [
   // ===== JOOLA =====
   {
-    slug: 'joola-perseus-pro-iv-16mm',
+    slug: 'joola-perseus-pro-v-16mm',
     brand: 'JOOLA',
-    model: 'Perseus Pro IV 16mm',
-    year: 2024,
+    model: 'Perseus Pro V 16mm',
+    year: 2026,
     level: '職業',
     shape: '混合 Hybrid',
-    weight: '7.9 oz',
+    weight: '8.1 oz',
     thickness: '16mm',
     core: 'Thermoformed 熱壓',
     face: 'T700 碳纖',
     gripLength: '5.25"',
     gripSize: '4.25"',
-    priceUSD: 280,
-    priceTWD: 9200,
-    rating: { power: 95, control: 96, spin: 94, forgiveness: 88 },
+    priceUSD: 300,
+    priceTWD: 9500,
+    rating: { power: 95, control: 96, spin: 94, forgiveness: 89 },
     endorser: 'Ben Johns',
-    highlights: ['Ben Johns 親用款', 'Propulsion Core 技術', '職業巡迴賽高使用率', '熱壓成型一體'],
+    highlights: ['2026 最新第五代旗艦', 'Ben Johns 親用款', 'KineticFrame 喉部彈性框架', '觸球吸震、出球更集中'],
     bestFor: 'DUPR 4.0+ 追求全能與精準的進階球員',
     cons: '入門者難駕馭，價格高',
     usapApproved: true,
@@ -75,22 +76,23 @@ export const PADDLE_DATABASE: Paddle[] = [
     colors: { face: '#1a1a2e', accent: '#c9a86a' },
   },
   {
-    slug: 'joola-perseus-pro-iv-14mm',
+    slug: 'joola-perseus-pro-v-14mm',
     brand: 'JOOLA',
-    model: 'Perseus Pro IV 14mm',
-    year: 2024,
+    model: 'Perseus Pro V 14mm',
+    year: 2026,
     level: '職業',
     shape: '混合 Hybrid',
-    weight: '7.7 oz',
+    weight: '7.9 oz',
     thickness: '14mm',
     core: 'Thermoformed 熱壓',
     face: 'T700 碳纖',
     gripLength: '5.25"',
     gripSize: '4.25"',
-    priceUSD: 280,
-    priceTWD: 9200,
-    rating: { power: 98, control: 92, spin: 94, forgiveness: 82 },
-    highlights: ['14mm 版更薄更快', '揮速快、出球更彈', '強攻力量', '回饋更直接'],
+    priceUSD: 300,
+    priceTWD: 9500,
+    rating: { power: 98, control: 92, spin: 94, forgiveness: 83 },
+    endorser: 'Ben Johns',
+    highlights: ['2026 第五代 14mm 版', '更薄更快、揮速優勢', 'KineticFrame 喉部彈性框架', '單打與強攻首選'],
     bestFor: '攻擊型選手、單打愛好者',
     usapApproved: true,
     colors: { face: '#1a1a2e', accent: '#c9a86a' },
@@ -161,7 +163,52 @@ export const PADDLE_DATABASE: Paddle[] = [
     colors: { face: '#232323', accent: '#ff6b35' },
   },
 
+  {
+    slug: 'joola-agassi-graf-pro-iv',
+    brand: 'JOOLA',
+    model: 'Agassi / Graf Pro IV 16mm',
+    year: 2025,
+    level: '進階',
+    shape: '混合 Hybrid',
+    weight: '8.0 oz',
+    thickness: '16mm',
+    core: 'Thermoformed 熱壓',
+    face: 'T700 碳纖',
+    gripLength: '5.5"',
+    gripSize: '4.25"',
+    priceTWD: 8800,
+    rating: { power: 91, control: 94, spin: 92, forgiveness: 91 },
+    endorser: 'Andre Agassi / Steffi Graf',
+    highlights: ['網球傳奇 Agassi 與 Graf 聯名', 'Tech Flex Power 底緣發泡擴大甜蜜點', '5.5" 長握把利雙手反拍', '網球轉項玩家的親切選擇'],
+    bestFor: '網球轉打匹克球、想要大甜蜜點的中進階',
+    usapApproved: true,
+    tags: ['近期熱搜'],
+    colors: { face: '#14213d', accent: '#fca311' },
+  },
+
   // ===== Selkirk =====
+  {
+    slug: 'selkirk-labs-boomstik',
+    brand: 'Selkirk',
+    model: 'LABS Project Boomstik',
+    year: 2025,
+    level: '職業',
+    shape: '長型 Elongated',
+    weight: '8.1 oz',
+    thickness: '14mm',
+    core: 'Thermoformed 熱壓',
+    face: 'Raw Carbon Fiber',
+    gripLength: '5.5"',
+    gripSize: '4.25"',
+    priceTWD: 9900,
+    rating: { power: 97, control: 88, spin: 93, forgiveness: 80 },
+    highlights: ['Selkirk LABS 實驗系列', '長型進攻火力頂級', '台灣有現貨通路（美版／亞版）'],
+    bestFor: 'DUPR 4.5+ 純進攻流',
+    cons: '容錯偏低，新手不易駕馭；美版與亞版規格略有差異',
+    usapApproved: true,
+    tags: ['近期熱搜'],
+    colors: { face: '#1a1a1a', accent: '#ff4d00' },
+  },
   {
     slug: 'selkirk-luxx-control-air-invikta',
     brand: 'Selkirk',
@@ -917,6 +964,77 @@ export const PADDLE_DATABASE: Paddle[] = [
     tags: ['護肘友善'],
     colors: { face: '#000000', accent: '#c0c0c0' },
   },
+
+  // ===== LUZZ（台灣通路能見度最高的匹克球拍品牌之一）=====
+  {
+    slug: 'luzz-pro-4',
+    brand: 'LUZZ',
+    model: 'Pro 4（龍捲風／地獄火）',
+    year: 2025,
+    level: '中階',
+    shape: '寬型 Widebody',
+    weight: '7.9 oz',
+    thickness: '16mm',
+    core: 'Foam 發泡芯',
+    face: 'T700 碳纖',
+    gripLength: '5.25"',
+    gripSize: '4.25"',
+    priceTWD: 5280,
+    rating: { power: 89, control: 91, spin: 90, forgiveness: 92 },
+    highlights: ['UPA-A + USAP PBCoR .43 雙認證', 'PEBAZ 核心 + MPP 微孔泡棉吸震', '3D 凹槽碳纖拍面增旋轉', '台灣 momo／PChome／實體店都買得到'],
+    bestFor: '想要台灣現貨、售後方便的中階球員',
+    usapApproved: true,
+    tags: ['新手友善'],
+    colors: { face: '#8b0000', accent: '#ffb703' },
+  },
+
+  // ===== adidas（大廠背書、台灣通路好找）=====
+  {
+    slug: 'adidas-metalbone-lp',
+    brand: 'adidas',
+    model: 'Metalbone LP',
+    year: 2025,
+    level: '進階',
+    shape: '長型 Elongated',
+    weight: '8.0 oz',
+    thickness: '16mm',
+    core: 'Polymer 聚合物',
+    face: 'Raw Carbon Fiber',
+    gripLength: '5.5"',
+    gripSize: '4.125"',
+    priceTWD: 7500,
+    rating: { power: 93, control: 90, spin: 93, forgiveness: 86 },
+    highlights: ['三條線大廠出品、辨識度高', 'Spin Blade Max 表面處理增旋轉', '可調配重系統（側邊與頂部加重）', '低密度 PP 蜂窩芯 + 一體成型'],
+    bestFor: '想要大廠品質保證的進攻型中進階',
+    cons: '偏進攻取向，純新手容錯感不如寬型拍',
+    usapApproved: true,
+    tags: ['近期熱搜'],
+    colors: { face: '#111111', accent: '#eeeeee' },
+  },
+
+  // ===== RPM =====
+  {
+    slug: 'rpm-friction-pro-v2-16mm',
+    brand: 'RPM',
+    model: 'Friction Pro V2 Elongated 16mm',
+    year: 2025,
+    level: '進階',
+    shape: '長型 Elongated',
+    weight: '7.9 oz',
+    thickness: '16mm',
+    core: 'Foam 發泡芯',
+    face: 'Raw Carbon Fiber',
+    gripLength: '5.5"',
+    gripSize: '4.125"',
+    priceUSD: 250,
+    priceTWD: 8200,
+    rating: { power: 92, control: 91, spin: 96, forgiveness: 89 },
+    endorser: 'James Ignatowich',
+    highlights: ['世界前十 James Ignatowich 共同設計', 'CarbonBite 面板旋轉頂尖', 'Tri-Density 核心 + EVA 發泡邊環', '甜蜜點大、旋轉導向'],
+    bestFor: '旋轉流、想用弧線與落點壓制對手',
+    usapApproved: true,
+    colors: { face: '#1d2d44', accent: '#a8e10c' },
+  },
 ];
 
 /* ===== 正版購買管道 =====
@@ -1006,6 +1124,81 @@ export const BRAND_PURCHASE: Partial<Record<PaddleBrand, PurchaseChannel[]>> = {
 
 export const getPurchaseChannels = (brand: PaddleBrand): PurchaseChannel[] =>
   BRAND_PURCHASE[brand] ?? [];
+
+/* ===== 蝦皮分潤連結 =====
+ * 這些是站方的蝦皮分潤（聯盟行銷）連結，透過它們下單站方會獲得回饋，
+ * 售價與你自己搜尋進去完全相同。頁面上會明確揭露此事。
+ *
+ * 收錄原則（重要）：
+ *   1. 只收「本站資料庫實際推薦的型號」，不放無品牌雜牌拍衝分潤——
+ *      那會讓整個資料庫的可信度歸零。
+ *   2. 每筆都標明賣場與是否為水貨／平行輸入，讓使用者自行判斷。
+ *   3. 官方管道（BRAND_PURCHASE）永遠優先顯示於分潤連結之上。
+ */
+export interface AffiliateOffer {
+  shop: string;          // 賣場名稱
+  url: string;           // 蝦皮分潤短連結
+  variant?: string;      // 版本／規格說明（如「美版」「14/16mm」）
+  parallelImport?: boolean; // 是否為水貨／平行輸入（無原廠保固）
+}
+
+// 商品層級：直接對應到某一支球拍
+export const PADDLE_AFFILIATES: Record<string, AffiliateOffer[]> = {
+  'joola-perseus-pro-v-16mm': [
+    { shop: '力揚體育', url: 'https://s.shopee.tw/1qbcGNhaEh', variant: '600558 / 600555' },
+    { shop: '丘林體育 Chilling', url: 'https://s.shopee.tw/6q0IDb6ch9', variant: '14 / 16mm 可選' },
+  ],
+  'joola-perseus-pro-v-14mm': [
+    { shop: '丘林體育 Chilling', url: 'https://s.shopee.tw/6q0IDb6ch9', variant: '14 / 16mm 可選' },
+    { shop: '力揚體育', url: 'https://s.shopee.tw/1qbcGNhaEh', variant: '600558 / 600555' },
+  ],
+  'joola-agassi-graf-pro-iv': [
+    { shop: 'JOOLA 官方旗艦店', url: 'https://s.shopee.tw/3qMgfUwabS', variant: 'Agassi / Graf Pro 4' },
+  ],
+  'selkirk-labs-boomstik': [
+    { shop: '匹克魂', url: 'https://s.shopee.tw/5LBUQs4249', variant: '美版（長／寬版）', parallelImport: true },
+    { shop: '古大體育 匹克魂', url: 'https://s.shopee.tw/7VFz10Toy1', variant: '亞版 Raw Carbon', parallelImport: true },
+  ],
+  'selkirk-luxx-control-air-invikta': [
+    { shop: 'JR 育樂', url: 'https://s.shopee.tw/6AkbRl9YCK', variant: 'InfiniGrit / INVICTA / EPIC', parallelImport: true },
+  ],
+  'luzz-pro-4': [
+    { shop: '美國 LUZZ 官方賣場', url: 'https://s.shopee.tw/1LfLfaoqem', variant: '龍捲風／地獄火' },
+    { shop: '現貨免運賣場', url: 'https://s.shopee.tw/1Vylt7F7A5', variant: '買 1 送 4（拍套＋球＋握把布）' },
+    { shop: '庫鎷尹戶外', url: 'https://s.shopee.tw/3LQQ3JkyLa', variant: 'Inferno 地獄火 極光藍套餐' },
+  ],
+  'adidas-metalbone-lp': [
+    { shop: '蝦皮現貨', url: 'https://s.shopee.tw/6AkbRjo1ah', variant: 'Metalbone LP 國際雙認證' },
+  ],
+  'rpm-friction-pro-v2-16mm': [
+    { shop: 'JR 育樂', url: 'https://s.shopee.tw/5VUuedDRhd', variant: '14mm / 16mm Elongated', parallelImport: true },
+  ],
+  'crbn-1x-power': [
+    { shop: '威盛國際', url: 'https://s.shopee.tw/4LIxGXj4Eg', variant: '同店另有 3X Power Series', parallelImport: true },
+  ],
+};
+
+// 賣場層級：該賣場確認有經營此品牌，作為找不到單品連結時的入口
+export const BRAND_SHOP_AFFILIATES: Partial<Record<PaddleBrand, AffiliateOffer[]>> = {
+  JOOLA: [
+    { shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' },
+    { shop: '力揚體育 · Perseus 3S DUAL', url: 'https://s.shopee.tw/6AkbS1pPpG', variant: '600121 / 600119 前代款' },
+  ],
+  Selkirk: [{ shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' }],
+  LUZZ: [
+    { shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' },
+    { shop: 'Vispinvo 賣場', url: 'https://s.shopee.tw/AAGkBZp2oh' },
+  ],
+  adidas: [{ shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' }],
+};
+
+export const getAffiliateOffers = (paddle: Paddle): AffiliateOffer[] => {
+  const direct = PADDLE_AFFILIATES[paddle.slug];
+  if (direct?.length) return direct;
+  return BRAND_SHOP_AFFILIATES[paddle.brand] ?? [];
+};
+
+export const hasAffiliate = (paddle: Paddle): boolean => getAffiliateOffers(paddle).length > 0;
 
 // 依品牌取得
 export const getPaddlesByBrand = (brand: PaddleBrand) =>

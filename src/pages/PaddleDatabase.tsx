@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   PADDLE_DATABASE, PADDLE_BRANDS, PADDLE_LEVELS, PADDLE_TAGS, MAX_COMPARE, getPaddleBySlug,
-  getPurchaseChannels, CHANNEL_TYPE_META,
+  getPurchaseChannels, CHANNEL_TYPE_META, getAffiliateOffers, hasAffiliate,
   type Paddle, type PaddleBrand, type PaddleLevel, type PaddleTag, type PurchaseChannelType,
 } from '../data/paddleDatabase';
 import PaddleVisual from '../components/equipment/PaddleVisual';
@@ -49,7 +49,7 @@ const FEATURED: { slug: string; title: string; reason: string }[] = [
   { slug: 'ronbus-r1-16', title: 'CP 值之王', reason: '80 美金打出碳纖旗艦八成功力' },
   { slug: 'honolulu-j2k', title: '熱搜爆款', reason: 'Kevlar 編織面板，海外社群刷屏話題款' },
   { slug: 'selkirk-luxx-control-air-invikta', title: '控球天花板', reason: '20mm 超厚芯，網前 Dink 穩到犯規' },
-  { slug: 'joola-perseus-pro-iv-14mm', title: '火力最強', reason: '力量評分 98 全場最高，殺球一錘定音' },
+  { slug: 'joola-perseus-pro-v-14mm', title: '火力最強', reason: '力量評分 98 全場最高，殺球一錘定音' },
   { slug: 'paddletek-bantam-alw-c', title: '球后同款', reason: 'Anna Leigh Waters 親用，曬拍常客' },
 ];
 
@@ -102,8 +102,8 @@ const SCENARIOS: Scenario[] = [
   },
   {
     id: 'tw-buy', emoji: '🇹🇼', label: '台灣買得到',
-    desc: '台灣有官方或實體通路可購買，不必等海外集運、售後也好處理',
-    filter: p => getPurchaseChannels(p.brand).some(c => c.type !== 'global'),
+    desc: '台灣有官方通路、實體店或蝦皮現貨，不必等海外集運、售後也好處理',
+    filter: p => getPurchaseChannels(p.brand).some(c => c.type !== 'global') || hasAffiliate(p),
     sort: (a, b) => avgRating(b) - avgRating(a),
   },
 ];
@@ -248,6 +248,33 @@ const PaddleCard = ({
         </div>
       </div>
     )}
+
+    {/* 蝦皮現貨（分潤連結） */}
+    {hasAffiliate(p) && (
+      <div className="mt-2.5">
+        <div className="text-[10px] font-bold text-neutral-400 mb-1.5">
+          蝦皮現貨 <span className="font-normal text-neutral-300">· 含分潤連結</span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {getAffiliateOffers(p).map(o => (
+            <a
+              key={o.url}
+              href={o.url}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              title={`${o.shop}${o.variant ? ` · ${o.variant}` : ''}${o.parallelImport ? ' · 水貨／平行輸入，無原廠保固' : ''}`}
+              className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-full border border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100 transition active:scale-95"
+            >
+              🛍️ {o.shop}
+              {o.parallelImport && (
+                <span className="text-[9px] font-semibold text-orange-500/80">水貨</span>
+              )}
+              <span className="opacity-40">↗</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
   </motion.article>
 );
 
@@ -323,7 +350,7 @@ const PaddleDatabasePage = () => {
           {[
             { slug: 'six-zero-ruby', className: 'left-[6%] top-16 w-20 rotate-[-14deg]', delay: 0 },
             { slug: 'elevensix24-jelly-bean', className: 'right-[7%] top-10 w-16 rotate-[12deg]', delay: 1.2 },
-            { slug: 'joola-perseus-pro-iv-16mm', className: 'right-[16%] bottom-2 w-14 rotate-[24deg]', delay: 0.6 },
+            { slug: 'joola-perseus-pro-v-16mm', className: 'right-[16%] bottom-2 w-14 rotate-[24deg]', delay: 0.6 },
           ].map(d => {
             const p = getPaddleBySlug(d.slug);
             if (!p) return null;
@@ -566,6 +593,20 @@ const PaddleDatabasePage = () => {
               <div className="text-neutral-400">找不到符合條件的球拍，試著放寬篩選條件</div>
             </div>
           )}
+        </div>
+
+        {/* 分潤揭露 */}
+        <div className="pb-32 -mt-24">
+          <div className="bg-neutral-50 border border-neutral-100 rounded-2xl p-4 text-[11px] text-neutral-500 leading-relaxed">
+            <strong className="text-neutral-700">關於購買連結：</strong>
+            標示「蝦皮現貨」的連結為本站的蝦皮分潤（聯盟行銷）連結，你透過它下單時本站會獲得少量回饋，
+            <strong className="text-neutral-700">你的售價完全不變</strong>，這是本站持續營運與更新資料的來源之一。
+            標示「台灣官方」「台灣通路」「品牌官網」的連結則<strong className="text-neutral-700">不含分潤</strong>，
+            單純提供正版購買參考。
+            <br />
+            本站球拍推薦與評分依規格與公開評測撰寫，<strong className="text-neutral-700">不因是否有分潤而調整排序</strong>。
+            標示「水貨」者為平行輸入，通常無台灣原廠保固，購買前請向賣家確認保固與退換貨條件。
+          </div>
         </div>
       </section>
 

@@ -460,6 +460,32 @@ const pageSEO = {
             ]
         }
     },
+    aepl: {
+        title: 'AEPL 職業聯賽專區｜台灣匹克球職業聯盟 球隊・賽程・戰力分析',
+        description: '台灣第一個匹克球職業聯賽 AEPL 完整追蹤：6 支企業隊戰力卡、8 站巡迴賽程、賽制解說、選手焦點與賽前情報分析。桃園雲豹、台南旭日雷霆、Ahhh 等隊伍介紹，總獎金百萬的創始賽季一站掌握。',
+        keywords: 'AEPL,亞洲菁英匹克球聯盟,台灣匹克球職業聯賽,匹克球職業,桃園雲豹,台南旭日雷霆,Ahhh,蘆沐,富瑞特科技,鍾振煒,蔡萱,邱子恩,林志穎,匹克球隊,職業匹克球選手,台中火車站 匹克球,高雄駁二 匹克球',
+        structuredData: {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "SportsOrganization",
+                    "name": "AEPL 亞洲菁英匹克球聯盟",
+                    "alternateName": "Asia Elite Pickleball League",
+                    "sport": "Pickleball",
+                    "foundingDate": "2026-05-22",
+                    "areaServed": { "@type": "Country", "name": "Taiwan" },
+                    "url": "https://picklemastertw.site/aepl"
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 2, "name": "AEPL 職業聯賽", "item": "https://picklemastertw.site/aepl" }
+                    ]
+                }
+            ]
+        }
+    },
     tournaments: {
         title: '2026 台灣匹克球賽事總覽 | CTPF 全年認證賽、國際積分賽',
         description: '完整掌握 2026 台灣匹克球 23 場賽事：AEPL 職業聯賽、TCI APP ASIA TOUR 台北站、金碧盃、南華盃、臺北公開賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
@@ -1104,6 +1130,19 @@ async function generateStaticPages() {
         console.log('Prerendering index/hub pages...');
         const INDEX_PAGES = [
             {
+                route: 'aepl', h1: 'AEPL 職業聯賽專區', crumb: 'AEPL 職業聯賽',
+                intro: '台灣第一個匹克球職業聯賽：AEPL 亞洲菁英匹克球聯盟 2026 創始賽季（8-11 月），6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元，11 月總決賽，藝人林志穎擔任賽事大使。開幕站 8/29-30 於台中火車站空中廊道，第二站高雄駁二特區。',
+                items: [
+                    { href: '/aepl', label: '台南旭日雷霆', sub: '尚騰汽車集團×寶嘉聯合共同成立，領隊吳睿弘、隊長蔡萱（20 年網球底子轉項）' },
+                    { href: '/aepl', label: '桃園雲豹', sub: 'TPBL 台啤永豐雲豹體系，隊長鍾振煒（26 歲）、15 歲雙棲小將邱子恩；台啤建國廠國際標準場地年底落成' },
+                    { href: '/aepl', label: 'Ahhh', sub: '台北 Ahhh Social Pickleball Hub 場館品牌跨足職業球隊' },
+                    { href: '/aepl', label: '蘆沐', sub: '創始賽季首發公布球隊之一' },
+                    { href: '/aepl', label: '富瑞特科技', sub: '科技產業企業隊' },
+                    { href: '/aepl', label: '第六隊（台中）', sub: '隊名待官方公布' },
+                ],
+                foot: '<a href="/articles/taiwan-pro-pickleball-2026" style="color:#0d9488;">深度專欄：台灣匹克球職業元年全解析</a>　·　<a href="/tournaments" style="color:#0d9488;">2026 賽事總覽</a>',
+            },
+            {
                 route: 'techniques', h1: '匹克球技巧百科', crumb: '技巧百科',
                 intro: '從握拍、發球到 Dink、第三球下切與進階戰術，完整收錄匹克球各項技巧的步驟拆解與練習要點。',
                 items: TECHNIQUE_SLUGS.map(t => ({ href: `/techniques/${t.slug}`, label: `${t.name}（${t.nameEn}）`, sub: t.tagline })),
@@ -1144,6 +1183,12 @@ async function generateStaticPages() {
                 crumbs: [{ name: '首頁', href: '/' }, { name: page.crumb }],
                 h1: page.h1, bodyHtml: body,
             }));
+            if (page.route === 'aepl') {
+                content = applyOg(content, 'og/aepl.png', {
+                    title: 'AEPL 職業聯賽專區', type: 'player', badge: '職業聯賽',
+                    subtitle: '6 隊戰力卡 · 8 站賽程 · 賽前情報分析',
+                });
+            }
             fs.writeFileSync(filePath, content);
             indexPageCount++;
         }

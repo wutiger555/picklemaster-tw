@@ -20,6 +20,9 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 - 縣市球場攻略頁（各含場地清單、免費/室內/24H 統計與在地 FAQ）：
   - [台北](https://picklemastertw.site/courts/taipei)、[新北](https://picklemastertw.site/courts/new-taipei)、[基隆](https://picklemastertw.site/courts/keelung)、[桃園](https://picklemastertw.site/courts/taoyuan)、[新竹縣](https://picklemastertw.site/courts/hsinchu)、[新竹市](https://picklemastertw.site/courts/hsinchu-city)、[台中](https://picklemastertw.site/courts/taichung)、[彰化](https://picklemastertw.site/courts/changhua)、[南投](https://picklemastertw.site/courts/nantou)、[雲林](https://picklemastertw.site/courts/yunlin)、[嘉義市](https://picklemastertw.site/courts/chiayi)、[嘉義縣](https://picklemastertw.site/courts/chiayi-county)、[台南](https://picklemastertw.site/courts/tainan)、[高雄](https://picklemastertw.site/courts/kaohsiung)、[屏東](https://picklemastertw.site/courts/pingtung)、[宜蘭](https://picklemastertw.site/courts/yilan)、[花蓮](https://picklemastertw.site/courts/hualien)
 
+### AEPL 職業聯賽專區
+- [AEPL 職業聯賽專區](https://picklemastertw.site/aepl): 台灣第一個匹克球職業聯賽完整追蹤。6 支企業隊（台南旭日雷霆、桃園雲豹、Ahhh、蘆沐、富瑞特科技、台中第六隊）戰力卡、全台 8 站巡迴賽程（開幕站台中火車站、第二站高雄駁二）、賽制解說（每隊 6-10 人、每站登錄 4 人、總獎金 100 萬）、選手焦點（鍾振煒、蔡萱、邱子恩）與賽前情報分析。
+
 ### 賽事資訊
 - [2026 賽事總覽](https://picklemastertw.site/tournaments): 涵蓋 CTPF 全年認證賽事、亞洲區 APG、PPA Asia 等國際積分賽。
   - 2026 臺灣盃 (1/30-2/1, 宜蘭大學) — 已完賽

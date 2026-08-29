@@ -37,6 +37,7 @@ export const ROUTES = {
   ABOUT: '/about',
   FAQ: '/faq',
   TOURNAMENTS: '/tournaments',
+  AEPL: '/aepl',
   GLOSSARY: '/glossary',
   RATINGS: '/ratings',
   ARTICLES: '/articles',

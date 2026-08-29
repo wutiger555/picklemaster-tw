@@ -175,6 +175,29 @@ const Home = () => {
           <NewCourtsTicker />
         </Suspense>
 
+        {/* AEPL 職業聯賽聚光橫幅 */}
+        <section className="container mx-auto px-4 pt-10">
+          <Link
+            to="/aepl"
+            className="relative block overflow-hidden rounded-2xl bg-gradient-to-r from-neutral-900 via-neutral-800 to-teal-900 p-5 md:p-6 text-white shadow-xl border border-neutral-700/60 hover:border-teal-400/50 hover:-translate-y-0.5 transition-all max-w-5xl mx-auto"
+          >
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal-400/15 rounded-full blur-2xl pointer-events-none" />
+            <div className="flex items-center justify-between gap-4 relative z-10">
+              <div className="flex items-center gap-4 min-w-0">
+                <span className="text-4xl shrink-0">🏆</span>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="font-black text-lg md:text-xl">AEPL 職業聯賽專區</span>
+                    <span className="px-2 py-0.5 rounded-full bg-red-500 text-[10px] font-black animate-pulse">● 賽季進行中</span>
+                  </div>
+                  <p className="text-sm text-neutral-300 truncate">台灣職業元年：6 隊戰力卡・8 站賽程・賽前情報分析</p>
+                </div>
+              </div>
+              <svg className="w-6 h-6 text-teal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5-5 5M6 12h12" /></svg>
+            </div>
+          </Link>
+        </section>
+
         {/* 新聞區塊 - 玻璃態 */}
         <LazySection className="bg-gradient-to-b from-white to-neutral-50/30 pt-8">
           <NewsSection />

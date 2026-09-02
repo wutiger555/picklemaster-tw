@@ -68,6 +68,14 @@ export interface Court {
     rent?: string; // 場地租借狀態
     verified: string; // 本站對照該筆資料的日期
     note?: string; // 資料適用範圍的補充說明
+    address?: string; // 官方登記地址（與本站 location.address 並存供對照）
+    gym_id?: number; // iPlay 場館編號
+    page?: string; // iPlay 場館頁網址
+    transit?: string; // 大眾運輸抵達方式（含步行分鐘數）
+    indoor_outdoor?: string; // 室內／室外／半室內
+    lighting?: boolean; // 夜間照明
+    air_conditioning?: boolean; // 空調
+    open_time?: string; // 官方登記開放時間
   };
 }
 

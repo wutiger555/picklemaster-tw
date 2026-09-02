@@ -1438,7 +1438,11 @@ async function generateStaticPages() {
           <p style="font-size:15px;margin:0;">${esc(court.reviews)}</p>
         </section>` : ''}
         <section style="margin-bottom:24px;">
-          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">交通與導航</h2>
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">怎麼去</h2>
+          ${court.iplay && court.iplay.transit ? `<p style="font-size:15px;margin:0 0 8px;"><strong>大眾運輸：</strong>${esc(court.iplay.transit)}</p>` : ''}
+          ${court.iplay && court.iplay.park ? `<p style="font-size:15px;margin:0 0 8px;"><strong>停車：</strong>${esc(court.iplay.park)}</p>` : ''}
+          ${court.iplay && (court.iplay.indoor_outdoor || court.iplay.lighting || court.iplay.air_conditioning) ? `<p style="font-size:15px;margin:0 0 8px;"><strong>現場條件：</strong>${[court.iplay.indoor_outdoor, court.iplay.lighting ? '夜間照明' : '', court.iplay.air_conditioning ? '有空調' : ''].filter(Boolean).map(esc).join('、')}</p>` : ''}
+          ${court.iplay && court.iplay.tel ? `<p style="font-size:15px;margin:0 0 8px;"><strong>場館電話：</strong>${esc(court.iplay.tel)}</p>` : ''}
           <p style="font-size:15px;margin:0;"><a href="${navUrl}" style="color:#0d9488;">開啟 Google 地圖導航前往 ${esc(court.name)}</a></p>
         </section>
         <section style="margin-bottom:24px;">
@@ -1486,6 +1490,8 @@ async function generateStaticPages() {
                             ...(court.contact ? { "telephone": court.contact } : {}),
                             ...(court.facilities && court.facilities.length ? { "amenityFeature": court.facilities.map(f => ({ "@type": "LocationFeatureSpecification", "name": f, "value": true })) } : {}),
                             ...(court.last_updated ? { "dateModified": court.last_updated } : {}),
+                            ...(court.iplay && court.iplay.transit ? { "publicTransportInformation": court.iplay.transit } : {}),
+                            ...(court.iplay && court.iplay.website ? { "sameAs": court.iplay.website } : {}),
                         },
                         { "@type": "BreadcrumbList", "itemListElement": crumbs },
                         { "@type": "FAQPage", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) },

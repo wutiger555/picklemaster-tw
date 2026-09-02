@@ -290,7 +290,7 @@ const CourtDetail = () => {
                         <span className="text-neutral-400">
                           場館位置與聯絡資料部分來源：
                           <a
-                            href="https://iplay.sports.gov.tw/"
+                            href={court.iplay.page || 'https://iplay.sports.gov.tw/'}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="underline hover:text-emerald-600"
@@ -332,6 +332,96 @@ const CourtDetail = () => {
                       );
                     })}
                   </div>
+                </section>
+              )}
+
+              {/* 怎麼去：大眾運輸與現場條件（資料來源 iPlay，多數平台沒有這層） */}
+              {court.iplay && (court.iplay.transit || court.iplay.park || court.iplay.indoor_outdoor) && (
+                <section className="bg-white rounded-2xl border border-neutral-100 p-6">
+                  <h2 className="text-xl font-bold text-neutral-900 mb-1">怎麼去</h2>
+                  <p className="text-xs text-neutral-500 mb-4">
+                    官方登記的抵達方式與現場條件，實際狀況請以場館公告為準
+                  </p>
+
+                  {(court.iplay.indoor_outdoor || court.iplay.lighting || court.iplay.air_conditioning) && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {court.iplay.indoor_outdoor && (
+                        <span className="px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-semibold">
+                          {court.iplay.indoor_outdoor}
+                        </span>
+                      )}
+                      {court.iplay.lighting && (
+                        <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-semibold">
+                          💡 夜間照明
+                        </span>
+                      )}
+                      {court.iplay.air_conditioning && (
+                        <span className="px-2.5 py-1 rounded-full bg-sky-50 text-sky-800 text-xs font-semibold">
+                          ❄️ 有空調
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="space-y-3 text-sm">
+                    {court.iplay.transit && (
+                      <div className="flex gap-3">
+                        <span className="shrink-0 text-neutral-400 w-16">大眾運輸</span>
+                        <p className="text-neutral-800 leading-relaxed">{court.iplay.transit}</p>
+                      </div>
+                    )}
+                    {court.iplay.park && (
+                      <div className="flex gap-3">
+                        <span className="shrink-0 text-neutral-400 w-16">停車</span>
+                        <p className="text-neutral-800">{court.iplay.park}</p>
+                      </div>
+                    )}
+                    {court.iplay.address && court.iplay.address !== court.location.address && (
+                      <div className="flex gap-3">
+                        <span className="shrink-0 text-neutral-400 w-16">官方地址</span>
+                        <p className="text-neutral-800">{court.iplay.address}</p>
+                      </div>
+                    )}
+                    {court.iplay.open_time && (
+                      <div className="flex gap-3">
+                        <span className="shrink-0 text-neutral-400 w-16">官方時段</span>
+                        <p className="text-neutral-800">{court.iplay.open_time}</p>
+                      </div>
+                    )}
+                    {court.iplay.operator && (
+                      <div className="flex gap-3">
+                        <span className="shrink-0 text-neutral-400 w-16">營運單位</span>
+                        <p className="text-neutral-800">{court.iplay.operator}</p>
+                      </div>
+                    )}
+                    {court.iplay.tel && (
+                      <div className="flex gap-3">
+                        <span className="shrink-0 text-neutral-400 w-16">場館電話</span>
+                        <a href={`tel:${court.iplay.tel.replace(/[^0-9+#]/g, '')}`} className="text-emerald-700 font-semibold hover:text-emerald-800">
+                          {court.iplay.tel}
+                        </a>
+                      </div>
+                    )}
+                    {court.iplay.website && (
+                      <div className="flex gap-3">
+                        <span className="shrink-0 text-neutral-400 w-16">官方網站</span>
+                        <a
+                          href={court.iplay.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-emerald-700 font-semibold hover:text-emerald-800 break-all"
+                        >
+                          {court.iplay.website}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {court.iplay.note && (
+                    <p className="mt-4 pt-3 border-t border-neutral-100 text-xs text-amber-800 bg-amber-50 -mx-2 px-3 py-2 rounded-lg">
+                      ⚠️ {court.iplay.note}
+                    </p>
+                  )}
                 </section>
               )}
 

@@ -695,7 +695,7 @@ const Courts = () => {
             >
               <div className={mapExpanded
                 ? 'w-full h-full bg-white'
-                : 'bg-white rounded-2xl overflow-hidden shadow-lg shadow-neutral-900/5 border border-neutral-200/80 h-[55vh] min-h-[380px] max-h-[560px] supports-[height:1dvh]:h-[55dvh] lg:h-[calc(100vh-210px)] lg:supports-[height:1dvh]:h-[calc(100dvh-210px)] lg:min-h-[480px] lg:max-h-none'}
+                : 'bg-white rounded-2xl overflow-hidden shadow-lg shadow-neutral-900/5 border border-neutral-200/80 h-[55vh] min-h-[380px] max-h-[560px] supports-[height:1svh]:h-[55svh] lg:h-[calc(100vh-210px)] lg:supports-[height:1svh]:h-[calc(100svh-210px)] lg:min-h-[480px] lg:max-h-none'}
               >
                 <CourtMap
                   courts={filteredCourts}

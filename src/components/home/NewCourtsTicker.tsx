@@ -41,7 +41,9 @@ const NewCourtsTicker = () => {
       });
   }, []);
 
-  if (loading || newCourts.length === 0) return null;
+  // 載入中先佔住 48px（與跑馬燈同高），避免資料到位時整頁往下推
+  if (loading) return <div className="h-12 bg-neutral-900 border-y border-white/10" aria-hidden />;
+  if (newCourts.length === 0) return null;
 
   // Duplicate the array to ensure smooth infinite scroll
   // We use 4 copies to ensure we have enough content to scroll seamlessly even on wide screens

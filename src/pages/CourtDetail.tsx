@@ -335,6 +335,47 @@ const CourtDetail = () => {
                 </section>
               )}
 
+              {/* 場地實景（依 iPlay 開放授權重製，逐張人工檢視過內容與肖像） */}
+              {court.iplay?.photos && court.iplay.photos.length > 0 && (
+                <section className="bg-white rounded-2xl border border-neutral-100 p-6">
+                  <h2 className="text-xl font-bold text-neutral-900 mb-1">場地實景</h2>
+                  <p className="text-xs text-neutral-500 mb-4">
+                    由官方場館登記資料取得，照片拍攝時間見各圖說明
+                  </p>
+                  <div className={`grid gap-3 ${court.iplay.photos.length > 1 ? 'sm:grid-cols-2' : ''}`}>
+                    {court.iplay.photos.map(ph => (
+                      <figure key={ph.src} className="m-0">
+                        <img
+                          src={ph.src}
+                          alt={`${court.name}－${ph.caption}（${ph.taken}）`}
+                          width={ph.width}
+                          height={ph.height}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-auto rounded-xl border border-neutral-100 bg-neutral-50"
+                        />
+                        <figcaption className="mt-1.5 text-xs text-neutral-500">
+                          {ph.caption}
+                          <span className="text-neutral-400">・{ph.taken} 拍攝</span>
+                        </figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                  <p className="mt-4 pt-3 border-t border-neutral-100 text-xs text-neutral-400">
+                    照片來源：
+                    <a
+                      href={court.iplay.page || 'https://iplay.sports.gov.tw/'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-emerald-600"
+                    >
+                      運動部全國運動場館資訊網 iPlay
+                    </a>
+                    ，依政府網站資料開放宣告使用。照片為場館登記時所攝，現場狀況可能已改變。
+                  </p>
+                </section>
+              )}
+
               {/* 怎麼去：大眾運輸與現場條件（資料來源 iPlay，多數平台沒有這層） */}
               {court.iplay && (court.iplay.transit || court.iplay.park || court.iplay.indoor_outdoor) && (
                 <section className="bg-white rounded-2xl border border-neutral-100 p-6">

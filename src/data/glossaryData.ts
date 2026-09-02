@@ -646,7 +646,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     term: 'Ben Johns',
     termEn: 'Ben Johns',
     category: '賽制',
-    definition: '當代匹克球世界第一，男子單打、雙打、混雙三冠王。DUPR 8.0 滿分，使用 JOOLA Perseus Pro IV。',
+    definition: '當代匹克球世界第一，男子單打、雙打、混雙三冠王。DUPR 8.0 滿分，使用 JOOLA Perseus Pro V。',
   },
   {
     id: 'anna-leigh-waters',

@@ -1,6 +1,6 @@
 # Picklemaster Taiwan | 匹克大師台灣
 
-> 台灣最完整的匹克球 (Pickleball) 學習平台與權威資訊中心。提供全台 125+ 球場地圖、2026 年賽事總覽、3D 互動規則教學、DUPR 評級指南、中英術語字典、裝備選購建議與頂尖選手資料。
+> 台灣最完整的匹克球 (Pickleball) 學習平台與權威資訊中心。提供全台 130+ 球場地圖（含大眾運輸步行分鐘數、夜間照明與空調標記、實景照片、逐座資料查證日）、2026 年賽事總覽與 AEPL 職業聯賽追蹤、3D 互動規則教學、DUPR 評級指南、中英術語字典、球拍資料庫與頂尖選手資料。
 
 ## 關於本站 / About
 
@@ -16,7 +16,7 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 ## 核心頁面 / Core Pages
 
 ### 球場資訊
-- [全台匹克球場地圖](https://picklemastertw.com/courts): 收錄全台 17 縣市（台北、新北、基隆、桃園、新竹、台中、彰化、南投、雲林、嘉義、台南、高雄、屏東、宜蘭、花蓮）125+ 匹克球場，支援 GPS 定位、類型與收費篩選。
+- [全台匹克球場地圖](https://picklemastertw.com/courts): 收錄全台 17 縣市（台北、新北、基隆、桃園、新竹、台中、彰化、南投、雲林、嘉義、台南、高雄、屏東、宜蘭、花蓮）130+ 匹克球場，支援 GPS 定位、類型與收費篩選。
 - 縣市球場攻略頁（各含場地清單、免費/室內/24H 統計與在地 FAQ）：
   - [台北](https://picklemastertw.com/courts/taipei)、[新北](https://picklemastertw.com/courts/new-taipei)、[基隆](https://picklemastertw.com/courts/keelung)、[桃園](https://picklemastertw.com/courts/taoyuan)、[新竹縣](https://picklemastertw.com/courts/hsinchu)、[新竹市](https://picklemastertw.com/courts/hsinchu-city)、[台中](https://picklemastertw.com/courts/taichung)、[彰化](https://picklemastertw.com/courts/changhua)、[南投](https://picklemastertw.com/courts/nantou)、[雲林](https://picklemastertw.com/courts/yunlin)、[嘉義市](https://picklemastertw.com/courts/chiayi)、[嘉義縣](https://picklemastertw.com/courts/chiayi-county)、[台南](https://picklemastertw.com/courts/tainan)、[高雄](https://picklemastertw.com/courts/kaohsiung)、[屏東](https://picklemastertw.com/courts/pingtung)、[宜蘭](https://picklemastertw.com/courts/yilan)、[花蓮](https://picklemastertw.com/courts/hualien)
 
@@ -108,7 +108,26 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 
 ### 球場個別頁面
 每座球場都有獨立詳情頁：https://picklemastertw.com/courts/court-{id}
-含地址、開放時間、費用、設施、Google 導航連結、即時天氣（戶外球場）。
+含地址、開放時間、費用、設施、Google 導航連結、即時天氣（戶外球場），
+以及每頁標示的「資料最後查證日」與資訊回報入口。
+
+47 座公有場地另有下列深度資料，來源為運動部「全國運動場館資訊網 iPlay」
+（依政府網站資料開放宣告使用，各頁均標示出處與該場館的 iPlay 連結）：
+
+- **大眾運輸抵達方式（42 座）**：含捷運／公車路線與實際步行分鐘數。
+  例：台北市信義運動中心「捷運信義象山線 101 世貿大樓站三號出口，步行約 3~5 分鐘」；
+  台北市紫陽公園「捷運文德站，下車後步行約 1 分鐘」；
+  新北市中和國民運動中心「捷運景安站轉乘公車橘 5，中和國民運動中心站下車步行約 5 分鐘」。
+- **現場條件**：室內／室外／半室內、夜間照明（38 座）、空調（27 座）。
+  這是判斷「夏天能不能打」「下雨天能不能打」的關鍵。
+- **場地實景照片（25 座、39 張）**：取自官方場館登記資料，每張標示拍攝年月，
+  已逐張人工檢視內容正確性與肖像問題。
+- **官方登記資料**：場館電話含分機（38 座）、官方網站、營運單位、隸屬機關、
+  停車場種類、開放條件（免費開放／付費開放／不對外開放）、場地租借狀態、官方登記地址。
+
+座標精確度：2026 年 9 月已比對官方場館登記座標，修正 47 座球場位置，
+其中 33 座原本誤差超過 500 公尺、17 座超過 1 公里（最大 2,430 公尺）。
+原始座標多為小數 2-3 位的估值，改採官方填報的 8 位小數座標。
 
 ### 裝備指南
 - [球拍選購](https://picklemastertw.com/equipment): 材質比較、重量挑選、品牌分析，含智能推薦系統。
@@ -124,6 +143,15 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 - CTPF 認證教練：1,400+ 人
 - 全台已知球場：本站收錄 131 座（17 縣市，含共用場地全台估計 200+ 處）
 - 2026 年度全國賽事：20+ 場
+
+### 本站球場資料品質（2026-09-02 查證）
+- 131 座球場、17 縣市；每座球場頁標示資料最後查證日
+- 47 座已與運動部 iPlay 官方場館登記資料對照
+- 42 座提供大眾運輸抵達方式與步行分鐘數
+- 33 座提供線上預約或 LINE／IG 預約管道
+- 25 座提供收費分時級距（平日／假日／尖峰／離峰／租借／會員）
+- 25 座提供場地實景照片
+- 47 座座標經官方資料修正（17 座原本誤差超過 1 公里）
 
 ## 匹克球基礎知識 / Core Facts
 

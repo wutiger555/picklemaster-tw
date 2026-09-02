@@ -8,7 +8,7 @@ const QuickNav = () => {
   const quickLinks = [
     {
       title: '🏟️ 找球場',
-      description: '125+ 球場地圖',
+      description: '130+ 球場地圖',
       path: ROUTES.COURTS,
       color: 'from-purple-500 to-indigo-500',
       bgColor: 'bg-purple-50',

@@ -1437,6 +1437,12 @@ async function generateStaticPages() {
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">場地說明</h2>
           <p style="font-size:15px;margin:0;">${esc(court.reviews)}</p>
         </section>` : ''}
+        ${court.iplay && court.iplay.photos && court.iplay.photos.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">場地實景</h2>
+          ${court.iplay.photos.map(ph => `<figure style="margin:0 0 12px;"><img src="${esc(ph.src)}" alt="${esc(court.name)}－${esc(ph.caption)}（${esc(ph.taken)}）" width="${ph.width}" height="${ph.height}" loading="lazy" style="max-width:100%;height:auto;border-radius:10px;" /><figcaption style="font-size:13px;color:#6b7280;margin-top:4px;">${esc(ph.caption)}・${esc(ph.taken)} 拍攝</figcaption></figure>`).join('')}
+          <p style="font-size:13px;color:#6b7280;margin:0;">照片來源：<a href="${esc(court.iplay.page || 'https://iplay.sports.gov.tw/')}" style="color:#0d9488;">運動部全國運動場館資訊網 iPlay</a>，依政府網站資料開放宣告使用。</p>
+        </section>` : ''}
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">怎麼去</h2>
           ${court.iplay && court.iplay.transit ? `<p style="font-size:15px;margin:0 0 8px;"><strong>大眾運輸：</strong>${esc(court.iplay.transit)}</p>` : ''}
@@ -1492,6 +1498,7 @@ async function generateStaticPages() {
                             ...(court.last_updated ? { "dateModified": court.last_updated } : {}),
                             ...(court.iplay && court.iplay.transit ? { "publicTransportInformation": court.iplay.transit } : {}),
                             ...(court.iplay && court.iplay.website ? { "sameAs": court.iplay.website } : {}),
+                            ...(court.iplay && court.iplay.photos && court.iplay.photos.length ? { "image": court.iplay.photos.map(ph => BASE_URL + ph.src) } : {}),
                         },
                         { "@type": "BreadcrumbList", "itemListElement": crumbs },
                         { "@type": "FAQPage", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) },

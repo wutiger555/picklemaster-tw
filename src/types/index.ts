@@ -76,6 +76,13 @@ export interface Court {
     lighting?: boolean; // 夜間照明
     air_conditioning?: boolean; // 空調
     open_time?: string; // 官方登記開放時間
+    photos?: {
+      src: string; // 本站鏡像路徑（依授權重製，須標示出處）
+      caption: string; // iPlay 登記的設施名稱
+      taken: string; // 照片上傳年月，YYYY-MM
+      width: number;
+      height: number;
+    }[];
   };
 }
 

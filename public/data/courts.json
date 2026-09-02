@@ -291,7 +291,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/7730"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/7730",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-7-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 450,
+            "height": 600
+          },
+          {
+            "src": "/images/courts/iplay/iplay-7-2.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 450,
+            "height": 600
+          }
+        ]
       }
     },
     {
@@ -347,7 +363,16 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/8042"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/8042",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-8-1.jpg",
+            "caption": "羽球場",
+            "taken": "2025-01",
+            "width": 600,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -388,7 +413,16 @@
         "transit": "公車：搭紅30、市民小巴1、小18、小18區、小19、255、255區、268、300、304、557、620、645、645副、680、681、683、815、957 至雙溪公園",
         "indoor_outdoor": "室外設施",
         "lighting": true,
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15787"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15787",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-9-1.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2024-12",
+            "width": 450,
+            "height": 600
+          }
+        ]
       }
     },
     {
@@ -639,7 +673,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/8100"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/8100",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-15-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 600,
+            "height": 450
+          },
+          {
+            "src": "/images/courts/iplay/iplay-15-2.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 600,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -693,7 +743,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/14619"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/14619",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-16-1.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2025-01",
+            "width": 599,
+            "height": 450
+          },
+          {
+            "src": "/images/courts/iplay/iplay-16-2.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2025-01",
+            "width": 599,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -739,7 +805,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "週一至週五 15:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/20424"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/20424",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-17-1.jpg",
+            "caption": "羽球場",
+            "taken": "2025-01",
+            "width": 600,
+            "height": 450
+          },
+          {
+            "src": "/images/courts/iplay/iplay-17-2.jpg",
+            "caption": "羽球場",
+            "taken": "2025-01",
+            "width": 599,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -789,7 +871,16 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/10274"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/10274",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-18-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 450,
+            "height": 600
+          }
+        ]
       }
     },
     {
@@ -840,7 +931,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/14297"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/14297",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-19-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 599,
+            "height": 450
+          },
+          {
+            "src": "/images/courts/iplay/iplay-19-2.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 599,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -1090,7 +1197,23 @@
         "transit": "公車 38、38（區間車）、532、601",
         "indoor_outdoor": "室外設施",
         "lighting": true,
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/11926"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/11926",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-26-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 599,
+            "height": 337
+          },
+          {
+            "src": "/images/courts/iplay/iplay-26-2.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 599,
+            "height": 337
+          }
+        ]
       }
     },
     {
@@ -1263,7 +1386,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/25797"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/25797",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-31-1.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2025-03",
+            "width": 599,
+            "height": 450
+          },
+          {
+            "src": "/images/courts/iplay/iplay-31-2.jpg",
+            "caption": "網球場館",
+            "taken": "2026-07",
+            "width": 599,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -1323,7 +1462,23 @@
         "gym_id": 15691,
         "indoor_outdoor": "室外設施",
         "lighting": true,
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15691"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15691",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-33-1.jpg",
+            "caption": "網球場(館)",
+            "taken": "2024-12",
+            "width": 598,
+            "height": 336
+          },
+          {
+            "src": "/images/courts/iplay/iplay-33-2.jpg",
+            "caption": "網球場(館)",
+            "taken": "2024-12",
+            "width": 598,
+            "height": 336
+          }
+        ]
       }
     },
     {
@@ -1537,7 +1692,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/9686"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/9686",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-36-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 600,
+            "height": 450
+          },
+          {
+            "src": "/images/courts/iplay/iplay-36-2.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-01",
+            "width": 600,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -1619,7 +1790,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/26199"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/26199",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-38-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2024-12",
+            "width": 599,
+            "height": 294
+          },
+          {
+            "src": "/images/courts/iplay/iplay-38-2.jpg",
+            "caption": "羽球場館",
+            "taken": "2024-12",
+            "width": 599,
+            "height": 579
+          }
+        ]
       }
     },
     {
@@ -1702,7 +1889,16 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23686"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23686",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-40-1.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2025-02",
+            "width": 599,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -1710,8 +1906,8 @@
       "name": "台南市哈赫拿爾匹克球場",
       "location": {
         "address": "台南市南區體育路90號",
-        "lat": 22.97,
-        "lng": 120.19,
+        "lat": 22.975871,
+        "lng": 120.205414,
         "city": "台南市",
         "district": "南區"
       },
@@ -1730,8 +1926,12 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "台南專用匹克球場，會員制經營"
+      "last_updated": "2026-09-02",
+      "reviews": "台南專用匹克球場，會員制經營",
+      "iplay": {
+        "verified": "2026-09-02",
+        "note": "座標依 OpenStreetMap「哈赫拿爾森林」與 iPlay 永華體育園區（體育路）交叉定位，兩者相距約 400 公尺；園區型場地實際球場位置可能略有差異"
+      }
     },
     {
       "id": 42,
@@ -1805,7 +2005,23 @@
         "indoor_outdoor": "半室內設施（有頂蓋但外牆未密封）",
         "lighting": true,
         "open_time": "06:00-21:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/11902"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/11902",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-43-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-02",
+            "width": 450,
+            "height": 600
+          },
+          {
+            "src": "/images/courts/iplay/iplay-43-2.jpg",
+            "caption": "羽球場館",
+            "taken": "2025-02",
+            "width": 599,
+            "height": 337
+          }
+        ]
       }
     },
     {
@@ -1813,8 +2029,8 @@
       "name": "屏東歸來匹克球場",
       "location": {
         "address": "屏東縣屏東市歸仁路63巷70號",
-        "lat": 22.65,
-        "lng": 120.5,
+        "lat": 22.653745,
+        "lng": 120.499987,
         "city": "屏東縣",
         "district": "屏東市"
       },
@@ -1832,8 +2048,12 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "屏東歸來社區熱門球場"
+      "last_updated": "2026-09-02",
+      "reviews": "屏東歸來社區熱門球場",
+      "iplay": {
+        "verified": "2026-09-02",
+        "note": "座標依 iPlay「華洲工家田徑場」（屏東市歸仁路63巷99號）定位——與本場地同一巷弄相鄰門牌"
+      }
     },
     {
       "id": 45,
@@ -1931,7 +2151,23 @@
         "transit": "捷運松山新店線景美站下車後步行約10分鐘。公車905於中正環河路口站下車後步行約19分鐘。",
         "indoor_outdoor": "室外設施",
         "lighting": true,
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23199"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23199",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-47-1.jpg",
+            "caption": "羽球場館",
+            "taken": "2024-12",
+            "width": 598,
+            "height": 336
+          },
+          {
+            "src": "/images/courts/iplay/iplay-47-2.jpg",
+            "caption": "羽球場館",
+            "taken": "2024-12",
+            "width": 598,
+            "height": 336
+          }
+        ]
       }
     },
     {
@@ -2098,7 +2334,23 @@
         "transit": "捷運芝山站轉乘601號公車，或捷運劍潭站轉乘220、267等公車至天母站下車，轉入巷內5分鐘內即可抵達。",
         "indoor_outdoor": "室外設施",
         "lighting": true,
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23053"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23053",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-51-1.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2024-12",
+            "width": 600,
+            "height": 450
+          },
+          {
+            "src": "/images/courts/iplay/iplay-51-2.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2024-12",
+            "width": 600,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -2863,7 +3115,16 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16742"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16742",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-74-1.jpg",
+            "caption": "綜合球場",
+            "taken": "2025-01",
+            "width": 600,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -3136,7 +3397,23 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/9627"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/9627",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-81-1.jpg",
+            "caption": "羽球場",
+            "taken": "2025-08",
+            "width": 600,
+            "height": 450
+          },
+          {
+            "src": "/images/courts/iplay/iplay-81-2.jpg",
+            "caption": "羽球場",
+            "taken": "2025-08",
+            "width": 599,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -3187,7 +3464,16 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/10272"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/10272",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-82-1.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2025-01",
+            "width": 600,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -3263,7 +3549,16 @@
         "indoor_outdoor": "室外設施",
         "lighting": true,
         "open_time": "08:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23157"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23157",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-84-1.jpg",
+            "caption": "羽球場(館)",
+            "taken": "2024-12",
+            "width": 600,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -3301,7 +3596,16 @@
         "transit": "捷運文德站，下車後步行約1分鐘",
         "indoor_outdoor": "室外設施",
         "lighting": true,
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15630"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15630",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-85-1.jpg",
+            "caption": "紫陽綠地羽球場",
+            "taken": "2024-01",
+            "width": 599,
+            "height": 395
+          }
+        ]
       }
     },
     {
@@ -3409,7 +3713,16 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/24234"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/24234",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-87-1.jpg",
+            "caption": "多功能球場",
+            "taken": "2025-02",
+            "width": 598,
+            "height": 337
+          }
+        ]
       }
     },
     {
@@ -3563,7 +3876,16 @@
         "lighting": true,
         "air_conditioning": true,
         "open_time": "06:00-22:00",
-        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16700"
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16700",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-90-1.jpg",
+            "caption": "羽球場",
+            "taken": "2025-02",
+            "width": 599,
+            "height": 450
+          }
+        ]
       }
     },
     {
@@ -5074,7 +5396,16 @@
         "lighting": true,
         "air_conditioning": true,
         "verified": "2026-09-02",
-        "note": "iPlay 場館簡介仍記載「預計本年度裝修後開放」，實際已於 2026 年 7 月啟用；場地面數以 iPlay 登記的 1 面計，尚待現場確認"
+        "note": "iPlay 場館簡介仍記載「預計本年度裝修後開放」，實際已於 2026 年 7 月啟用；場地面數以 iPlay 登記的 1 面計，尚待現場確認",
+        "photos": [
+          {
+            "src": "/images/courts/iplay/iplay-133-1.jpg",
+            "caption": "匹克球場",
+            "taken": "2026-06",
+            "width": 598,
+            "height": 337
+          }
+        ]
       }
     }
   ]

@@ -284,6 +284,23 @@ const CourtDetail = () => {
                       <>資料由本站人工整理</>
                     )}
                     <span className="text-neutral-400 ml-2">費用與時段請以場館現場公告為準</span>
+                    {court.iplay && (
+                      <>
+                        <br />
+                        <span className="text-neutral-400">
+                          場館位置與聯絡資料部分來源：
+                          <a
+                            href="https://iplay.sports.gov.tw/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline hover:text-emerald-600"
+                          >
+                            運動部全國運動場館資訊網 iPlay
+                          </a>
+                          （{court.iplay.venue}）
+                        </span>
+                      </>
+                    )}
                   </p>
                   {reportLink && (
                     <a

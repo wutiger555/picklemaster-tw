@@ -1419,6 +1419,7 @@ async function generateStaticPages() {
             ${ownLabel ? `<li><strong>經營類型：</strong>${esc(ownLabel)}</li>` : ''}
             ${court.contact ? `<li><strong>聯絡電話：</strong>${esc(court.contact)}</li>` : ''}
             ${court.last_updated ? `<li><strong>資料最後查證：</strong><time datetime="${esc(court.last_updated)}">${esc(court.last_updated)}</time>（費用與時段請以場館現場公告為準）</li>` : ''}
+            ${court.iplay ? `<li style="color:#6b7280;font-size:14px;">場館位置與聯絡資料部分來源：<a href="https://iplay.sports.gov.tw/" style="color:#0d9488;">運動部全國運動場館資訊網 iPlay</a>（${esc(court.iplay.venue)}）</li>` : ''}
           </ul>
         </section>
         ${court.features && court.features.length ? `

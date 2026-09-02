@@ -2036,7 +2036,7 @@
       "id": 66,
       "name": "閃電匹克館 Inazuma Pickleball",
       "location": {
-        "address": "新竹縣寶山鄉",
+        "address": "新竹縣寶山鄉寶山路二段568之3號",
         "lat": 24.757,
         "lng": 121.021,
         "city": "新竹縣",
@@ -2044,14 +2044,16 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "依官方公告",
+      "price": "離峰 NT$800/時、尖峰 NT$1,000/時",
       "courts_count": 2,
       "surface": "synthetic",
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "依預約",
       "contact_details": {
-        "instagram": "@inazuma.pickleball"
+        "line": "@912cgfpw",
+        "instagram": "https://www.instagram.com/inazuma.pickleball",
+        "facebook": "https://www.facebook.com/INAZUMAPickleball/"
       },
       "facilities": [
         "冷氣",
@@ -2063,8 +2065,13 @@
       ],
       "is_new": false,
       "added_date": "2026-04",
-      "last_updated": "2026-08-15",
-      "reviews": "新竹寶山鄉室內匹克球館，2026 年 6 月 6 日正式開幕"
+      "last_updated": "2026-09-02",
+      "reviews": "新竹寶山鄉室內匹克球館，2026 年 6 月 6 日正式開幕",
+      "contact": "LINE @912cgfpw",
+      "price_details": {
+        "offpeak": "離峰時段：NT$800/小時",
+        "peak": "尖峰時段：NT$1,000/小時"
+      }
     },
     {
       "id": 67,
@@ -2252,13 +2259,13 @@
       },
       "type": "covered",
       "fee": "paid",
-      "price": "約 NT$770-980/小時（依時段，以官方公告為準）",
+      "price": "平日離峰 NT$1,100/時、平日尖峰 NT$1,300/時、假日 NT$1,400/時",
       "courts_count": 3,
       "surface": "acrylic",
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "依預約",
-      "contact": "依官方社群公告",
+      "contact": "LINE 官方帳號（lin.ee/XxbWpXE）",
       "facilities": [
         "冷氣",
         "遮陽棚",
@@ -2273,8 +2280,19 @@
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "花博 MAJI 園區內的半戶外粉紅球場，大滿貫級地板結合運動社交"
+      "last_updated": "2026-09-02",
+      "reviews": "花博 MAJI 園區內的半戶外粉紅球場，大滿貫級地板結合運動社交",
+      "contact_details": {
+        "line": "https://lin.ee/XxbWpXE",
+        "instagram": "https://www.instagram.com/flower_pickle_/",
+        "facebook": "https://www.facebook.com/profile.php?id=61585141475077"
+      },
+      "price_details": {
+        "offpeak": "平日 08:00-15:00：NT$1,100/小時",
+        "peak": "平日 15:00-24:00：NT$1,300/小時",
+        "weekend": "假日／國定假日：NT$1,400/小時",
+        "rental": "球拍租借 NT$100，用球免費"
+      }
     },
     {
       "id": 74,
@@ -2847,13 +2865,13 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "租場尖峰 NT$1,000/時",
+      "price": "Open Play NT$150-250/人；場地租借 NT$800-1,000/時",
       "courts_count": 4,
       "surface": "acrylic",
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "08:00-23:00",
-      "contact": "依官方社群公告",
+      "contact": "LINE @188eiekd",
       "facilities": [
         "冷氣",
         "室內停車場",
@@ -2865,8 +2883,16 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "泰山室內專用館，4 面標準場地"
+      "last_updated": "2026-09-02",
+      "reviews": "泰山室內專用館，4 面標準場地",
+      "contact_details": {
+        "line": "@188eiekd",
+        "facebook": "https://www.facebook.com/pickle Ing 匹克癮"
+      },
+      "price_details": {
+        "weekday": "Open Play NT$150-250/人",
+        "rental": "場地租借 NT$800-1,000/小時"
+      }
     },
     {
       "id": 92,
@@ -2880,13 +2906,13 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "Open Play NT$250/4小時",
+      "price": "平日 NT$250/人、假日 NT$300/人",
       "courts_count": 2,
       "surface": "synthetic",
       "net_type": "permanent",
       "ownership": "private",
-      "opening_hours": "依預約",
-      "contact": "依官方社群公告",
+      "opening_hours": "週一至週五 09:00-22:00，週六日 09:00-20:00",
+      "contact": "LINE 社群／FB 粉專",
       "facilities": [
         "冷氣"
       ],
@@ -2896,8 +2922,16 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "五股室內館，Open Play 250 元打 4 小時"
+      "last_updated": "2026-09-02",
+      "reviews": "五股室內館，Open Play 250 元打 4 小時",
+      "price_details": {
+        "weekday": "一般開放時段 NT$250/人",
+        "weekend": "假日 NT$300/人",
+        "membership": "月費 VIP NT$2,000-2,500/人"
+      },
+      "contact_details": {
+        "facebook": "https://www.facebook.com/profile.php?id=61584463606694"
+      }
     },
     {
       "id": 93,
@@ -2911,13 +2945,13 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "臨打 NT$250-400",
+      "price": "臨打 NT$250-400（2-3 小時）；租場 NT$800-1,000/時",
       "courts_count": 2,
       "surface": "synthetic",
       "net_type": "permanent",
       "ownership": "private",
-      "opening_hours": "依預約",
-      "contact": "依官方社群公告",
+      "opening_hours": "09:00-24:00",
+      "contact": "線上預約表單／LINE 社群",
       "facilities": [
         "冷氣"
       ],
@@ -2926,8 +2960,14 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "板橋浮州的室內臨打館"
+      "last_updated": "2026-09-02",
+      "reviews": "板橋浮州的室內臨打館",
+      "price_details": {
+        "weekday": "臨打 NT$250-400（2-3 小時）",
+        "rental": "租場 NT$800-1,000/小時",
+        "membership": "教學課程 NT$3,500-4,000"
+      },
+      "booking_url": "https://docs.google.com/forms/d/e/1FAIpQLScBnEK_GMGpbUetOqSyL_pz4Qk27A8paN9ND0I3b26i_Jpw6g/viewform"
     },
     {
       "id": 94,
@@ -3333,13 +3373,13 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "臨打 NT$200/2小時",
+      "price": "臨打 NT$200/2 小時；租場 NT$400/30 分鐘",
       "courts_count": 6,
       "surface": "acrylic",
       "net_type": "permanent",
       "ownership": "private",
-      "opening_hours": "依預約",
-      "contact": "依官方社群公告",
+      "opening_hours": "10:00-22:00",
+      "contact": "LINE 社群",
       "facilities": [
         "冷氣",
         "球具租借"
@@ -3350,8 +3390,12 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "南屯 6 面專用場，臨打 200 元打 2 小時"
+      "last_updated": "2026-09-02",
+      "reviews": "南屯 6 面專用場，臨打 200 元打 2 小時",
+      "price_details": {
+        "weekday": "臨打 NT$200／2 小時",
+        "rental": "租場 NT$400／30 分鐘"
+      }
     },
     {
       "id": 107,
@@ -3365,13 +3409,13 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "依官方公告",
+      "price": "NT$400-600/時",
       "courts_count": 2,
       "surface": "acrylic",
       "net_type": "permanent",
       "ownership": "private",
-      "opening_hours": "依預約",
-      "contact": "依官方社群公告",
+      "opening_hours": "09:00-23:00",
+      "contact": "LINE 社群",
       "facilities": [
         "冷氣",
         "免費借拍"
@@ -3382,8 +3426,11 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "烏日專用館，新手免帶裝備也能打"
+      "last_updated": "2026-09-02",
+      "reviews": "烏日專用館，新手免帶裝備也能打",
+      "price_details": {
+        "weekday": "NT$400-600/小時（依時段）"
+      }
     },
     {
       "id": 108,
@@ -3487,13 +3534,13 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "NT$400/時",
+      "price": "離峰 NT$300/時、尖峰 NT$400/時（每場）",
       "courts_count": 2,
       "surface": "synthetic",
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "08:00-22:00",
-      "contact": "依官方社群公告",
+      "contact": "0918-615-150",
       "facilities": [
         "冷氣"
       ],
@@ -3502,8 +3549,16 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "溪湖鎮室內匹克球俱樂部"
+      "last_updated": "2026-09-02",
+      "reviews": "溪湖鎮室內匹克球俱樂部",
+      "contact_details": {
+        "phone": "0918615150"
+      },
+      "booking_url": "https://wulili810.booknow.com.tw/",
+      "price_details": {
+        "offpeak": "平日 08:00-18:00：NT$300/小時/場",
+        "peak": "平日 18:00-22:00、假日 08:00-22:00：NT$400/小時/場"
+      }
     },
     {
       "id": 112,
@@ -3674,8 +3729,8 @@
       "surface": "acrylic",
       "net_type": "permanent",
       "ownership": "private",
-      "opening_hours": "平日 06:00-24:00、假日 07:00-24:00",
-      "contact": "預約：pk.ainfolink.net",
+      "opening_hours": "週一至週五 06:00-24:00，週六日 07:00-24:00",
+      "contact": "LINE @132zvqky／線上預約",
       "facilities": [
         "冷氣",
         "線上預約",
@@ -3688,8 +3743,16 @@
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "雲林第一座匹克球專用館，交流道旁交通方便"
+      "last_updated": "2026-09-02",
+      "reviews": "雲林第一座匹克球專用館，交流道旁交通方便",
+      "contact_details": {
+        "line": "@132zvqky",
+        "facebook": "https://www.facebook.com/profile.php?id=61586956418835"
+      },
+      "booking_url": "https://pk.ainfolink.net/",
+      "price_details": {
+        "weekday": "NT$300-400/時（依時段）"
+      }
     },
     {
       "id": 118,

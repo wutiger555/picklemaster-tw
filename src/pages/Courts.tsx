@@ -12,6 +12,7 @@ import { getCityByName } from '../utils/cityData';
 import SEOHead from '../components/common/SEOHead';
 import WeatherBadge from '../components/court/WeatherBadge';
 import CourtQuickSheet from '../components/court/CourtQuickSheet';
+import { NEW_COURT_FORM_URL, REPORT_FORM_URL } from '../config/community';
 import OpenNowBadge from '../components/court/OpenNowBadge';
 
 // Pickleball Icon Component
@@ -1061,6 +1062,40 @@ const Courts = () => {
           </motion.div>
         )}
       </div>
+
+      {/* 社群補漏入口（Phase 0）：全台場地由本站人工盤查，仰賴球友回報缺漏 */}
+      {(NEW_COURT_FORM_URL || REPORT_FORM_URL) && (
+        <div className="container mx-auto px-4 pb-12">
+          <div className="rounded-2xl border border-dashed border-neutral-300 bg-white/70 p-6 text-center">
+            <h2 className="text-base font-bold text-neutral-900 mb-1">找不到你常去的球場？</h2>
+            <p className="text-sm text-neutral-500 mb-4 max-w-lg mx-auto">
+              全台場地由本站逐一查證整理，難免有新開幕或變動來不及跟上。你的一則回報，會讓下一個找場的球友少跑一趟。
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {NEW_COURT_FORM_URL && (
+                <a
+                  href={NEW_COURT_FORM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-neutral-900 text-white text-sm font-bold rounded-xl hover:bg-neutral-800 transition-colors"
+                >
+                  ➕ 新增球場
+                </a>
+              )}
+              {REPORT_FORM_URL && (
+                <a
+                  href={REPORT_FORM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-neutral-200 text-neutral-700 text-sm font-bold rounded-xl hover:border-emerald-300 hover:text-emerald-700 transition-colors"
+                >
+                  🚩 回報資訊有誤
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 行動版底部快覽面板：桌面版由地圖 popup 呈現，lg 以上隱藏 */}
       <div className="lg:hidden">

@@ -7,6 +7,7 @@ import { getCityByName } from '../utils/cityData';
 import WeatherWidget from '../components/common/WeatherWidget';
 import SEOHead from '../components/common/SEOHead';
 import OpenNowBadge from '../components/court/OpenNowBadge';
+import { reportUrl } from '../config/community';
 
 const TYPE_LABEL = (t: Court['type']) => (t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外');
 const PRICE_TIERS = [
@@ -158,6 +159,7 @@ const CourtDetail = () => {
   const feeLabel = court.fee === 'free' ? '免費' : '收費';
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${court.location.lat},${court.location.lng}`;
   // 實景：連往外部平台檢視（不重製他人照片，避免著作權問題）
+  const reportLink = reportUrl(court.name);
   const photosUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(court.name)}%20${court.location.lat},${court.location.lng}`;
   const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${court.location.lat},${court.location.lng}`;
   const navigateUrl = `https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`;
@@ -266,13 +268,34 @@ const CourtDetail = () => {
                     </>
                   )}
 
-                  {court.last_updated && (
-                    <>
-                      <dt className="text-neutral-500">資料更新</dt>
-                      <dd className="text-neutral-500 text-xs">{court.last_updated}</dd>
-                    </>
-                  )}
                 </dl>
+
+                {/* 資料新鮮度 + 回報入口：讓使用者知道資料何時查證過，並能直接指正 */}
+                <div className="mt-5 pt-4 border-t border-neutral-100 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                  <p className="text-xs text-neutral-500 leading-relaxed">
+                    {court.last_updated ? (
+                      <>
+                        <span className="text-emerald-600 font-bold">✓</span> 資料最後查證{' '}
+                        <time dateTime={court.last_updated} className="font-semibold text-neutral-700">
+                          {court.last_updated}
+                        </time>
+                      </>
+                    ) : (
+                      <>資料由本站人工整理</>
+                    )}
+                    <span className="text-neutral-400 ml-2">費用與時段請以場館現場公告為準</span>
+                  </p>
+                  {reportLink && (
+                    <a
+                      href={reportLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-emerald-700 border border-neutral-200 hover:border-emerald-300 rounded-full px-3 py-1.5 transition-colors"
+                    >
+                      🚩 回報資訊有誤
+                    </a>
+                  )}
+                </div>
               </section>
 
               {/* 分時價格（本站深度資料：多數平台只給單一價格區間） */}

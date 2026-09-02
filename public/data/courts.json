@@ -650,7 +650,6 @@
         "飲水機",
         "冷氣"
       ],
-      "website": "http://whsc.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "last_updated": "2026-09-02",
       "reviews": "萬華區運動中心，社區球友活躍",
@@ -659,7 +658,6 @@
         "authority": "臺北市政府體育局",
         "operator": "匯陽百貨",
         "tel": "02-23759900",
-        "website": "http://whsc.com.tw/",
         "park": "一般及無障礙停車場",
         "verified": "2026-09-02",
         "open_condition": "付費對外開放使用",
@@ -1485,7 +1483,7 @@
         "authority": "臺北市政府體育局",
         "operator": "匯陽百貨",
         "tel": "02-77555058",
-        "website": "http://sssc.com.tw/",
+        "website": "https://sssc.com.tw/",
         "park": "一般及無障礙停車場",
         "verified": "2026-09-02",
         "open_condition": "付費對外開放使用",
@@ -1959,7 +1957,6 @@
         "authority": "埔里鎮公所",
         "operator": "民政課",
         "tel": "049-2984040#170",
-        "website": "https://www.puli.gov.tw/",
         "park": "一般停車場",
         "verified": "2026-09-02",
         "open_condition": "免費對外開放使用",
@@ -2508,9 +2505,11 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "依預約系統",
-      "contact": "線上預約",
+      "contact": "0919-471-309",
       "contact_details": {
-        "website": "https://downstairspickleballclub.com/"
+        "website": "https://downstairspickleballclub.com/",
+        "phone": "0919-471-309",
+        "email": "downstairspickleballclub@gmail.com"
       },
       "facilities": [
         "冷氣",
@@ -2527,8 +2526,9 @@
       "booking_url": "https://downstairspickleballclub.com/collections/court",
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-05-15",
-      "reviews": "石牌捷運站旁地下室專用館，北投區第一座室內匹克球俱樂部"
+      "last_updated": "2026-09-02",
+      "reviews": "石牌捷運站旁地下室專用館，北投區第一座室內匹克球俱樂部",
+      "website": "https://downstairspickleballclub.com/"
     },
     {
       "id": 60,
@@ -3224,7 +3224,7 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "24 小時（智能球場）",
-      "contact": "依官網 ppclub.tw 公告",
+      "contact": "24H 智能無人球場，僅線上預約，無現場電話",
       "facilities": [
         "冷氣",
         "智能預約系統"
@@ -3235,8 +3235,9 @@
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "新竹寶山 24 小時智能匹克球場，2026 年新開幕（部分資訊待官方公告）"
+      "last_updated": "2026-09-02",
+      "reviews": "新竹寶山 24 小時智能匹克球場，2026 年新開幕（部分資訊待官方公告）",
+      "website": "https://ppclub.tw/"
     },
     {
       "id": 79,
@@ -3665,7 +3666,6 @@
         "authority": "新北市政府體育局",
         "operator": "全越運動事業",
         "tel": "02-27990011",
-        "website": "https://scysports.com.tw/",
         "park": "一般及無障礙停車場",
         "verified": "2026-09-02",
         "open_condition": "付費對外開放使用",
@@ -3777,7 +3777,6 @@
         "authority": "新北市政府體育局",
         "operator": "全越運動事業",
         "tel": "02-27990011",
-        "website": "https://scysports.com.tw/",
         "park": "一般及無障礙停車場",
         "verified": "2026-09-02",
         "open_condition": "付費對外開放使用",
@@ -3927,11 +3926,8 @@
         "weekend": "假日 NT$300/人",
         "membership": "月費 VIP NT$2,000-2,500/人"
       },
-      "contact_details": {
-        "line": "https://line.me/R/ti/p/@572srsmf"
-      },
       "status": "temporarily_closed",
-      "status_note": "Google 地圖標示「暫時關閉」，官方 Facebook 粉專已無法瀏覽。前往前請務必先電話確認。",
+      "status_note": "Google 地圖標示「暫時關閉」，官方 Facebook 粉專已移除、LINE 官方帳號亦查無。前往前務必先電話確認。",
       "status_verified": "2026-09-02"
     },
     {
@@ -4042,7 +4038,7 @@
       "id": 96,
       "name": "邷力豹 Pickleball",
       "location": {
-        "address": "桃園市蘆竹區中興路756巷109號",
+        "address": "桃園市蘆竹區中興路756巷109號、105號",
         "lat": 25.0452,
         "lng": 121.2922,
         "city": "桃園市",
@@ -4069,10 +4065,10 @@
       "is_new": true,
       "added_date": "2026-07",
       "last_updated": "2026-09-02",
-      "reviews": "蘆竹新開專用館，2026 年 4 月開幕",
+      "reviews": "蘆竹新開專用館，2026 年 4 月開幕。官方報名系統採場次制，標示強度 1.0~5.0+，A/B 兩面場地。",
       "booking_url": "https://www.aligh.co/zh-TW/venue/1723?sportId=2",
       "price_details": {
-        "offpeak": "平日上午至下午：2 小時 NT$800",
+        "offpeak": "離峰場次 NT$120/人",
         "peak": "平日晚場與假日全天：2 小時 NT$1,400"
       }
     },
@@ -4369,7 +4365,7 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "24 小時（自助）",
-      "contact": "LINE 社群／FB 粉專",
+      "contact": "24H 自助球館，透過 LINE 社群聯繫，無現場電話",
       "facilities": [
         "冷氣",
         "智能預約"
@@ -4765,7 +4761,7 @@
     },
     {
       "id": 117,
-      "name": "PK Park 匹克球館",
+      "name": "PK Park 匹克帕克",
       "location": {
         "address": "雲林縣虎尾鎮興南里竹圍50號（國道1號斗南/虎尾交流道旁）",
         "lat": 23.7262,
@@ -5226,7 +5222,7 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "24 小時（線上預約自助入場）",
-      "contact": "goBooking 線上預約（無人場館）",
+      "contact": "全台首創無人化球場，全程線上預約，無現場電話",
       "facilities": [
         "冷氣",
         "無人自助入場",
@@ -5240,7 +5236,7 @@
       ],
       "is_new": false,
       "added_date": "2026-04",
-      "last_updated": "2026-08-15",
+      "last_updated": "2026-09-02",
       "booking_url": "https://gobooking.tw/picklegang/pgc.html",
       "reviews": "新北三重 24 小時無人化自助匹克球場，預約、付款、進場、燈控全自動化，2026 年 4 月開幕。全台最大匹克球社團營運的科技示範場。"
     },
@@ -5299,7 +5295,7 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "依線上預約時段（p9arena.linkcourt.app）",
-      "contact": "線上預約：p9arena.linkcourt.app",
+      "contact": "線上即時預約制，無現場櫃檯電話",
       "facilities": [
         "冷氣",
         "淋浴間",
@@ -5313,7 +5309,7 @@
       ],
       "is_new": true,
       "added_date": "2026-08",
-      "last_updated": "2026-08-23",
+      "last_updated": "2026-09-02",
       "booking_url": "https://p9arena.linkcourt.app/",
       "reviews": "新竹寶山 2026 年 8 月 1 日新開幕的複合式運動館，一樓為匹克球場、二樓為棒球練習區，附寬敞淋浴間。採線上預約制（面數與收費以官方公告為準）。"
     },

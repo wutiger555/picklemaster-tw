@@ -1418,6 +1418,7 @@ async function generateStaticPages() {
             <li><strong>類型：</strong>${typeLabel}${court.surface ? `（${esc(court.surface)}）` : ''}</li>
             ${ownLabel ? `<li><strong>經營類型：</strong>${esc(ownLabel)}</li>` : ''}
             ${court.contact ? `<li><strong>聯絡電話：</strong>${esc(court.contact)}</li>` : ''}
+            ${court.last_updated ? `<li><strong>資料最後查證：</strong><time datetime="${esc(court.last_updated)}">${esc(court.last_updated)}</time>（費用與時段請以場館現場公告為準）</li>` : ''}
           </ul>
         </section>
         ${court.features && court.features.length ? `
@@ -1483,6 +1484,7 @@ async function generateStaticPages() {
                             "hasMap": `https://www.google.com/maps/search/?api=1&query=${court.location.lat},${court.location.lng}`,
                             ...(court.contact ? { "telephone": court.contact } : {}),
                             ...(court.facilities && court.facilities.length ? { "amenityFeature": court.facilities.map(f => ({ "@type": "LocationFeatureSpecification", "name": f, "value": true })) } : {}),
+                            ...(court.last_updated ? { "dateModified": court.last_updated } : {}),
                         },
                         { "@type": "BreadcrumbList", "itemListElement": crumbs },
                         { "@type": "FAQPage", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) },

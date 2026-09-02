@@ -25,7 +25,7 @@ const LazySection = ({ children, className = "" }: { children: ReactNode, classN
           {children}
         </Suspense>
       ) : (
-        <div className="w-full h-24" /> // Minimal placeholder
+        <div className="w-full h-96" /> // 佔位高度與 Suspense fallback 一致，避免載入時位移
       )}
     </div>
   );
@@ -171,7 +171,7 @@ const Home = () => {
 
 
         {/* 新球場跑馬燈 */}
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="h-12 bg-neutral-900 border-y border-white/10" aria-hidden />}>
           <NewCourtsTicker />
         </Suspense>
 

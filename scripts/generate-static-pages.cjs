@@ -786,6 +786,27 @@ const PROGRAM_SLUGS = [
 ];
 
 // Players (per-slug static pages) — minimal subset for SEO
+// ===== 球拍清單：直接從 src/data/paddleDatabase.ts 擷取，避免兩處維護 =====
+const PADDLE_SLUGS = (() => {
+    try {
+        const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'paddleDatabase.ts'), 'utf-8');
+        const body = src.slice(src.indexOf('export const PADDLE_DATABASE'), src.indexOf('/* ===== 正版購買管道'));
+        const re = /slug: '([^']+)',\s*\n\s*brand: '([^']+)',\s*\n\s*model: '([^']+)',\s*\n\s*year: (\d+),[\s\S]*?level: '([^']+)',\s*\n\s*shape: '([^']+)',\s*\n\s*weight: '([^']+)',\s*\n\s*thickness: '([^']+)',\s*\n\s*core: '([^']+)',\s*\n\s*face: '([^']+)'/g;
+        const out = [];
+        let m;
+        while ((m = re.exec(body)) !== null) {
+            out.push({
+                slug: m[1], brand: m[2], model: m[3], year: +m[4], level: m[5],
+                shape: m[6], weight: m[7], thickness: m[8], core: m[9], face: m[10],
+            });
+        }
+        return out;
+    } catch (e) {
+        console.warn('  ! 無法解析 paddleDatabase.ts，略過球拍詳細頁:', e.message);
+        return [];
+    }
+})();
+
 const PLAYER_SLUGS = [
     { slug: 'ben-johns', name: 'Ben Johns', country: 'USA', bio: '匹克球界 GOAT，連續 5+ 年世界第一。' },
     { slug: 'jw-johnson', name: 'JW Johnson', country: 'USA', bio: '20 歲出頭就登頂的年輕天才，身高臂長強攻打法。' },
@@ -1038,6 +1059,64 @@ async function generateStaticPages() {
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
         console.log(`  Generated ${PLAYER_SLUGS.length} player detail pages`);
+
+        // ===== Generate per-paddle pages =====
+        if (PADDLE_SLUGS.length) {
+            console.log('Generating paddle detail pages...');
+            for (const pd of PADDLE_SLUGS) {
+                const dirPath = path.join(BUILD_DIR, 'paddles', pd.slug);
+                fs.mkdirSync(dirPath, { recursive: true });
+                const full = `${pd.brand} ${pd.model}`;
+                const title = `${full} 規格與評測 | 厚度 ${pd.thickness}、${pd.face} | 匹克球拍資料庫`;
+                const desc = `${full}（${pd.year}）完整規格：${pd.shape}、核心 ${pd.thickness} ${pd.core}、拍面 ${pd.face}、重量 ${pd.weight}。拍型定位、力量控球旋轉容錯四項評比與台灣購買管道一次看。`;
+                const canonical = `${BASE_URL}/paddles/${pd.slug}`;
+                let content = template;
+                content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
+                content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
+                content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+                content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+                const productSchema = {
+                    "@context": "https://schema.org", "@type": "Product",
+                    "name": full, "brand": { "@type": "Brand", "name": pd.brand },
+                    "category": "Pickleball Paddle", "description": desc, "url": canonical,
+                    "additionalProperty": [
+                        { "@type": "PropertyValue", "name": "核心厚度", "value": pd.thickness },
+                        { "@type": "PropertyValue", "name": "重量", "value": pd.weight },
+                        { "@type": "PropertyValue", "name": "拍面材質", "value": pd.face },
+                        { "@type": "PropertyValue", "name": "核心材質", "value": pd.core },
+                        { "@type": "PropertyValue", "name": "拍形", "value": pd.shape },
+                    ],
+                };
+                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(productSchema)}</script>`);
+                {
+                    const others = PADDLE_SLUGS.filter(x => x.slug !== pd.slug && x.brand === pd.brand).slice(0, 5);
+                    const body = `
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(pd.brand)} · ${esc(pd.level)}級 · ${esc(pd.year)}</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">規格</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">
+            <li>拍形：${esc(pd.shape)}</li>
+            <li>核心厚度：${esc(pd.thickness)}（${esc(pd.core)}）</li>
+            <li>拍面材質：${esc(pd.face)}</li>
+            <li>重量：${esc(pd.weight)}</li>
+          </ul>
+        </section>${others.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(pd.brand)} 其他型號</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/paddles/${o.slug}" style="color:#0d9488;">${esc(o.model)}</a></li>`).join('')}</ul>
+        </section>` : ''}
+        <p style="font-size:15px;"><a href="/paddles" style="color:#0d9488;">回球拍資料庫</a>　·　<a href="/equipment" style="color:#0d9488;">裝備選購指南</a></p>`;
+                    content = injectPrerender(content, prerenderShell({
+                        crumbs: [{ name: '首頁', href: '/' }, { name: '球拍資料庫', href: '/paddles' }, { name: pd.model }],
+                        h1: full, bodyHtml: body,
+                    }));
+                }
+                fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+            }
+            console.log(`  Generated ${PADDLE_SLUGS.length} paddle detail pages`);
+        }
 
         // ===== Generate per-article pages =====
         console.log('Generating article detail pages...');
@@ -1573,6 +1652,17 @@ async function generateStaticPages() {
         <lastmod>${today}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.85</priority>
+    </url>`;
+        }
+
+        // Add per-paddle URLs
+        for (const pd of PADDLE_SLUGS) {
+            sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/paddles/${pd.slug}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
     </url>`;
         }
 

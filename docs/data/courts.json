@@ -2976,19 +2976,27 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "08:30-22:30",
-      "contact": "依官方社群公告",
+      "contact": "LINE @power325",
       "facilities": [
         "冷氣",
         "球具租借"
       ],
       "features": [
         "2026/4/11 開幕",
-        "2 面專用 + 2 面練習場"
+        "2 面專用 + 2 面練習場",
+        "2 面專用場 + 2 面練習場"
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "龍潭新開室內館，2026 年 4 月開幕"
+      "last_updated": "2026-09-02",
+      "reviews": "龍潭新開室內館，2026 年 4 月開幕",
+      "contact_details": {
+        "line": "@power325",
+        "instagram": "https://www.instagram.com/325_power"
+      },
+      "price_details": {
+        "weekday": "NT$300-450/時（依時段）"
+      }
     },
     {
       "id": 96,
@@ -3002,25 +3010,31 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "NT$400-700/時",
+      "price": "離峰 2 小時 NT$800／尖峰 2 小時 NT$1,400",
       "courts_count": 2,
       "surface": "acrylic",
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "依預約（aligh.co）",
-      "contact": "依官網 aligh.co 公告",
+      "contact": "線上預約（aligh.co）",
       "facilities": [
         "冷氣",
         "線上預約"
       ],
       "features": [
         "2026/4 開幕",
-        "2 面專用場"
+        "2 面專用場",
+        "2 面專用球場"
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "蘆竹新開專用館，2026 年 4 月開幕"
+      "last_updated": "2026-09-02",
+      "reviews": "蘆竹新開專用館，2026 年 4 月開幕",
+      "booking_url": "https://www.aligh.co/zh-TW/venue/1723?sportId=2",
+      "price_details": {
+        "offpeak": "平日上午至下午：2 小時 NT$800",
+        "peak": "平日晚場與假日全天：2 小時 NT$1,400"
+      }
     },
     {
       "id": 97,
@@ -3243,7 +3257,7 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "24 小時",
-      "contact": "依官方社群公告",
+      "contact": "線上預約（app.ipickleball.tw）／LINE 社群",
       "facilities": [
         "冷氣",
         "獨立圍欄",
@@ -3252,12 +3266,18 @@
       "features": [
         "4 面國際標準場",
         "獨立圍欄",
-        "24 小時智慧場館"
+        "24 小時智慧場館",
+        "4 面國際標準球場",
+        "24 小時開放"
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "潭子 24 小時室內館，4 面國際標準場附獨立圍欄"
+      "last_updated": "2026-09-02",
+      "reviews": "潭子 24 小時室內館，4 面國際標準場附獨立圍欄",
+      "booking_url": "https://app.ipickleball.tw/",
+      "price_details": {
+        "weekday": "NT$300-700/時（依時段）"
+      }
     },
     {
       "id": 105,
@@ -3271,25 +3291,35 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "NT$250-800/時（深夜約 NT$380）",
+      "price": "NT$300-700/時（依時段）",
       "courts_count": 4,
       "surface": "acrylic",
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "24 小時（自助）",
-      "contact": "依官方社群公告",
+      "contact": "LINE 社群／FB 粉專",
       "facilities": [
         "冷氣",
         "智能預約"
       ],
       "features": [
         "3 面標準 + 1 面單打練習區",
-        "24 小時自助"
+        "24 小時自助",
+        "3 面標準球場 + 1 面單打練習區",
+        "24 小時開放"
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "沙鹿 24 小時自助球館"
+      "last_updated": "2026-09-02",
+      "reviews": "沙鹿 24 小時自助球館",
+      "contact_details": {
+        "line": "https://line.me/ti/g2/LHTFkMa05MCFvmSRxC8KVvzHx-vVc7gV6K0kSA",
+        "facebook": "https://www.facebook.com/profile.php?id=61578799498457"
+      },
+      "price_details": {
+        "offpeak": "平日 06:00-16:00 NT$500；深夜 23:00-06:00 NT$300",
+        "peak": "平日 16:00-23:00 NT$700；假日 08:00-23:00 NT$700"
+      }
     },
     {
       "id": 106,

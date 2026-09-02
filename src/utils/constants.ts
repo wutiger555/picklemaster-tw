@@ -48,6 +48,7 @@ export const ROUTES = {
   PLAYER_DETAIL: '/players/:slug',
   HISTORY: '/history',
   PADDLE_DATABASE: '/paddles',
+  PADDLE_DETAIL: '/paddles/:slug',
   VIDEOS: '/videos',
   TRAINING_PROGRAMS: '/training-programs',
   TRAINING_PROGRAM_DETAIL: '/training-programs/:slug',

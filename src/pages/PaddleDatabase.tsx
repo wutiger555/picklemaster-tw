@@ -744,8 +744,52 @@ const PaddleDatabasePage = () => {
           )}
         </div>
 
+        {/* 選拍指南專欄 */}
+        <section className="pb-10 -mt-24">
+          <h2 className="text-xl md:text-2xl font-black text-neutral-900 mb-1">不知道怎麼挑？先看這幾篇</h2>
+          <p className="text-xs text-neutral-400 mb-4">規格看不懂、預算不知道怎麼抓、擔心買到水貨——這三篇把選拍會遇到的問題講完</p>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              {
+                slug: 'beginner-first-paddle-2026', emoji: '🎯',
+                title: '新手第一支球拍怎麼選',
+                desc: '從三個問題開始，避開五個新手最常犯的選拍錯誤',
+                tag: '新手必讀',
+              },
+              {
+                slug: 'paddle-specs-explained-2026', emoji: '📐',
+                title: '球拍規格全解析',
+                desc: '厚度、揮重、扭轉慣量到底在講什麼，看懂就不用問哪支最好',
+                tag: '進階',
+              },
+              {
+                slug: 'buy-paddle-taiwan-2026', emoji: '🇹🇼',
+                title: '台灣購買完全指南',
+                desc: '25 品牌通路查證、水貨真相、辨識假拍的五個檢查點',
+                tag: '台灣限定',
+              },
+            ].map(g => (
+              <Link
+                key={g.slug}
+                to={`/articles/${g.slug}`}
+                className="group bg-white rounded-2xl border border-neutral-100 p-5 hover:shadow-lg hover:border-emerald-200 transition"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">{g.emoji}</span>
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600">{g.tag}</span>
+                </div>
+                <h3 className="text-base font-black text-neutral-900 leading-tight mb-1.5 group-hover:text-emerald-600 transition">
+                  {g.title}
+                </h3>
+                <p className="text-xs text-neutral-500 leading-relaxed">{g.desc}</p>
+                <span className="inline-block text-xs font-bold text-emerald-600 mt-2.5">閱讀 →</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         {/* 分潤揭露 */}
-        <div className="pb-32 -mt-24">
+        <div className="pb-32">
           <div className="bg-neutral-50 border border-neutral-100 rounded-2xl p-4 text-[11px] text-neutral-500 leading-relaxed">
             <strong className="text-neutral-700">關於購買連結：</strong>
             標示「蝦皮現貨」的連結為本站的蝦皮分潤（聯盟行銷）連結，你透過它下單時本站會獲得少量回饋，

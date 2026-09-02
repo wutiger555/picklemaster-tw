@@ -139,8 +139,8 @@ export const pageSEO: Record<string, SEOConfig> = {
     keywords: '匹克球歷史,匹克球起源,Pickleball history,匹克球規則演變,CTPF 歷史,匹克球大事紀,匹克球編年史'
   },
   'paddle-database': {
-    title: '匹克球拍完整資料庫 | 22 大品牌 36 款規格對照、並排比較',
-    description: 'JOOLA、Selkirk、Paddletek、Vatic Pro、Ronbus、Niupipo 等 22 大品牌 36 款球拍。小紅書熱門、高 CP 值新手拍完整收錄，支援 2-4 支規格並排比較。',
+    title: '匹克球拍完整資料庫 | 26 大品牌 45 款規格對照、並排比較',
+    description: 'JOOLA、Selkirk、Paddletek、Vatic Pro、Ronbus、Niupipo、Facolos、ProKennex 等 26 大品牌 45 款球拍。小紅書熱門、高 CP 值新手拍完整收錄，附拍型定位與六軸專業篩選，支援 2-4 支規格並排比較。',
     keywords: '匹克球拍資料庫,球拍規格,匹克球拍比較,匹克球拍推薦,新手匹克球拍,JOOLA Perseus,Vatic Pro,Ronbus,Niupipo,高CP值球拍,pickleball paddle database,paddle comparison'
   },
   videos: {

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import ArticleBlockRenderer from '../components/articles/ArticleBlocks';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { m, LazyMotion, domAnimation } from 'framer-motion';
 import { getArticleBySlug, ARTICLES } from '../data/articlesData';
@@ -139,6 +140,7 @@ const ArticleDetail = () => {
                   className="article-content text-neutral-700 leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: s.content }}
                 />
+                {s.block && <ArticleBlockRenderer block={s.block} />}
               </section>
             ))}
           </article>

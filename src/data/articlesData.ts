@@ -605,10 +605,10 @@ export const ARTICLES: Article[] = [
     category: '器材評測',
     readingTime: 12,
     publishedDate: '2026-04-25',
-    updatedDate: '2026-04-25',
+    updatedDate: '2026-09-02',
     author: 'Picklemaster Taiwan',
-    summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro IV、Selkirk Labs Project 002、Paddletek Bantam TS-5 等頂級選手愛用款，附新手/中階/高階完整推薦。',
-    tags: ['球拍', '評測', '2026', 'JOOLA', 'Selkirk', 'Paddletek'],
+    summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro V、Selkirk LABS Project Boomstik、Paddletek Bantam TS-5 Pro 等頂級選手愛用款，附新手/中階/高階完整推薦。價格與型號已對齊本站球拍資料庫 2026-09 版本。',
+    tags: ['球拍', '評測', '2026', 'JOOLA', 'Selkirk', 'Paddletek', 'Perseus Pro V'],
     coverEmoji: '🏓',
     featured: true,
     tableOfContents: [
@@ -630,7 +630,9 @@ export const ARTICLES: Article[] = [
 
 <p>熱壓成型的核心優勢在於：核心、面板與邊框在高溫下一體熔合，減少共振，提供更大的甜蜜點與更穩定的球感。然而這類球拍通常價格較高（台幣 8,000 - 15,000），且可能因 USAP 對「去壓成型球拍球速過快」的疑慮而面臨規格調整。</p>
 
-<p>2026 年另一個值得注意的技術是 <strong>Carbon Core（碳芯）</strong>。相較傳統 Polymer 芯，碳芯更硬、回饋更直接，適合進攻型選手。代表產品有 Selkirk Labs Project 002、Six Zero Ruby。</p>
+<p>2026 年另一個值得注意的方向是<strong>核心材料的分化</strong>。除了傳統 Polymer 蜂窩芯，市面上已經分出三條路線：<strong>碳芯（Carbon Core）</strong>整支拍由碳纖維構成、不使用蜂窩芯，硬、回饋直接，代表作是 <a href="/paddles/gearbox-pro-power-elongated">Gearbox Pro Power Elongated</a> 的 SST 一體碳纖結構；<strong>發泡核心（Foam Core）</strong>則以發泡材取代蜂窩，甜蜜點分布更均勻、也不像蜂窩芯會隨使用時間塌陷衰減，代表作是 <a href="/paddles/crbn-trufoam-genesis">CRBN TruFoam Genesis</a> 與 <a href="/paddles/six-zero-ruby">Six Zero Ruby</a>。</p>
+
+<p>另外，<strong>2026 年 USAP 把 PBCoR（球拍回彈係數）上限從 .44 收緊到 .43</strong>，等於對「太彈」的熱壓拍設了天花板。實際影響是：新世代旗艦不再靠單純加彈取勝，改往甜蜜點分布、扭轉慣量與吸震結構去做差異——這也是為什麼 2026 的新款拍在規格表上看起來變化不大，實打感受卻明顯不同。</p>
 
 <p>台灣市場過去仰賴代購與球館經銷商，2025 年起 JOOLA、Selkirk、Paddletek 陸續設立亞洲經銷，價格較 2023 年下降約 15-20%。</p>
         `
@@ -657,59 +659,61 @@ export const ARTICLES: Article[] = [
 <p>以下為 2026 年我們評測的 Top 10（綜合評分排序）：</p>
 
 <ol>
-<li><strong>JOOLA Perseus Pro IV 16mm</strong> - 9.4/10（職業級，Ben Johns 簽名款）</li>
-<li><strong>Selkirk Labs Project 002</strong> - 9.3/10（進攻首選）</li>
-<li><strong>Paddletek Bantam TS-5</strong> - 9.2/10（控球王）</li>
-<li><strong>JOOLA Hyperion CFS 16mm</strong> - 9.0/10（最均衡）</li>
-<li><strong>Six Zero Double Black Diamond</strong> - 8.9/10（CP 值王）</li>
-<li><strong>Gearbox Pro Power Elongated</strong> - 8.7/10（長型球拍代表）</li>
-<li><strong>CRBN 1X Power Series</strong> - 8.5/10（重量級進攻）</li>
-<li><strong>Engage Pursuit Pro1</strong> - 8.3/10（中階全能）</li>
-<li><strong>Franklin Ben Johns 系列</strong> - 8.0/10（中階性價比）</li>
-<li><strong>PROLITE Titan Pro</strong> - 7.8/10（新手友善）</li>
+<li><a href="/paddles/joola-perseus-pro-v-16mm"><strong>JOOLA Perseus Pro V 16mm</strong></a> - 9.4/10（職業級，Ben Johns 簽名款）</li>
+<li><a href="/paddles/selkirk-labs-boomstik"><strong>Selkirk LABS Project Boomstik</strong></a> - 9.3/10（進攻首選）</li>
+<li><a href="/paddles/paddletek-bantam-ts-5"><strong>Paddletek Bantam TS-5 Pro</strong></a> - 9.2/10（控球王）</li>
+<li><a href="/paddles/joola-hyperion-cfs-16mm"><strong>JOOLA Hyperion CFS 16mm</strong></a> - 9.0/10（最均衡）</li>
+<li><a href="/paddles/six-zero-double-black-diamond"><strong>Six Zero Double Black Diamond Control 14mm</strong></a> - 8.9/10（CP 值王）</li>
+<li><a href="/paddles/gearbox-pro-power-elongated"><strong>Gearbox Pro Power Elongated</strong></a> - 8.7/10（長型球拍代表）</li>
+<li><a href="/paddles/crbn-1x-power"><strong>CRBN 1X Power Series 14mm</strong></a> - 8.5/10（重量級進攻）</li>
+<li><a href="/paddles/engage-pursuit-pro1"><strong>Engage Pursuit Pro EX 6.0</strong></a> - 8.3/10（中階全能）</li>
+<li><a href="/paddles/franklin-signature-pro"><strong>Franklin Signature Pro Series 16mm</strong></a> - 8.0/10（中階性價比）</li>
+<li><a href="/paddles/prolite-titan-pro"><strong>PROLITE Titan Pro Black Diamond</strong></a> - 7.8/10（新手友善）</li>
 </ol>
+
+<p class="text-sm">名次為本站評測當下的綜合判斷，規格與售價則以<a href="/paddles">球拍資料庫</a>為準——資料庫會持續更新，這篇長文不會每次都跟著改，兩邊對不上時請以資料庫為主。</p>
         `
       },
       {
         heading: '新手友善 3 款',
         content: `
-<p><strong>1. PROLITE Titan Pro（NT$ 3,500）</strong><br>
-甜蜜點大、重量輕（7.6 oz），握把粗度 4.25" 適合亞洲人手型。缺點是力量略弱，但對新手來說剛好可控。適合 DUPR 2.0-3.0。</p>
+<p><strong>1. <a href="/paddles/prolite-titan-pro">PROLITE Titan Pro Black Diamond</a>（NT$ 3,400）</strong><br>
+甜蜜點超大、重量輕（7.7 oz），握把粗度 4.25" 適合亞洲人手型。核心 12.7mm 偏薄，出球直接、回饋清楚。缺點是力量略弱，但對新手來說剛好可控。適合 DUPR 2.0-3.0。</p>
 
-<p><strong>2. Franklin Ben Johns 系列（NT$ 4,200）</strong><br>
-熱壓成型入門款，有 Ben Johns 簽名加持。球感比 Titan Pro 進階，是新手升級的好選擇。適合 DUPR 2.5-3.5。</p>
+<p><strong>2. <a href="/paddles/franklin-signature-pro">Franklin Signature Pro Series 16mm</a>（NT$ 3,200）</strong><br>
+Franklin 的 MaxGrit 高摩擦表面配 16mm 聚合物核心，容錯 92 分是這個價位少見的水準。球感比 Titan Pro 進階，是新手升級的好選擇。適合 DUPR 2.5-3.5。</p>
 
-<p><strong>3. Engage Pursuit Pro1（NT$ 5,800）</strong><br>
-一直以來被稱為「最容易上手的中階拍」，容錯高、控球好。中階選手也能用到 4.0 等級。</p>
+<p><strong>3. <a href="/paddles/engage-pursuit-pro1">Engage Pursuit Pro EX 6.0</a>（NT$ 7,500）</strong><br>
+Engage 是美國老牌，這支一直被稱為「最容易上手的進階拍」，容錯高、控球好。中階選手也能一路用到 4.5 等級。價位已跳出純新手帶，適合確定會長期打、想一次到位的人。</p>
         `
       },
       {
         heading: '中階玩家 3 款',
         content: `
-<p><strong>4. Paddletek Bantam TS-5（NT$ 7,800）</strong><br>
-控球王。雖然力量不是最強，但第三球下切、軟球穩定度最佳。適合偏控球流派的 DUPR 3.5-4.5。</p>
+<p><strong>4. <a href="/paddles/paddletek-bantam-ts-5">Paddletek Bantam TS-5 Pro</a>（NT$ 5,200）</strong><br>
+控球王。14.3mm 玻纖面板，力量不是最強，但第三球下切、軟球穩定度最佳，容錯 92 分。適合偏控球流派的 DUPR 3.5-4.5。</p>
 
-<p><strong>5. JOOLA Hyperion CFS 16mm（NT$ 8,500）</strong><br>
-JOOLA 熱賣款，「均衡」代名詞。力量、控球、旋轉都在平均以上。</p>
+<p><strong>5. <a href="/paddles/joola-hyperion-cfs-16mm">JOOLA Hyperion CFS 16mm</a>（NT$ 6,500）</strong><br>
+JOOLA 經典熱賣款，「均衡」代名詞。力量、控球、旋轉都在平均以上。2022 年的拍子還留在榜上，是因為二手市場流通量大、想試長型拍的人很容易用低價入手。</p>
 
-<p><strong>6. Six Zero Double Black Diamond（NT$ 6,900）</strong><br>
-CP 值最高的熱壓成型球拍。性能接近 JOOLA 旗艦，價格少 30%。是精打細算球友的首選。</p>
+<p><strong>6. <a href="/paddles/six-zero-double-black-diamond">Six Zero Double Black Diamond Control 14mm</a>（NT$ 5,300）</strong><br>
+CP 值最高的熱壓成型球拍，旋轉 95 分是全榜最高。性能接近旗艦、價格少四成，是精打細算球友的首選。</p>
         `
       },
       {
         heading: '職業級 4 款',
         content: `
-<p><strong>7. JOOLA Perseus Pro IV 16mm（NT$ 12,500）</strong><br>
-Ben Johns 親用款。全新 Propulsion Core 技術，進攻力驚人，同時維持控球。2026 年職業巡迴賽 #1 使用率。缺點：初學者駕馭不了。</p>
+<p><strong>7. <a href="/paddles/joola-perseus-pro-v-16mm">JOOLA Perseus Pro V 16mm</a>（NT$ 9,500）</strong><br>
+Ben Johns 親用款，2026 年推出的<strong>第五代</strong>——如果你看到的評測還在講 Pro IV，那是 2025 年的資訊。第五代最大的結構差異是 <strong>KineticFrame</strong>：把彈性框架做進拍頸，觸球時先吸震再回彈，出球比前代更集中。控球 96、力量 95，是全榜最全能的一支。缺點：初學者駕馭不了，且旗艦價位。</p>
 
-<p><strong>8. Selkirk Labs Project 002（NT$ 14,800）</strong><br>
-碳芯設計，硬度高、回饋直接。網前截擊與殺球無人能敵，但軟球手感比 Polymer 核稍遜。適合進攻流。</p>
+<p><strong>8. <a href="/paddles/selkirk-labs-boomstik">Selkirk LABS Project Boomstik</a>（NT$ 9,900）</strong><br>
+Selkirk 的 LABS 實驗系列，取代了早期的 Project 002 成為現行進攻旗艦。長型 14mm 熱壓 + Raw Carbon Fiber，力量 97 分是全榜最高，網前截擊與殺球極具威脅，但容錯只有 80，軟球手感也比聚合物核稍遜。適合 DUPR 4.5+ 的純進攻流。注意台灣買得到的有美版與亞版，規格略有差異。</p>
 
-<p><strong>9. Gearbox Pro Power Elongated（NT$ 11,800）</strong><br>
-長型（16.5"），觸球範圍大。反手用一手拿也更穩。但握把偏細，亞洲選手可能要加橡膠貼。</p>
+<p><strong>9. <a href="/paddles/gearbox-pro-power-elongated">Gearbox Pro Power Elongated</a>（NT$ 8,900）</strong><br>
+全榜最特別的一支：SST 一體碳纖結構完全不用聚合物蜂窩芯，整支拍由碳纖維構成，手感與出球邏輯跟主流拍截然不同。長型設計觸球範圍大、力量 96 分。但握把只有 4.0"偏細，亞洲選手多半要加一層貼布，而且手感需要適應期。</p>
 
-<p><strong>10. CRBN 1X Power Series（NT$ 10,500）</strong><br>
-重量級（8.2 oz），給進攻型球員。底線 Drive 威脅十足，但長時間打容易手肘痠。</p>
+<p><strong>10. <a href="/paddles/crbn-1x-power">CRBN 1X Power Series 14mm</a>（NT$ 7,900）</strong><br>
+重量級（8.1 oz），給進攻型球員。熱壓成型剛性強，底線 Drive 威脅十足，但長時間打容易手肘痠。想要 CRBN 又想要最新核心技術的，可以看同廠的 <a href="/paddles/crbn-trufoam-genesis">TruFoam Genesis</a>（100% 發泡核心）。</p>
         `
       },
       {
@@ -746,11 +750,13 @@ Ben Johns 親用款。全新 Propulsion Core 技術，進攻力驚人，同時�
         content: `
 <p>幫你快速定位：</p>
 <ul>
-<li>預算 < 5,000：Titan Pro 或 Franklin Ben Johns</li>
-<li>預算 5,000-8,000：Six Zero Double Black Diamond（CP 王）</li>
-<li>預算 8,000-10,000：Paddletek Bantam TS-5（控球）或 JOOLA Hyperion CFS</li>
-<li>預算 10,000+：JOOLA Perseus Pro IV（全能）或 Selkirk Labs 002（進攻）</li>
+<li>預算 &lt; 4,000：<a href="/paddles/prolite-titan-pro">PROLITE Titan Pro Black Diamond</a> 或 <a href="/paddles/franklin-signature-pro">Franklin Signature Pro Series</a></li>
+<li>預算 4,000-6,000：<a href="/paddles/six-zero-double-black-diamond">Six Zero Double Black Diamond</a>（CP 王）或 <a href="/paddles/paddletek-bantam-ts-5">Paddletek Bantam TS-5 Pro</a>（控球）</li>
+<li>預算 6,000-8,000：<a href="/paddles/joola-hyperion-cfs-16mm">JOOLA Hyperion CFS</a>（均衡）、<a href="/paddles/engage-pursuit-pro1">Engage Pursuit Pro EX 6.0</a>（容錯）或 <a href="/paddles/crbn-1x-power">CRBN 1X Power</a>（進攻）</li>
+<li>預算 8,000+：<a href="/paddles/joola-perseus-pro-v-16mm">JOOLA Perseus Pro V</a>（全能）或 <a href="/paddles/selkirk-labs-boomstik">Selkirk LABS Project Boomstik</a>（進攻）</li>
 </ul>
+
+<p>覺得選項還是太多？<a href="/paddles">球拍資料庫</a>有拍型定位、厚度、重量、拍面、核心、品牌國別六軸篩選，也可以一次挑 2-4 支並排比規格；不知道自己該往哪個方向走的話，<a href="/articles/beginner-first-paddle-2026">〈2026 新手第一支匹克球拍〉</a>裡有一個三題的互動測驗會直接幫你定位。</p>
 
 <p>最重要：<strong>能試打就試打</strong>。台北 DOPE 水獺綠洲、淡水 P.dang、中和 Pickle Day 都有球拍借打服務。花 NT$ 500 試打一小時，勝過後悔花 10,000 買錯。</p>
         `
@@ -759,11 +765,11 @@ Ben Johns 親用款。全新 Propulsion Core 技術，進攻力驚人，同時�
     faqs: [
       {
         question: '2026 年最熱門的匹克球拍是哪一支？',
-        answer: 'JOOLA Perseus Pro IV 16mm 是 2026 年職業巡迴賽使用率第一的球拍，由 Ben Johns 簽名加持。但最適合你的不見得是最熱門的，需依你的預算、等級、打法決定。'
+        answer: 'JOOLA Perseus Pro V 16mm——2026 年推出的第五代，Ben Johns 親用款，也是職業巡迴賽使用率最高的一支。市面上很多中文評測還停在第四代 Pro IV，那是 2025 年的型號。不過最適合你的不見得是最熱門的，仍需依你的預算、等級、打法決定。'
       },
       {
         question: '新手第一支球拍該花多少錢？',
-        answer: '建議 NT$ 3,500 - 5,000，選擇 Titan Pro、Franklin Ben Johns 系列或 Engage Pursuit Pro1。不需要一開始就買頂級球拍，等 DUPR 達到 3.5+ 再升級。'
+        answer: '建議 NT$ 3,000 - 5,500，選擇 PROLITE Titan Pro Black Diamond、Franklin Signature Pro Series 或 Six Zero Double Black Diamond。不需要一開始就買頂級球拍，等 DUPR 達到 3.5+ 再升級。'
       },
       {
         question: '碳纖維球拍一定比玻璃纖維好嗎？',
@@ -1566,7 +1572,7 @@ A: Momo、PChome 代理商、蝦皮群團（12 顆裝下殺 30%）、DOPE / Pick
       {
         heading: '50+ 歲裝備選擇',
         content: `
-<p><strong>球拍</strong>：選 <strong>輕量（7.2-7.6 oz）+ Polymer 軟核 + 寬型甜蜜點大</strong>。避免職業級重拍（8+ oz）易造成匹克球肘。推薦：Engage Pursuit Pro1、PROLITE Titan Pro、Paddletek Bantam TS-5。</p>
+<p><strong>球拍</strong>：選 <strong>輕量（7.2-7.6 oz）+ Polymer 軟核 + 寬型甜蜜點大</strong>。避免職業級重拍（8+ oz）易造成匹克球肘。推薦：<a href="/paddles/prolite-titan-pro">PROLITE Titan Pro Black Diamond</a>（7.7 oz、容錯 96 分）、<a href="/paddles/franklin-signature-pro">Franklin Signature Pro Series</a>（7.9 oz）、<a href="/paddles/paddletek-bantam-ts-5">Paddletek Bantam TS-5 Pro</a>（7.8 oz）。<a href="/paddles">球拍資料庫</a>可以直接用重量篩選出輕量拍。</p>
 
 <p><strong>鞋子</strong>：<strong>側向支撐好 + 舒適底</strong>。Skechers Viper Court 是銀髮族 CP 王，K-Swiss Bigshot Light 也不錯。絕對不要穿慢跑鞋！</p>
 

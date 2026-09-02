@@ -178,7 +178,7 @@ export const FAQ_DATA: FAQItem[] = [
   {
     category: '裝備器材',
     question: '第一支球拍該花多少錢？',
-    answer: '建議 NT$ 3,000-5,000。推薦新手款如 Titan Pro、Franklin Ben Johns 系列、Engage Pursuit Pro1。不需要一開始就買頂級球拍，等 DUPR 達到 3.5+ 再升級。',
+    answer: '建議 NT$ 3,000-5,000。推薦新手款如 PROLITE Titan Pro Black Diamond、Franklin Signature Pro Series、Six Zero Double Black Diamond。不需要一開始就買頂級球拍，等 DUPR 達到 3.5+ 再升級。',
   },
   {
     category: '裝備器材',

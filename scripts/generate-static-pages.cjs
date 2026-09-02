@@ -860,7 +860,7 @@ const ARTICLE_SLUGS = [
     { slug: 'paddle-specs-explained-2026', title: '匹克球拍規格全解析：厚度、揮重、扭轉慣量到底在講什麼', summary: '為什麼兩支同重量的球拍打起來天差地遠？拆解核心厚度、靜態重量與揮重的差異、扭轉慣量如何決定容錯、四種面板材質的實戰差異，以及 2026 年 USAP 把 PBCoR 上限收緊到 .43 的影響。', category: '器材評測' },
     { slug: 'buy-paddle-taiwan-2026', title: '2026 台灣買匹克球拍完全指南：正版通路、水貨真相、價格行情', summary: '本站逐一查證 25 個品牌在台灣的購買管道。說明台灣實際的通路現況、水貨與平行輸入的保固現實、辨識假拍的五個檢查點，以及海外直購的成本試算。', category: '器材評測' },
     { slug: 'taiwan-pro-pickleball-2026', title: '台灣匹克球「職業元年」全解析：AEPL 開打，然後呢？', summary: '2026 年 8 月 29 日，AEPL 亞洲菁英匹克球聯盟在台中火車站空中廊道開打，台灣有了第一個匹克球職業聯賽。本文拆解 6 支企業隊背後的產業版圖、選手為何說「終於不用一直飛國外」、聯盟制度設計與國際接軌時程。', category: '產業動態' },
-    { slug: '2026-best-pickleball-paddles', title: '2026 十大匹克球拍完整評測', summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro IV、Selkirk Labs Project 002、Paddletek Bantam TS-5 等頂級選手愛用款。', category: '器材評測' },
+    { slug: '2026-best-pickleball-paddles', title: '2026 十大匹克球拍完整評測', summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro V、Selkirk LABS Project Boomstik、Paddletek Bantam TS-5 Pro 等頂級選手愛用款。', category: '器材評測' },
     { slug: 'pickleball-vs-tennis-badminton-padel', title: '匹克球 vs 網球 vs 羽球 vs Padel 完整比較', summary: '四大拍類運動一次看懂：場地、難度、體能、社群文化。', category: '比較分析' },
     { slug: '2026-best-pickleball-shoes', title: '2026 最佳匹克球鞋選購指南', summary: '匹克球專用鞋 vs 網球鞋 vs 羽球鞋完整比較。2026 Top 8 匹克球鞋實測。', category: '器材評測' },
     { slug: 'indoor-vs-outdoor-balls', title: '匹克球室內球 vs 戶外球全解析', summary: '26 孔還是 40 孔？設計差異、球速、彈跳、耐用度、主流品牌實測。', category: '器材評測' },

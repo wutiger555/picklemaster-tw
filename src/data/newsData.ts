@@ -3,6 +3,50 @@ import type { NewsItem } from '../types/news';
 export const NEWS_DATA: NewsItem[] = [
   // ===== 2026 Q3 最新消息 =====
   {
+    id: 'tw-202608-aepl-station1',
+    title: '雲豹封王！AEPL 首站 Dreambreaker 21:18 驚險摘冠',
+    summary: 'AEPL 創始賽季首站台中站落幕：桃園永豐雲豹與台南旭日雷霆冠軍戰前 4 回合戰成 2:2，第 5 回合 Dreambreaker 雲豹以 21:18 過關、總回合數 3:2 封王。神祕第六隊「新竹 YANKEY ACE」首度亮相即闖進 4 強。',
+    content: `
+      <p>台灣職業匹克球的第一座分站冠軍出爐。<strong>AEPL 創始賽季首站</strong>於 8 月 29、30 日在台中火車站空中廊道舉行，冠軍戰由<strong>桃園永豐雲豹</strong>對決<strong>台南旭日雷霆</strong>——前 4 回合雙方各取 2 勝，進入第 5 回合 <strong>Dreambreaker 單點決勝</strong>，雲豹以 <strong>21:18</strong> 過關，總回合數 3:2 收下首站冠軍。</p>
+
+      <p>4 強戰同樣精彩：雲豹 3:2 力退首度亮相的<strong>新竹 YANKEY ACE</strong>——這支開季前隊名成謎的第六隊，第一戰就把最終冠軍逼到第 5 回合；旭日雷霆則直落三擊敗<strong>新北蘆沐</strong>。</p>
+
+      <p>雲豹隊長<strong>鍾振煒</strong>賽後說：「沒有想過第 1 站就可以打到最後，整體賽事的氛圍很棒，現場都是熟悉的加油聲。」雷霆隊長<strong>蔡萱</strong>也認為「整體氛圍感覺比預期還要更好，打起來很順」。在車站搭台比賽的實驗，第一站就繳出了人氣答卷。</p>
+
+      <p>賽季第 2 站將於 <strong>9 月 19、20 日在高雄駁二特區</strong>登場。完整戰報、六隊戰力卡與賽制解析，見本站 <a href="/aepl" class="text-primary-600 hover:underline">AEPL 職業聯賽專區</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://newtalk.tw/news/view/2026-08-30/1056680" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Newtalk 戰報</a></p>
+    `,
+    date: '2026-08-30',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '2026']
+  },
+  {
+    id: 'int-202608-mlp-champion',
+    title: 'New Jersey 5s 中央公園封王！Staksrud 獲決賽 MVP',
+    summary: 'MLP 2026 總決賽於紐約中央公園 CityPickle 球場落幕，New Jersey 5s 以 2:0 橫掃 St. Louis Shock 奪下隊史首冠——兩場皆戰至 Dreambreaker（22:20、21:9）。Federico Staksrud 獲決賽 MVP。',
+    content: `
+      <p>職業匹克球史上第一座在<strong>紐約中央公園</strong>誕生的年度冠軍，屬於 <strong>New Jersey 5s</strong>。MLP 2026 總決賽 8 月 28 至 30 日在 Wollman Rink 的 CityPickle 球場舉行，例行賽頭號種子 5s 以 <strong>2:0</strong> 系列賽橫掃 <strong>St. Louis Shock</strong>，拿下隊史首座 MLP 冠軍。</p>
+
+      <p>兩場決賽都比比分更緊繃：雙打對戰各自 1:1 平手後，兩場皆進入 <strong>Dreambreaker 決勝</strong>——首日 5s 以 22:20 驚險過關，次日則以 21:9 收尾封王。<strong>Federico Staksrud</strong> 整個週末表現關鍵，獲選決賽 MVP（他的完整選手檔案見<a href="/players/federico-staksrud" class="text-primary-600 hover:underline">本站選手資料庫</a>）。</p>
+
+      <p>這也為 MLP「5 至 8 月密集賽季＋三週季後賽」的新賽制畫下句點：從達拉斯首輪、Newport Beach 八強到中央公園決賽，聯盟成功把年度高潮推進世界級地標。接下來的焦點是 10 月 30 日至 11 月 1 日在達拉斯登場的國家對抗賽 <strong>Nations Cup</strong>。</p>
+
+      <p>值得一提的是：台灣 AEPL 首站冠軍戰同週末也以 Dreambreaker 決勝——太平洋兩岸的職業匹克球，正在用同一種最刺激的方式收尾。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://pickleball.com/news/new-jersey-wins-the-2026-mlp-championship-time-for-post-season-awards" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">pickleball.com</a>、<a href="https://www.thedinkpickleball.com/the-new-jersey-fives-take-home-the-2026-mlp-championship/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">The Dink</a>、Major League Pickleball</p>
+    `,
+    date: '2026-08-31',
+    category: 'International',
+    image: 'https://images.unsplash.com/photo-1502904550040-7534597429ae?q=80&w=2069&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/news/int-202608-mlp-champion',
+    tags: ['International', 'MLP', '2026']
+  },
+  {
     id: 'tw-202608-aepl-kickoff',
     title: '職業元年正式啟動！AEPL 今日台中開打，6 支企業隊到齊',
     summary: '台灣第一個匹克球職業聯賽 AEPL 亞洲菁英匹克球聯盟創始賽季，8 月 29、30 日在台中火車站空中廊道開幕。6 支企業隊到齊，最新成軍的台南旭日雷霆由尚騰汽車集團與寶嘉聯合共同成立，隊長蔡萱是打了 20 多年網球的轉項選手。',

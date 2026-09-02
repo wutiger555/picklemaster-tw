@@ -6,6 +6,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import {
   AEPL_LEAGUE, AEPL_FORMAT, AEPL_TEAMS, AEPL_STATIONS,
   AEPL_PLAYERS_SPOTLIGHT, AEPL_PRESEASON_RESULTS, AEPL_INTEL, AEPL_SOURCES,
+  AEPL_STATION1_REPORT,
 } from '../data/aeplData';
 
 const STATION_STATUS: Record<string, { label: string; cls: string }> = {
@@ -18,8 +19,8 @@ const STATION_STATUS: Record<string, { label: string; cls: string }> = {
 const FAQS = [
   { q: 'AEPL 是什麼？', a: 'AEPL（亞洲菁英匹克球聯盟）是台灣第一個匹克球職業聯賽，由亞洲菁英匹克球股份有限公司於 2026 年 5 月成立，定位為「台灣匹克球賽事的最高殿堂」。創始賽季 6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元，藝人林志穎擔任賽事大使。' },
   { q: 'AEPL 的比賽怎麼進行？', a: '採企業隊際制：每隊編制 6-10 名選手，每個分站登錄 4 人出賽，8 月至 11 月巡迴全台 8 站，11 月舉行總決賽。分站刻意選在人潮聚集的公共場域（如台中火車站空中廊道、高雄駁二特區），讓路過民眾就能看到職業比賽。' },
-  { q: '有哪些球隊？', a: '創始賽季共 6 隊：台南旭日雷霆（尚騰汽車×寶嘉聯合）、桃園雲豹（TPBL 雲豹體系）、Ahhh（台北場館品牌）、蘆沐、富瑞特科技，以及一支來自台中、隊名待公布的第六隊。' },
-  { q: '在哪裡可以看比賽？', a: '分站均在開放公共場域舉行，現場觀賽免費親民。開幕站於台中火車站空中廊道（8/29-30），第二站確定落腳高雄駁二特區，後續站點遍及雙北、桃園、新竹、宜蘭、台南等地，日期公布後本站將即時更新。' },
+  { q: '有哪些球隊？', a: '創始賽季共 6 隊：桃園永豐雲豹（TPBL 雲豹體系，首站冠軍）、台南旭日雷霆（尚騰汽車×寶嘉聯合，首站亞軍）、新竹 YANKEY ACE、新北蘆沐、Ahhh（台北場館品牌）、富瑞特科技。' },
+  { q: '在哪裡可以看比賽？', a: '分站均在開放公共場域舉行，現場觀賽免費親民。開幕站已於台中火車站空中廊道完賽（冠軍桃園永豐雲豹），第 2 站 9 月 19、20 日在高雄駁二特區登場，後續站點遍及雙北、桃園、新竹、宜蘭、台南等地，日期公布後本站將即時更新。' },
 ];
 
 const Aepl = () => {
@@ -67,7 +68,7 @@ const Aepl = () => {
     <div className="min-h-screen bg-neutral-950 text-white">
       <SEOHead
         customTitle="AEPL 職業聯賽專區｜台灣匹克球職業聯盟 球隊・賽程・戰力分析"
-        customDescription="台灣第一個匹克球職業聯賽 AEPL 完整追蹤：6 支企業隊戰力卡、8 站巡迴賽程、賽制解說、選手焦點與賽前情報分析。桃園雲豹、台南旭日雷霆、Ahhh 等隊伍介紹，總獎金百萬的創始賽季一站掌握。"
+        customDescription="台灣第一個匹克球職業聯賽 AEPL 完整追蹤：首站冠軍桃園永豐雲豹、6 隊戰力卡、8 站巡迴賽程（第 2 站 9/19-20 高雄駁二）、Dreambreaker 賽制解說、選手焦點與戰報分析。總獎金百萬的創始賽季一站掌握。"
       />
 
       {/* ===== Hero ===== */}
@@ -87,7 +88,8 @@ const Aepl = () => {
 
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
             <div className="flex flex-wrap items-center gap-2 mb-5">
-              <span className="px-3 py-1 rounded-full bg-red-500 text-white text-xs font-black tracking-wide animate-pulse">● 開幕站進行中</span>
+              <span className="px-3 py-1 rounded-full bg-amber-400 text-neutral-900 text-xs font-black tracking-wide">🏆 首站冠軍：桃園永豐雲豹</span>
+              <span className="px-3 py-1 rounded-full bg-red-500 text-white text-xs font-black tracking-wide animate-pulse">● 下一站 9/19-20 高雄駁二</span>
               <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-neutral-200">2026 創始賽季</span>
               <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-neutral-200">台灣首個匹克球職業聯賽</span>
             </div>
@@ -143,6 +145,45 @@ const Aepl = () => {
             })}
           </div>
           <p className="text-xs text-neutral-500 mt-3">後續分站的日期與場地由聯盟陸續公布，本站將即時更新。執行長張智維：「我們接下來的比賽都會選人潮最多的地方。」</p>
+        </section>
+
+        {/* ===== 首站戰報 ===== */}
+        <section>
+          <h2 className="text-2xl md:text-3xl font-black mb-2">📰 首站戰報：台中站</h2>
+          <p className="text-neutral-400 text-sm mb-6">{AEPL_STATION1_REPORT.dateLabel}</p>
+          <div className="grid md:grid-cols-5 gap-4">
+            <div className="md:col-span-3 rounded-2xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 to-red-500/5 p-6">
+              <div className="text-[11px] font-bold text-amber-300 tracking-widest mb-2">FINAL・冠軍戰</div>
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <span className="text-2xl font-black">🏆 {AEPL_STATION1_REPORT.champion}</span>
+                <span className="text-neutral-500 font-bold">def.</span>
+                <span className="text-lg font-bold text-neutral-300">{AEPL_STATION1_REPORT.runnerUp}</span>
+                <span className="px-2 py-0.5 rounded-full bg-white/10 text-xs font-black">3:2</span>
+              </div>
+              <p className="text-sm text-neutral-300 leading-relaxed mb-4">{AEPL_STATION1_REPORT.final}</p>
+              <div className="space-y-2">
+                {AEPL_STATION1_REPORT.quotes.map(q => (
+                  <div key={q.who} className="rounded-xl bg-black/30 border border-white/5 p-3 text-sm">
+                    <span className="text-teal-300 font-bold">{q.who}</span>
+                    <span className="text-neutral-400">：「{q.text}」</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div className="text-[11px] font-bold text-neutral-400 tracking-widest mb-3">SEMIFINALS・4 強戰</div>
+              <ul className="space-y-3">
+                {AEPL_STATION1_REPORT.semis.map((m, i) => (
+                  <li key={i} className="flex gap-2 text-sm text-neutral-300 leading-relaxed">
+                    <span className="text-teal-400 shrink-0">▸</span>{m}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 pt-4 border-t border-white/10 text-xs text-neutral-500">
+                什麼是 Dreambreaker？前 4 回合戰成 2:2 時的第 5 回合單點決勝制——MLP 職業體系同款的最刺激收尾方式。
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ===== 賽制解析 ===== */}

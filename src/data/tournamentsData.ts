@@ -1,6 +1,6 @@
 // 2026 台灣匹克球賽事資料
 // 資料來源：中華民國匹克球總會 (CTPF) 公開賽事行事曆（2026-08 版）、TMLP、AEPL
-// 最後更新：2026-08-29
+// 最後更新：2026-09-02
 
 export type TournamentLevel = '國際' | '全國' | '區域' | '公益' | '分齡';
 export type TournamentStatus = 'upcoming' | 'registration' | 'ongoing' | 'completed';
@@ -131,7 +131,7 @@ export const TOURNAMENTS_2026: Tournament[] = [
     level: '全國',
     status: 'ongoing',
     organizer: '亞洲菁英匹克球股份有限公司 (AEPL)',
-    summary: '台灣第一個匹克球職業聯賽，2026 年 5 月宣布成立，創始賽季 8 月 29、30 日於台中火車站空中廊道開幕。6 支企業隊參戰（台南旭日雷霆〔尚騰汽車集團與寶嘉聯合共同成立〕、桃園雲豹、Ahhh、蘆沐、富瑞特科技等，橫跨汽車、能源、科技產業），賽季 8 至 11 月朝全台 8 站推進、11 月總決賽，總獎金新台幣 100 萬元。藝人林志穎擔任賽事大使。',
+    summary: '台灣第一個匹克球職業聯賽，2026 年 5 月宣布成立，創始賽季 8 月 29、30 日於台中火車站空中廊道開幕。6 支企業隊參戰（台南旭日雷霆〔尚騰汽車集團與寶嘉聯合共同成立〕、桃園雲豹、Ahhh、蘆沐、富瑞特科技等，橫跨汽車、能源、科技產業），賽季 8 至 11 月朝全台 8 站推進、11 月總決賽，總獎金新台幣 100 萬元。首站台中站由桃園永豐雲豹奪冠（冠軍戰 Dreambreaker 21:18 勝旭日雷霆），第 2 站 9/19-20 高雄駁二特區。藝人林志穎擔任賽事大使。',
     categories: ['職業隊際賽'],
     featured: true,
   },
@@ -183,9 +183,9 @@ export const TOURNAMENTS_2026: Tournament[] = [
     city: '新竹縣',
     region: '北部',
     level: '區域',
-    status: 'ongoing',
+    status: 'completed',
     organizer: '新竹縣政府 / 中華民國匹克球總會',
-    summary: '新竹縣年度縣長盃錦標賽，於竹北國民運動中心舉行，是大新竹地區匹克球熱潮下的指標賽事。',
+    summary: '新竹縣年度縣長盃錦標賽，已於 8 月 29、30 日在竹北國民運動中心圓滿落幕，是大新竹地區匹克球熱潮下的指標賽事。',
     categories: ['公開組', '分齡組'],
     officialUrl: 'https://www.ctpf.org.tw/',
   },
@@ -449,5 +449,5 @@ export const TAIWAN_PICKLEBALL_STATS_2026 = {
   tournamentsYear: TOURNAMENTS_2026.length,
   governingBody: '中華民國匹克球協會 (CTPF)',
   chairman: '陳朝鍵',
-  lastUpdated: '2026-08-29',
+  lastUpdated: '2026-09-02',
 };

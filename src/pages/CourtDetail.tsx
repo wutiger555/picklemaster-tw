@@ -7,6 +7,7 @@ import { getCityByName } from '../utils/cityData';
 import WeatherWidget from '../components/common/WeatherWidget';
 import SEOHead from '../components/common/SEOHead';
 import OpenNowBadge from '../components/court/OpenNowBadge';
+import CourtStatusNotice, { CourtStatusChip } from '../components/court/CourtStatusNotice';
 import { reportUrl } from '../config/community';
 
 const TYPE_LABEL = (t: Court['type']) => (t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外');
@@ -202,7 +203,7 @@ const CourtDetail = () => {
               {is24h(court.opening_hours) && (
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-violet-100 text-violet-700">24 小時</span>
               )}
-              <OpenNowBadge openingHours={court.opening_hours} size="md" />
+              {!court.status ? <OpenNowBadge openingHours={court.opening_hours} size="md" /> : <CourtStatusChip status={court.status} />}
               {court.is_new && (
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-orange-400 to-amber-400 text-white">
                   NEW
@@ -227,6 +228,7 @@ const CourtDetail = () => {
           <div className="grid md:grid-cols-3 gap-5">
             {/* Main info */}
             <div className="md:col-span-2 space-y-5">
+              <CourtStatusNotice court={court} />
               <section className="bg-white rounded-2xl border border-neutral-100 p-6">
                 <h2 className="text-xl font-bold text-neutral-900 mb-4">基本資訊</h2>
                 <dl className="grid grid-cols-2 gap-y-3 text-sm">
@@ -236,7 +238,7 @@ const CourtDetail = () => {
                   <dt className="text-neutral-500">開放時間</dt>
                   <dd className="text-neutral-900 font-semibold">
                     <span className="mr-2">{court.opening_hours}</span>
-                    <OpenNowBadge openingHours={court.opening_hours} />
+                    {!court.status && <OpenNowBadge openingHours={court.opening_hours} />}
                   </dd>
 
                   <dt className="text-neutral-500">費用</dt>

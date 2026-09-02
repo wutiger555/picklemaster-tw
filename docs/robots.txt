@@ -67,6 +67,12 @@ Allow: /
 User-agent: Meta-ExternalAgent
 Allow: /
 
+User-agent: Ai2Bot
+Allow: /
+
+User-agent: Google-CloudVertexBot
+Allow: /
+
 User-agent: Meta-ExternalFetcher
 Allow: /
 

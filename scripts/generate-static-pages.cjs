@@ -6,6 +6,12 @@ const { renderOg } = require('./og-image.cjs');
 const BUILD_DIR = path.join(__dirname, '../docs');
 const BASE_URL = 'https://picklemastertw.com';
 
+// 球場主檔（模組層先讀，供 /courts 的 ItemList 結構化資料使用；
+// 讀 public/ 而非 docs/，避免依賴 vite 的複製時序）
+const ALL_COURTS = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '../public/data/courts.json'), 'utf-8')
+).courts;
+
 // 為單頁產生專屬 OG 圖並替換 og:image / twitter:image；失敗則保留預設圖（優雅降級）
 let ogGenerated = 0;
 function applyOg(content, ogPathRel, opts) {
@@ -47,8 +53,8 @@ function injectPrerender(content, shellHtml) {
 // SEO Data (Copied from src/utils/seo.ts)
 const pageSEO = {
     courts: {
-        title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 125+ 免費/室內/24H 場地',
-        description: '2026 全台最新匹克球場地圖！收錄 125+ 球場，17 縣市全覆蓋（含花博 MAJI、內湖 PicklePickle、板橋國運、台中 YIYI、雲林 PK Park、花蓮 PKing 等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
+        title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 130+ 免費/室內/24H 場地',
+        description: '2026 全台最新匹克球場地圖！收錄 130+ 球場，17 縣市全覆蓋（含花博 MAJI、內湖 PicklePickle、板橋國運、台中 YIYI、雲林 PK Park、花蓮 PKing 等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
         keywords: '匹克球場,匹克球場地,皮克球場地,台灣匹克球場,匹克球場地圖,匹克球場推薦,匹克球場預約,戶外匹克球場,免費匹克球場,室內匹克球場,附近匹克球場,最近匹克球場,24小時匹克球場,台北匹克球場,新北匹克球場,桃園匹克球場地,新竹匹克球場,台中匹克球場,彰化匹克球場,嘉義匹克球場,台南匹克球場,高雄匹克球場,屏東匹克球場,宜蘭匹克球場,花蓮匹克球場,南投匹克球場,天母公園匹克球場,大村匹克球,竹北星空匹克球場,北投匹克球場,信義匹克球場,士林匹克球場,內湖匹克球場,大安匹克球場,松山匹克球場,中和匹克球場,新莊匹克球場,板橋匹克球場,淡水匹克球場,龜山匹克球場,中壢匹克球場,平鎮匹克球場,西屯匹克球場,南屯匹克球場,東區匹克球場,鳳山匹克球場,左營匹克球場,前金匹克球場,埔里匹克球場,大村匹克球場,秀水匹克球場,公園匹克球場,河濱匹克球場,學校匹克球場,運動中心匹克球,網球中心匹克球場,PICKZONE,Pickle Day,Downstairs Pickleball,Social N Pickle,P.dang,Seattle Pickleball,pickleball court taiwan,pickleball court taipei,pickleball court kaohsiung,pickleball court taichung,pickleball court taoyuan,pickleball court hsinchu,pickleball near me',
         structuredData: {
             "@context": "https://schema.org",
@@ -57,7 +63,7 @@ const pageSEO = {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/courts#webpage",
                     "url": "https://picklemastertw.com/courts",
-                    "name": "台灣匹克球場地圖 2026 | 全台 125+ 球場完整資訊",
+                    "name": "台灣匹克球場地圖 2026 | 全台 130+ 球場完整資訊",
                     "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" },
                     "inLanguage": "zh-TW"
@@ -72,9 +78,21 @@ const pageSEO = {
                 {
                     "@type": "SportsActivityLocation",
                     "name": "台灣匹克球場地圖",
-                    "description": "提供全台灣超過 70 個匹克球場的詳細資訊與地圖，涵蓋雙北、桃竹、中彰投、雲嘉南、高屏、宜花東",
+                    "description": "提供全台灣超過 130 個匹克球場的詳細資訊與地圖，涵蓋雙北、桃竹、中彰投、雲嘉南、高屏、宜花東",
                     "geo": { "@type": "GeoCoordinates", "latitude": "23.5", "longitude": "121.0" },
                     "address": { "@type": "PostalAddress", "addressCountry": "TW", "addressRegion": "台灣" }
+                },
+                {
+                    "@type": "ItemList",
+                    "@id": "https://picklemastertw.com/courts#courtlist",
+                    "name": "全台匹克球場完整列表",
+                    "numberOfItems": ALL_COURTS.length,
+                    "itemListElement": ALL_COURTS.map((c, i) => ({
+                        "@type": "ListItem",
+                        "position": i + 1,
+                        "name": c.name,
+                        "url": `${BASE_URL}/courts/court-${c.id}`
+                    }))
                 },
                 {
                     "@type": "WebApplication",
@@ -1406,6 +1424,7 @@ async function generateStaticPages() {
           <span>${esc(court.name)}</span>
         </nav>
         <h1 style="font-size:30px;font-weight:800;margin:0 0 8px;">${esc(court.name)}</h1>
+        ${court.status ? `<p style="margin:0 0 10px;padding:10px 14px;border:2px solid #fecdd3;background:#fff1f2;border-radius:10px;color:#881337;font-size:15px;"><strong>⚠️ 此場地目前${court.status === 'permanently_closed' ? '已歇業' : '暫時關閉'}</strong>${court.status_note ? `　${esc(court.status_note)}` : ''}${court.status_verified ? `（查證日期 ${esc(court.status_verified)}）` : ''}</p>` : ''}
         <p style="color:#4b5563;margin:0 0 4px;">📍 ${esc(court.location.address)}</p>
         <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">${esc(city)}${esc(district)}・${typeLabel}球場・${court.courts_count} 面・${esc(feeText)}${courtIs24h(court.opening_hours) ? '・24 小時開放' : ''}</p>
         <section style="margin-bottom:24px;">
@@ -1488,7 +1507,7 @@ async function generateStaticPages() {
                             "description": `${court.name}是位於${city}${court.location.district || ''}的${typeLabel}匹克球場，共 ${court.courts_count} 面球場，${court.fee === 'free' ? '免費開放' : '收費'}。`,
                             "address": { "@type": "PostalAddress", "streetAddress": court.location.address, "addressLocality": court.location.district, "addressRegion": city, "addressCountry": "TW" },
                             "geo": { "@type": "GeoCoordinates", "latitude": court.location.lat, "longitude": court.location.lng },
-                            "openingHours": court.opening_hours,
+                            ...(court.status ? {} : { "openingHours": court.opening_hours }),
                             "isAccessibleForFree": court.fee === 'free',
                             "priceRange": court.fee === 'free' ? '免費' : (court.price || '付費'),
                             "url": canonical,
@@ -1496,6 +1515,7 @@ async function generateStaticPages() {
                             ...(court.contact ? { "telephone": court.contact } : {}),
                             ...(court.facilities && court.facilities.length ? { "amenityFeature": court.facilities.map(f => ({ "@type": "LocationFeatureSpecification", "name": f, "value": true })) } : {}),
                             ...(court.last_updated ? { "dateModified": court.last_updated } : {}),
+                            ...(court.status ? { "disambiguatingDescription": `本站於 ${court.status_verified || '近期'} 查證：此場地${court.status === 'permanently_closed' ? '已歇業' : '暫時關閉'}` } : {}),
                             ...(court.iplay && court.iplay.transit ? { "publicTransportInformation": court.iplay.transit } : {}),
                             ...(court.iplay && court.iplay.website ? { "sameAs": court.iplay.website } : {}),
                             ...(court.iplay && court.iplay.photos && court.iplay.photos.length ? { "image": court.iplay.photos.map(ph => BASE_URL + ph.src) } : {}),
@@ -1515,8 +1535,10 @@ async function generateStaticPages() {
                 const typeLabel = typeLabelOf(court.type);
                 const feeLabel = court.fee === 'free' ? '免費' : '收費';
                 const siblings = courtsData.courts.filter(c => c.location.city === city && c.id !== court.id).slice(0, 6);
-                const title = `${court.name}｜${city}${district}匹克球場・${typeLabel}${court.courts_count}面${feeLabel} | 地址、開放時間、導航`;
-                const desc = `${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}提供 GPS 開車導航與大眾運輸路線，${city}打匹克球的完整場地資訊。`;
+                const statusTag = court.status === 'permanently_closed' ? '【已歇業】' : court.status === 'temporarily_closed' ? '【暫時關閉】' : '';
+                const title = `${statusTag}${court.name}｜${city}${district}匹克球場・${typeLabel}${court.courts_count}面${feeLabel} | 地址、開放時間、導航`;
+                const statusDesc = court.status ? `${court.status === 'permanently_closed' ? '【本站查證：已歇業】' : '【本站查證：暫時關閉】'}${court.status_verified ? `（${court.status_verified}）` : ''}` : '';
+                const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}提供 GPS 開車導航與大眾運輸路線，${city}打匹克球的完整場地資訊。`;
                 const canonical = `${BASE_URL}/courts/${slug}`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);

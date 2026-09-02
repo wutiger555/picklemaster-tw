@@ -14,6 +14,7 @@ import WeatherBadge from '../components/court/WeatherBadge';
 import CourtQuickSheet from '../components/court/CourtQuickSheet';
 import { NEW_COURT_FORM_URL, REPORT_FORM_URL } from '../config/community';
 import OpenNowBadge from '../components/court/OpenNowBadge';
+import { CourtStatusChip } from '../components/court/CourtStatusNotice';
 
 // Pickleball Icon Component
 const PickleballIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
@@ -366,7 +367,7 @@ const Courts = () => {
           <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
             {court.courts_count}面
           </span>
-          <OpenNowBadge openingHours={court.opening_hours} />
+          {court.status ? <CourtStatusChip status={court.status} /> : <OpenNowBadge openingHours={court.opening_hours} />}
           {court.type === 'outdoor' && (
             <WeatherBadge lat={court.location.lat} lng={court.location.lng} weather={weatherMap.get(weatherKey(court.location.lat, court.location.lng))} />
           )}
@@ -955,6 +956,11 @@ const Courts = () => {
                         {court.is_new && (
                           <span className="px-2 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-bold rounded">
                             NEW
+                          </span>
+                        )}
+                        {court.status && (
+                          <span className="px-2 py-0.5 bg-rose-100 text-rose-700 text-xs font-bold rounded self-center whitespace-nowrap">
+                            {court.status === 'permanently_closed' ? '已歇業' : '暫時關閉'}
                           </span>
                         )}
                       </div>

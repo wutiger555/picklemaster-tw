@@ -42,6 +42,9 @@ export interface Paddle {
   cons?: string;         // 缺點
   usapApproved: boolean; // USAP 認證
   discontinued?: boolean;
+  /** 官方商品圖（public/paddles/<slug>.webp）。無圖者自動退回 SVG 示意圖。
+   *  每張皆經人工目視比對確認為該型號本人，型號不符者一律不收。 */
+  image?: string;
   tags?: PaddleTag[];    // 熱門標籤（小紅書熱門 / CP值 / 新手友善…）
   colors: {              // 示意圖配色（拍面主色 / 點綴色）
     face: string;
@@ -72,6 +75,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     bestFor: 'DUPR 4.0+ 追求全能與精準的進階球員',
     cons: '入門者難駕馭，價格高',
     usapApproved: true,
+    image: '/paddles/joola-perseus-pro-v-16mm.webp',
     tags: ['近期熱搜', '小紅書熱門'],
     colors: { face: '#1a1a2e', accent: '#c9a86a' },
   },
@@ -95,6 +99,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['2026 第五代 14mm 版', '更薄更快、揮速優勢', 'KineticFrame 喉部彈性框架', '單打與強攻首選'],
     bestFor: '攻擊型選手、單打愛好者',
     usapApproved: true,
+    image: '/paddles/joola-perseus-pro-v-14mm.webp',
     colors: { face: '#1a1a2e', accent: '#c9a86a' },
   },
   {
@@ -116,6 +121,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['JOOLA 經典熱賣款', '均衡性能代名詞', 'CFS 碳摩擦面板旋轉佳', '二手市場流通量大'],
     bestFor: 'DUPR 3.5-4.5 中進階全能型',
     usapApproved: true,
+    image: '/paddles/joola-hyperion-cfs-16mm.webp',
     tags: ['經典長青'],
     colors: { face: '#16213e', accent: '#e94560' },
   },
@@ -138,6 +144,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['Collin Johns 使用', '寬型甜蜜點大', '控球型 Perseus 替代', '低震感手肘友善'],
     bestFor: '控球型進階選手',
     usapApproved: true,
+    image: '/paddles/joola-scorpeus-pro-iv.webp',
     colors: { face: '#0f3460', accent: '#e2b04a' },
   },
   {
@@ -160,6 +167,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     bestFor: '進攻型選手、底線主攻',
     cons: '略重、軟球手感較硬',
     usapApproved: true,
+    image: '/paddles/joola-magnus-3.webp',
     colors: { face: '#232323', accent: '#ff6b35' },
   },
 
@@ -206,6 +214,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     bestFor: 'DUPR 4.5+ 純進攻流',
     cons: '容錯偏低，新手不易駕馭；美版與亞版規格略有差異',
     usapApproved: true,
+    image: '/paddles/selkirk-labs-boomstik.webp',
     tags: ['近期熱搜'],
     colors: { face: '#1a1a1a', accent: '#ff4d00' },
   },
@@ -229,6 +238,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     bestFor: '控球流、網前 Dink 戰術愛好者',
     cons: '力量偏弱，殺球需自帶揮速',
     usapApproved: true,
+    image: '/paddles/selkirk-luxx-control-air-invikta.webp',
     tags: ['小紅書熱門'],
     colors: { face: '#2d132c', accent: '#f0a500' },
   },
@@ -250,6 +260,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['空氣動力學開孔喉部', '揮拍速度快', '進攻火力充足'],
     bestFor: '進攻型中進階',
     usapApproved: true,
+    image: '/paddles/selkirk-vanguard-power-air.webp',
     colors: { face: '#101820', accent: '#ee2737' },
   },
   {
@@ -383,6 +394,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['女子世界第一 ALW 親用款', '攻擊力與控球兼備', '細握把適合小手'],
     bestFor: '女性球員、全能型進階選手',
     usapApproved: true,
+    image: '/paddles/paddletek-bantam-alw-c.webp',
     tags: ['近期熱搜', '小紅書熱門'],
     colors: { face: '#4b0082', accent: '#ff7bac' },
   },
@@ -407,6 +419,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['海外論壇公認 CP 值神拍', '旋轉頂級', '性能接近旗艦、價格少 40%'],
     bestFor: '預算有限但要職業級性能',
     usapApproved: true,
+    image: '/paddles/six-zero-double-black-diamond.webp',
     tags: ['CP值首選', '近期熱搜'],
     colors: { face: '#111111', accent: '#00b4d8' },
   },
@@ -428,6 +441,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['全發泡核心新世代', 'Kevlar 紅色編織面板', '力量與手感兼得'],
     bestFor: 'DUPR 4.0+ 想嘗鮮發泡芯科技',
     usapApproved: true,
+    image: '/paddles/six-zero-ruby.webp',
     tags: ['近期熱搜', '高顏值'],
     colors: { face: '#7b1e1e', accent: '#f4d35e' },
   },
@@ -539,6 +553,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['100% 發泡核心先驅', '甜蜜點均勻不衰減', '耐用度大幅提升'],
     bestFor: '追求最新科技的職業級選手',
     usapApproved: true,
+    image: '/paddles/crbn-trufoam-genesis.webp',
     tags: ['近期熱搜'],
     colors: { face: '#001219', accent: '#94d2bd' },
   },
@@ -563,6 +578,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     bestFor: '力量流、想要極致出球速度',
     cons: '握把偏細、手感獨特需適應',
     usapApproved: true,
+    image: '/paddles/gearbox-pro-power-elongated.webp',
     colors: { face: '#240046', accent: '#ff9e00' },
   },
 
@@ -678,6 +694,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     bestFor: '喜歡直接手感的新手、網球轉匹克球',
     cons: 'Nomex 核心聲音大、震手感明顯',
     usapApproved: true,
+    image: '/paddles/onix-z5.webp',
     tags: ['經典長青', '電商爆款'],
     colors: { face: '#1f7a8c', accent: '#ffbf00' },
   },
@@ -700,6 +717,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['職業雙打冠軍曾用款', '平衡全面', '耐用度佳'],
     bestFor: '中階全能型',
     usapApproved: true,
+    image: '/paddles/onix-evoke-premier.webp',
     colors: { face: '#264653', accent: '#e76f51' },
   },
 
@@ -794,6 +812,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['馬卡龍配色高顏值', '社群曬拍熱門款', '軟彈手感新手不震手'],
     bestFor: '重視顏值與手感的新手',
     usapApproved: true,
+    image: '/paddles/elevensix24-jelly-bean.webp',
     tags: ['高顏值', '小紅書熱門', '新手友善'],
     colors: { face: '#ffafcc', accent: '#a2d2ff' },
   },
@@ -840,6 +859,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['80 美金碳纖拍天花板', '論壇 CP 值討論常勝軍', '控球旋轉遠超價位'],
     bestFor: '學生黨、預算 3 千內想要碳纖拍',
     usapApproved: true,
+    image: '/paddles/ronbus-r1-16.webp',
     tags: ['CP值首選', '小紅書熱門'],
     colors: { face: '#10002b', accent: '#c77dff' },
   },

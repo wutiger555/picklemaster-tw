@@ -237,8 +237,8 @@
       "name": "台北市信義運動中心",
       "location": {
         "address": "台北市信義區松勤街100號",
-        "lat": 25.0453,
-        "lng": 121.5783,
+        "lat": 25.031848,
+        "lng": 121.566553,
         "city": "台北市",
         "district": "信義區"
       },
@@ -271,16 +271,36 @@
       "website": "https://xysc.teamxports.com/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "booking_method": "現場或電話預約，僅開放三日內場地預約",
-      "last_updated": "2025-12-10",
-      "reviews": "台北市設施最完善的匹克球場之一"
+      "last_updated": "2026-09-02",
+      "reviews": "台北市設施最完善的匹克球場之一",
+      "iplay": {
+        "venue": "臺北市信義運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "全越運動事業",
+        "tel": "02-87861911",
+        "website": "https://xysc.teamxports.com/",
+        "park": "無停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市信義區松勤街100號",
+        "gym_id": 7730,
+        "transit": "搭乘捷運板南線(藍線)至台北市政府站，沿松仁路直行10~15分鐘，過信義路五段後右轉松勤街即可到達。或搭捷運信義象山線至101世貿大樓站三號出口，後於松智路口右轉進松勤街步行約為3~5分鐘。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/7730"
+      }
     },
     {
       "id": 8,
       "name": "台北市北投運動中心",
       "location": {
         "address": "台北市北投區石牌路一段39巷100號",
-        "lat": 25.1145,
-        "lng": 121.5163,
+        "lat": 25.116898,
+        "lng": 121.509696,
         "city": "台北市",
         "district": "北投區"
       },
@@ -307,16 +327,36 @@
       ],
       "website": "https://www.btsport.org.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2025-12-10",
-      "reviews": "運動後可泡溫泉，北投特色球場"
+      "last_updated": "2026-09-02",
+      "reviews": "運動後可泡溫泉，北投特色球場",
+      "iplay": {
+        "venue": "臺北市北投運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "建中工程",
+        "tel": "02-28202880",
+        "website": "http://www.btsport.org.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市北投區石牌路1段39巷100號",
+        "gym_id": 8042,
+        "transit": "捷運石牌站一號出口往承德方向沿石牌路一段行走，至致遠二路右轉後 5 分鐘，左轉至石牌公園即可進入。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/8042"
+      }
     },
     {
       "id": 9,
       "name": "台北市士林至善公園",
       "location": {
         "address": "台北市士林區至善路二段",
-        "lat": 25.105,
-        "lng": 121.548,
+        "lat": 25.098424,
+        "lng": 121.537907,
         "city": "台北市",
         "district": "士林區"
       },
@@ -338,16 +378,26 @@
         "需自備球網",
         "永久標線"
       ],
-      "last_updated": "2025-12-10",
-      "reviews": "士林免費戶外球場，下午時段開放"
+      "last_updated": "2026-09-02",
+      "reviews": "士林免費戶外球場，下午時段開放",
+      "iplay": {
+        "venue": "至善公園羽球場",
+        "verified": "2026-09-02",
+        "address": "臺北市士林區福林路至善路一段",
+        "gym_id": 15787,
+        "transit": "公車：搭紅30、市民小巴1、小18、小18區、小19、255、255區、268、300、304、557、620、645、645副、680、681、683、815、957 至雙溪公園",
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15787"
+      }
     },
     {
       "id": 10,
       "name": "新北市中和國民運動中心",
       "location": {
         "address": "新北市中和區錦和路350號",
-        "lat": 24.9982,
-        "lng": 121.4897,
+        "lat": 24.993389,
+        "lng": 121.489143,
         "city": "新北市",
         "district": "中和區"
       },
@@ -374,8 +424,28 @@
       ],
       "booking_method": "現場預約或電話預約",
       "website": "https://www.zhsc.com.tw/",
-      "last_updated": "2025-12-10",
-      "reviews": "新北中和地區便利球場"
+      "last_updated": "2026-09-02",
+      "reviews": "新北中和地區便利球場",
+      "iplay": {
+        "venue": "中和國民運動中心",
+        "authority": "新北市政府體育局",
+        "operator": "長佳機電",
+        "tel": "02-22429222",
+        "website": "http://www.changjia.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "免費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "新北市中和區錦和路350-1、2號",
+        "gym_id": 16721,
+        "transit": "捷運於景安站下車，轉乘公車橘5，於中和國民運動中心站下車步行約5分鐘",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16721"
+      }
     },
     {
       "id": 11,
@@ -414,8 +484,8 @@
       "name": "宜蘭運動公園匹克球場",
       "location": {
         "address": "宜蘭縣宜蘭市中山路一段755號",
-        "lat": 24.7605,
-        "lng": 121.7536,
+        "lat": 24.738646,
+        "lng": 121.753621,
         "city": "宜蘭縣",
         "district": "宜蘭市"
       },
@@ -439,8 +509,25 @@
         "國際賽事場地",
         "縣府增建 1,500㎡ 風雨多元球場（至少 6 面），預計 2026 年底完工"
       ],
-      "last_updated": "2026-07-14",
-      "reviews": "宜蘭地區最大匹克球場，曾舉辦國際賽事"
+      "last_updated": "2026-09-02",
+      "reviews": "宜蘭地區最大匹克球場，曾舉辦國際賽事",
+      "iplay": {
+        "venue": "宜蘭運動公園－田徑場",
+        "authority": "宜蘭縣立體育場",
+        "operator": "宜蘭縣立體育場",
+        "tel": "03-9254034",
+        "website": "https://gym.e-land.gov.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "免費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "宜蘭市中山路一段755號",
+        "gym_id": 2489,
+        "transit": "宜蘭轉運站搭乘【1766】路線往南方澳方向，於宜蘭運動公園站下車。",
+        "indoor_outdoor": "室外設施",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/2489"
+      }
     },
     {
       "id": 13,
@@ -509,8 +596,8 @@
       "name": "台北市萬華運動中心",
       "location": {
         "address": "台北市萬華區西藏路125-1號",
-        "lat": 25.0363,
-        "lng": 121.4978,
+        "lat": 25.047518,
+        "lng": 121.506751,
         "city": "台北市",
         "district": "萬華區"
       },
@@ -532,16 +619,36 @@
       ],
       "website": "http://whsc.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2025-12-10",
-      "reviews": "萬華區運動中心，社區球友活躍"
+      "last_updated": "2026-09-02",
+      "reviews": "萬華區運動中心，社區球友活躍",
+      "iplay": {
+        "venue": "臺北市萬華運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "匯陽百貨",
+        "tel": "02-23759900",
+        "website": "http://whsc.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市萬華區西寧南路6之1號",
+        "gym_id": 8100,
+        "transit": "捷運北門站1號出口，由塔城街往中華路一段前行，於洛陽街右轉直行約8分鐘即達。捷運西門站6號出口，沿峨嵋街右轉西寧南路方向，步行約10分鐘即達。",
+        "indoor_outdoor": "室內設施/室外設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/8100"
+      }
     },
     {
       "id": 16,
       "name": "台北市內湖運動中心",
       "location": {
         "address": "台北市內湖區洲子街12號",
-        "lat": 25.0787,
-        "lng": 121.5705,
+        "lat": 25.078292,
+        "lng": 121.575201,
         "city": "台北市",
         "district": "內湖區"
       },
@@ -566,16 +673,36 @@
       ],
       "website": "https://nhsc.cyc.org.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2025-12-10",
-      "reviews": "內湖科技園區周邊，上班族運動好選擇"
+      "last_updated": "2026-09-02",
+      "reviews": "內湖科技園區周邊，上班族運動好選擇",
+      "iplay": {
+        "venue": "臺北市內湖運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "救國團",
+        "tel": "02-26562869",
+        "website": "https://nhsc.cyc.org.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市內湖區洲子街12號",
+        "gym_id": 14619,
+        "transit": "捷運文湖線港墘站2號出口，沿內湖高工至洲子街",
+        "indoor_outdoor": "室內設施/室外設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/14619"
+      }
     },
     {
       "id": 17,
       "name": "捷運北投會館",
       "location": {
         "address": "台北市北投區大業路527巷88號",
-        "lat": 25.132,
-        "lng": 121.501,
+        "lat": 25.134621,
+        "lng": 121.483825,
         "city": "台北市",
         "district": "北投區"
       },
@@ -592,16 +719,36 @@
         "更衣室",
         "停車場"
       ],
-      "last_updated": "2025-12-10",
-      "reviews": "北投區室內球場選擇"
+      "last_updated": "2026-09-02",
+      "reviews": "北投區室內球場選擇",
+      "iplay": {
+        "venue": "臺北捷運北投會館",
+        "authority": "臺北大眾捷運",
+        "operator": "北捷",
+        "tel": "02-28930105#8320",
+        "website": "https://btresort.metro.taipei/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市北投區大業路527巷88號",
+        "gym_id": 20424,
+        "transit": "捷運淡水信義線復興崗站下車後，直接上捷運站2樓，往2號出口「北投機廠」出站，經過天橋後再依指標往「北投會館」行走。",
+        "indoor_outdoor": "室內設施/室外設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "週一至週五 15:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/20424"
+      }
     },
     {
       "id": 18,
       "name": "台北市南港運動中心",
       "location": {
         "address": "台北市南港區玉成街69號",
-        "lat": 25.0508,
-        "lng": 121.5908,
+        "lat": 25.048951,
+        "lng": 121.581853,
         "city": "台北市",
         "district": "南港區"
       },
@@ -622,16 +769,36 @@
         "冷氣"
       ],
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2025-12-10",
-      "reviews": "南港軟體園區附近，科技業球友眾多"
+      "last_updated": "2026-09-02",
+      "reviews": "南港軟體園區附近，科技業球友眾多",
+      "iplay": {
+        "venue": "臺北市南港運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "救國團",
+        "tel": "02-26532279",
+        "website": "https://ngsc.cyc.org.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市南港區玉成街69號",
+        "gym_id": 10274,
+        "transit": "捷運板南線後山埤站4號出口（忠孝東路六段9巷），直走接玉成街左轉後步行約5分鐘即達。捷運松山線松山站4A出口，沿市民大道六段直行至玉成街交叉口即達。火車松山站向東步行約200公尺。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/10274"
+      }
     },
     {
       "id": 19,
       "name": "台北市大安運動中心",
       "location": {
         "address": "台北市大安區辛亥路三段55號",
-        "lat": 25.0161,
-        "lng": 121.5435,
+        "lat": 25.020533,
+        "lng": 121.545779,
         "city": "台北市",
         "district": "大安區"
       },
@@ -653,8 +820,28 @@
       ],
       "website": "https://www.daansports.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2025-12-10",
-      "reviews": "大安區優質運動中心，設施新穎"
+      "last_updated": "2026-09-02",
+      "reviews": "大安區優質運動中心，設施新穎",
+      "iplay": {
+        "venue": "臺北市大安運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "長佳機電",
+        "tel": "02-23770300",
+        "website": "https://www.daansports.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市大安區辛亥路三段55號",
+        "gym_id": 14297,
+        "transit": "捷運文湖線科技大樓站下車，直行復興南路左轉辛亥路步行約12-15分鐘；或六張犁站下車，直行基隆路右轉辛亥路步行約12-15分鐘即達。",
+        "indoor_outdoor": "室內設施/室外設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/14297"
+      }
     },
     {
       "id": 20,
@@ -811,8 +998,8 @@
       "name": "新北市新莊國民運動中心",
       "location": {
         "address": "新北市新莊區中華路一段75號",
-        "lat": 25.0371,
-        "lng": 121.4351,
+        "lat": 25.039576,
+        "lng": 121.448348,
         "city": "新北市",
         "district": "新莊區"
       },
@@ -833,16 +1020,36 @@
         "冷氣"
       ],
       "website": "https://www.xzsports.com.tw/",
-      "last_updated": "2025-12-10",
-      "reviews": "新莊區大型運動中心，球場數量充足"
+      "last_updated": "2026-09-02",
+      "reviews": "新莊區大型運動中心，球場數量充足",
+      "iplay": {
+        "venue": "新莊國民運動中心",
+        "authority": "新北市政府體育局",
+        "operator": "頂尖運動行銷",
+        "tel": "02-77288898",
+        "website": "https://www.xzsports.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "新北市新莊區公園路11號",
+        "gym_id": 20269,
+        "transit": "捷運中和新蘆線新莊站1號出口，往中華路一段直行約5分鐘，到公園路後左轉直行5分鐘即可到達。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/20269"
+      }
     },
     {
       "id": 26,
       "name": "台北市華中河濱公園匹克球場",
       "location": {
         "address": "台北市萬華區華中河濱公園",
-        "lat": 25.019,
-        "lng": 121.4985,
+        "lat": 25.016235,
+        "lng": 121.494407,
         "city": "台北市",
         "district": "萬華區"
       },
@@ -865,8 +1072,26 @@
         "河濱公園",
         "夜間照明佳"
       ],
-      "last_updated": "2026-07-22",
-      "reviews": "河濱公園球場，夜間照明佳，球友眾多"
+      "last_updated": "2026-09-02",
+      "reviews": "河濱公園球場，夜間照明佳，球友眾多",
+      "iplay": {
+        "venue": "華中河濱公園",
+        "authority": "臺北市政府體育局",
+        "operator": "臺北市政府體育局",
+        "tel": "02-25702330",
+        "website": "https://vbs.sports.taipei/",
+        "park": "無停車場",
+        "verified": "2026-09-02",
+        "open_condition": "免費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "免費對外場地租借",
+        "address": "華中橋下游約100M兒童遊戲區旁溜冰場",
+        "gym_id": 11926,
+        "transit": "公車 38、38（區間車）、532、601",
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/11926"
+      }
     },
     {
       "id": 27,
@@ -997,8 +1222,8 @@
       "name": "新竹縣竹北國民運動中心",
       "location": {
         "address": "新竹縣竹北市福興路920號",
-        "lat": 24.8362,
-        "lng": 121.0113,
+        "lat": 24.820622,
+        "lng": 121.021762,
         "city": "新竹縣",
         "district": "竹北市"
       },
@@ -1018,8 +1243,28 @@
         "飲水機",
         "冷氣"
       ],
-      "last_updated": "2025-12-10",
-      "reviews": "竹北地區新穎運動中心"
+      "last_updated": "2026-09-02",
+      "reviews": "竹北地區新穎運動中心",
+      "iplay": {
+        "venue": "新竹縣竹北國民運動中心",
+        "authority": "新竹縣體育場",
+        "operator": "遠東鐵櫃",
+        "tel": "03-5500222",
+        "website": "https://www.zbsports.com.tw/",
+        "park": "一般停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "新竹縣竹北市莊敬南路18號",
+        "gym_id": 25797,
+        "transit": "公車 60、61、61A 支線",
+        "indoor_outdoor": "室內設施/室外設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/25797"
+      }
     },
     {
       "id": 32,
@@ -1051,8 +1296,8 @@
       "name": "屏東廣興匹克球場",
       "location": {
         "address": "屏東縣屏東市廣興里",
-        "lat": 22.68,
-        "lng": 120.485,
+        "lat": 22.69234,
+        "lng": 120.488185,
         "city": "屏東縣",
         "district": "屏東市"
       },
@@ -1068,16 +1313,26 @@
       "facilities": [
         "廁所"
       ],
-      "last_updated": "2025-12-10",
-      "reviews": "屏東社區匹克球場"
+      "last_updated": "2026-09-02",
+      "reviews": "屏東社區匹克球場",
+      "iplay": {
+        "venue": "屏東市廣興公園網球場",
+        "verified": "2026-09-02",
+        "note": "依 iPlay 廣興公園網球場座標定位",
+        "address": "屏東市敬軍路屏東監理站汽車考照場旁",
+        "gym_id": 15691,
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15691"
+      }
     },
     {
       "id": 34,
       "name": "台北市松山運動中心",
       "location": {
         "address": "台北市松山區敦化北路1號",
-        "lat": 25.0502,
-        "lng": 121.5485,
+        "lat": 25.048577,
+        "lng": 121.550192,
         "city": "台北市",
         "district": "松山區"
       },
@@ -1102,8 +1357,28 @@
       ],
       "website": "https://sssc.com.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2025-12-10",
-      "reviews": "松山區交通便利，捷運可達"
+      "last_updated": "2026-09-02",
+      "reviews": "松山區交通便利，捷運可達",
+      "iplay": {
+        "venue": "臺北市松山運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "匯陽百貨",
+        "tel": "02-77555058",
+        "website": "http://sssc.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市松山區敦化北路1號",
+        "gym_id": 8147,
+        "transit": "捷運台北小巨蛋站：往西走南京東路四段朝敦化北路前進，於敦化北路向左轉八德路約100公尺。YouBike：臺北田徑場、社教館站。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/8147"
+      }
     },
     {
       "id": 57,
@@ -1167,8 +1442,8 @@
       "name": "台北市中山運動中心",
       "location": {
         "address": "台北市中山區中山北路二段44號",
-        "lat": 25.0547,
-        "lng": 121.5225,
+        "lat": 25.054827,
+        "lng": 121.521411,
         "city": "台北市",
         "district": "中山區"
       },
@@ -1192,16 +1467,36 @@
         "近捷運雙連站"
       ],
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2025-12-10",
-      "reviews": "中山區中心位置，近捷運雙連站"
+      "last_updated": "2026-09-02",
+      "reviews": "中山區中心位置，近捷運雙連站",
+      "iplay": {
+        "venue": "臺北市中山運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "救國團",
+        "tel": "02-25811060",
+        "website": "https://cssc.cyc.org.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市中山區中山北路2段44巷2號",
+        "gym_id": 10271,
+        "transit": "捷運淡水信義線雙連站：沿捷運地下書街往中山站方向至 R9 出口，步行約2分鐘。中山站：沿地下書街往雙連站方向至 R7 出口，步行約5分鐘。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/10271"
+      }
     },
     {
       "id": 36,
       "name": "台北市文山運動中心",
       "location": {
         "address": "台北市文山區興隆路三段222號",
-        "lat": 24.9869,
-        "lng": 121.5455,
+        "lat": 24.997009,
+        "lng": 121.559687,
         "city": "台北市",
         "district": "文山區"
       },
@@ -1222,8 +1517,28 @@
         "冷氣"
       ],
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2025-12-10",
-      "reviews": "文山區社區型運動中心"
+      "last_updated": "2026-09-02",
+      "reviews": "文山區社區型運動中心",
+      "iplay": {
+        "venue": "臺北市文山運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "救國團",
+        "tel": "02-22308268",
+        "website": "https://wssc.cyc.org.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "臺北市文山區興隆路三段222號",
+        "gym_id": 9686,
+        "transit": "捷運文湖線萬芳醫院站下車，出站後往左邊走，步行約5-6分鐘即可到達。公車下車站名：文山運動中心、萬芳路口或警察學校（236、237、676、530、606、671、0南、棕11、253、棕2、棕3、棕6、棕12、綠2、611、298）",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/9686"
+      }
     },
     {
       "id": 37,
@@ -1259,8 +1574,8 @@
       "name": "桃園市蘆竹國民運動中心",
       "location": {
         "address": "桃園市蘆竹區中正路1號",
-        "lat": 25.0454,
-        "lng": 121.2915,
+        "lat": 25.051168,
+        "lng": 121.294411,
         "city": "桃園市",
         "district": "蘆竹區"
       },
@@ -1284,8 +1599,28 @@
         "冷氣充足"
       ],
       "website": "https://www.tyfa.com.tw/",
-      "last_updated": "2025-12-10",
-      "reviews": "桃園地區優質室內球場"
+      "last_updated": "2026-09-02",
+      "reviews": "桃園地區優質室內球場",
+      "iplay": {
+        "venue": "桃園市蘆竹國民運動中心",
+        "authority": "桃園市政府體育局",
+        "operator": "長佳機電",
+        "tel": "03-2639066",
+        "website": "http://www.lzsports.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "桃園市蘆竹區仁愛路一段49號",
+        "gym_id": 26199,
+        "transit": "公車吉林路口站、仁愛五福路口站（5014，步行約2分鐘）；婦幼館站（L302、L302A、L302B、L308、L308A，步行約2分鐘）；南山路口站（106、5015、5016、5020-5023、5069、5071、5073，步行約5分鐘）",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/26199"
+      }
     },
     {
       "id": 39,
@@ -1321,8 +1656,8 @@
       "name": "台中北區國民運動中心",
       "location": {
         "address": "台中市北區崇德路一段55號",
-        "lat": 24.1625,
-        "lng": 120.6844,
+        "lat": 24.156915,
+        "lng": 120.683758,
         "city": "台中市",
         "district": "北區"
       },
@@ -1347,8 +1682,28 @@
         "場地數量多"
       ],
       "website": "https://www.tcsc.com.tw/",
-      "last_updated": "2025-12-10",
-      "reviews": "台中地區場地數量最多"
+      "last_updated": "2026-09-02",
+      "reviews": "台中地區場地數量最多",
+      "iplay": {
+        "venue": "臺中市北區國民運動中心",
+        "authority": "臺中市政府運動局",
+        "operator": "鄭資盛",
+        "tel": "04-22356555",
+        "website": "http://tndcsc.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺中市北區崇德路一段55號",
+        "gym_id": 23686,
+        "transit": "臺中火車站搭公車 12、58、58副、65、71、324 於北區國民運動中心站下車。一中商圈步行2分鐘至臺中科技大學，搭 201、304、307、303、308、324 於北區國民運動中心站下車。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23686"
+      }
     },
     {
       "id": 41,
@@ -1411,8 +1766,8 @@
       "name": "南投縣埔里鎮立綜合球場",
       "location": {
         "address": "南投縣埔里鎮六合路228號",
-        "lat": 23.966,
-        "lng": 120.969,
+        "lat": 23.969887,
+        "lng": 120.970818,
         "city": "南投縣",
         "district": "埔里鎮"
       },
@@ -1431,8 +1786,27 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "埔里室內球場，適合下雨天打球"
+      "last_updated": "2026-09-02",
+      "reviews": "埔里室內球場，適合下雨天打球",
+      "iplay": {
+        "venue": "埔里鎮立綜合球場",
+        "authority": "埔里鎮公所",
+        "operator": "民政課",
+        "tel": "049-2984040#170",
+        "website": "https://www.puli.gov.tw/",
+        "park": "一般停車場",
+        "verified": "2026-09-02",
+        "open_condition": "免費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "南投縣埔里鎮六合路228號",
+        "gym_id": 11902,
+        "transit": "無任何大眾運輸工具經過此處，須自行前往。",
+        "indoor_outdoor": "半室內設施（有頂蓋但外牆未密封）",
+        "lighting": true,
+        "open_time": "06:00-21:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/11902"
+      }
     },
     {
       "id": 44,
@@ -1495,8 +1869,8 @@
       "name": "新北市五股公民會館",
       "location": {
         "address": "新北市五股區御史路1巷59號",
-        "lat": 25.085,
-        "lng": 121.44,
+        "lat": 25.090303,
+        "lng": 121.440212,
         "city": "新北市",
         "district": "五股區"
       },
@@ -1515,7 +1889,7 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
+      "last_updated": "2026-09-02",
       "reviews": "五股區室內好去處，價格親民"
     },
     {
@@ -1523,8 +1897,8 @@
       "name": "台北市景美河濱球場",
       "location": {
         "address": "台北市文山區景美河濱公園",
-        "lat": 25.0,
-        "lng": 121.53,
+        "lat": 24.989776,
+        "lng": 121.536555,
         "city": "台北市",
         "district": "文山區"
       },
@@ -1543,19 +1917,30 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-09-02",
       "reviews": "河濱公園空氣好，週末晨練好去處",
       "features": [
         "2026/3/16 起 2 號羽球場改為羽球/匹克球共用"
-      ]
+      ],
+      "iplay": {
+        "venue": "景美河濱公園溜冰場",
+        "verified": "2026-09-02",
+        "note": "iPlay 座標為園內溜冰場區域，河濱公園呈長條狀，實際球場位置可能略有差異",
+        "address": "臺北市文山區鄰近育英疏散門（景一疏散門）",
+        "gym_id": 23199,
+        "transit": "捷運松山新店線景美站下車後步行約10分鐘。公車905於中正環河路口站下車後步行約19分鐘。",
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23199"
+      }
     },
     {
       "id": 48,
       "name": "台北市南湖國小",
       "location": {
         "address": "台北市內湖區康寧路三段200號",
-        "lat": 25.07,
-        "lng": 121.61,
+        "lat": 25.068032,
+        "lng": 121.610185,
         "city": "台北市",
         "district": "內湖區"
       },
@@ -1574,16 +1959,29 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "內湖熱門學校場地，需提前預約"
+      "last_updated": "2026-09-02",
+      "reviews": "內湖熱門學校場地，需提前預約",
+      "iplay": {
+        "venue": "南湖國小田徑場",
+        "authority": "市立南湖國小",
+        "operator": "林淑華",
+        "tel": "02-26321296#54",
+        "website": "http://www.nhps.tp.edu.tw",
+        "verified": "2026-09-02",
+        "note": "iPlay 比對到的是同場館內其他設施，僅採用場館層級資料",
+        "address": "臺北市內湖區康寧路3段200號",
+        "gym_id": 26132,
+        "transit": "捷運文湖線東湖站2號出口即達。",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/26132"
+      }
     },
     {
       "id": 49,
       "name": "台北市幸安國小",
       "location": {
         "address": "台北市大安區仁愛路三段22號",
-        "lat": 25.038,
-        "lng": 121.535,
+        "lat": 25.036851,
+        "lng": 121.534477,
         "city": "台北市",
         "district": "大安區"
       },
@@ -1601,16 +1999,36 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "大安區市中心，交通便利"
+      "last_updated": "2026-09-02",
+      "reviews": "大安區市中心，交通便利",
+      "iplay": {
+        "venue": "幸安國小活動中心",
+        "authority": "市立幸安國小",
+        "operator": "體育組",
+        "tel": "02-27074191",
+        "website": "http://www.haps.tp.edu.tw",
+        "park": "無停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五",
+        "rent": "付費對外場地租借",
+        "address": "臺北市大安區仁愛路3段22號",
+        "gym_id": 14952,
+        "transit": "捷運忠孝新生站或大安森林公園站",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "18:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/14952"
+      }
     },
     {
       "id": 50,
       "name": "新北市板橋新埔國小",
       "location": {
         "address": "新北市板橋區陽明街206號",
-        "lat": 25.02,
-        "lng": 121.46,
+        "lat": 25.026678,
+        "lng": 121.462419,
         "city": "新北市",
         "district": "板橋區"
       },
@@ -1628,16 +2046,24 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "板橋地區學校場地，平日晚上開放"
+      "last_updated": "2026-09-02",
+      "reviews": "板橋地區學校場地，平日晚上開放",
+      "iplay": {
+        "venue": "新埔國小操場",
+        "verified": "2026-09-02",
+        "address": "新北市板橋區陽明街206號",
+        "gym_id": 21979,
+        "transit": "捷運板南線新埔站1號出口步行10分鐘即達；環狀線民生新埔站步行10分鐘即達。公車857於新埔國小站下車即達。YouBike 可停放於四維公園站點。",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/21979"
+      }
     },
     {
       "id": 51,
       "name": "台北市士林天母公園",
       "location": {
         "address": "台北市士林區中山北路七段141巷旁",
-        "lat": 25.125,
-        "lng": 121.53,
+        "lat": 25.125703,
+        "lng": 121.530542,
         "city": "台北市",
         "district": "士林區"
       },
@@ -1655,8 +2081,25 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "天母公園戶外場地，環境清幽"
+      "last_updated": "2026-09-02",
+      "reviews": "天母公園戶外場地，環境清幽",
+      "iplay": {
+        "venue": "天母公園",
+        "authority": "臺北市公園處",
+        "operator": "管理員",
+        "tel": "02-25702330#6535",
+        "park": "一般停車場",
+        "verified": "2026-09-02",
+        "open_condition": "免費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "臺北市士林區中山北路7段319巷",
+        "gym_id": 23053,
+        "transit": "捷運芝山站轉乘601號公車，或捷運劍潭站轉乘220、267等公車至天母站下車，轉入巷內5分鐘內即可抵達。",
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23053"
+      }
     },
     {
       "id": 52,
@@ -1693,7 +2136,7 @@
       "booking_url": "https://www.tsc.taipei/",
       "is_new": false,
       "added_date": "2026-03",
-      "last_updated": "2026-07-14",
+      "last_updated": "2025-12-10",
       "reviews": "台北頂級運動中心新增匹克球設施，環境專業舒適"
     },
     {
@@ -1781,8 +2224,8 @@
       "name": "永春高中匹克球場",
       "location": {
         "address": "台北市信義區松山路 654 號",
-        "lat": 25.0412,
-        "lng": 121.578,
+        "lat": 25.034034,
+        "lng": 121.578333,
         "city": "台北市",
         "district": "信義區"
       },
@@ -1806,8 +2249,28 @@
       ],
       "is_new": false,
       "added_date": "2026-02",
-      "last_updated": "2026-07-14",
-      "reviews": "信義區學校場地，下班後去打剛剛好"
+      "last_updated": "2026-09-02",
+      "reviews": "信義區學校場地，下班後去打剛剛好",
+      "iplay": {
+        "venue": "永春高中活動中心",
+        "authority": "市立永春高中",
+        "operator": "體育室",
+        "tel": "02-27272983",
+        "website": "http://www.ycsh.tp.edu.tw",
+        "park": "無停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "六",
+        "rent": "付費對外場地租借",
+        "address": "臺北市信義區松山路654號",
+        "gym_id": 14783,
+        "transit": "公車永春高中站（20、33、299、286）。捷運信義線象山站2號出口轉乘20公車至終點站永春高中；捷運永春站4號出口轉搭299公車至終點站。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "17:00-19:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/14783"
+      }
     },
     {
       "id": 59,
@@ -1854,8 +2317,8 @@
       "name": "台北市青年公園匹克球場",
       "location": {
         "address": "台北市萬華區水源路199號",
-        "lat": 25.0277,
-        "lng": 121.504,
+        "lat": 25.023371,
+        "lng": 121.503489,
         "city": "台北市",
         "district": "萬華區"
       },
@@ -1880,16 +2343,35 @@
       ],
       "is_new": false,
       "added_date": "2026-02",
-      "last_updated": "2026-07-14",
-      "reviews": "青年公園內羽球場改打匹克球，開放至凌晨，市區免費首選之一"
+      "last_updated": "2026-09-02",
+      "reviews": "青年公園內羽球場改打匹克球，開放至凌晨，市區免費首選之一",
+      "iplay": {
+        "venue": "青年公園棒球場",
+        "authority": "臺北市政府體育局",
+        "operator": "運動設施科",
+        "tel": "02-25702330",
+        "website": "https://sports.gov.taipei/",
+        "park": "一般停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市萬華區水源路199號",
+        "gym_id": 11919,
+        "transit": "捷運古亭站或西門站，再轉乘公車 12、藍29、205、212直達車、532、630，於青年路站下車。",
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "open_time": "08:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/11919"
+      }
     },
     {
       "id": 61,
       "name": "台北市北投明德球場",
       "location": {
         "address": "台北市北投區明德路165號旁",
-        "lat": 25.1095,
-        "lng": 121.5168,
+        "lat": 25.112283,
+        "lng": 121.52227,
         "city": "台北市",
         "district": "北投區"
       },
@@ -1910,8 +2392,20 @@
       ],
       "is_new": false,
       "added_date": "2026-02",
-      "last_updated": "2026-07-14",
-      "reviews": "北投明德路旁專用球場，僅日間開放"
+      "last_updated": "2026-09-02",
+      "reviews": "北投明德路旁專用球場，僅日間開放",
+      "iplay": {
+        "venue": "明德國小活動中心",
+        "verified": "2026-09-02",
+        "address": "臺北市北投區明德路190號",
+        "gym_id": 15141,
+        "transit": "捷運淡水信義線明德站，出口左轉明德路直走即達。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "08:00-14:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15141"
+      }
     },
     {
       "id": 62,
@@ -2014,9 +2508,9 @@
       "id": 65,
       "name": "竹北星空匹克球場",
       "location": {
-        "address": "新竹縣竹北市興隆路（興隆國小旁公園）",
-        "lat": 24.821,
-        "lng": 121.007,
+        "address": "新竹縣竹北市自強一路與文興路口（公25公園）",
+        "lat": 24.817703,
+        "lng": 121.014308,
         "city": "新竹縣",
         "district": "竹北市"
       },
@@ -2036,12 +2530,23 @@
       "features": [
         "大新竹首座公立匹克球場",
         "薰衣紫主題場",
-        "與星空網球場相鄰"
+        "與星空網球場相鄰",
+        "位於公25公園，官方登記名為「公25網球(匹克球)場」"
       ],
       "is_new": false,
       "added_date": "2026-03",
-      "last_updated": "2026-07-14",
-      "reviews": "竹北市公所打造，2026/3/27 啟用，大新竹地區唯一公立匹克球場"
+      "last_updated": "2026-09-02",
+      "reviews": "竹北市公所打造，2026/3/27 啟用，大新竹地區唯一公立匹克球場",
+      "iplay": {
+        "venue": "公25網球(匹克球)場",
+        "gym_id": 33421,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/33421",
+        "address": "竹北市自強一路與文興路交叉口",
+        "tel": "03-5515919#458",
+        "authority": "竹北市公所",
+        "rent": "付費對外場地租借",
+        "verified": "2026-09-02"
+      }
     },
     {
       "id": 66,
@@ -2310,8 +2815,8 @@
       "name": "淡水國民運動中心匹克球場",
       "location": {
         "address": "新北市淡水區（三樓綜合球場）",
-        "lat": 25.1747,
-        "lng": 121.4451,
+        "lat": 25.187406,
+        "lng": 121.443165,
         "city": "新北市",
         "district": "淡水區"
       },
@@ -2338,8 +2843,28 @@
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "2025 年封館整修後於 2026 年 1 月試營運重啟，正式支援匹克球"
+      "last_updated": "2026-09-02",
+      "reviews": "2025 年封館整修後於 2026 年 1 月試營運重啟，正式支援匹克球",
+      "iplay": {
+        "venue": "淡水國民運動中心",
+        "authority": "新北市政府體育局",
+        "operator": "桑斯伯國際",
+        "tel": "02-26261891",
+        "website": "http://tssc.tw",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "新北市淡水區中山北路二段381巷2號",
+        "gym_id": 16742,
+        "transit": "捷運淡水站2號出口轉乘公車：860、862、863、紅37至新市國小站下車步行約3分鐘；紅36、紅39至米粉寮站下車步行約10分鐘；871至國民運動中心站下車。淡海輕軌行政中心站下車步行5分鐘。",
+        "indoor_outdoor": "室內設施/室外設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16742"
+      }
     },
     {
       "id": 75,
@@ -2567,8 +3092,8 @@
       "name": "台北市中正運動中心",
       "location": {
         "address": "台北市中正區信義路一段1號",
-        "lat": 25.0337,
-        "lng": 121.5185,
+        "lat": 25.038203,
+        "lng": 121.519306,
         "city": "台北市",
         "district": "中正區"
       },
@@ -2591,16 +3116,36 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "中正運動中心開放匹克球固定時段"
+      "last_updated": "2026-09-02",
+      "reviews": "中正運動中心開放匹克球固定時段",
+      "iplay": {
+        "venue": "臺北市中正運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "舞動陽光",
+        "tel": "02-23961000",
+        "website": "https://wsjjsc.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市中正區信義路1段1號",
+        "gym_id": 9627,
+        "transit": "捷運松山新店線中正紀念堂站2號出口步行約5分鐘即達；捷運淡水信義線台大醫院站2號出口步行約5分鐘即達。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/9627"
+      }
     },
     {
       "id": 82,
       "name": "台北市大同運動中心",
       "location": {
         "address": "台北市大同區大龍街51號",
-        "lat": 25.0656,
-        "lng": 121.5157,
+        "lat": 25.06527,
+        "lng": 121.516347,
         "city": "台北市",
         "district": "大同區"
       },
@@ -2622,8 +3167,28 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "大同運動中心週六早上開放匹克球"
+      "last_updated": "2026-09-02",
+      "reviews": "大同運動中心週六早上開放匹克球",
+      "iplay": {
+        "venue": "臺北市大同運動中心",
+        "authority": "臺北市政府體育局",
+        "operator": "舞動陽光",
+        "tel": "02-25920055",
+        "website": "http://www.dtsc-wdyg.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "臺北市大同區大龍街51號",
+        "gym_id": 10272,
+        "transit": "捷運淡水線民權西路站下車，沿民權西路朝西往承德路方向，於大龍街口右轉直行約500公尺即達。捷運蘆洲線大橋頭站下車，沿民權東路朝東往承德路方向，於大龍街口左轉直行約500公尺即達。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/10272"
+      }
     },
     {
       "id": 83,
@@ -2660,8 +3225,8 @@
       "name": "台北市東陽公園匹克球場",
       "location": {
         "address": "台北市南港區東陽公園",
-        "lat": 25.0553,
-        "lng": 121.6062,
+        "lat": 25.057749,
+        "lng": 121.599171,
         "city": "台北市",
         "district": "南港區"
       },
@@ -2680,16 +3245,34 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "南港免費戶外劃線場，需自備球網"
+      "last_updated": "2026-09-02",
+      "reviews": "南港免費戶外劃線場，需自備球網",
+      "iplay": {
+        "venue": "東陽公園",
+        "authority": "臺北市公園處",
+        "operator": "管理員",
+        "tel": "02-25702330",
+        "website": "https://sports.tms.gov.tw/",
+        "park": "無停車場",
+        "verified": "2026-09-02",
+        "open_condition": "免費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "免費對外場地租借",
+        "address": "臺北市南港區重陽路187巷6號",
+        "gym_id": 23157,
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "open_time": "08:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23157"
+      }
     },
     {
       "id": 85,
       "name": "台北市紫陽公園匹克球場",
       "location": {
         "address": "台北市內湖區紫陽公園",
-        "lat": 25.0662,
-        "lng": 121.5885,
+        "lat": 25.07697,
+        "lng": 121.586745,
         "city": "台北市",
         "district": "內湖區"
       },
@@ -2708,16 +3291,26 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "內湖免費戶外劃線場"
+      "last_updated": "2026-09-02",
+      "reviews": "內湖免費戶外劃線場",
+      "iplay": {
+        "venue": "內湖區紫陽綠地",
+        "verified": "2026-09-02",
+        "address": "臺北市內湖區文德路210巷30弄附近",
+        "gym_id": 15630,
+        "transit": "捷運文德站，下車後步行約1分鐘",
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/15630"
+      }
     },
     {
       "id": 86,
       "name": "板橋國民運動中心匹克球場",
       "location": {
         "address": "新北市板橋區智樂路6號",
-        "lat": 25.0142,
-        "lng": 121.4642,
+        "lat": 25.02258,
+        "lng": 121.457584,
         "city": "新北市",
         "district": "板橋區"
       },
@@ -2742,10 +3335,30 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-09-02",
       "reviews": "板橋國運中心官方開放匹克球租用，室內露天雙選擇",
       "price_details": {
         "rental": "球拍組 NT$50"
+      },
+      "iplay": {
+        "venue": "板橋國民運動中心",
+        "authority": "新北市政府體育局",
+        "operator": "長佳機電",
+        "tel": "02-22588886",
+        "website": "http://www.bqsports.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "新北市板橋區智樂路6號",
+        "gym_id": 17888,
+        "transit": "公車658、857、橘5於板橋國民運動中心站下車。310、307、810、786至板橋國中（板橋435藝文特區）下車步行約5分鐘。藍32於聯合醫院板橋院區站下車步行約2分鐘。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/17888"
       }
     },
     {
@@ -2753,8 +3366,8 @@
       "name": "鶯歌國民運動中心匹克球場",
       "location": {
         "address": "新北市鶯歌區（鶯歌國民運動中心）",
-        "lat": 24.9545,
-        "lng": 121.3542,
+        "lat": 24.953855,
+        "lng": 121.35777,
         "city": "新北市",
         "district": "鶯歌區"
       },
@@ -2776,16 +3389,36 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "鶯歌國運中心開放匹克球時段"
+      "last_updated": "2026-09-02",
+      "reviews": "鶯歌國運中心開放匹克球時段",
+      "iplay": {
+        "venue": "鶯歌國民運動中心",
+        "authority": "新北市政府體育局",
+        "operator": "全越運動事業",
+        "tel": "02-27990011",
+        "website": "https://scysports.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "新北市鶯歌區館前路250號",
+        "gym_id": 24234,
+        "transit": "搭車至鶯歌火車站，於前站下車後步行約10-15分鐘",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/24234"
+      }
     },
     {
       "id": 88,
       "name": "土城國民運動中心匹克球場",
       "location": {
         "address": "新北市土城區金城路二段247-1號",
-        "lat": 24.9727,
-        "lng": 121.4432,
+        "lat": 24.985426,
+        "lng": 121.457216,
         "city": "新北市",
         "district": "土城區"
       },
@@ -2807,16 +3440,36 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "土城國運中心匹克球時段"
+      "last_updated": "2026-09-02",
+      "reviews": "土城國運中心匹克球時段",
+      "iplay": {
+        "venue": "土城國民運動中心",
+        "authority": "新北市政府體育局",
+        "operator": "救國團",
+        "tel": "02-22615999",
+        "website": "https://tccsc.cyc.org.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "新北市土城區金城路二段247-1號",
+        "gym_id": 16723,
+        "transit": "捷運板南線海山站3號裕民路出口，至裕民路後轉搭藍41公車至廣川醫院，下車步行約3分鐘抵達。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16723"
+      }
     },
     {
       "id": 89,
       "name": "三峽國民運動中心匹克球場",
       "location": {
         "address": "新北市三峽區文化路210巷12號",
-        "lat": 24.9352,
-        "lng": 121.3692,
+        "lat": 24.937965,
+        "lng": 121.368325,
         "city": "新北市",
         "district": "三峽區"
       },
@@ -2839,16 +3492,36 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "三峽國運中心 3F 開放匹克球，亦為金碧盃比賽場地"
+      "last_updated": "2026-09-02",
+      "reviews": "三峽國運中心 3F 開放匹克球，亦為金碧盃比賽場地",
+      "iplay": {
+        "venue": "三峽國民運動中心",
+        "authority": "新北市政府體育局",
+        "operator": "全越運動事業",
+        "tel": "02-27990011",
+        "website": "https://scysports.com.tw/",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "新北市三峽區文化路210巷12號",
+        "gym_id": 24233,
+        "transit": "公車三峽國小站（702、778、779、802、807、885、908、910、916、5001、5005）、三峽國中站（702、705、706、889、908、910）、臺北大學三峽校區站（702、889、908、910、916、921、932、939、941、981）",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/24233"
+      }
     },
     {
       "id": 90,
       "name": "蘆洲國民運動中心匹克球場",
       "location": {
         "address": "新北市蘆洲區長樂路103號",
-        "lat": 25.0857,
-        "lng": 121.4737,
+        "lat": 25.091118,
+        "lng": 121.462398,
         "city": "新北市",
         "district": "蘆洲區"
       },
@@ -2870,8 +3543,28 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "蘆洲國運中心週二開放匹克球"
+      "last_updated": "2026-09-02",
+      "reviews": "蘆洲國運中心週二開放匹克球",
+      "iplay": {
+        "venue": "蘆洲國民運動中心",
+        "authority": "新北市政府體育局",
+        "operator": "展昭國際",
+        "tel": "02-22810338",
+        "website": "https://lzcsc.cyc.org.tw",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "付費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "新北市蘆洲區長樂路235-1號",
+        "gym_id": 16700,
+        "transit": "捷運蘆洲線蘆洲站1號出口，過三民路後右轉至長樂路左轉即可到達。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "open_time": "06:00-22:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16700"
+      }
     },
     {
       "id": 91,
@@ -3248,8 +3941,8 @@
       "name": "新竹市西門國小匹克球場",
       "location": {
         "address": "新竹市北區西門街542號",
-        "lat": 24.8092,
-        "lng": 120.9602,
+        "lat": 24.803318,
+        "lng": 120.958738,
         "city": "新竹市",
         "district": "北區"
       },
@@ -3268,16 +3961,30 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "新竹市匹克球委員會的主要練習據點"
+      "last_updated": "2026-09-02",
+      "reviews": "新竹市匹克球委員會的主要練習據點",
+      "iplay": {
+        "venue": "西門國小棒球場",
+        "authority": "市立西門國小",
+        "operator": "阮瀚逸",
+        "tel": "03-5222492",
+        "website": "http://www.cmps.hc.edu.tw",
+        "verified": "2026-09-02",
+        "note": "iPlay 比對到的是同場館內其他設施，僅採用場館層級資料",
+        "address": "新竹市北區北大路450號",
+        "gym_id": 23298,
+        "transit": "搭乘新竹客運15號路線到西門國小下車即達。",
+        "indoor_outdoor": "室外設施",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/23298"
+      }
     },
     {
       "id": 103,
       "name": "新竹市三民國中匹克球場",
       "location": {
         "address": "新竹市東區自由路2號",
-        "lat": 24.8062,
-        "lng": 120.9772,
+        "lat": 24.812213,
+        "lng": 120.978838,
         "city": "新竹市",
         "district": "東區"
       },
@@ -3296,8 +4003,21 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "三民國中戶外場，課後與假日開放"
+      "last_updated": "2026-09-02",
+      "reviews": "三民國中戶外場，課後與假日開放",
+      "iplay": {
+        "venue": "三民國中射箭場",
+        "authority": "市立三民國中",
+        "operator": "體育組",
+        "tel": "03-5339825#125",
+        "website": "http://www.smjh.hc.edu.tw",
+        "verified": "2026-09-02",
+        "note": "iPlay 比對到的是同場館內其他設施，僅採用場館層級資料",
+        "address": "新竹市東區自由路95巷15號",
+        "gym_id": 9421,
+        "transit": "搭乘新竹市免費公車52路抵達",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/9421"
+      }
     },
     {
       "id": 104,
@@ -3798,8 +4518,8 @@
       "name": "雲林科技大學匹克球場",
       "location": {
         "address": "雲林縣斗六市大學路三段123號",
-        "lat": 23.6932,
-        "lng": 120.5342,
+        "lat": 23.692094,
+        "lng": 120.536429,
         "city": "雲林縣",
         "district": "斗六市"
       },
@@ -3818,8 +4538,26 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "雲科大戶外場，免費開放"
+      "last_updated": "2026-09-02",
+      "reviews": "雲科大戶外場，免費開放",
+      "iplay": {
+        "venue": "雲林科技大學室外排球場",
+        "authority": "國立雲林科技大學",
+        "operator": "體育室",
+        "tel": "05-5342601#2705",
+        "website": "http://www.yuntech.edu.tw",
+        "park": "一般及無障礙停車場",
+        "verified": "2026-09-02",
+        "open_condition": "免費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "付費對外場地租借",
+        "address": "雲林縣斗六市大學路三段123號",
+        "gym_id": 6021,
+        "transit": "高鐵雲林站轉搭高鐵快捷公車至本校。斗六火車站後站轉搭校車或台西客運7120（經正門）、7126（經龍潭路側門）；前站可搭日統客運7011。",
+        "indoor_outdoor": "室外設施",
+        "lighting": true,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/6021"
+      }
     },
     {
       "id": 119,
@@ -3976,8 +4714,8 @@
       "name": "高雄大同國小匹克球場",
       "location": {
         "address": "高雄市新興區大同二路165號",
-        "lat": 22.6262,
-        "lng": 120.2982,
+        "lat": 22.627811,
+        "lng": 120.299231,
         "city": "高雄市",
         "district": "新興區"
       },
@@ -3996,8 +4734,26 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "新興區大同國小晚間開放室內場"
+      "last_updated": "2026-09-02",
+      "reviews": "新興區大同國小晚間開放室內場",
+      "iplay": {
+        "venue": "大同國小光電球場",
+        "authority": "市立大同國小",
+        "operator": "總務處",
+        "tel": "07-2823039",
+        "website": "http://www.ttps.kh.edu.tw",
+        "park": "一般停車場",
+        "verified": "2026-09-02",
+        "open_condition": "免費對外開放使用",
+        "open_days": "一二三四五六日",
+        "rent": "不開放對外場地租借",
+        "address": "高雄市新興區大同一路231號",
+        "gym_id": 9181,
+        "transit": "高捷紅線R8美麗島站2號出口或R9中央公園站1號出口下車，步行約5分鐘即可到達本校。",
+        "indoor_outdoor": "室外設施",
+        "open_time": "16:30-19:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/9181"
+      }
     },
     {
       "id": 125,
@@ -4124,8 +4880,8 @@
       "name": "基隆堵南國小風雨球場",
       "location": {
         "address": "基隆市七堵區大德路120號",
-        "lat": 25.0942,
-        "lng": 121.7132,
+        "lat": 25.084122,
+        "lng": 121.692252,
         "city": "基隆市",
         "district": "七堵區"
       },
@@ -4146,8 +4902,19 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "七堵堵南國小風雨球場，晚間開放"
+      "last_updated": "2026-09-02",
+      "reviews": "七堵堵南國小風雨球場，晚間開放",
+      "iplay": {
+        "venue": "堵南國小活動中心",
+        "verified": "2026-09-02",
+        "address": "基隆市七堵區大德路120號",
+        "gym_id": 11621,
+        "transit": "基隆市公車402搭至堵南國小即可到達。火車於百福站下車，過實踐橋後沿實踐路直行，至百福橋後左轉過橋即達。",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "open_time": "19:00-21:00",
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/11621"
+      }
     },
     {
       "id": 130,
@@ -4257,6 +5024,58 @@
       "last_updated": "2026-08-23",
       "booking_url": "https://p9arena.linkcourt.app/",
       "reviews": "新竹寶山 2026 年 8 月 1 日新開幕的複合式運動館，一樓為匹克球場、二樓為棒球練習區，附寬敞淋浴間。採線上預約制（面數與收費以官方公告為準）。"
+    },
+    {
+      "id": 133,
+      "name": "匹克八里（八里運動中心）",
+      "location": {
+        "address": "新北市八里區忠孝路81號",
+        "lat": 25.160521,
+        "lng": 121.425253,
+        "city": "新北市",
+        "district": "八里區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "費用未公告，請洽八里區公所 02-2610-2621",
+      "courts_count": 1,
+      "surface": "室內硬地",
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "依場館公告",
+      "contact": "02-2610-2621",
+      "facilities": [
+        "室內場地",
+        "夜間照明",
+        "空調"
+      ],
+      "features": [
+        "八里運動中心閒置室內泳池改建",
+        "2026 年 7 月啟用",
+        "國際標準室內匹克球場",
+        "新北市八里區公所管理"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-02",
+      "reviews": "原八里運動中心（東海運動休閒中心）室內泳池因使用率低停止營運，空間改建為室內匹克球場，2026 年 7 月啟用。費用與開放時段尚未查得官方公告，前往前建議先電話確認。",
+      "iplay": {
+        "venue": "匹克八里",
+        "gym_id": 16464,
+        "page": "https://iplay.sports.gov.tw/GymInfo/Index/16464",
+        "address": "新北市八里區忠孝路81號",
+        "tel": "02-26102621",
+        "authority": "新北市八里區公所",
+        "park": "無停車場",
+        "open_condition": "開放對象無限制",
+        "rent": "不開放對外場地租借",
+        "transit": "公車 紅22、紅13、704",
+        "indoor_outdoor": "室內設施",
+        "lighting": true,
+        "air_conditioning": true,
+        "verified": "2026-09-02",
+        "note": "iPlay 場館簡介仍記載「預計本年度裝修後開放」，實際已於 2026 年 7 月啟用；場地面數以 iPlay 登記的 1 面計，尚待現場確認"
+      }
     }
   ]
 }

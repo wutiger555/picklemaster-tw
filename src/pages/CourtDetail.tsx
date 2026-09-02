@@ -8,6 +8,15 @@ import WeatherWidget from '../components/common/WeatherWidget';
 import SEOHead from '../components/common/SEOHead';
 
 const TYPE_LABEL = (t: Court['type']) => (t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外');
+const PRICE_TIERS = [
+  { key: 'weekday' as const, label: '平日', tone: 'border-neutral-200 bg-neutral-50 text-neutral-800' },
+  { key: 'weekend' as const, label: '假日', tone: 'border-amber-200 bg-amber-50 text-amber-900' },
+  { key: 'offpeak' as const, label: '離峰', tone: 'border-emerald-200 bg-emerald-50 text-emerald-900' },
+  { key: 'peak' as const, label: '尖峰', tone: 'border-rose-200 bg-rose-50 text-rose-900' },
+  { key: 'rental' as const, label: '球具租借', tone: 'border-sky-200 bg-sky-50 text-sky-900' },
+  { key: 'membership' as const, label: '會員', tone: 'border-violet-200 bg-violet-50 text-violet-900' },
+];
+
 const OWN_LABEL: Record<string, string> = { public: '公營', private: '民營', school: '學校', community: '社區' };
 const is24h = (h?: string) => /24\s*小時/.test(h || '');
 
@@ -257,6 +266,66 @@ const CourtDetail = () => {
                   )}
                 </dl>
               </section>
+
+              {/* 分時價格（本站深度資料：多數平台只給單一價格區間） */}
+              {court.price_details && Object.values(court.price_details).some(Boolean) && (
+                <section className="bg-white rounded-2xl border border-neutral-100 p-6">
+                  <h2 className="text-xl font-bold text-neutral-900 mb-1">收費細節</h2>
+                  <p className="text-xs text-neutral-500 mb-4">依時段分級，實際價格以場館公告為準</p>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {PRICE_TIERS.map(({ key, label, tone }) => {
+                      const val = court.price_details?.[key];
+                      if (!val) return null;
+                      return (
+                        <div key={key} className={`rounded-xl border p-4 ${tone}`}>
+                          <div className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{label}</div>
+                          <div className="text-sm font-semibold leading-relaxed">{val}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
+              {/* 預約與聯絡管道（台灣球館多靠 LINE／IG 預約） */}
+              {(court.booking_url || court.website || (court.contact_details && Object.values(court.contact_details).some(Boolean))) && (
+                <section className="bg-white rounded-2xl border border-neutral-100 p-6">
+                  <h2 className="text-xl font-bold text-neutral-900 mb-4">預約與聯絡管道</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {court.booking_url && (
+                      <a href={court.booking_url} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-neutral-900 text-white text-sm font-bold hover:bg-neutral-800 transition-colors">
+                        📝 線上預約
+                      </a>
+                    )}
+                    {court.contact_details?.line && (
+                      <a href={court.contact_details.line.startsWith('http') ? court.contact_details.line : `https://line.me/R/ti/p/${encodeURIComponent(court.contact_details.line)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#06C755] text-white text-sm font-bold hover:brightness-95 transition-all">
+                        LINE {court.contact_details.line.startsWith('@') ? court.contact_details.line : '社群'}
+                      </a>
+                    )}
+                    {court.contact_details?.instagram && (
+                      <a href={court.contact_details.instagram} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-orange-400 text-white text-sm font-bold hover:brightness-95 transition-all">
+                        📷 Instagram
+                      </a>
+                    )}
+                    {court.contact_details?.facebook && (
+                      <a href={court.contact_details.facebook} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1877F2] text-white text-sm font-bold hover:brightness-95 transition-all">
+                        Facebook
+                      </a>
+                    )}
+                    {court.website && (
+                      <a href={court.website} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border-2 border-neutral-200 text-neutral-700 text-sm font-bold hover:border-emerald-300 transition-colors">
+                        🌐 官網
+                      </a>
+                    )}
+                  </div>
+                </section>
+              )}
 
               {court.features && court.features.length > 0 && (
                 <section className="bg-white rounded-2xl border border-neutral-100 p-6">

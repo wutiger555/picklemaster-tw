@@ -147,6 +147,32 @@ export default function CourtQuickSheet({ court, weather, distanceLabel, onClose
                   🚌 大眾運輸
                 </a>
               </div>
+
+              {/* 預約管道（線上預約 / LINE / 電話）*/}
+              {(court.booking_url || court.contact_details?.line || court.contact) && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {court.booking_url && (
+                    <a href={court.booking_url} target="_blank" rel="noopener noreferrer"
+                      className="flex-1 min-w-[110px] flex items-center justify-center gap-1 px-3 py-2.5 bg-neutral-900 text-white rounded-xl text-sm font-bold active:scale-[0.98] transition-transform">
+                      📝 線上預約
+                    </a>
+                  )}
+                  {court.contact_details?.line && (
+                    <a
+                      href={court.contact_details.line.startsWith('http') ? court.contact_details.line : `https://line.me/R/ti/p/${encodeURIComponent(court.contact_details.line)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex-1 min-w-[110px] flex items-center justify-center gap-1 px-3 py-2.5 bg-[#06C755] text-white rounded-xl text-sm font-bold active:scale-[0.98] transition-transform">
+                      LINE 預約
+                    </a>
+                  )}
+                  {!court.booking_url && !court.contact_details?.line && court.contact && /^[0-9()+\-\s]{7,}$/.test(court.contact) && (
+                    <a href={`tel:${court.contact.replace(/\s/g, '')}`}
+                      className="flex-1 min-w-[110px] flex items-center justify-center gap-1 px-3 py-2.5 bg-white border border-neutral-200 text-neutral-700 rounded-xl text-sm font-bold active:scale-[0.98] transition-transform">
+                      📞 撥打電話
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </motion.div>
         </>

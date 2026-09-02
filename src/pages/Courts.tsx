@@ -27,6 +27,15 @@ const PickleballIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
 
 type SortBy = 'recommended' | 'distance';
 
+// 預約管道：線上預約優先，其次 LINE（台灣球館多以 LINE 預約）
+const bookingHref = (c: Court): string | null => {
+  if (c.booking_url) return c.booking_url;
+  const line = c.contact_details?.line;
+  if (line) return line.startsWith('http') ? line : `https://line.me/R/ti/p/${encodeURIComponent(line)}`;
+  return null;
+};
+const isBookable = (c: Court): boolean => !!bookingHref(c);
+
 // 從網址還原篩選狀態（可分享的篩選連結）— 在 state 初始化當下讀取，支援 SPA 導航
 const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
 const pick = <T extends string>(key: string, allowed: readonly T[], fallback: T): T => {
@@ -49,6 +58,7 @@ const Courts = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [collapsedCities, setCollapsedCities] = useState<Set<string>>(new Set());
   const [playableNow, setPlayableNow] = useState(() => readParam('now') === '1');
+  const [bookableOnly, setBookableOnly] = useState(() => readParam('book') === '1');
   // court 參數要在首次 render 就抓住：URL 同步 effect 會在資料載入前先清掉它
   const pendingCourtParam = useRef<string | null>(readParam('court'));
   const [sortBy, setSortBy] = useState<SortBy>('recommended');
@@ -119,11 +129,12 @@ const Courts = () => {
     if (filterCity !== 'all') params.set('city', filterCity);
     if (showNewOnly) params.set('new', '1');
     if (playableNow) params.set('now', '1');
+    if (bookableOnly) params.set('book', '1');
     if (viewMode !== 'map') params.set('view', viewMode);
     if (selectedCourt) params.set('court', String(selectedCourt.id));
     const qs = params.toString();
     window.history.replaceState(null, '', qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
-  }, [searchQuery, filterType, filterFee, filterOwnership, filterCity, showNewOnly, playableNow, viewMode, selectedCourt]);
+  }, [searchQuery, filterType, filterFee, filterOwnership, filterCity, showNewOnly, playableNow, bookableOnly, viewMode, selectedCourt]);
 
   // 全螢幕地圖時鎖住頁面捲動（含 Lenis）
   useEffect(() => {
@@ -177,6 +188,7 @@ const Courts = () => {
     if (filterOwnership !== 'all' && court.ownership !== filterOwnership) return false;
     if (filterCity !== 'all' && court.location.city !== filterCity) return false;
     if (showNewOnly && !court.is_new) return false;
+    if (bookableOnly && !isBookable(court)) return false;
     if (playableNow) {
       // 室內 / 風雨永遠 OK；戶外要看天氣
       if (court.type === 'outdoor') {
@@ -206,7 +218,7 @@ const Courts = () => {
     if (ad !== bd) return bd.localeCompare(ad);
     // 3. id asc — 穩定排序
     return a.id - b.id;
-  }), [courtsData, filterType, filterFee, filterOwnership, filterCity, showNewOnly, playableNow, searchQuery, weatherMap]);
+  }), [courtsData, filterType, filterFee, filterOwnership, filterCity, showNewOnly, playableNow, bookableOnly, searchQuery, weatherMap]);
 
   // 列表用：再套「只看地圖範圍」與排序
   const listCourts = useMemo(() => {
@@ -232,7 +244,7 @@ const Courts = () => {
     const t = setTimeout(() => setDebouncedQuery(searchQuery), 450);
     return () => clearTimeout(t);
   }, [searchQuery]);
-  const fitSignature = `${filterType}|${filterFee}|${filterOwnership}|${filterCity}|${showNewOnly}|${playableNow}|${debouncedQuery}`;
+  const fitSignature = `${filterType}|${filterFee}|${filterOwnership}|${filterCity}|${showNewOnly}|${playableNow}|${bookableOnly}|${debouncedQuery}`;
 
   const typeLabels: Record<string, string> = { indoor: '室內', outdoor: '戶外', covered: '風雨' };
   const ownershipLabels: Record<string, string> = { public: '公營', private: '民營', school: '學校', community: '社區' };
@@ -244,6 +256,7 @@ const Courts = () => {
     setFilterCity('all');
     setShowNewOnly(false);
     setPlayableNow(false);
+    setBookableOnly(false);
     setSearchQuery('');
     setSelectedCourt(null);
   };
@@ -257,8 +270,8 @@ const Courts = () => {
   const courtDistance = (court: Court): number | null =>
     userLocation ? distanceKm(userLocation.lat, userLocation.lng, court.location.lat, court.location.lng) : null;
 
-  const hasActiveFilters = filterType !== 'all' || filterFee !== 'all' || filterOwnership !== 'all' || filterCity !== 'all' || showNewOnly || playableNow || searchQuery;
-  const activeFilterCount = [filterType !== 'all', filterFee !== 'all', filterOwnership !== 'all', filterCity !== 'all', showNewOnly, playableNow].filter(Boolean).length;
+  const hasActiveFilters = filterType !== 'all' || filterFee !== 'all' || filterOwnership !== 'all' || filterCity !== 'all' || showNewOnly || playableNow || bookableOnly || searchQuery;
+  const activeFilterCount = [filterType !== 'all', filterFee !== 'all', filterOwnership !== 'all', filterCity !== 'all', showNewOnly, playableNow, bookableOnly].filter(Boolean).length;
 
   // 側欄球場卡片（縣市分組模式與距離排序模式共用）
   const renderCourtCard = (court: Court) => {
@@ -322,6 +335,19 @@ const Courts = () => {
               <span aria-hidden>🚌</span>
               公車
             </a>
+            {bookingHref(court) && (
+              <a
+                href={bookingHref(court)!}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-bold"
+                title="線上預約／LINE 預約"
+              >
+                <span aria-hidden>📝</span>
+                預約
+              </a>
+            )}
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
@@ -522,6 +548,20 @@ const Courts = () => {
                   <span aria-hidden>📍</span>
                 )}
                 離我最近
+              </motion.button>
+
+              {/* Bookable filter — 可線上／LINE 預約 */}
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setBookableOnly(v => !v)}
+                title="只顯示可線上預約或有 LINE 預約管道的球場"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 flex-shrink-0 ${bookableOnly
+                    ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-md shadow-emerald-500/25'
+                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
+              >
+                <span aria-hidden>📝</span>
+                可預約
               </motion.button>
 
               <div className="w-px h-6 bg-neutral-200 flex-shrink-0" />

@@ -12,6 +12,7 @@ import { getCityByName } from '../utils/cityData';
 import SEOHead from '../components/common/SEOHead';
 import WeatherBadge from '../components/court/WeatherBadge';
 import CourtQuickSheet from '../components/court/CourtQuickSheet';
+import OpenNowBadge from '../components/court/OpenNowBadge';
 
 // Pickleball Icon Component
 const PickleballIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
@@ -364,6 +365,7 @@ const Courts = () => {
           <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
             {court.courts_count}面
           </span>
+          <OpenNowBadge openingHours={court.opening_hours} />
           {court.type === 'outdoor' && (
             <WeatherBadge lat={court.location.lat} lng={court.location.lng} weather={weatherMap.get(weatherKey(court.location.lat, court.location.lng))} />
           )}

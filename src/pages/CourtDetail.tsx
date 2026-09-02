@@ -6,6 +6,7 @@ import { parseCourtSlug, courtSlug } from '../utils/slugify';
 import { getCityByName } from '../utils/cityData';
 import WeatherWidget from '../components/common/WeatherWidget';
 import SEOHead from '../components/common/SEOHead';
+import OpenNowBadge from '../components/court/OpenNowBadge';
 
 const TYPE_LABEL = (t: Court['type']) => (t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外');
 const PRICE_TIERS = [
@@ -199,6 +200,7 @@ const CourtDetail = () => {
               {is24h(court.opening_hours) && (
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-violet-100 text-violet-700">24 小時</span>
               )}
+              <OpenNowBadge openingHours={court.opening_hours} size="md" />
               {court.is_new && (
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-orange-400 to-amber-400 text-white">
                   NEW
@@ -230,7 +232,10 @@ const CourtDetail = () => {
                   <dd className="text-neutral-900 font-semibold">{court.location.city}{court.location.district && ` · ${court.location.district}`}</dd>
 
                   <dt className="text-neutral-500">開放時間</dt>
-                  <dd className="text-neutral-900 font-semibold">{court.opening_hours}</dd>
+                  <dd className="text-neutral-900 font-semibold">
+                    <span className="mr-2">{court.opening_hours}</span>
+                    <OpenNowBadge openingHours={court.opening_hours} />
+                  </dd>
 
                   <dt className="text-neutral-500">費用</dt>
                   <dd className="text-neutral-900 font-semibold">{court.price || (court.fee === 'free' ? '免費' : '付費')}</dd>

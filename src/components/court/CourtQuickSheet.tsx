@@ -4,6 +4,7 @@ import type { Court } from '../../types';
 import type { CourtWeather } from '../../hooks/useCourtsWeather';
 import { courtSlug } from '../../utils/slugify';
 import WeatherBadge from './WeatherBadge';
+import OpenNowBadge from './OpenNowBadge';
 
 interface Props {
   court: Court | null;
@@ -89,6 +90,7 @@ export default function CourtQuickSheet({ court, weather, distanceLabel, onClose
                   {court.fee === 'free' ? '免費' : '付費'}
                 </span>
                 <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-neutral-50 text-neutral-600 border border-neutral-200">{court.courts_count} 面</span>
+                <OpenNowBadge openingHours={court.opening_hours} size="md" />
                 {/24\s*小時/.test(court.opening_hours || '') && (
                   <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-violet-50 text-violet-700 border border-violet-100">24H</span>
                 )}

@@ -1424,6 +1424,7 @@ async function generateStaticPages() {
           <span>${esc(court.name)}</span>
         </nav>
         <h1 style="font-size:30px;font-weight:800;margin:0 0 8px;">${esc(court.name)}</h1>
+        ${court.status ? `<p style="margin:0 0 10px;padding:10px 14px;border:2px solid #fecdd3;background:#fff1f2;border-radius:10px;color:#881337;font-size:15px;"><strong>⚠️ 此場地目前${court.status === 'permanently_closed' ? '已歇業' : '暫時關閉'}</strong>${court.status_note ? `　${esc(court.status_note)}` : ''}${court.status_verified ? `（查證日期 ${esc(court.status_verified)}）` : ''}</p>` : ''}
         <p style="color:#4b5563;margin:0 0 4px;">📍 ${esc(court.location.address)}</p>
         <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">${esc(city)}${esc(district)}・${typeLabel}球場・${court.courts_count} 面・${esc(feeText)}${courtIs24h(court.opening_hours) ? '・24 小時開放' : ''}</p>
         <section style="margin-bottom:24px;">
@@ -1506,7 +1507,7 @@ async function generateStaticPages() {
                             "description": `${court.name}是位於${city}${court.location.district || ''}的${typeLabel}匹克球場，共 ${court.courts_count} 面球場，${court.fee === 'free' ? '免費開放' : '收費'}。`,
                             "address": { "@type": "PostalAddress", "streetAddress": court.location.address, "addressLocality": court.location.district, "addressRegion": city, "addressCountry": "TW" },
                             "geo": { "@type": "GeoCoordinates", "latitude": court.location.lat, "longitude": court.location.lng },
-                            "openingHours": court.opening_hours,
+                            ...(court.status ? {} : { "openingHours": court.opening_hours }),
                             "isAccessibleForFree": court.fee === 'free',
                             "priceRange": court.fee === 'free' ? '免費' : (court.price || '付費'),
                             "url": canonical,
@@ -1514,6 +1515,7 @@ async function generateStaticPages() {
                             ...(court.contact ? { "telephone": court.contact } : {}),
                             ...(court.facilities && court.facilities.length ? { "amenityFeature": court.facilities.map(f => ({ "@type": "LocationFeatureSpecification", "name": f, "value": true })) } : {}),
                             ...(court.last_updated ? { "dateModified": court.last_updated } : {}),
+                            ...(court.status ? { "disambiguatingDescription": `本站於 ${court.status_verified || '近期'} 查證：此場地${court.status === 'permanently_closed' ? '已歇業' : '暫時關閉'}` } : {}),
                             ...(court.iplay && court.iplay.transit ? { "publicTransportInformation": court.iplay.transit } : {}),
                             ...(court.iplay && court.iplay.website ? { "sameAs": court.iplay.website } : {}),
                             ...(court.iplay && court.iplay.photos && court.iplay.photos.length ? { "image": court.iplay.photos.map(ph => BASE_URL + ph.src) } : {}),
@@ -1533,8 +1535,10 @@ async function generateStaticPages() {
                 const typeLabel = typeLabelOf(court.type);
                 const feeLabel = court.fee === 'free' ? '免費' : '收費';
                 const siblings = courtsData.courts.filter(c => c.location.city === city && c.id !== court.id).slice(0, 6);
-                const title = `${court.name}｜${city}${district}匹克球場・${typeLabel}${court.courts_count}面${feeLabel} | 地址、開放時間、導航`;
-                const desc = `${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}提供 GPS 開車導航與大眾運輸路線，${city}打匹克球的完整場地資訊。`;
+                const statusTag = court.status === 'permanently_closed' ? '【已歇業】' : court.status === 'temporarily_closed' ? '【暫時關閉】' : '';
+                const title = `${statusTag}${court.name}｜${city}${district}匹克球場・${typeLabel}${court.courts_count}面${feeLabel} | 地址、開放時間、導航`;
+                const statusDesc = court.status ? `${court.status === 'permanently_closed' ? '【本站查證：已歇業】' : '【本站查證：暫時關閉】'}${court.status_verified ? `（${court.status_verified}）` : ''}` : '';
+                const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}提供 GPS 開車導航與大眾運輸路線，${city}打匹克球的完整場地資訊。`;
                 const canonical = `${BASE_URL}/courts/${slug}`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);

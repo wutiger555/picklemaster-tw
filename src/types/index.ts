@@ -50,6 +50,13 @@ export interface Court {
   is_new?: boolean; // 是否為新球場（近半年內開放）
   added_date?: string; // 加入日期
   last_updated?: string; // 最後更新日期
+
+  // 營業狀態。省略＝正常營業（絕大多數場地不需要這個欄位）。
+  // 只有在確認場地停止營業時才標記，並且一定要填 status_verified 說明查證日期，
+  // 否則使用者無法判斷這個「已關閉」是不是自己也過期了。
+  status?: 'temporarily_closed' | 'permanently_closed';
+  status_note?: string; // 給使用者看的說明，例如「Google 地圖標示暫時關閉，官方粉專已移除」
+  status_verified?: string; // 查證日期 YYYY-MM-DD
   images?: string[]; // 球場照片
   google_maps_url?: string; // Google Maps 連結
   navigation_tips?: string; // 導航提示

@@ -6,6 +6,12 @@ const { renderOg } = require('./og-image.cjs');
 const BUILD_DIR = path.join(__dirname, '../docs');
 const BASE_URL = 'https://picklemastertw.com';
 
+// 球場主檔（模組層先讀，供 /courts 的 ItemList 結構化資料使用；
+// 讀 public/ 而非 docs/，避免依賴 vite 的複製時序）
+const ALL_COURTS = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '../public/data/courts.json'), 'utf-8')
+).courts;
+
 // 為單頁產生專屬 OG 圖並替換 og:image / twitter:image；失敗則保留預設圖（優雅降級）
 let ogGenerated = 0;
 function applyOg(content, ogPathRel, opts) {
@@ -72,9 +78,21 @@ const pageSEO = {
                 {
                     "@type": "SportsActivityLocation",
                     "name": "台灣匹克球場地圖",
-                    "description": "提供全台灣超過 70 個匹克球場的詳細資訊與地圖，涵蓋雙北、桃竹、中彰投、雲嘉南、高屏、宜花東",
+                    "description": "提供全台灣超過 130 個匹克球場的詳細資訊與地圖，涵蓋雙北、桃竹、中彰投、雲嘉南、高屏、宜花東",
                     "geo": { "@type": "GeoCoordinates", "latitude": "23.5", "longitude": "121.0" },
                     "address": { "@type": "PostalAddress", "addressCountry": "TW", "addressRegion": "台灣" }
+                },
+                {
+                    "@type": "ItemList",
+                    "@id": "https://picklemastertw.com/courts#courtlist",
+                    "name": "全台匹克球場完整列表",
+                    "numberOfItems": ALL_COURTS.length,
+                    "itemListElement": ALL_COURTS.map((c, i) => ({
+                        "@type": "ListItem",
+                        "position": i + 1,
+                        "name": c.name,
+                        "url": `${BASE_URL}/courts/court-${c.id}`
+                    }))
                 },
                 {
                     "@type": "WebApplication",

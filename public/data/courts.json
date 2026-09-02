@@ -1736,7 +1736,7 @@
       "id": 54,
       "name": "DOPE 水獺綠洲 新莊店",
       "location": {
-        "address": "新北市新莊區",
+        "address": "新北市新莊區新北大道四段210-2號",
         "lat": 25.0359,
         "lng": 121.4513,
         "city": "新北市",
@@ -1744,13 +1744,13 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "場租 $900-1,200/小時",
+      "price": "NT$400-900/時（依時段）",
       "courts_count": 4,
       "surface": "synthetic",
       "net_type": "permanent",
       "ownership": "private",
-      "opening_hours": "10:00-22:00",
-      "contact": "線上預約",
+      "opening_hours": "10:00-23:30",
+      "contact": "LINE @dopepb／線上預約",
       "facilities": [
         "冷氣",
         "精品 Lounge",
@@ -1765,8 +1765,16 @@
       ],
       "is_new": false,
       "added_date": "2025-11",
-      "last_updated": "2026-04-24",
-      "reviews": "新莊高端匹克球會館，裝潢精緻"
+      "last_updated": "2026-09-02",
+      "reviews": "新莊高端匹克球會館，裝潢精緻",
+      "contact_details": {
+        "line": "@dopepb",
+        "instagram": "https://www.threads.com/@dope_pickleballclub"
+      },
+      "booking_url": "https://ec.bookfastpos.com/G9AnG2r5eg",
+      "price_details": {
+        "weekday": "NT$400-900/小時（依時段）"
+      }
     },
     {
       "id": 55,
@@ -1935,8 +1943,11 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-05-15",
-      "reviews": "全台少見的鄉鎮級室內匹克球專用場，大村鄉社區運動指標"
+      "last_updated": "2026-09-02",
+      "reviews": "全台少見的鄉鎮級室內匹克球專用場，大村鄉社區運動指標",
+      "price_details": {
+        "weekday": "週一至週五 18:00-21:00（室內）NT$100-200/場"
+      }
     },
     {
       "id": 63,
@@ -2526,7 +2537,7 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "依預約",
-      "contact": "02-2321-0090",
+      "contact": "LINE @ahhh（加 LINE 預約場地）",
       "facilities": [
         "冷氣",
         "酒吧",
@@ -2535,12 +2546,21 @@
       "features": [
         "2026/3/18 開幕",
         "1 面專業場結合社交酒吧",
-        "LINE @Ahhh 預約"
+        "LINE @Ahhh 預約",
+        "近捷運善導寺站 6 號出口步行 5 分鐘",
+        "鄰近華山文創園區"
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "華山旁的社交型匹克球館，打球結合酒吧聚會的新型態場館"
+      "last_updated": "2026-09-02",
+      "reviews": "華山旁的社交型匹克球館，打球結合酒吧聚會的新型態場館",
+      "contact_details": {
+        "line": "@ahhh",
+        "phone": "0223210090"
+      },
+      "price_details": {
+        "rental": "場地租借約 NT$2,500-5,500（實際依館方 LINE 報價）"
+      }
     },
     {
       "id": 81,
@@ -3572,7 +3592,7 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "依官方公告",
+      "price": "NT$300/時",
       "courts_count": 2,
       "surface": "synthetic",
       "net_type": "permanent",
@@ -3587,10 +3607,15 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-09-02",
       "reviews": "員林室內館，開放時間長",
       "contact_details": {
-        "instagram": "@banger_pickleball_club"
+        "phone": "0937663033",
+        "instagram": "https://www.instagram.com/banger_pickleball_club/",
+        "line": "https://openchat.line.me/tw/cover/AEYfC1bC-3MvhaO9v4Q-oCckzvMBB117DL-mZ2IWxuFU65VsLxkCUjI7j48"
+      },
+      "price_details": {
+        "weekday": "NT$300/小時"
       }
     },
     {
@@ -3605,24 +3630,31 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "依官方公告",
+      "price": "NT$300-400/時",
       "courts_count": 2,
       "surface": "acrylic",
       "net_type": "permanent",
       "ownership": "private",
-      "opening_hours": "依預約",
-      "contact": "依官方社群公告",
+      "opening_hours": "07:00-23:00",
+      "contact": "FB 粉專／LINE 社群",
       "facilities": [
         "冷氣"
       ],
       "features": [
         "專業比賽級場地",
-        "原「匹克王」"
+        "原「匹克王」",
+        "原名 Pickle King Sports Club 匹克王"
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "花壇專業比賽場地（原匹克王運動俱樂部）"
+      "last_updated": "2026-09-02",
+      "reviews": "花壇專業比賽場地（原匹克王運動俱樂部）",
+      "contact_details": {
+        "facebook": "https://www.facebook.com/people/Pickle-King-Sports-Club-%E5%8C%B9%E5%85%8B%E7%8E%8B/61581330136338/"
+      },
+      "price_details": {
+        "weekday": "NT$300-400/小時"
+      }
     },
     {
       "id": 114,
@@ -3636,13 +3668,13 @@
       },
       "type": "indoor",
       "fee": "paid",
-      "price": "依官方公告",
+      "price": "NT$400/時",
       "courts_count": 2,
       "surface": "synthetic",
       "net_type": "permanent",
       "ownership": "private",
-      "opening_hours": "依預約",
-      "contact": "依官方社群公告",
+      "opening_hours": "24 小時",
+      "contact": "LINE 官方帳號（lin.ee/qmHW62K）",
       "facilities": [
         "冷氣"
       ],
@@ -3651,8 +3683,15 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "彰化市室內館，2 面標準場地"
+      "last_updated": "2026-09-02",
+      "reviews": "彰化市室內館，2 面標準場地",
+      "contact_details": {
+        "line": "https://lin.ee/qmHW62K",
+        "instagram": "https://www.instagram.com/inandout_pickleball_club/"
+      },
+      "price_details": {
+        "weekday": "NT$400/小時"
+      }
     },
     {
       "id": 115,

@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   PADDLE_DATABASE, PADDLE_BRANDS, PADDLE_LEVELS, PADDLE_TAGS, MAX_COMPARE, getPaddleBySlug,
   getPurchaseChannels, CHANNEL_TYPE_META, getAffiliateOffers, hasAffiliate,
+  getArchetype, ARCHETYPE_INFO, PADDLE_ARCHETYPES, PADDLE_ORIGINS, thicknessMm, weightOz,
   type Paddle, type PaddleBrand, type PaddleLevel, type PaddleTag, type PurchaseChannelType,
+  type PaddleArchetype, type PaddleOrigin,
 } from '../data/paddleDatabase';
 import PaddleVisual from '../components/equipment/PaddleVisual';
 import PaddleCompareSheet from '../components/equipment/PaddleCompareSheet';
@@ -108,6 +111,35 @@ const SCENARIOS: Scenario[] = [
   },
 ];
 
+/* ===== 專業篩選定義 ===== */
+const THICKNESS_BANDS: { id: string; label: string; test: (p: Paddle) => boolean }[] = [
+  { id: 'thin', label: '≤13mm 薄芯', test: p => thicknessMm(p) > 0 && thicknessMm(p) <= 13 },
+  { id: 'mid', label: '14mm 中薄', test: p => thicknessMm(p) > 13 && thicknessMm(p) < 15 },
+  { id: 'std', label: '16mm 標準', test: p => thicknessMm(p) >= 15 && thicknessMm(p) < 18 },
+  { id: 'thick', label: '≥18mm 厚芯', test: p => thicknessMm(p) >= 18 },
+];
+
+const WEIGHT_BANDS: { id: string; label: string; test: (p: Paddle) => boolean }[] = [
+  { id: 'light', label: '<7.7oz 輕量', test: p => weightOz(p) > 0 && weightOz(p) < 7.7 },
+  { id: 'mid', label: '7.7-8.0oz 中量', test: p => weightOz(p) >= 7.7 && weightOz(p) <= 8.0 },
+  { id: 'heavy', label: '>8.0oz 重量級', test: p => weightOz(p) > 8.0 },
+];
+
+const FACE_GROUPS: { id: string; label: string; test: (p: Paddle) => boolean }[] = [
+  { id: 'raw', label: '原始碳纖', test: p => p.face.includes('Raw Carbon') },
+  { id: 't700', label: 'T700 碳纖', test: p => p.face.includes('T700') },
+  { id: 'kevlar', label: 'Kevlar', test: p => p.face.includes('Kevlar') },
+  { id: 'glass', label: '玻纖／複合', test: p => p.face.includes('玻璃纖維') || p.face.includes('FiberFlex') || p.face.includes('複合') },
+  { id: 'graphite', label: '石墨', test: p => p.face.includes('石墨') },
+];
+
+const CORE_GROUPS: { id: string; label: string; test: (p: Paddle) => boolean }[] = [
+  { id: 'thermo', label: '熱壓成型', test: p => p.core.includes('Thermoformed') },
+  { id: 'foam', label: '發泡芯', test: p => p.core.includes('Foam') },
+  { id: 'poly', label: '聚合物蜂窩', test: p => p.core.includes('Polymer') },
+  { id: 'other', label: '其他（碳芯／Nomex／避震）', test: p => p.core.includes('Carbon') || p.core.includes('Nomex') || p.core.includes('Kinetic') },
+];
+
 /* ===== 球拍卡片 ===== */
 const PaddleCard = ({
   p, index, inCompare, compareFull, onToggleCompare,
@@ -151,12 +183,24 @@ const PaddleCard = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest truncate">{p.brand}</div>
-            <h3 className="text-base font-black text-neutral-900 leading-tight">{p.model}</h3>
+            <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest truncate">
+              {p.brand}{p.origin && <span className="ml-1 normal-case tracking-normal text-neutral-300">· {p.origin}</span>}
+            </div>
+            <Link to={`/paddles/${p.slug}`} className="block group/title">
+              <h3 className="text-base font-black text-neutral-900 leading-tight group-hover/title:text-emerald-600 transition">
+                {p.model}
+              </h3>
+            </Link>
           </div>
           <span className={`shrink-0 text-[11px] font-bold px-2.5 py-0.5 rounded-full ${LEVEL_COLORS[p.level]}`}>{p.level}</span>
         </div>
         {p.endorser && <div className="text-[11px] text-emerald-600 mt-1 truncate">⭐ {p.endorser}</div>}
+        <div className="mt-1.5">
+          <span
+            className="text-[10px] font-black px-2 py-0.5 rounded-md text-white"
+            style={{ backgroundColor: ARCHETYPE_INFO[getArchetype(p)].color }}
+          >{getArchetype(p)}</span>
+        </div>
         {p.tags && (
           <div className="flex flex-wrap gap-1 mt-1.5">
             {p.tags.map(t => (
@@ -212,6 +256,10 @@ const PaddleCard = ({
         <span className="text-lg font-black text-emerald-600">NT$ {p.priceTWD.toLocaleString()}</span>
         <span className="block text-[9px] text-neutral-400">台灣行情參考價{p.usapApproved ? ' · USAP 認證' : ''}</span>
       </div>
+      <Link
+        to={`/paddles/${p.slug}`}
+        className="text-xs font-bold text-neutral-500 hover:text-emerald-600 transition mr-2"
+      >完整規格 →</Link>
       <button
         onClick={() => onToggleCompare(p.slug)}
         disabled={!inCompare && compareFull}
@@ -284,6 +332,13 @@ const PaddleDatabasePage = () => {
   const [levelFilter, setLevelFilter] = useState<'all' | PaddleLevel>('all');
   const [tagFilter, setTagFilter] = useState<'all' | PaddleTag>('all');
   const [scenario, setScenario] = useState<Scenario | null>(null);
+  const [archFilter, setArchFilter] = useState<'all' | PaddleArchetype>('all');
+  const [originFilter, setOriginFilter] = useState<'all' | PaddleOrigin>('all');
+  const [thickFilter, setThickFilter] = useState<string>('all');
+  const [weightFilter, setWeightFilter] = useState<string>('all');
+  const [faceFilter, setFaceFilter] = useState<string>('all');
+  const [coreFilter, setCoreFilter] = useState<string>('all');
+  const [proOpen, setProOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'rating' | 'price-low' | 'price-high'>('rating');
   const [compare, setCompare] = useState<string[]>([]);
@@ -298,13 +353,28 @@ const PaddleDatabasePage = () => {
       .filter(p => brandFilter === 'all' || p.brand === brandFilter)
       .filter(p => levelFilter === 'all' || p.level === levelFilter)
       .filter(p => tagFilter === 'all' || p.tags?.includes(tagFilter))
-      .filter(p => !q || `${p.brand} ${p.model}`.toLowerCase().includes(q));
+      .filter(p => !q || `${p.brand} ${p.model}`.toLowerCase().includes(q))
+      .filter(p => archFilter === 'all' || getArchetype(p) === archFilter)
+      .filter(p => originFilter === 'all' || p.origin === originFilter)
+      .filter(p => thickFilter === 'all' || (THICKNESS_BANDS.find(b => b.id === thickFilter)?.test(p) ?? true))
+      .filter(p => weightFilter === 'all' || (WEIGHT_BANDS.find(b => b.id === weightFilter)?.test(p) ?? true))
+      .filter(p => faceFilter === 'all' || (FACE_GROUPS.find(b => b.id === faceFilter)?.test(p) ?? true))
+      .filter(p => coreFilter === 'all' || (CORE_GROUPS.find(b => b.id === coreFilter)?.test(p) ?? true));
     if (scenario) r.sort(scenario.sort);
     else if (sortBy === 'price-low') r.sort((a, b) => a.priceTWD - b.priceTWD);
     else if (sortBy === 'price-high') r.sort((a, b) => b.priceTWD - a.priceTWD);
     else r.sort((a, b) => avgRating(b) - avgRating(a));
     return r;
-  }, [scenario, brandFilter, levelFilter, tagFilter, search, sortBy]);
+  }, [scenario, brandFilter, levelFilter, tagFilter, search, sortBy,
+      archFilter, originFilter, thickFilter, weightFilter, faceFilter, coreFilter]);
+
+  const proActive = [archFilter, originFilter, thickFilter, weightFilter, faceFilter, coreFilter]
+    .filter(v => v !== 'all').length;
+
+  const resetPro = () => {
+    setArchFilter('all'); setOriginFilter('all'); setThickFilter('all');
+    setWeightFilter('all'); setFaceFilter('all'); setCoreFilter('all');
+  };
 
   const comparePaddles = useMemo(
     () => compare
@@ -544,6 +614,85 @@ const PaddleDatabasePage = () => {
                 >{b}</button>
               ))}
             </div>
+            {/* 專業篩選 */}
+            <div className="pt-1">
+              <button
+                onClick={() => setProOpen(v => !v)}
+                className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full transition ${
+                  proActive > 0 ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                }`}
+              >
+                ⚙️ 專業篩選{proActive > 0 && ` (${proActive})`}
+                <span className={`transition-transform ${proOpen ? 'rotate-180' : ''}`}>⌄</span>
+              </button>
+              {proActive > 0 && (
+                <button onClick={resetPro} className="ml-2 text-[11px] text-neutral-400 hover:text-red-500 font-semibold transition">
+                  清除
+                </button>
+              )}
+
+              <AnimatePresence>
+                {proOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-3 space-y-2.5 bg-neutral-50 rounded-2xl p-3.5 border border-neutral-100">
+                      {([
+                        { name: '拍型定位', value: archFilter, set: (v: string) => setArchFilter(v as 'all' | PaddleArchetype),
+                          opts: PADDLE_ARCHETYPES.map(a => ({ id: a, label: a })) },
+                        { name: '核心厚度', value: thickFilter, set: setThickFilter,
+                          opts: THICKNESS_BANDS.map(b => ({ id: b.id, label: b.label })) },
+                        { name: '重量級距', value: weightFilter, set: setWeightFilter,
+                          opts: WEIGHT_BANDS.map(b => ({ id: b.id, label: b.label })) },
+                        { name: '拍面材質', value: faceFilter, set: setFaceFilter,
+                          opts: FACE_GROUPS.map(b => ({ id: b.id, label: b.label })) },
+                        { name: '核心材質', value: coreFilter, set: setCoreFilter,
+                          opts: CORE_GROUPS.map(b => ({ id: b.id, label: b.label })) },
+                        { name: '品牌國別', value: originFilter, set: (v: string) => setOriginFilter(v as 'all' | PaddleOrigin),
+                          opts: PADDLE_ORIGINS.filter(o => PADDLE_DATABASE.some(p => p.origin === o)).map(o => ({ id: o, label: o })) },
+                      ]).map(row => (
+                        <div key={row.name} className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[11px] font-bold text-neutral-400 w-16 shrink-0">{row.name}</span>
+                          <button
+                            onClick={() => row.set('all')}
+                            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition ${
+                              row.value === 'all' ? 'bg-neutral-800 text-white' : 'bg-white text-neutral-500 hover:bg-neutral-100 border border-neutral-200'
+                            }`}
+                          >不限</button>
+                          {row.opts.map(o => {
+                            const n = PADDLE_DATABASE.filter(p => {
+                              if (row.name === '拍型定位') return getArchetype(p) === o.id;
+                              if (row.name === '品牌國別') return p.origin === o.id;
+                              if (row.name === '核心厚度') return THICKNESS_BANDS.find(b => b.id === o.id)?.test(p);
+                              if (row.name === '重量級距') return WEIGHT_BANDS.find(b => b.id === o.id)?.test(p);
+                              if (row.name === '拍面材質') return FACE_GROUPS.find(b => b.id === o.id)?.test(p);
+                              return CORE_GROUPS.find(b => b.id === o.id)?.test(p);
+                            }).length;
+                            if (n === 0) return null;
+                            return (
+                              <button
+                                key={o.id}
+                                onClick={() => row.set(row.value === o.id ? 'all' : o.id)}
+                                className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition ${
+                                  row.value === o.id ? 'bg-emerald-500 text-white' : 'bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200'
+                                }`}
+                              >{o.label} <span className="opacity-50">{n}</span></button>
+                            );
+                          })}
+                        </div>
+                      ))}
+                      <p className="text-[10px] text-neutral-400 pt-1 leading-relaxed">
+                        拍型定位為本站依四項評分推導的分類；厚度、重量、材質為原廠公開規格。
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <div className="flex flex-wrap items-center gap-1.5">
               {PADDLE_LEVELS.map(l => (
                 <button

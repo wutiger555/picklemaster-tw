@@ -7,13 +7,39 @@ export type PaddleBrand =
   | 'Franklin' | 'CRBN' | 'Gearbox' | 'PROLITE' | 'Vatic Pro' | 'Electrum'
   | 'Onix' | 'HEAD' | 'Niupipo' | '11SIX24' | 'Ronbus' | 'Friday'
   | 'Bread & Butter' | 'Volair' | 'Honolulu' | 'ProKennex' | 'LUZZ'
-  | 'adidas' | 'RPM';
+  | 'adidas' | 'RPM' | 'Facolos';
 
 export type PaddleShape = '寬型 Widebody' | '長型 Elongated' | '混合 Hybrid';
 export type CoreType = 'Polymer 聚合物' | 'Carbon 碳芯' | 'Foam 發泡芯' | 'Nomex 紙蜂窩' | 'Thermoformed 熱壓' | 'Kinetic 動能避震';
 export type FaceMaterial = 'T300 碳纖' | 'T700 碳纖' | '玻璃纖維' | 'FiberFlex 玻璃纖維' | '複合材質' | 'Raw Carbon Fiber' | 'Kevlar 編織' | '石墨 Graphite';
 export type PaddleLevel = '新手' | '中階' | '進階' | '職業';
 export type PaddleTag = '小紅書熱門' | 'CP值首選' | '新手友善' | '近期熱搜' | '護肘友善' | '高顏值' | '電商爆款' | '經典長青';
+
+/** 品牌所屬地／設計地。製造多集中於中國東莞、深圳、廈門一帶，此欄位指品牌歸屬而非代工地 */
+export type PaddleOrigin = '美國' | '越南' | '中國' | '台灣' | '德國' | '奧地利' | '紐西蘭';
+
+/**
+ * 業界標準實測數據——僅收錄查得到公開實測來源者，查不到一律留空，不臆測。
+ * 這些是第三方實驗室（Pickleball Studio / JohnKew / Pickleball Effect 等）
+ * 以統一流程量測的數字，與廠商行銷數據不同。
+ */
+export interface LabSpec {
+  /** 揮重 swing weight：揮動時的轉動慣量。新手 105-115、中階 112-118、進階 115-122 */
+  swingWeight?: number;
+  /** 扭轉慣量 twist weight：非甜蜜點擊球的穩定度。>6.5 容錯佳 */
+  twistWeight?: number;
+  /** 平衡點（距握把底端 mm）。數字越大越「頭重」 */
+  balancePoint?: number;
+  /** 實測旋轉轉速 RPM */
+  spinRPM?: number;
+  /** USAP PBCoR 彈性係數。2026 年起上限收緊為 .43 */
+  pbcor?: number;
+  /** 數據來源說明 */
+  source?: string;
+}
+
+/** 本站依公開規格推導的拍型定位（非實測，為分類標籤） */
+export type PaddleArchetype = '爆發型' | '控制型' | '全能型' | '旋轉型';
 
 export interface Paddle {
   slug: string;
@@ -45,6 +71,12 @@ export interface Paddle {
   /** 官方商品圖（public/paddles/<slug>.webp）。無圖者自動退回 SVG 示意圖。
    *  每張皆經人工目視比對確認為該型號本人，型號不符者一律不收。 */
   image?: string;
+  /** 品牌所屬地 */
+  origin?: PaddleOrigin;
+  /** 第三方實測數據（僅在查得到來源時填寫） */
+  lab?: LabSpec;
+  /** 這支拍與眾不同之處：獨家技術、材料、設計取向 */
+  specialty?: string;
   tags?: PaddleTag[];    // 熱門標籤（小紅書熱門 / CP值 / 新手友善…）
   colors: {              // 示意圖配色（拍面主色 / 點綴色）
     face: string;
@@ -74,6 +106,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['2026 最新第五代旗艦', 'Ben Johns 親用款', 'KineticFrame 喉部彈性框架', '觸球吸震、出球更集中'],
     bestFor: 'DUPR 4.0+ 追求全能與精準的進階球員',
     cons: '入門者難駕馭，價格高',
+    specialty: 'KineticFrame 把彈性框架做進拍頸，觸球時先吸震再回彈，是第五代與前代最大的結構差異。',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/joola-perseus-pro-v-16mm.webp',
     tags: ['近期熱搜', '小紅書熱門'],
@@ -98,6 +132,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     endorser: 'Ben Johns',
     highlights: ['2026 第五代 14mm 版', '更薄更快、揮速優勢', 'KineticFrame 喉部彈性框架', '單打與強攻首選'],
     bestFor: '攻擊型選手、單打愛好者',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/joola-perseus-pro-v-14mm.webp',
     colors: { face: '#1a1a2e', accent: '#c9a86a' },
@@ -120,6 +155,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 91, control: 93, spin: 92, forgiveness: 85 },
     highlights: ['JOOLA 經典熱賣款', '均衡性能代名詞', 'CFS 碳摩擦面板旋轉佳', '二手市場流通量大'],
     bestFor: 'DUPR 3.5-4.5 中進階全能型',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/joola-hyperion-cfs-16mm.webp',
     tags: ['經典長青'],
@@ -143,6 +179,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     endorser: 'Collin Johns',
     highlights: ['Collin Johns 使用', '寬型甜蜜點大', '控球型 Perseus 替代', '低震感手肘友善'],
     bestFor: '控球型進階選手',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/joola-scorpeus-pro-iv.webp',
     colors: { face: '#0f3460', accent: '#e2b04a' },
@@ -166,6 +203,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['Tyson McGuffin 簽名', '強力底線抽球', '長型進攻'],
     bestFor: '進攻型選手、底線主攻',
     cons: '略重、軟球手感較硬',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/joola-magnus-3.webp',
     colors: { face: '#232323', accent: '#ff6b35' },
@@ -189,6 +227,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     endorser: 'Andre Agassi / Steffi Graf',
     highlights: ['網球傳奇 Agassi 與 Graf 聯名', 'Tech Flex Power 底緣發泡擴大甜蜜點', '5.5" 長握把利雙手反拍', '網球轉項玩家的親切選擇'],
     bestFor: '網球轉打匹克球、想要大甜蜜點的中進階',
+    origin: '美國',
     usapApproved: true,
     tags: ['近期熱搜'],
     colors: { face: '#14213d', accent: '#fca311' },
@@ -213,6 +252,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['Selkirk LABS 實驗系列', '長型進攻火力頂級', '台灣有現貨通路（美版／亞版）'],
     bestFor: 'DUPR 4.5+ 純進攻流',
     cons: '容錯偏低，新手不易駕馭；美版與亞版規格略有差異',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/selkirk-labs-boomstik.webp',
     tags: ['近期熱搜'],
@@ -237,6 +277,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['20mm 超厚控球王', 'Float Foam 發泡邊框', 'Dink 對戰穩定度頂級', '手感極軟'],
     bestFor: '控球流、網前 Dink 戰術愛好者',
     cons: '力量偏弱，殺球需自帶揮速',
+    specialty: '20mm 是市售最厚的核心之一，配合 Float Foam 發泡邊框，觸球停留時間長，小球控制力為資料庫之最。',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/selkirk-luxx-control-air-invikta.webp',
     tags: ['小紅書熱門'],
@@ -259,6 +301,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 94, control: 89, spin: 91, forgiveness: 84 },
     highlights: ['空氣動力學開孔喉部', '揮拍速度快', '進攻火力充足'],
     bestFor: '進攻型中進階',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/selkirk-vanguard-power-air.webp',
     colors: { face: '#101820', accent: '#ee2737' },
@@ -280,6 +323,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 85, control: 92, spin: 87, forgiveness: 93 },
     highlights: ['新手友善的 Selkirk', 'S2 甜蜜點極大', '玻纖容錯高', '長青經典款'],
     bestFor: 'DUPR 2.5-3.5 新手進階',
+    origin: '美國',
     usapApproved: true,
     tags: ['經典長青', '新手友善'],
     colors: { face: '#1b3b6f', accent: '#65c3ba' },
@@ -304,6 +348,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 85, control: 92, spin: 90, forgiveness: 90 },
     highlights: ['Selkirk 技術下放平價副牌', '原始碳纖面板', '半價體驗大廠品質'],
     bestFor: '想升級碳纖拍的新手/中階',
+    origin: '美國',
     usapApproved: true,
     tags: ['CP值首選'],
     colors: { face: '#0b2545', accent: '#8da9c4' },
@@ -327,6 +372,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['兩千有找的大廠入門拍', '輕量好上手', '甜蜜點大'],
     bestFor: '第一支拍、預算有限的完全新手',
     cons: '進步到中階後會想換',
+    origin: '美國',
     usapApproved: true,
     tags: ['新手友善', 'CP值首選'],
     colors: { face: '#227c9d', accent: '#ffcb77' },
@@ -351,6 +397,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 82, control: 93, spin: 85, forgiveness: 91 },
     highlights: ['十年長青控球經典', '石墨面板手感細膩', '無數教練推薦的第二支拍'],
     bestFor: '重視手感與控球的新手升級',
+    origin: '美國',
     usapApproved: true,
     tags: ['經典長青'],
     colors: { face: '#22333b', accent: '#5bc0be' },
@@ -372,6 +419,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 88, control: 90, spin: 86, forgiveness: 92 },
     highlights: ['Bantam 系列彈性核心', '甜蜜點大', '攻守均衡'],
     bestFor: '想要多一點力量的中階球員',
+    origin: '美國',
     usapApproved: true,
     colors: { face: '#3d0000', accent: '#ffd23f' },
   },
@@ -393,6 +441,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     endorser: 'Anna Leigh Waters',
     highlights: ['女子世界第一 ALW 親用款', '攻擊力與控球兼備', '細握把適合小手'],
     bestFor: '女性球員、全能型進階選手',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/paddletek-bantam-alw-c.webp',
     tags: ['近期熱搜', '小紅書熱門'],
@@ -418,6 +467,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 92, control: 93, spin: 95, forgiveness: 87 },
     highlights: ['海外論壇公認 CP 值神拍', '旋轉頂級', '性能接近旗艦、價格少 40%'],
     bestFor: '預算有限但要職業級性能',
+    origin: '紐西蘭',
     usapApproved: true,
     image: '/paddles/six-zero-double-black-diamond.webp',
     tags: ['CP值首選', '近期熱搜'],
@@ -440,6 +490,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 95, control: 92, spin: 94, forgiveness: 84 },
     highlights: ['全發泡核心新世代', 'Kevlar 紅色編織面板', '力量與手感兼得'],
     bestFor: 'DUPR 4.0+ 想嘗鮮發泡芯科技',
+    specialty: '全發泡核心搭配 Kevlar 編織面板，Kevlar 的韌性讓面板在高速擊球下形變更小。',
+    origin: '紐西蘭',
     usapApproved: true,
     image: '/paddles/six-zero-ruby.webp',
     tags: ['近期熱搜', '高顏值'],
@@ -464,6 +516,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 89, control: 94, spin: 91, forgiveness: 92 },
     highlights: ['美國老牌品質穩定', '甜蜜點大', '控球與容錯兼顧'],
     bestFor: 'DUPR 3.0-4.5 全能型',
+    origin: '美國',
     usapApproved: true,
     colors: { face: '#013a63', accent: '#61a5c2' },
   },
@@ -487,6 +540,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 84, control: 90, spin: 88, forgiveness: 92 },
     highlights: ['MaxGrit 高摩擦表面', '美國國民品牌', '新手升級首選之一'],
     bestFor: '新手進階到中階',
+    origin: '美國',
     usapApproved: true,
     tags: ['新手友善', 'CP值首選'],
     colors: { face: '#1d3557', accent: '#e63946' },
@@ -509,6 +563,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     endorser: 'Christian Alshon',
     highlights: ['Christian Alshon 使用', 'Franklin 首款頂級熱壓拍', '45° 碳纖編織'],
     bestFor: '進攻型進階選手',
+    origin: '美國',
     usapApproved: true,
     colors: { face: '#212529', accent: '#4cc9f0' },
   },
@@ -532,6 +587,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['重量級進攻', '底線抽球威脅', '熱壓成型剛性強'],
     bestFor: '進攻型、手臂力量好',
     cons: '長時間打手肘易累',
+    origin: '美國',
     usapApproved: true,
     colors: { face: '#0d0d0d', accent: '#d90429' },
   },
@@ -552,6 +608,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 94, control: 94, spin: 95, forgiveness: 86 },
     highlights: ['100% 發泡核心先驅', '甜蜜點均勻不衰減', '耐用度大幅提升'],
     bestFor: '追求最新科技的職業級選手',
+    specialty: '100% 發泡核心取代傳統蜂窩芯，甜蜜點分布更均勻，且不像蜂窩芯會隨使用時間塌陷衰減。',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/crbn-trufoam-genesis.webp',
     tags: ['近期熱搜'],
@@ -577,6 +635,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['SST 一體碳纖結構（無聚合物芯）', '力量怪獸', '獨家專利製程'],
     bestFor: '力量流、想要極致出球速度',
     cons: '握把偏細、手感獨特需適應',
+    specialty: 'SST 一體碳纖結構完全不用聚合物蜂窩芯，整支拍由碳纖維構成，手感與出球邏輯與主流拍截然不同。',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/gearbox-pro-power-elongated.webp',
     colors: { face: '#240046', accent: '#ff9e00' },
@@ -601,6 +661,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['美國最老匹克球品牌之一', '甜蜜點超大', '輕量手臂友善'],
     bestFor: 'DUPR 2.0-3.0 完全新手',
     cons: '力量較弱',
+    origin: '美國',
     usapApproved: true,
     tags: ['新手友善'],
     colors: { face: '#343a40', accent: '#74c69d' },
@@ -625,6 +686,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 86, control: 91, spin: 92, forgiveness: 88 },
     highlights: ['百元美金神拍', '海外新手社群推薦率極高', '控球與旋轉超越價位'],
     bestFor: '第一次換碳纖拍的預算型玩家',
+    origin: '美國',
     usapApproved: true,
     tags: ['CP值首選', '小紅書熱門', '新手友善'],
     colors: { face: '#1a1b41', accent: '#baff29' },
@@ -646,6 +708,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 91, control: 89, spin: 93, forgiveness: 85 },
     highlights: ['新興品牌高 CP', '熱壓成型力量足', '旋轉出色'],
     bestFor: '預算有限的進攻型玩家',
+    origin: '美國',
     usapApproved: true,
     tags: ['CP值首選'],
     colors: { face: '#231942', accent: '#e0aaff' },
@@ -669,6 +732,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 94, control: 88, spin: 94, forgiveness: 82 },
     highlights: ['13mm 超薄手感直接', '旋轉頂級', '小眾高手品牌'],
     bestFor: '進階進攻型',
+    origin: '美國',
     usapApproved: true,
     colors: { face: '#2b2d42', accent: '#ffd60a' },
   },
@@ -693,6 +757,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['史上最暢銷入門拍之一', 'Nomex 核心出球脆彈', '網球轉項玩家最愛'],
     bestFor: '喜歡直接手感的新手、網球轉匹克球',
     cons: 'Nomex 核心聲音大、震手感明顯',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/onix-z5.webp',
     tags: ['經典長青', '電商爆款'],
@@ -716,6 +781,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     endorser: 'Matt Wright & Lucy Kovalova（曾用）',
     highlights: ['職業雙打冠軍曾用款', '平衡全面', '耐用度佳'],
     bestFor: '中階全能型',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/onix-evoke-premier.webp',
     colors: { face: '#264653', accent: '#e76f51' },
@@ -741,6 +807,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['大廠背書的千元級入門拍', '台灣體育用品店好買', '耐操抗撞'],
     bestFor: '想先花小錢試試匹克球的人',
     cons: '性能天花板低',
+    origin: '奧地利',
     usapApproved: true,
     tags: ['新手友善', 'CP值首選'],
     colors: { face: '#f77f00', accent: '#003049' },
@@ -763,6 +830,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 85, control: 89, spin: 84, forgiveness: 90 },
     highlights: ['網球大廠工藝', '控制取向', '品質穩定保固完善'],
     bestFor: '網球/壁球轉項的中階玩家',
+    origin: '奧地利',
     usapApproved: true,
     colors: { face: '#d62828', accent: '#fcbf49' },
   },
@@ -787,6 +855,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['Amazon / 蝦皮銷量王', 'USAPA 認證千元拍', '常見兩支組合裝更划算'],
     bestFor: '完全新手、想買一組全家一起玩',
     cons: '進階後必換，轉賣殘值低',
+    origin: '中國',
     usapApproved: true,
     tags: ['電商爆款', '小紅書熱門', '新手友善'],
     colors: { face: '#023e8a', accent: '#48cae4' },
@@ -811,6 +880,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 80, control: 88, spin: 82, forgiveness: 94 },
     highlights: ['馬卡龍配色高顏值', '社群曬拍熱門款', '軟彈手感新手不震手'],
     bestFor: '重視顏值與手感的新手',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/elevensix24-jelly-bean.webp',
     tags: ['高顏值', '小紅書熱門', '新手友善'],
@@ -834,6 +904,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 88, control: 94, spin: 92, forgiveness: 90 },
     highlights: ['海外評測網高分常客', '控球容錯雙高', '中價位打旗艦性能'],
     bestFor: 'DUPR 3.5+ 控球流',
+    origin: '美國',
     usapApproved: true,
     tags: ['CP值首選', '近期熱搜'],
     colors: { face: '#283618', accent: '#dda15e' },
@@ -858,6 +929,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 84, control: 91, spin: 90, forgiveness: 88 },
     highlights: ['80 美金碳纖拍天花板', '論壇 CP 值討論常勝軍', '控球旋轉遠超價位'],
     bestFor: '學生黨、預算 3 千內想要碳纖拍',
+    origin: '美國',
     usapApproved: true,
     image: '/paddles/ronbus-r1-16.webp',
     tags: ['CP值首選', '小紅書熱門'],
@@ -883,6 +955,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 89, control: 89, spin: 91, forgiveness: 86 },
     highlights: ['百元價位少見的熱壓工藝', '性能均衡無明顯短板', '新銳品牌口碑快速累積'],
     bestFor: '想一步到位買熱壓拍的預算玩家',
+    origin: '美國',
     usapApproved: true,
     tags: ['CP值首選'],
     colors: { face: '#003566', accent: '#ffc300' },
@@ -908,6 +981,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['塗鴉街頭風設計辨識度極高', '出球彈度大（Pop 強）', '社群話題度高'],
     bestFor: '進攻型、喜歡張揚設計的玩家',
     cons: '彈性大，細膩小球需適應',
+    origin: '美國',
     usapApproved: true,
     tags: ['高顏值', '小紅書熱門'],
     colors: { face: '#e07be0', accent: '#231123' },
@@ -932,6 +1006,7 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 90, control: 90, spin: 91, forgiveness: 88 },
     highlights: ['甜蜜點大的熱壓拍', '攻守轉換順', '新銳品牌評測高分'],
     bestFor: '中階升進階的全能型',
+    origin: '美國',
     usapApproved: true,
     colors: { face: '#03045e', accent: '#00f5d4' },
   },
@@ -955,6 +1030,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 91, control: 92, spin: 94, forgiveness: 87 },
     highlights: ['Kevlar 編織面板話題款', '2024-25 海外爆紅', '旋轉與手感兼得'],
     bestFor: '想嘗鮮 Kevlar 面板的中進階玩家',
+    specialty: 'Kevlar 編織面板在 2024-25 帶起一波話題，抓球感與碳纖不同，旋轉衰減較慢。',
+    origin: '美國',
     usapApproved: true,
     tags: ['近期熱搜', '小紅書熱門'],
     colors: { face: '#8338ec', accent: '#ffbe0b' },
@@ -980,6 +1057,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['獨家 Kinetic 動能避震艙', '網球肘/手腕傷球友救星', '台灣品牌代工淵源深'],
     bestFor: '有手肘手腕舊傷、重視健康打球的人',
     cons: '價格高、手感獨特需適應',
+    specialty: '獨家 Kinetic 動能避震艙以可動配重吸收衝擊，是少數以「減少手肘負擔」為設計主軸的球拍；母公司光男企業為台灣老牌球拍製造商。',
+    origin: '台灣',
     usapApproved: true,
     tags: ['護肘友善'],
     colors: { face: '#000000', accent: '#c0c0c0' },
@@ -1003,6 +1082,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     rating: { power: 89, control: 91, spin: 90, forgiveness: 92 },
     highlights: ['UPA-A + USAP PBCoR .43 雙認證', 'PEBAZ 核心 + MPP 微孔泡棉吸震', '3D 凹槽碳纖拍面增旋轉', '台灣 momo／PChome／實體店都買得到'],
     bestFor: '想要台灣現貨、售後方便的中階球員',
+    specialty: 'PEBAZ 核心加 MPP 微孔泡棉，主打吸收九成衝擊力；通過 UPA-A 與 USAP PBCoR .43 雙認證。',
+    origin: '美國',
     usapApproved: true,
     tags: ['新手友善'],
     colors: { face: '#8b0000', accent: '#ffb703' },
@@ -1027,6 +1108,8 @@ export const PADDLE_DATABASE: Paddle[] = [
     highlights: ['三條線大廠出品、辨識度高', 'Spin Blade Max 表面處理增旋轉', '可調配重系統（側邊與頂部加重）', '低密度 PP 蜂窩芯 + 一體成型'],
     bestFor: '想要大廠品質保證的進攻型中進階',
     cons: '偏進攻取向，純新手容錯感不如寬型拍',
+    specialty: '可調配重系統可在側邊與頂部加掛配重片，等於讓使用者自行微調揮重與平衡點——這在市售拍中相當少見。',
+    origin: '德國',
     usapApproved: true,
     tags: ['近期熱搜'],
     colors: { face: '#111111', accent: '#eeeeee' },
@@ -1050,10 +1133,63 @@ export const PADDLE_DATABASE: Paddle[] = [
     priceTWD: 8200,
     rating: { power: 92, control: 91, spin: 96, forgiveness: 89 },
     endorser: 'James Ignatowich',
+    lab: { swingWeight: 117, twistWeight: 7.4, source: '品牌公開規格' },
+    specialty: 'CarbonBite 面板搭配 Tri-Density 三密度核心與 EVA 發泡邊環，扭轉慣量 7.4 屬高容錯，甜蜜點在同級長型拍中偏大。',
     highlights: ['世界前十 James Ignatowich 共同設計', 'CarbonBite 面板旋轉頂尖', 'Tri-Density 核心 + EVA 發泡邊環', '甜蜜點大、旋轉導向'],
     bestFor: '旋轉流、想用弧線與落點壓制對手',
+    origin: '美國',
     usapApproved: true,
     colors: { face: '#1d2d44', accent: '#a8e10c' },
+  },
+
+  // ===== Facolos（越南品牌，UPA／PPA Tour Asia 2026 官方球拍夥伴）=====
+  {
+    slug: 'facolos-elite-x-16mm',
+    brand: 'Facolos',
+    model: 'Elite X 16mm',
+    year: 2026,
+    level: '進階',
+    shape: '長型 Elongated',
+    weight: '8.0 oz',
+    thickness: '16mm',
+    core: 'Thermoformed 熱壓',
+    face: 'T700 碳纖',
+    gripLength: '5.5"',
+    gripSize: '4.25"',
+    priceUSD: 160,
+    priceTWD: 5300,
+    rating: { power: 90, control: 93, spin: 93, forgiveness: 89 },
+    highlights: ['UPA／PPA Tour Asia 2026 官方球拍夥伴', 'Gen3 結構 + T700 多向原始碳纖', '亞洲品牌中唯一與 JOOLA 並列巡迴賽計畫', '16mm 版偏穩定與控制'],
+    bestFor: '想支持亞洲品牌又要巡迴賽級性能的中進階',
+    specialty: '越南製造的 Gen3 熱壓拍。越南複合材料產業由航太／汽車供應鏈延伸而來，近年成為中國之外的第二個匹克球拍生產重鎮。',
+    origin: '越南',
+    usapApproved: true,
+    tags: ['近期熱搜', 'CP值首選'],
+    colors: { face: '#0b3d2e', accent: '#ffd400' },
+  },
+  {
+    slug: 'facolos-elite-x-14mm',
+    brand: 'Facolos',
+    model: 'Elite X 14mm',
+    year: 2026,
+    level: '進階',
+    shape: '長型 Elongated',
+    weight: '7.8 oz',
+    thickness: '14mm',
+    core: 'Thermoformed 熱壓',
+    face: 'T700 碳纖',
+    gripLength: '5.5"',
+    gripSize: '4.25"',
+    priceUSD: 160,
+    priceTWD: 5300,
+    rating: { power: 94, control: 89, spin: 93, forgiveness: 84 },
+    highlights: ['14mm 版靈活、偏進攻取向', 'Gen3 熱壓結構出球彈度高', 'T700 多向原始碳纖抓球佳'],
+    bestFor: '進攻型、揮速快的中進階球員',
+    specialty: '與 16mm 同結構但更薄，出球更快、手感更直接，適合單打與強攻。',
+    origin: '越南',
+    usapApproved: true,
+    tags: ['近期熱搜'],
+    colors: { face: '#0b3d2e', accent: '#ffd400' },
   },
 ];
 
@@ -1141,6 +1277,116 @@ export const BRAND_PURCHASE: Partial<Record<PaddleBrand, PurchaseChannel[]>> = {
   'Bread & Butter': GLOBAL_ONLY('Bread & Butter 官網', 'https://www.bnbpickleball.com/', '品牌設有亞洲站，經銷集中於馬來西亞、新加坡'),
   Volair: GLOBAL_ONLY('Volair 官網', 'https://volair.com/', '官網支援國際運送，運費於結帳時計算'),
 };
+
+/* ===== 專業判讀：以下皆由公開規格推導，非實測數據 ===== */
+
+/** 從厚度字串取出數值（mm） */
+export const thicknessMm = (p: Paddle): number => parseFloat(p.thickness) || 0;
+
+/** 從重量字串取出數值（oz） */
+export const weightOz = (p: Paddle): number => parseFloat(p.weight) || 0;
+
+/**
+ * 拍型定位：依四項評分的相對強弱歸類。
+ * 判準：先看最突出的維度領先平均多少，差距不明顯者歸為全能型。
+ */
+export const getArchetype = (p: Paddle): PaddleArchetype => {
+  const { power, control, spin, forgiveness } = p.rating;
+  const avg = (power + control + spin + forgiveness) / 4;
+  const gaps: [PaddleArchetype, number][] = [
+    ['爆發型', power - avg],
+    ['控制型', control - avg],
+    ['旋轉型', spin - avg],
+  ];
+  gaps.sort((a, b) => b[1] - a[1]);
+  return gaps[0][1] >= 3 ? gaps[0][0] : '全能型';
+};
+
+export const ARCHETYPE_INFO: Record<PaddleArchetype, { desc: string; play: string; color: string }> = {
+  爆發型: {
+    desc: '力量明顯高於自身其他項目，出球速度快、殺球具威脅。',
+    play: '適合底線抽球、第三拍直接下壓的打法。代價通常是容錯較低，小球需要更多手感。',
+    color: '#f97316',
+  },
+  控制型: {
+    desc: '控球明顯高於自身其他項目，觸球停留久、落點好拿捏。',
+    play: '適合網前 Dink 纏鬥與 Reset 過渡球。想強攻時需要自己帶揮速。',
+    color: '#10b981',
+  },
+  旋轉型: {
+    desc: '旋轉明顯高於自身其他項目，面板抓球強，能做出弧線與側旋。',
+    play: '適合用旋轉壓迫、把球拉出角度的打法。發球與第三拍下切效果特別明顯。',
+    color: '#8b5cf6',
+  },
+  全能型: {
+    desc: '四項發展均衡，沒有明顯短板也沒有極端強項。',
+    play: '適合打法尚在成形、或需要一支拍應付所有情境的球員。新手期通常從這類開始最保險。',
+    color: '#0ea5e9',
+  },
+};
+
+/** 核心厚度分級——厚度直接決定觸球停留時間與軟硬手感 */
+export const getThicknessClass = (p: Paddle): { label: string; note: string } => {
+  const mm = thicknessMm(p);
+  if (!mm) return { label: '—', note: '' };
+  if (mm <= 13) return { label: '薄芯 ≤13mm', note: '出球快、回饋直接，力量取向；小球需要更細膩的手感' };
+  if (mm < 15) return { label: '中薄 14mm', note: '力量與手感的折衷，揮速快，是進攻型的主流厚度' };
+  if (mm < 18) return { label: '標準 16mm', note: '目前市場主流。停留時間較長，控球與容錯明顯較好' };
+  return { label: '厚芯 ≥18mm', note: '極長觸球停留，小球控制力最佳，但需自帶揮速才打得出力量' };
+};
+
+/** 重量分級——靜態重量影響揮動負擔與穩定度 */
+export const getWeightClass = (p: Paddle): { label: string; note: string } => {
+  const oz = weightOz(p);
+  if (!oz) return { label: '—', note: '' };
+  if (oz < 7.7) return { label: '輕量 <7.7oz', note: '揮動負擔小、手速快，適合網前對抗與手腕手肘有疑慮者' };
+  if (oz <= 8.0) return { label: '中量 7.7-8.0oz', note: '最普遍的區間，力量與靈活度平衡' };
+  return { label: '重量級 >8.0oz', note: '擊球穩定、力量足，但長時間打對手臂負擔較大' };
+};
+
+/** 面板材質的旋轉潛力判讀 */
+export const getFaceNote = (p: Paddle): string => {
+  const f = p.face;
+  if (f.includes('Kevlar')) return 'Kevlar 編織：韌性高、形變小，抓球感與碳纖不同，旋轉衰減較慢';
+  if (f.includes('Raw Carbon')) return '原始碳纖：表面未上漆，摩擦力最高，是目前旋轉表現的主流選擇';
+  if (f.includes('T700')) return 'T700 碳纖：高模數碳纖維，剛性與旋轉兼顧';
+  if (f.includes('T300')) return 'T300 碳纖：入門級碳纖，剛性略低但價格友善';
+  if (f.includes('石墨')) return '石墨：手感細膩、回饋清晰，經典材質，旋轉不如原始碳纖';
+  if (f.includes('玻璃纖維') || f.includes('FiberFlex')) return '玻璃纖維：彈性高、出球彈，甜蜜點大且容錯佳，是新手友善的材質';
+  return '複合材質：多層混合，特性依配方而異';
+};
+
+/** 核心材質判讀 */
+export const getCoreNote = (p: Paddle): string => {
+  const c = p.core;
+  if (c.includes('Foam')) return '發泡核心：甜蜜點分布均勻，且不像蜂窩芯會隨使用時間塌陷衰減';
+  if (c.includes('Thermoformed')) return '熱壓成型：整支一體成型、邊框灌注發泡，剛性高、出球彈度大';
+  if (c.includes('Carbon')) return '碳芯：以碳纖維取代聚合物蜂窩，剛性極高、力量直接';
+  if (c.includes('Nomex')) return 'Nomex 紙蜂窩：出球脆彈、聲音大，早期主流，現多見於經典款';
+  if (c.includes('Kinetic')) return 'Kinetic 動能避震：以可動配重吸收衝擊，主打降低手肘負擔';
+  return '聚合物蜂窩：最普遍的核心，軟硬適中、成本與性能平衡';
+};
+
+/** 揮重推估級距——沒有實測值時，以靜態重量與拍形給出概略區間 */
+export const getSwingWeightBand = (p: Paddle): { label: string; note: string; measured: boolean } => {
+  if (p.lab?.swingWeight) {
+    const sw = p.lab.swingWeight;
+    const label = sw < 112 ? '低揮重' : sw <= 118 ? '中揮重' : '高揮重';
+    return { label: `${label}（實測 ${sw}）`, note: '數值來自公開實測', measured: true };
+  }
+  const oz = weightOz(p);
+  const elongated = p.shape.includes('長型');
+  const score = oz + (elongated ? 0.35 : 0);
+  const label = score < 7.9 ? '偏低（推估）' : score <= 8.25 ? '中等（推估）' : '偏高（推估）';
+  return {
+    label,
+    note: '本站依靜態重量與拍形推估，非實測值。長型拍質量分布較遠，同重量下揮重通常更高。',
+    measured: false,
+  };
+};
+
+export const PADDLE_ARCHETYPES: PaddleArchetype[] = ['爆發型', '控制型', '旋轉型', '全能型'];
+export const PADDLE_ORIGINS: PaddleOrigin[] = ['美國', '越南', '中國', '台灣', '德國', '奧地利', '紐西蘭'];
 
 export const getPurchaseChannels = (brand: PaddleBrand): PurchaseChannel[] =>
   BRAND_PURCHASE[brand] ?? [];

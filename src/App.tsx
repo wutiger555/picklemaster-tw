@@ -32,6 +32,7 @@ const CourtSlugPage = lazy(() => import('./pages/CourtSlugPage'));
 const PlayerDetail = lazy(() => import('./pages/PlayerDetail'));
 const History = lazy(() => import('./pages/History'));
 const PaddleDatabase = lazy(() => import('./pages/PaddleDatabase'));
+const PaddleDetail = lazy(() => import('./pages/PaddleDetail'));
 const Videos = lazy(() => import('./pages/Videos'));
 const TrainingPrograms = lazy(() => import('./pages/TrainingPrograms'));
 const TrainingProgramDetail = lazy(() => import('./pages/TrainingProgramDetail'));
@@ -111,6 +112,7 @@ function App() {
               <Route path={ROUTES.PLAYER_DETAIL} element={<PlayerDetail />} />
               <Route path={ROUTES.HISTORY} element={<History />} />
               <Route path={ROUTES.PADDLE_DATABASE} element={<PaddleDatabase />} />
+              <Route path={ROUTES.PADDLE_DETAIL} element={<PaddleDetail />} />
               <Route path={ROUTES.VIDEOS} element={<Videos />} />
               <Route path={ROUTES.TRAINING_PROGRAMS} element={<TrainingPrograms />} />
               <Route path={ROUTES.TRAINING_PROGRAM_DETAIL} element={<TrainingProgramDetail />} />

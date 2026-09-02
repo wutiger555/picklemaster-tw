@@ -11,9 +11,9 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Made in Taiwan](https://img.shields.io/badge/Made%20in-Taiwan%20🇹🇼-red)](https://picklemastertw.site/)
+[![Made in Taiwan](https://img.shields.io/badge/Made%20in-Taiwan%20🇹🇼-red)](https://picklemastertw.com/)
 
-**🌐 線上體驗**：[https://picklemastertw.site/](https://picklemastertw.site/)
+**🌐 線上體驗**：[https://picklemastertw.com/](https://picklemastertw.com/)
 
 [功能特色](#核心功能) • [快速開始](#本機開發) • [文檔](#文檔) • [更新日誌](CHANGELOG.md)
 
@@ -318,7 +318,7 @@ git commit -m "Deploy: Update production build"
 git push origin main
 ```
 
-**🌐 正式網址**：[https://picklemastertw.site/](https://picklemastertw.site/)
+**🌐 正式網址**：[https://picklemastertw.com/](https://picklemastertw.com/)
 
 **📦 GitHub Pages**：[https://wutiger555.github.io/picklemaster-tw/](https://wutiger555.github.io/picklemaster-tw/)
 

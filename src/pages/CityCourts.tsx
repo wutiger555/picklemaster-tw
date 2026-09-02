@@ -90,7 +90,7 @@ const CityCourts = () => {
   // JSON-LD：ItemList + FAQPage + BreadcrumbList
   useEffect(() => {
     if (!cityInfo || cityCourts.length === 0) return;
-    const base = 'https://picklemastertw.site';
+    const base = 'https://picklemastertw.com';
     const data = {
       '@context': 'https://schema.org',
       '@graph': [

@@ -42,7 +42,7 @@
 1. 點擊左上角的下拉選單
 2. 選擇「+ 新增資源」
 3. 選擇「URL 前置字元」類型
-4. 輸入：`https://picklemastertw.site`
+4. 輸入：`https://picklemastertw.com`
 5. 點擊「繼續」
 
 ### Step 3: 驗證網站所有權
@@ -75,13 +75,13 @@
 4. 狀態會顯示「成功」
 
 ### Step 5: 手動要求編入索引
-1. 在 Search Console 頂部搜尋欄輸入：`https://picklemastertw.site/courts`
+1. 在 Search Console 頂部搜尋欄輸入：`https://picklemastertw.com/courts`
 2. 點擊「要求編入索引」
 3. 對其他重要頁面重複此步驟：
-   - `https://picklemastertw.site/`
-   - `https://picklemastertw.site/rules`
-   - `https://picklemastertw.site/equipment`
-   - `https://picklemastertw.site/learning`
+   - `https://picklemastertw.com/`
+   - `https://picklemastertw.com/rules`
+   - `https://picklemastertw.com/equipment`
+   - `https://picklemastertw.com/learning`
 
 ---
 

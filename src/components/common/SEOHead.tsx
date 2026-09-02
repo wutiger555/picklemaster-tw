@@ -74,7 +74,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription,
 
     updateOGTag('og:title', title);
     updateOGTag('og:description', description);
-    updateOGTag('og:url', `https://picklemastertw.site${location.pathname}`);
+    updateOGTag('og:url', `https://picklemastertw.com${location.pathname}`);
     if (image) {
       updateOGTag('og:image', image);
     }
@@ -100,7 +100,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription,
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', `https://picklemastertw.site${location.pathname}`);
+    canonical.setAttribute('href', `https://picklemastertw.com${location.pathname}`);
 
     // 添加麵包屑結構化資料
     const breadcrumbItems = getBreadcrumbItems(currentPage);
@@ -163,7 +163,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription,
 
 // 生成麵包屑項目
 const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> => {
-  const baseUrl = 'https://picklemastertw.site';
+  const baseUrl = 'https://picklemastertw.com';
   const breadcrumbs: Array<{ name: string, url: string }> = [
     { name: '首頁', url: baseUrl }
   ];

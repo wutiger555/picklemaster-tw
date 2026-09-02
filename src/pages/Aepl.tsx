@@ -27,7 +27,7 @@ const Aepl = () => {
   usePageTitle('AEPL 職業聯賽專區');
 
   useEffect(() => {
-    const base = 'https://picklemastertw.site';
+    const base = 'https://picklemastertw.com';
     const data = {
       '@context': 'https://schema.org',
       '@graph': [

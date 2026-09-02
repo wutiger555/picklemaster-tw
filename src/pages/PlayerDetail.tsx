@@ -40,9 +40,9 @@ const PlayerDetail = () => {
       description: player.bio,
       sponsor: player.sponsors?.map(s => ({ '@type': 'Organization', name: s })),
       award: player.achievements.map(a => `${a.year} ${a.event}`),
-      url: `https://picklemastertw.site/players/${player.slug}`,
+      url: `https://picklemastertw.com/players/${player.slug}`,
     };
-    const base = 'https://picklemastertw.site';
+    const base = 'https://picklemastertw.com';
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',

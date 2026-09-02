@@ -95,7 +95,7 @@ const CourtDetail = () => {
   // Structured data: @graph（SportsActivityLocation + BreadcrumbList + FAQPage）
   useEffect(() => {
     if (!court || court === 'not-found') return;
-    const base = 'https://picklemastertw.site';
+    const base = 'https://picklemastertw.com';
     const canonical = `${base}/courts/${courtSlug(court.id)}`;
     const citySlug = cityInfo?.slug;
     const typeLabel = TYPE_LABEL(court.type);

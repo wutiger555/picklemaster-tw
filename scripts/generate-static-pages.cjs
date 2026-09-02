@@ -4,7 +4,7 @@ const { renderOg } = require('./og-image.cjs');
 
 // Configuration
 const BUILD_DIR = path.join(__dirname, '../docs');
-const BASE_URL = 'https://picklemastertw.site';
+const BASE_URL = 'https://picklemastertw.com';
 
 // 為單頁產生專屬 OG 圖並替換 og:image / twitter:image；失敗則保留預設圖（優雅降級）
 let ogGenerated = 0;
@@ -55,18 +55,18 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/courts#webpage",
-                    "url": "https://picklemastertw.site/courts",
+                    "@id": "https://picklemastertw.com/courts#webpage",
+                    "url": "https://picklemastertw.com/courts",
                     "name": "台灣匹克球場地圖 2026 | 全台 125+ 球場完整資訊",
                     "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" },
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" },
                     "inLanguage": "zh-TW"
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "找球場", "item": "https://picklemastertw.site/courts" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "找球場", "item": "https://picklemastertw.com/courts" }
                     ]
                 },
                 {
@@ -97,17 +97,17 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/rules#webpage",
-                    "url": "https://picklemastertw.site/rules",
+                    "@id": "https://picklemastertw.com/rules#webpage",
+                    "url": "https://picklemastertw.com/rules",
                     "name": "3分鐘學會匹克球！超簡單 3D 互動規則教學",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.site/newcomer" },
-                        { "@type": "ListItem", "position": 3, "name": "規則教學", "item": "https://picklemastertw.site/rules" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.com/newcomer" },
+                        { "@type": "ListItem", "position": 3, "name": "規則教學", "item": "https://picklemastertw.com/rules" }
                     ]
                 },
                 {
@@ -133,16 +133,16 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/equipment#webpage",
-                    "url": "https://picklemastertw.site/equipment",
+                    "@id": "https://picklemastertw.com/equipment#webpage",
+                    "url": "https://picklemastertw.com/equipment",
                     "name": "匹克球拍選購指南",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "裝備指南", "item": "https://picklemastertw.site/equipment" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "裝備指南", "item": "https://picklemastertw.com/equipment" }
                     ]
                 },
                 {
@@ -198,23 +198,23 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/learning-paths#webpage",
-                    "url": "https://picklemastertw.site/learning-paths",
+                    "@id": "https://picklemastertw.com/learning-paths#webpage",
+                    "url": "https://picklemastertw.com/learning-paths",
                     "name": "匹克球完整學習課程",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "學習路徑", "item": "https://picklemastertw.site/learning-paths" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "學習路徑", "item": "https://picklemastertw.com/learning-paths" }
                     ]
                 },
                 {
                     "@type": "Course",
                     "name": "匹克球完整學習課程",
                     "description": "從新手到進階的系統化匹克球學習路徑",
-                    "provider": { "@type": "Organization", "name": "Picklemaster Taiwan", "url": "https://picklemastertw.site" },
+                    "provider": { "@type": "Organization", "name": "Picklemaster Taiwan", "url": "https://picklemastertw.com" },
                     "hasCourseInstance": [
                         { "@type": "CourseInstance", "name": "新手入門課程", "courseMode": "online" },
                         { "@type": "CourseInstance", "name": "中階進修課程", "courseMode": "online" },
@@ -233,23 +233,23 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/learning#webpage",
-                    "url": "https://picklemastertw.site/learning",
+                    "@id": "https://picklemastertw.com/learning#webpage",
+                    "url": "https://picklemastertw.com/learning",
                     "name": "匹克球互動技巧教學",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "實戰技巧", "item": "https://picklemastertw.site/learning" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "實戰技巧", "item": "https://picklemastertw.com/learning" }
                     ]
                 },
                 {
                     "@type": "Course",
                     "name": "匹克球互動技巧教學",
                     "description": "3D互動式匹克球教學，包含站位、球路分析",
-                    "provider": { "@type": "Organization", "name": "Picklemaster Taiwan", "url": "https://picklemastertw.site" }
+                    "provider": { "@type": "Organization", "name": "Picklemaster Taiwan", "url": "https://picklemastertw.com" }
                 }
             ]
         }
@@ -263,16 +263,16 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/game#webpage",
-                    "url": "https://picklemastertw.site/game",
+                    "@id": "https://picklemastertw.com/game#webpage",
+                    "url": "https://picklemastertw.com/game",
                     "name": "Pickle Master 互動遊戲",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "互動遊戲", "item": "https://picklemastertw.site/game" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "互動遊戲", "item": "https://picklemastertw.com/game" }
                     ]
                 },
                 {
@@ -294,16 +294,16 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/scorer#webpage",
-                    "url": "https://picklemastertw.site/scorer",
+                    "@id": "https://picklemastertw.com/scorer#webpage",
+                    "url": "https://picklemastertw.com/scorer",
                     "name": "專業匹克球計分器",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "計分器", "item": "https://picklemastertw.site/scorer" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "計分器", "item": "https://picklemastertw.com/scorer" }
                     ]
                 },
                 {
@@ -325,16 +325,16 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/resources#webpage",
-                    "url": "https://picklemastertw.site/resources",
+                    "@id": "https://picklemastertw.com/resources#webpage",
+                    "url": "https://picklemastertw.com/resources",
                     "name": "匹克球學習資源彙整",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "資源中心", "item": "https://picklemastertw.site/resources" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "資源中心", "item": "https://picklemastertw.com/resources" }
                     ]
                 },
                 {
@@ -354,24 +354,24 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/about#webpage",
-                    "url": "https://picklemastertw.site/about",
+                    "@id": "https://picklemastertw.com/about#webpage",
+                    "url": "https://picklemastertw.com/about",
                     "name": "關於 Picklemaster Taiwan",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
                         { "@type": "ListItem", "position": 2, "name": "更多", "item": "" },
-                        { "@type": "ListItem", "position": 3, "name": "關於我們", "item": "https://picklemastertw.site/about" }
+                        { "@type": "ListItem", "position": 3, "name": "關於我們", "item": "https://picklemastertw.com/about" }
                     ]
                 },
                 {
                     "@type": "Organization",
                     "name": "Picklemaster Taiwan",
-                    "url": "https://picklemastertw.site",
-                    "logo": "https://picklemastertw.site/logo.png"
+                    "url": "https://picklemastertw.com",
+                    "logo": "https://picklemastertw.com/logo.png"
                 }
             ]
         }
@@ -385,17 +385,17 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/faq#webpage",
-                    "url": "https://picklemastertw.site/faq",
+                    "@id": "https://picklemastertw.com/faq#webpage",
+                    "url": "https://picklemastertw.com/faq",
                     "name": "匹克球常見問題",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.site/newcomer" },
-                        { "@type": "ListItem", "position": 3, "name": "常見問題", "item": "https://picklemastertw.site/faq" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.com/newcomer" },
+                        { "@type": "ListItem", "position": 3, "name": "常見問題", "item": "https://picklemastertw.com/faq" }
                     ]
                 },
                 {
@@ -435,17 +435,17 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/pro-players#webpage",
-                    "url": "https://picklemastertw.site/pro-players",
+                    "@id": "https://picklemastertw.com/pro-players#webpage",
+                    "url": "https://picklemastertw.com/pro-players",
                     "name": "世界頂尖匹克球選手",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "裝備與攻略", "item": "https://picklemastertw.site/equipment" },
-                        { "@type": "ListItem", "position": 3, "name": "頂尖選手", "item": "https://picklemastertw.site/pro-players" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "裝備與攻略", "item": "https://picklemastertw.com/equipment" },
+                        { "@type": "ListItem", "position": 3, "name": "頂尖選手", "item": "https://picklemastertw.com/pro-players" }
                     ]
                 },
                 {
@@ -474,13 +474,13 @@ const pageSEO = {
                     "sport": "Pickleball",
                     "foundingDate": "2026-05-22",
                     "areaServed": { "@type": "Country", "name": "Taiwan" },
-                    "url": "https://picklemastertw.site/aepl"
+                    "url": "https://picklemastertw.com/aepl"
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "AEPL 職業聯賽", "item": "https://picklemastertw.site/aepl" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "AEPL 職業聯賽", "item": "https://picklemastertw.com/aepl" }
                     ]
                 }
             ]
@@ -495,16 +495,16 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/tournaments#webpage",
-                    "url": "https://picklemastertw.site/tournaments",
+                    "@id": "https://picklemastertw.com/tournaments#webpage",
+                    "url": "https://picklemastertw.com/tournaments",
                     "name": "2026 台灣匹克球賽事總覽",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "2026 賽事", "item": "https://picklemastertw.site/tournaments" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "2026 賽事", "item": "https://picklemastertw.com/tournaments" }
                     ]
                 },
                 {
@@ -533,16 +533,16 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/glossary#webpage",
-                    "url": "https://picklemastertw.site/glossary",
+                    "@id": "https://picklemastertw.com/glossary#webpage",
+                    "url": "https://picklemastertw.com/glossary",
                     "name": "匹克球術語大全",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "術語字典", "item": "https://picklemastertw.site/glossary" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "術語字典", "item": "https://picklemastertw.com/glossary" }
                     ]
                 },
                 {
@@ -562,16 +562,16 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/ratings#webpage",
-                    "url": "https://picklemastertw.site/ratings",
+                    "@id": "https://picklemastertw.com/ratings#webpage",
+                    "url": "https://picklemastertw.com/ratings",
                     "name": "DUPR 評級指南 2026",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "DUPR 評級", "item": "https://picklemastertw.site/ratings" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "DUPR 評級", "item": "https://picklemastertw.com/ratings" }
                     ]
                 },
                 {
@@ -590,7 +590,7 @@ const pageSEO = {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "匹克球系統訓練菜單",
-            "url": "https://picklemastertw.site/training-programs"
+            "url": "https://picklemastertw.com/training-programs"
         }
     },
     playbook: {
@@ -611,7 +611,7 @@ const pageSEO = {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "匹克球名人堂",
-            "url": "https://picklemastertw.site/hall-of-fame"
+            "url": "https://picklemastertw.com/hall-of-fame"
         }
     },
     paddles: {
@@ -624,7 +624,7 @@ const pageSEO = {
             "name": "匹克球拍完整資料庫",
             "description": "26 大品牌 45 款熱門匹克球拍完整規格對照",
             "numberOfItems": 45,
-            "url": "https://picklemastertw.site/paddles"
+            "url": "https://picklemastertw.com/paddles"
         }
     },
     videos: {
@@ -635,7 +635,7 @@ const pageSEO = {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "匹克球教學影片中心",
-            "url": "https://picklemastertw.site/videos"
+            "url": "https://picklemastertw.com/videos"
         }
     },
     history: {
@@ -660,7 +660,7 @@ const pageSEO = {
             "@type": "Blog",
             "name": "匹克球深度專欄",
             "description": "深度長文：器材評測、運動科學、技術戰術、族群指南",
-            "url": "https://picklemastertw.site/articles"
+            "url": "https://picklemastertw.com/articles"
         }
     },
     techniques: {
@@ -672,7 +672,7 @@ const pageSEO = {
             "@type": "CollectionPage",
             "name": "匹克球技巧百科",
             "description": "12+ 個匹克球技巧深度教學頁面",
-            "url": "https://picklemastertw.site/techniques"
+            "url": "https://picklemastertw.com/techniques"
         }
     },
     tools: {
@@ -721,16 +721,16 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/newcomer-guide#webpage",
-                    "url": "https://picklemastertw.site/newcomer-guide",
+                    "@id": "https://picklemastertw.com/newcomer-guide#webpage",
+                    "url": "https://picklemastertw.com/newcomer-guide",
                     "name": "新手匹克球入門指南",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "新手懶人包", "item": "https://picklemastertw.site/newcomer-guide" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "新手懶人包", "item": "https://picklemastertw.com/newcomer-guide" }
                     ]
                 }
             ]
@@ -745,17 +745,17 @@ const pageSEO = {
             "@graph": [
                 {
                     "@type": "WebPage",
-                    "@id": "https://picklemastertw.site/newcomer#webpage",
-                    "url": "https://picklemastertw.site/newcomer",
+                    "@id": "https://picklemastertw.com/newcomer#webpage",
+                    "url": "https://picklemastertw.com/newcomer",
                     "name": "新手匹克球入門指南",
-                    "isPartOf": { "@id": "https://picklemastertw.site/#website" }
+                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.site/" },
-                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.site/newcomer" },
-                        { "@type": "ListItem", "position": 3, "name": "新手懶人包", "item": "https://picklemastertw.site/newcomer" }
+                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
+                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.com/newcomer" },
+                        { "@type": "ListItem", "position": 3, "name": "新手懶人包", "item": "https://picklemastertw.com/newcomer" }
                     ]
                 },
                 {
@@ -1143,7 +1143,7 @@ async function generateStaticPages() {
                 "description": desc,
                 "articleSection": a.category,
                 "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
-                "publisher": { "@type": "Organization", "name": "Picklemaster Taiwan", "logo": { "@type": "ImageObject", "url": "https://picklemastertw.site/android-chrome-v2-512x512.png" } },
+                "publisher": { "@type": "Organization", "name": "Picklemaster Taiwan", "logo": { "@type": "ImageObject", "url": "https://picklemastertw.com/android-chrome-v2-512x512.png" } },
                 "mainEntityOfPage": canonical,
                 "datePublished": "2026-04-25"
             };

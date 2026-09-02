@@ -4,6 +4,7 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import LoadingSpinner from './components/common/LoadingSpinner';
+import DomainNotice from './components/common/DomainNotice';
 import Home from './pages/Home';
 import { ROUTES } from './utils/constants';
 
@@ -83,6 +84,7 @@ function App() {
     <Router>
       <ScrollToTop />
       <div className="flex flex-col min-h-screen">
+        <DomainNotice />
         <Header />
         <main className="flex-grow">
           <Suspense fallback={<LoadingSpinner />}>

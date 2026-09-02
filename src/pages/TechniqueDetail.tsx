@@ -33,7 +33,7 @@ const TechniqueDetail = () => {
         text: s.description,
       })),
     };
-    const base = 'https://picklemastertw.site';
+    const base = 'https://picklemastertw.com';
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',

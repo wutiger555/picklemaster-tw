@@ -7,24 +7,24 @@
   
   <!-- 首頁 -->
   <url>
-    <loc>https://picklemastertw.site/</loc>
+    <loc>https://picklemastertw.com/</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://picklemastertw.site/og-image.png</image:loc>
+      <image:loc>https://picklemastertw.com/og-image.png</image:loc>
       <image:title>匹克球台灣 - 台灣最完整的匹克球學習平台</image:title>
     </image:image>
   </url>
 
   <!-- 球場地圖 - 重點頁面 -->
   <url>
-    <loc>https://picklemastertw.site/courts</loc>
+    <loc>https://picklemastertw.com/courts</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://picklemastertw.site/og-image.png</image:loc>
+      <image:loc>https://picklemastertw.com/og-image.png</image:loc>
       <image:title>台灣匹克球場地圖 2026 - 全台60+球場完整資訊</image:title>
       <image:caption>GPS定位找最近球場、篩選室內戶外免費場地、包含Pickle Day等民營球場</image:caption>
     </image:image>
@@ -32,19 +32,19 @@
 
   <!-- 2026 賽事總覽 -->
   <url>
-    <loc>https://picklemastertw.site/tournaments</loc>
+    <loc>https://picklemastertw.com/tournaments</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://picklemastertw.site/og-image.png</image:loc>
+      <image:loc>https://picklemastertw.com/og-image.png</image:loc>
       <image:title>2026 台灣匹克球賽事總覽 - CTPF 全年認證賽</image:title>
     </image:image>
   </url>
 
   <!-- 術語字典 -->
   <url>
-    <loc>https://picklemastertw.site/glossary</loc>
+    <loc>https://picklemastertw.com/glossary</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -52,7 +52,7 @@
 
   <!-- DUPR 評級指南 -->
   <url>
-    <loc>https://picklemastertw.site/ratings</loc>
+    <loc>https://picklemastertw.com/ratings</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -60,7 +60,7 @@
 
   <!-- 新手懶人包 -->
   <url>
-    <loc>https://picklemastertw.site/newcomer-guide</loc>
+    <loc>https://picklemastertw.com/newcomer-guide</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
@@ -68,19 +68,19 @@
   
   <!-- 裝備推薦 -->
   <url>
-    <loc>https://picklemastertw.site/equipment</loc>
+    <loc>https://picklemastertw.com/equipment</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
     <image:image>
-      <image:loc>https://picklemastertw.site/og-image.png</image:loc>
+      <image:loc>https://picklemastertw.com/og-image.png</image:loc>
       <image:title>匹克球裝備推薦 - 球拍選購指南</image:title>
     </image:image>
   </url>
   
   <!-- 技巧教學 -->
   <url>
-    <loc>https://picklemastertw.site/learning</loc>
+    <loc>https://picklemastertw.com/learning</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
@@ -88,7 +88,7 @@
   
   <!-- 規則教學 -->
   <url>
-    <loc>https://picklemastertw.site/rules</loc>
+    <loc>https://picklemastertw.com/rules</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -96,7 +96,7 @@
   
   <!-- 學習路徑 -->
   <url>
-    <loc>https://picklemastertw.site/learning-paths</loc>
+    <loc>https://picklemastertw.com/learning-paths</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -104,7 +104,7 @@
   
   <!-- FAQ -->
   <url>
-    <loc>https://picklemastertw.site/faq</loc>
+    <loc>https://picklemastertw.com/faq</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -112,7 +112,7 @@
   
   <!-- 學習資源 -->
   <url>
-    <loc>https://picklemastertw.site/resources</loc>
+    <loc>https://picklemastertw.com/resources</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -120,7 +120,7 @@
   
   <!-- 互動遊戲 -->
   <url>
-    <loc>https://picklemastertw.site/game</loc>
+    <loc>https://picklemastertw.com/game</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -128,7 +128,7 @@
   
   <!-- 計分器 -->
   <url>
-    <loc>https://picklemastertw.site/scorer</loc>
+    <loc>https://picklemastertw.com/scorer</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
@@ -136,7 +136,7 @@
   
   <!-- 關於我們 -->
   <url>
-    <loc>https://picklemastertw.site/about</loc>
+    <loc>https://picklemastertw.com/about</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -144,7 +144,7 @@
   
   <!-- 聯絡我們 -->
   <url>
-    <loc>https://picklemastertw.site/contact</loc>
+    <loc>https://picklemastertw.com/contact</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -152,7 +152,7 @@
   
   <!-- 隱私政策 -->
   <url>
-    <loc>https://picklemastertw.site/privacy-policy</loc>
+    <loc>https://picklemastertw.com/privacy-policy</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

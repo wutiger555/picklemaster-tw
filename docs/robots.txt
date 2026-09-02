@@ -87,10 +87,10 @@ Disallow: /api/
 Disallow: /service-worker.js
 
 # ===== 資源宣告 =====
-Sitemap: https://picklemastertw.site/sitemap.xml
+Sitemap: https://picklemastertw.com/sitemap.xml
 
 # AI Reference
-# llms.txt: https://picklemastertw.site/llms.txt
+# llms.txt: https://picklemastertw.com/llms.txt
 # 重點頁面:
 #   /courts - 全台匹克球場地圖
 #   /tournaments - 2026 賽事總覽

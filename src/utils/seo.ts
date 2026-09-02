@@ -371,7 +371,7 @@ export const glossaryDefinedTermSet = {
   "@type": "DefinedTermSet",
   "name": "匹克球術語大全",
   "description": "Picklemaster Taiwan 編纂的中英對照匹克球術語權威字典，涵蓋規則、技術、戰術、裝備、場地、賽制",
-  "inDefinedTermSet": "https://picklemastertw.site/glossary"
+  "inDefinedTermSet": "https://picklemastertw.com/glossary"
 };
 
 // 麵包屑結構化資料生成器
@@ -392,11 +392,11 @@ export const generateBreadcrumbStructuredData = (items: Array<{ name: string, ur
 export const localBusinessStructuredData = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  "@id": "https://picklemastertw.site/#localbusiness",
+  "@id": "https://picklemastertw.com/#localbusiness",
   "name": "Picklemaster Taiwan",
   "alternateName": "匹克大師台灣",
   "description": "台灣最完整的匹克球學習平台與社群",
-  "url": "https://picklemastertw.site/",
+  "url": "https://picklemastertw.com/",
   "telephone": "",
   "priceRange": "免費",
   "address": {
@@ -446,7 +446,7 @@ export const howToStructuredData = {
   "@type": "HowTo",
   "name": "如何開始學習匹克球",
   "description": "完整的匹克球新手入門指南，從了解規則到實戰練習",
-  "image": "https://picklemastertw.site/og-image.png",
+  "image": "https://picklemastertw.com/og-image.png",
   "totalTime": "PT2H",
   "estimatedCost": {
     "@type": "MonetaryAmount",
@@ -473,35 +473,35 @@ export const howToStructuredData = {
       "position": 1,
       "name": "了解基本規則",
       "text": "學習匹克球的基本規則，包括雙彈跳、廚房區、發球規則等。使用我們的互動式規則教學快速掌握。",
-      "url": "https://picklemastertw.site/rules"
+      "url": "https://picklemastertw.com/rules"
     },
     {
       "@type": "HowToStep",
       "position": 2,
       "name": "選擇適合的裝備",
       "text": "根據您的程度和預算選擇球拍。初學者建議選擇中等重量、複合材質的球拍，價格約1000-2000元。",
-      "url": "https://picklemastertw.site/equipment"
+      "url": "https://picklemastertw.com/equipment"
     },
     {
       "@type": "HowToStep",
       "position": 3,
       "name": "尋找附近球場",
       "text": "使用我們的球場地圖功能，找到離您最近的匹克球場。台灣目前有 125+ 個球場可供選擇。",
-      "url": "https://picklemastertw.site/courts"
+      "url": "https://picklemastertw.com/courts"
     },
     {
       "@type": "HowToStep",
       "position": 4,
       "name": "學習基本技巧",
       "text": "觀看教學影片學習發球、接發球、正反手等基本技巧。使用我們的3D互動教學理解站位和球路。",
-      "url": "https://picklemastertw.site/learning"
+      "url": "https://picklemastertw.com/learning"
     },
     {
       "@type": "HowToStep",
       "position": 5,
       "name": "加入社群練習",
       "text": "加入本地匹克球社群，與球友交流學習。參加初學者友善的練習活動，累積實戰經驗。",
-      "url": "https://picklemastertw.site/resources"
+      "url": "https://picklemastertw.com/resources"
     }
   ]
 };
@@ -613,12 +613,12 @@ export const courtsLocationData = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://picklemastertw.site/courts#webpage",
-      "url": "https://picklemastertw.site/courts",
+      "@id": "https://picklemastertw.com/courts#webpage",
+      "url": "https://picklemastertw.com/courts",
       "name": "台灣匹克球場地圖 2026 | 全台 125+ 球場完整資訊",
       "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
       "isPartOf": {
-        "@id": "https://picklemastertw.site/#website"
+        "@id": "https://picklemastertw.com/#website"
       },
       "about": {
         "@type": "Thing",
@@ -631,7 +631,7 @@ export const courtsLocationData = {
     },
     {
       "@type": "ItemList",
-      "@id": "https://picklemastertw.site/courts#courtlist",
+      "@id": "https://picklemastertw.com/courts#courtlist",
       "name": "台灣匹克球場完整列表",
       "description": "收錄台北、新北、基隆、桃園、新竹、台中、彰化、南投、雲林、嘉義、台南、高雄、屏東、宜蘭、花蓮等 17 縣市全台 125+ 個匹克球場的完整資訊",
       "numberOfItems": 130,
@@ -745,7 +745,7 @@ export const courtsLocationData = {
     },
     {
       "@type": "WebApplication",
-      "@id": "https://picklemastertw.site/courts#webapp",
+      "@id": "https://picklemastertw.com/courts#webapp",
       "name": "台灣匹克球場地圖",
       "description": "GPS 定位找最近球場、篩選室內/戶外/免費/民營場地的互動式地圖工具",
       "applicationCategory": "SportsApplication",
@@ -769,7 +769,7 @@ export const courtsLocationData = {
     },
     {
       "@type": "LocalBusiness",
-      "@id": "https://picklemastertw.site/courts#service",
+      "@id": "https://picklemastertw.com/courts#service",
       "name": "台灣匹克球場資訊服務",
       "description": "提供全台匹克球場的完整資訊查詢服務",
       "areaServed": [
@@ -798,7 +798,7 @@ export const learningCourseData = {
   "provider": {
     "@type": "Organization",
     "name": "Picklemaster Taiwan",
-    "url": "https://picklemastertw.site"
+    "url": "https://picklemastertw.com"
   },
   "educationalLevel": "初級到進階",
   "inLanguage": "zh-TW",

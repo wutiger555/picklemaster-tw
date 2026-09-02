@@ -100,7 +100,7 @@ function renderOg({ title, subtitle = '', badge = '', type = 'default' }) {
   <text x="${102}" y="200" font-family="Noto Sans TC" font-size="26" font-weight="700" fill="#ffffff">${esc(badge)}</text>` : ''}
   ${titleTspans}
   ${subtitle ? `<text x="80" y="${subBaseline}" font-family="Noto Sans TC" font-size="${subSize}" fill="#ffffff" opacity="0.9">${esc(subtitle)}</text>` : ''}
-  <text x="80" y="586" font-family="Noto Sans TC" font-size="26" fill="#ffffff" opacity="0.8">picklemastertw.site</text>
+  <text x="80" y="586" font-family="Noto Sans TC" font-size="26" fill="#ffffff" opacity="0.8">picklemastertw.com</text>
 </svg>`;
 
     const r = new Resvg(svg, {

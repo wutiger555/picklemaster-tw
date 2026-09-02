@@ -23,9 +23,9 @@ const ArticleDetail = () => {
       publisher: {
         '@type': 'Organization',
         name: 'Picklemaster Taiwan',
-        logo: { '@type': 'ImageObject', url: 'https://picklemastertw.site/android-chrome-v2-512x512.png' }
+        logo: { '@type': 'ImageObject', url: 'https://picklemastertw.com/android-chrome-v2-512x512.png' }
       },
-      mainEntityOfPage: `https://picklemastertw.site/articles/${article.slug}`,
+      mainEntityOfPage: `https://picklemastertw.com/articles/${article.slug}`,
       wordCount: article.sections.reduce((sum, s) => sum + s.content.length, 0),
       articleSection: article.category,
       keywords: article.tags.join(', '),
@@ -49,7 +49,7 @@ const ArticleDetail = () => {
       document.head.appendChild(s);
       return s;
     };
-    const base = 'https://picklemastertw.site';
+    const base = 'https://picklemastertw.com';
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',

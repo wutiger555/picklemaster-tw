@@ -156,6 +156,9 @@ const CourtDetail = () => {
   const typeLabel = TYPE_LABEL(court.type);
   const feeLabel = court.fee === 'free' ? '免費' : '收費';
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${court.location.lat},${court.location.lng}`;
+  // 實景：連往外部平台檢視（不重製他人照片，避免著作權問題）
+  const photosUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(court.name)}%20${court.location.lat},${court.location.lng}`;
+  const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${court.location.lat},${court.location.lng}`;
   const navigateUrl = `https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`;
   const transitUrl = `https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}&travelmode=transit`;
 
@@ -420,6 +423,58 @@ const CourtDetail = () => {
                       className="block w-full text-center bg-neutral-900 text-white font-bold px-4 py-3 rounded-xl hover:bg-neutral-800"
                     >
                       📝 線上預約
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* 看場地實景 —— 一律連往原平台檢視，本站不轉載他人照片 */}
+              <div className="bg-white rounded-2xl border border-neutral-100 p-5">
+                <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-1">看場地實景</h3>
+                <p className="text-xs text-neutral-400 mb-3">於原平台開啟，照片版權屬各原作者</p>
+                <div className="space-y-2">
+                  <a
+                    href={photosUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-2 w-full bg-white border-2 border-neutral-200 hover:border-emerald-300 text-neutral-900 font-bold px-4 py-3 rounded-xl transition-colors"
+                  >
+                    <span>📷 Google 地圖照片</span>
+                    <span className="text-xs font-normal text-neutral-400">開新分頁 ↗</span>
+                  </a>
+                  {isOutdoor && (
+                    <a
+                      href={streetViewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="戶外／風雨球場可用街景先看周邊環境與出入口"
+                      className="flex items-center justify-between gap-2 w-full bg-white border-2 border-neutral-200 hover:border-sky-300 text-neutral-900 font-bold px-4 py-3 rounded-xl transition-colors"
+                    >
+                      <span>🛣️ Google 街景</span>
+                      <span className="text-xs font-normal text-neutral-400">開新分頁 ↗</span>
+                    </a>
+                  )}
+                  {court.contact_details?.instagram && (
+                    <a
+                      href={court.contact_details.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="球館官方 IG 通常有最新場地照片"
+                      className="flex items-center justify-between gap-2 w-full bg-white border-2 border-neutral-200 hover:border-fuchsia-300 text-neutral-900 font-bold px-4 py-3 rounded-xl transition-colors"
+                    >
+                      <span>📸 官方 IG 照片</span>
+                      <span className="text-xs font-normal text-neutral-400">開新分頁 ↗</span>
+                    </a>
+                  )}
+                  {court.contact_details?.facebook && (
+                    <a
+                      href={court.contact_details.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between gap-2 w-full bg-white border-2 border-neutral-200 hover:border-blue-300 text-neutral-900 font-bold px-4 py-3 rounded-xl transition-colors"
+                    >
+                      <span>📘 官方 FB 相簿</span>
+                      <span className="text-xs font-normal text-neutral-400">開新分頁 ↗</span>
                     </a>
                   )}
                 </div>

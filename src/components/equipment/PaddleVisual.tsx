@@ -1,9 +1,14 @@
 /**
- * PaddleVisual — 依真實拍形與品牌配色程式繪製的球拍示意圖
- * 不使用外部圖片：不會抓錯圖、不會有版權問題、也不會因連結失效而破圖
- * 形狀比例依 USAP 規範：拍面長 + 寬 ≤ 24"，總長 ≤ 17"
+ * PaddleVisual — 球拍視覺
+ *
+ * 兩層策略：
+ *  1. 有官方商品圖（paddle.image）→ 顯示真圖。每張皆經目視比對確認為該型號本人，
+ *     型號對不上者（例如只找得到 Mach 2 的圖卻要配 Mach 1）一律不收。
+ *  2. 沒有真圖、或真圖載入失敗 → 退回依拍形與品牌配色程式繪製的 SVG 示意圖，
+ *     永不破圖。形狀比例依 USAP 規範：拍面長 + 寬 ≤ 24"，總長 ≤ 17"。
  */
 
+import { useState } from 'react';
 import type { Paddle } from '../../data/paddleDatabase';
 
 // 三種拍形的臉部尺寸（SVG 座標，viewBox 140x220）
@@ -23,7 +28,7 @@ interface PaddleVisualProps {
   className?: string;
 }
 
-const PaddleVisual = ({ paddle, className = '' }: PaddleVisualProps) => {
+const PaddleSvg = ({ paddle, className = '' }: PaddleVisualProps) => {
   const geo = SHAPE_GEOMETRY[paddle.shape];
   const cx = 70;
   const faceTop = 12;
@@ -176,6 +181,28 @@ const PaddleVisual = ({ paddle, className = '' }: PaddleVisualProps) => {
       />
     </svg>
   );
+};
+
+/**
+ * 有官方商品圖就用真圖；沒有、或圖片載入失敗時自動退回 SVG 示意圖。
+ * 真圖皆經目視比對確認為該型號本人（型號不符者一律不收）。
+ */
+const PaddleVisual = ({ paddle, className = '' }: PaddleVisualProps) => {
+  const [failed, setFailed] = useState(false);
+
+  if (paddle.image && !failed) {
+    return (
+      <img
+        src={paddle.image}
+        alt={`${paddle.brand} ${paddle.model} 球拍`}
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+        className={`object-contain ${className}`}
+      />
+    );
+  }
+  return <PaddleSvg paddle={paddle} className={className} />;
 };
 
 export default PaddleVisual;

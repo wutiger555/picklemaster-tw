@@ -571,7 +571,7 @@ const PaddleDatabasePage = () => {
         <div className="flex items-center justify-between mb-4">
           <div className="text-sm text-neutral-500 font-semibold">共 {filtered.length} 款</div>
           <div className="text-[11px] text-neutral-400 text-right">
-            價格為台灣行情參考 · 球拍圖為依規格繪製之示意圖
+            價格為台灣行情參考 · 球拍圖為品牌官方商品圖，無官方圖者以規格繪製示意圖替代
             <span className="hidden md:inline"> · 經銷資訊查證於 2026-08，購買前請以品牌官方公告為準</span>
           </div>
         </div>
@@ -605,6 +605,10 @@ const PaddleDatabasePage = () => {
             單純提供正版購買參考。
             <br />
             本站球拍推薦與評分依規格與公開評測撰寫，<strong className="text-neutral-700">不因是否有分潤而調整排序</strong>。
+            <br />
+            <strong className="text-neutral-700">關於球拍圖片：</strong>
+            商品圖取自各品牌官方網站，僅用於識別與說明該款球拍，各圖片與品牌名稱之權利均屬各品牌所有；
+            本站與各品牌無合作或代言關係。查無官方圖者，改以依規格繪製的示意圖標示。
             標示「水貨」者為平行輸入，通常無台灣原廠保固，購買前請向賣家確認保固與退換貨條件。
           </div>
         </div>

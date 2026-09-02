@@ -10,7 +10,7 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
 - 官方網站：https://picklemastertw.site/
 - 語言：繁體中文 (zh-TW)
 - 服務地區：台灣 (Taiwan)
-- 資料更新：2026-08-29
+- 資料更新：2026-09-02
 - GitHub：https://github.com/wutiger555/picklemaster-tw
 
 ## 核心頁面 / Core Pages
@@ -21,7 +21,7 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
   - [台北](https://picklemastertw.site/courts/taipei)、[新北](https://picklemastertw.site/courts/new-taipei)、[基隆](https://picklemastertw.site/courts/keelung)、[桃園](https://picklemastertw.site/courts/taoyuan)、[新竹縣](https://picklemastertw.site/courts/hsinchu)、[新竹市](https://picklemastertw.site/courts/hsinchu-city)、[台中](https://picklemastertw.site/courts/taichung)、[彰化](https://picklemastertw.site/courts/changhua)、[南投](https://picklemastertw.site/courts/nantou)、[雲林](https://picklemastertw.site/courts/yunlin)、[嘉義市](https://picklemastertw.site/courts/chiayi)、[嘉義縣](https://picklemastertw.site/courts/chiayi-county)、[台南](https://picklemastertw.site/courts/tainan)、[高雄](https://picklemastertw.site/courts/kaohsiung)、[屏東](https://picklemastertw.site/courts/pingtung)、[宜蘭](https://picklemastertw.site/courts/yilan)、[花蓮](https://picklemastertw.site/courts/hualien)
 
 ### AEPL 職業聯賽專區
-- [AEPL 職業聯賽專區](https://picklemastertw.site/aepl): 台灣第一個匹克球職業聯賽完整追蹤。6 支企業隊（台南旭日雷霆、桃園雲豹、Ahhh、蘆沐、富瑞特科技、台中第六隊）戰力卡、全台 8 站巡迴賽程（開幕站台中火車站、第二站高雄駁二）、賽制解說（每隊 6-10 人、每站登錄 4 人、總獎金 100 萬）、選手焦點（鍾振煒、蔡萱、邱子恩）與賽前情報分析。
+- [AEPL 職業聯賽專區](https://picklemastertw.site/aepl): 台灣第一個匹克球職業聯賽完整追蹤。首站台中站冠軍桃園永豐雲豹（Dreambreaker 21:18 勝台南旭日雷霆）。6 支企業隊（桃園永豐雲豹、台南旭日雷霆、新竹 YANKEY ACE、新北蘆沐、Ahhh、富瑞特科技）戰力卡、8 站巡迴賽程（第 2 站 9/19-20 高雄駁二）、賽制解說（Dreambreaker 決勝、每隊 6-10 人、每站登錄 4 人、總獎金 100 萬）、選手焦點與戰報分析。
 
 ### 賽事資訊
 - [2026 賽事總覽](https://picklemastertw.site/tournaments): 涵蓋 CTPF 全年認證賽事、亞洲區 APG、PPA Asia 等國際積分賽。
@@ -29,10 +29,10 @@ Picklemaster Taiwan 由台灣球友社群經營，使命是成為台灣匹克球
   - NAPA 盃 (2/28-3/1) — 已完賽
   - 港都盃 (4/18-19, 高雄樹德科大) — 已完賽
   - 中正盃 (6/18-21, 台北大安運動中心) — 已完賽
-  - AEPL 亞洲菁英匹克球聯盟創始賽季 (8/29-30 台中火車站空中廊道開幕，8-11月全台 8 站) — 6 支企業隊參戰、總獎金 100 萬、林志穎任賽事大使（8/29 開打）
+  - AEPL 亞洲菁英匹克球聯盟創始賽季 (8/29-30 台中火車站空中廊道開幕，8-11月全台 8 站) — 首站台中站冠軍：桃園永豐雲豹；第 2 站 9/19-20 高雄駁二
   - 新北金碧盃 (8/14-16, 三峽國民運動中心) — 已完賽
   - TMLP 積分巡迴賽 (8/15-16 新竹站已完賽、10月新北站、11月台北年終賽)
-  - 新竹縣長盃 (8/29-30, 竹北國民運動中心) — 進行中
+  - 新竹縣長盃 (8/29-30, 竹北國民運動中心) — 已完賽
   - 國民體育日系列 (9/6、9/12、9/13, 屏東)
   - 南華盃青銀共融全國聯賽 (9/12-11/15, 南華大學)
   - 臺灣女子匹克球公開賽 (10月, 待定)

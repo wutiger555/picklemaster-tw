@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isWetCode } from '../../utils/weather';
 
 interface WeatherData {
   temperature: number;
@@ -77,7 +78,8 @@ const WeatherWidget = ({ lat, lng }: Props) => {
   }
 
   const { label, icon } = codeToLabel(weather.weatherCode);
-  const isPlayable = weather.precipitation < 0.5 && weather.windspeed < 30;
+  const isRaining = weather.precipitation > 0 || isWetCode(weather.weatherCode);
+  const isPlayable = !isRaining && weather.windspeed < 30;
 
   return (
     <div className="bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50 rounded-2xl p-5 border border-sky-100">

@@ -949,11 +949,11 @@
     },
     {
       "id": 21,
-      "name": "台中市潭子國民運動中心",
+      "name": "臺中市潭子國民暨兒童運動中心",
       "location": {
-        "address": "台中市潭子區勝利路140號",
-        "lat": 24.212,
-        "lng": 120.705,
+        "address": "台中市潭子區甘蔗里勝利路140號",
+        "lat": 24.2103,
+        "lng": 120.7019,
         "city": "台中市",
         "district": "潭子區"
       },
@@ -964,15 +964,19 @@
       "surface": "wood",
       "net_type": "provided",
       "ownership": "public",
-      "opening_hours": "週一 09:00-11:00",
-      "contact": "04-2534-6611",
+      "opening_hours": "匹克球開放時段：週一、週三 09:00-12:00（場館 06:00-22:00）",
+      "contact": "04-2532-5580",
       "facilities": [
         "更衣室",
         "冷氣",
         "停車場"
       ],
-      "last_updated": "2025-12-10",
-      "reviews": "台中潭子區運動中心"
+      "last_updated": "2026-09-02",
+      "reviews": "潭子國運中心開放匹克球時段，非匹克球專用場",
+      "contact_details": {
+        "phone": "04-2532-5580"
+      },
+      "website": "https://tzcsc.com.tw/"
     },
     {
       "id": 22,
@@ -4461,37 +4465,6 @@
       }
     },
     {
-      "id": 108,
-      "name": "潭子國民運動中心匹克球場",
-      "location": {
-        "address": "台中市潭子區勝利路300號",
-        "lat": 24.2092,
-        "lng": 120.7182,
-        "city": "台中市",
-        "district": "潭子區"
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "依運動中心公告",
-      "courts_count": 2,
-      "surface": "wood",
-      "net_type": "portable",
-      "ownership": "public",
-      "opening_hours": "週一、週三 09:00-12:00",
-      "contact": "04-2531-5678",
-      "facilities": [
-        "冷氣",
-        "停車場"
-      ],
-      "features": [
-        "平日晨間時段"
-      ],
-      "is_new": false,
-      "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "潭子國運中心開放匹克球時段"
-    },
-    {
       "id": 109,
       "name": "長春國民暨兒童運動中心匹克球場",
       "location": {
@@ -5373,6 +5346,129 @@
           }
         ]
       }
+    },
+    {
+      "id": 134,
+      "name": "PicklePark 匹克公園室內匹克球場 北屯場",
+      "location": {
+        "address": "台中市北屯區敦和路125號",
+        "lat": 24.1902,
+        "lng": 120.6773,
+        "city": "台中市",
+        "district": "北屯區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "尖峰 NT$400/小時、離峰 NT$300/小時（試營運價）",
+      "price_details": {
+        "peak": "尖峰 NT$400/小時",
+        "offpeak": "離峰 NT$300/小時"
+      },
+      "courts_count": 2,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依當月場地時段公告，透過官方 LINE 預約",
+      "contact": "LINE @picklepark",
+      "contact_details": {
+        "line": "@picklepark",
+        "instagram": "https://www.threads.com/@picklepark_official"
+      },
+      "facilities": [
+        "冷氣",
+        "室內"
+      ],
+      "features": [
+        "每場次上限 8 人",
+        "有揪球 LINE 群組，人不夠館主可陪打",
+        "三小時全新手體驗班"
+      ],
+      "reviews": "北屯專業室內館，試營運中。場地面數尚未由官方公告，本站暫記 2 面待查證。",
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-02"
+    },
+    {
+      "id": 135,
+      "name": "匹克領域 PB-Club",
+      "location": {
+        "address": "台中市烏日區溪埧里溪南路一段348巷33號",
+        "lat": 24.0824,
+        "lng": 120.6423,
+        "city": "台中市",
+        "district": "烏日區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官網公告，整點一小時為單位",
+      "courts_count": 2,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "每日 06:00-22:00（整點 1 小時為單位）",
+      "contact": "LINE 預約（lin.ee/CBEfgA3）",
+      "contact_details": {
+        "line": "https://lin.ee/CBEfgA3"
+      },
+      "website": "https://pbclub.com.tw/",
+      "facilities": [
+        "冷氣",
+        "室內",
+        "兒童遊戲區"
+      ],
+      "features": [
+        "A／B 兩面場地",
+        "官網可查即時空場",
+        "附設小朋友遊戲區"
+      ],
+      "reviews": "烏日區室內專業館，官網可直接查當月空場後用 LINE 預約",
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-02"
+    },
+    {
+      "id": 136,
+      "name": "匹克王 PICKLE KING 匹克球運動餐廳",
+      "location": {
+        "address": "台中市南屯區新生里環中路四段2號",
+        "lat": 24.1477,
+        "lng": 120.622,
+        "city": "台中市",
+        "district": "南屯區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "旗艦場 NT$1,200/小時、標準場 NT$1,000/小時",
+      "price_details": {
+        "peak": "旗艦場 NT$1,200/小時（兩側，附獨立草地與專屬休憩桌椅）",
+        "offpeak": "標準場 NT$1,000/小時（中間場，休息需至場外用餐區）"
+      },
+      "courts_count": 3,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "週一 09:00 起，每日營業至 22:00",
+      "contact": "0911-716-532",
+      "contact_details": {
+        "phone": "0911-716-532",
+        "line": "@pk.bistro"
+      },
+      "facilities": [
+        "冷氣",
+        "室內",
+        "免費停車",
+        "餐飲"
+      ],
+      "features": [
+        "匹克球場結合運動餐酒館",
+        "挑高通風設計",
+        "旗艦場邊有獨立草地",
+        "無差別臨打社群"
+      ],
+      "reviews": "南屯區匹克球運動餐廳，Google 地圖 121 則評論。場地分旗艦場（兩側）與標準場（中間），本站暫記 3 面待官方確認。",
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-02"
     }
   ]
 }

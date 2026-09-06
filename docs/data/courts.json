@@ -2362,9 +2362,9 @@
       "id": 53,
       "name": "Triple Ace & P.DANG 匹克球館（皮蛋）",
       "location": {
-        "address": "新北市淡水區",
-        "lat": 25.1712,
-        "lng": 121.4485,
+        "address": "新北市淡水區中山北路一段285巷5號",
+        "lat": 25.1822,
+        "lng": 121.4437,
         "city": "新北市",
         "district": "淡水區"
       },
@@ -2376,7 +2376,7 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "10:00-22:00",
-      "contact": "線上預約",
+      "contact": "02-2626-0687",
       "facilities": [
         "冷氣",
         "球具租借",
@@ -2391,8 +2391,11 @@
       ],
       "is_new": false,
       "added_date": "2025-12",
-      "last_updated": "2026-09-02",
-      "reviews": "淡水區專業匹克球館，定期 DUPR 賽事"
+      "last_updated": "2026-09-06",
+      "reviews": "淡水區專業匹克球館，定期 DUPR 賽事",
+      "contact_details": {
+        "phone": "02-2626-0687"
+      }
     },
     {
       "id": 54,
@@ -5469,6 +5472,54 @@
       "is_new": true,
       "added_date": "2026-09",
       "last_updated": "2026-09-02"
+    },
+    {
+      "id": 137,
+      "name": "盧彥勳網球&匹克球俱樂部 真理院區",
+      "location": {
+        "address": "新北市淡水區新民街180之6號（真理大學後門停車場入口對面）",
+        "lat": 25.177,
+        "lng": 121.4345,
+        "city": "新北市",
+        "district": "淡水區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "平日日間 $600/小時、平日夜間與假日 $800/小時（固定月租 $500／$700）",
+      "price_details": {
+        "weekday": "平日 08:00-17:00　單次 $600/小時（固定月租 $500）",
+        "peak": "平日 17:00-22:00　單次 $800/小時（固定月租 $700）",
+        "weekend": "假日 08:00-22:00　單次 $800/小時（固定月租 $700）",
+        "membership": "固定月租制較單次每小時便宜 $100"
+      },
+      "courts_count": 6,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "08:00-22:00（依官方公告，週一自 07:00 開始營業）",
+      "contact": "0922-087-308",
+      "contact_details": {
+        "phone": "0922-087-308"
+      },
+      "website": "https://rendy.academy/",
+      "facilities": [
+        "室內",
+        "廁所",
+        "盥洗室",
+        "停車場"
+      ],
+      "features": [
+        "六面專業匹克球場，另有三面標準硬地網球場",
+        "全館室內挑高設計，風雨無阻",
+        "與網球場共用地板，彈跳穩定",
+        "可停真理大學校內停車場",
+        "每週六有球敘",
+        "前世界排名第 33 網球選手盧彥勳創辦"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-06",
+      "reviews": "淡水真理大學旁，2025 年 11 月開幕。全台少數匹克球與網球共構的室內館，定位偏長期訓練。"
     }
   ]
 }

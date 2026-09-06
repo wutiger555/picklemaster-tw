@@ -634,7 +634,7 @@ export const courtsLocationData = {
       "@id": "https://picklemastertw.com/courts#courtlist",
       "name": "台灣匹克球場完整列表",
       "description": "收錄台北、新北、基隆、桃園、新竹、台中、彰化、南投、雲林、嘉義、台南、高雄、屏東、宜蘭、花蓮等 17 縣市全台 130+ 個匹克球場的完整資訊",
-      "numberOfItems": 132,
+      "numberOfItems": 133,
       "itemListElement": [
         {
           "@type": "SportsActivityLocation",

@@ -249,6 +249,11 @@ const Aepl = () => {
                   <div className="flex flex-wrap gap-1.5 mb-4 text-[11px] font-semibold">
                     <span className="px-2 py-0.5 rounded-full bg-white/10 text-neutral-300">{t.industry}</span>
                     {t.homeBase && <span className="px-2 py-0.5 rounded-full bg-white/10 text-neutral-300">📍 {t.homeBase}</span>}
+                    {t.group && (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
+                        {t.group} 組
+                      </span>
+                    )}
                     <span className="px-2 py-0.5 rounded-full bg-white/10 text-neutral-300">{t.backer}</span>
                   </div>
 

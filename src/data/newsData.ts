@@ -3,6 +3,56 @@ import type { NewsItem } from '../types/news';
 export const NEWS_DATA: NewsItem[] = [
   // ===== 2026 Q3 最新消息 =====
   {
+    id: 'tw-202609-aepl-station2-preview',
+    title: 'AEPL 第 2 站 9/19 高雄駁二開打，地主富瑞特科技迎主場戰',
+    summary: 'AEPL 創始賽季第 2 站 9 月 19、20 日移師高雄駁二特區。六隊分為兩組：A 組台北 Ahhh、新北蘆沐、桃園永豐雲豹；B 組新竹 YANKEY ACE、台南旭日雷霆、高雄富瑞特科技——這站是富瑞特的主場。',
+    content: `
+      <p><strong>AEPL 亞洲菁英匹克球聯盟</strong>創始賽季第 2 站將於 <strong>9 月 19、20 日在高雄駁二特區</strong>登場。首站在台中火車站空中廊道搭台，第 2 站選在駁二，延續「把職業賽帶到人流最密集的城市場域」的策略。</p>
+
+      <p>值得留意的是<strong>分組</strong>。創始賽季六隊分為兩組：</p>
+      <ul>
+        <li><strong>A 組</strong>：台北 Ahhh、新北蘆沐、桃園永豐雲豹</li>
+        <li><strong>B 組</strong>：新竹 YANKEY ACE、台南旭日雷霆、高雄富瑞特科技</li>
+      </ul>
+
+      <p>也就是說，<strong>高雄站是富瑞特科技的主場</strong>。首站台中，冠軍雲豹與亞軍旭日雷霆分屬不同組，兩隊在冠軍戰纏鬥到第 5 回合 Dreambreaker 才分勝負；富瑞特首站未能突破，這次回到高雄能否借主場氣勢翻身，是本站最大的看點。</p>
+
+      <p>創始賽季自 8 月延續至 11 月、全台共 8 站，年終另有總冠軍賽，總獎金 100 萬元，賽事大使由藝人林志穎擔任。</p>
+
+      <p>六隊完整戰力卡（含分組標示）、賽制解析與首站戰報，見本站 <a href="/aepl" class="text-primary-600 hover:underline">AEPL 職業聯賽專區</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://newtalk.tw/news/view/2026-08-30/1056680" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Newtalk 首站戰報</a>、<a href="https://udn.com/news/story/7005/9696640" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合報 開季報導</a></p>
+    `,
+    date: '2026-09-08',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '高雄', '2026']
+  },
+  {
+    id: 'tw-202609-tmlp-newtaipei-registration',
+    title: 'TMLP 新北站開放報名：10/17-18 林口高中，年度倒數第二站',
+    summary: 'TMLP 台灣匹克球積分巡迴賽新北站 10 月 17、18 日於新北市林口高中舉行，官網已開放報名。全年六站中這是最後一站開放一般報名——年終台北站採積分邀請制。',
+    content: `
+      <p><strong>TMLP 台灣匹克球積分巡迴賽</strong>新北站已開放報名，賽事於 <strong>10 月 17、18 日</strong>在<strong>新北市林口高中</strong>（新北市林口區東勢里仁愛路二段173號）舉行，賽制為男子雙打／女子雙打／混合雙打，成績計入 TMLP 年度積分。</p>
+
+      <p>對想累積積分的球友來說，這站的時間點很關鍵：<strong>2026 賽季全年六站，新北站是最後一站開放一般報名</strong>。年終的台北站（11 月 22 日）採<strong>積分邀請制</strong>，也就是要靠前面幾站的積分才拿得到門票。</p>
+
+      <p>已完賽的四站分別是高雄站（4/11-12，鼓山高中）、嘉義站（5/30-31，嘉義市國民運動中心）、苗栗站（6/27-28，竹南運動公園）與新竹站（8/15-16，湖口王爺壟運動公園）。本站已補齊全六站資料。</p>
+
+      <p><a href="/tournaments" class="text-primary-600 hover:underline">2026 賽事總覽</a>可查全年賽程與報名狀態。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.tmlp.com.tw/events" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">TMLP 官方賽事頁</a></p>
+    `,
+    date: '2026-09-07',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', 'TMLP', '積分巡迴賽', '報名', '2026']
+  },
+  {
     id: 'tw-202608-aepl-station1',
     title: '雲豹封王！AEPL 首站 Dreambreaker 21:18 驚險摘冠',
     summary: 'AEPL 創始賽季首站台中站落幕：桃園永豐雲豹與台南旭日雷霆冠軍戰前 4 回合戰成 2:2，第 5 回合 Dreambreaker 雲豹以 21:18 過關、總回合數 3:2 封王。神祕第六隊「新竹 YANKEY ACE」首度亮相即闖進 4 強。',

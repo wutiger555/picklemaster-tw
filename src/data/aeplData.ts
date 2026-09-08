@@ -10,6 +10,7 @@ export interface AeplTeam {
   backer: string;             // 出資／經營母體
   industry: string;           // 產業背景
   homeBase?: string;          // 地緣（依公開資訊）
+  group?: 'A' | 'B';          // 創始賽季分組（Newtalk 首站戰報公布）
   emoji: string;              // 本站視覺識別（非官方隊徽）
   gradient: string;           // 本站視覺識別配色 Tailwind gradient
   captain?: string;
@@ -66,6 +67,7 @@ export const AEPL_TEAMS: AeplTeam[] = [
     backer: '尚騰汽車集團 × 寶嘉聯合',
     industry: '汽車產業',
     homeBase: '台南',
+    group: 'B',
     emoji: '⚡',
     gradient: 'from-amber-500 to-red-500',
     captain: '蔡萱',
@@ -89,6 +91,7 @@ export const AEPL_TEAMS: AeplTeam[] = [
     backer: 'TPBL 台啤永豐雲豹體系',
     industry: '職業運動經營',
     homeBase: '桃園',
+    group: 'A',
     emoji: '🐆',
     gradient: 'from-sky-600 to-indigo-600',
     captain: '鍾振煒',
@@ -113,6 +116,7 @@ export const AEPL_TEAMS: AeplTeam[] = [
     backer: 'Ahhh Social Pickleball Hub（台北）',
     industry: '匹克球場館經營',
     homeBase: '台北',
+    group: 'A',
     emoji: '🌀',
     gradient: 'from-teal-500 to-emerald-600',
     knownPlayers: [],
@@ -131,6 +135,7 @@ export const AEPL_TEAMS: AeplTeam[] = [
     backer: '蘆沐',
     industry: '企業隊（產業背景待官方介紹）',
     homeBase: '新北',
+    group: 'A',
     emoji: '🌿',
     gradient: 'from-lime-500 to-teal-600',
     knownPlayers: [],
@@ -145,6 +150,7 @@ export const AEPL_TEAMS: AeplTeam[] = [
     nameEn: 'FRT Technology',
     backer: '富瑞特科技',
     industry: '科技產業',
+    group: 'B',
     emoji: '🔷',
     gradient: 'from-blue-600 to-violet-600',
     knownPlayers: [],
@@ -160,6 +166,7 @@ export const AEPL_TEAMS: AeplTeam[] = [
     backer: '待官方介紹',
     industry: '企業隊（背景待官方介紹）',
     homeBase: '新竹',
+    group: 'B',
     emoji: '♠️',
     gradient: 'from-slate-500 to-cyan-700',
     knownPlayers: [],

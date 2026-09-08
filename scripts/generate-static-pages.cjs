@@ -872,6 +872,42 @@ const ARTICLE_SLUGS = [
     { slug: 'first-open-play-guide', title: '第一次參加匹克球球敘（Open Play）完整指南', summary: '怎麼找球敘、DUPR 程度自報、排拍輪場規矩、費用分攤行情與球場禮儀 8 條。', category: '族群指南' },
 ];
 
+/**
+ * 新聞頁：建置時直接解析 src/data/newsData.ts，不做手維護的鏡像清單。
+ * 原本新聞詳細頁完全沒有預渲染，所有 /news/:id 對爬蟲都回 404
+ * （使用者靠 404.html 的 SPA fallback 還看得到，但 Google 無法索引）。
+ */
+function loadNewsItems() {
+    const src = fs.readFileSync(path.join(__dirname, '../src/data/newsData.ts'), 'utf-8');
+    const items = [];
+    // 以 id 為起點，content 用 backtick 包住、後面接 date 與 category。
+    // 欄位之間可能夾行內註解（例如 date: '2025-10-15', // Estimated date），
+    // 所以分隔用 W 而不是 \s* —— 否則 lazy 的 content 群組會往後吃掉下一則。
+    const W = '(?:\\s|//[^\\n]*)*';
+    const STR = "'((?:[^'\\\\]|\\\\.)*)'";
+    const re = new RegExp(
+        '\\{' + W + 'id:' + W + STR + ',' +
+        W + 'title:' + W + STR + ',' +
+        W + 'summary:' + W + STR + ',' +
+        W + 'content:' + W + '`([\\s\\S]*?)`,' +
+        W + 'date:' + W + STR + ',' +
+        W + 'category:' + W + STR,
+        'g'
+    );
+    let m;
+    while ((m = re.exec(src)) !== null) {
+        items.push({
+            id: m[1],
+            title: m[2].replace(/\\'/g, "'"),
+            summary: m[3].replace(/\\'/g, "'"),
+            content: m[4].trim(),
+            date: m[5],
+            category: m[6],
+        });
+    }
+    return items;
+}
+
 // City hub pages — mirror of src/utils/cityData.ts
 const CITY_SLUG_MAP = [
     { slug: 'taipei', city: '台北市' },
@@ -1185,6 +1221,58 @@ async function generateStaticPages() {
             fs.writeFileSync(path.join(dirPath, 'index.html'), content);
         }
         console.log(`  Generated ${ARTICLE_SLUGS.length} article detail pages`);
+
+        // ===== Generate news detail pages =====
+        console.log('Generating news detail pages...');
+        {
+            const newsItems = loadNewsItems();
+            const CAT_LABEL = { Taiwan: '台灣', International: '國際', Equipment: '裝備', Rules: '規則', Courts: '球場', Tournament: '賽事' };
+            for (const nw of newsItems) {
+                const dirPath = path.join(BUILD_DIR, 'news', nw.id);
+                fs.mkdirSync(dirPath, { recursive: true });
+                const catLabel = CAT_LABEL[nw.category] || nw.category;
+                const title = `${nw.title} | 匹克球新聞`;
+                const desc = nw.summary;
+                const canonical = `${BASE_URL}/news/${nw.id}`;
+                let content = template;
+                content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
+                content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(desc)}" />`);
+                content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${esc(title)}" />`);
+                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${esc(desc)}" />`);
+                content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+                const newsSchema = {
+                    "@context": "https://schema.org", "@type": "NewsArticle",
+                    "headline": nw.title,
+                    "description": desc,
+                    "datePublished": nw.date,
+                    "dateModified": nw.date,
+                    "articleSection": catLabel,
+                    "inLanguage": "zh-TW",
+                    "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
+                    "publisher": { "@type": "Organization", "name": "Picklemaster Taiwan", "logo": { "@type": "ImageObject", "url": `${BASE_URL}/android-chrome-v2-512x512.png` } },
+                    "mainEntityOfPage": canonical,
+                };
+                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(newsSchema).replace(/</g, '\\u003c')}</script>`);
+                const others = newsItems.filter(x => x.id !== nw.id).slice(0, 6);
+                const body = `
+        <p style="font-size:14px;color:#6b7280;margin:0 0 4px;">${esc(catLabel)}　·　<time datetime="${esc(nw.date)}">${esc(nw.date)}</time></p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(nw.summary)}</p>
+        <section style="margin-bottom:24px;font-size:16px;line-height:1.8;">${nw.content}</section>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他最新消息</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li style="margin-bottom:6px;"><a href="/news/${o.id}" style="color:#0d9488;">${esc(o.title)}</a>（${esc(o.date)}）</li>`).join('')}</ul>
+        </section>
+        <p style="font-size:15px;"><a href="/" style="color:#0d9488;">回首頁看所有消息</a>　·　<a href="/tournaments" style="color:#0d9488;">2026 賽事總覽</a>　·　<a href="/aepl" style="color:#0d9488;">AEPL 職業聯賽專區</a></p>`;
+                content = injectPrerender(content, prerenderShell({
+                    crumbs: [{ name: '首頁', href: '/' }, { name: '最新消息', href: '/' }, { name: nw.title }],
+                    h1: nw.title, bodyHtml: body,
+                }));
+                content = applyOg(content, `og/news-${nw.id}.png`, { title: nw.title, subtitle: `${catLabel}　${nw.date}`, badge: '最新消息', type: 'news' });
+                fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+            }
+            console.log(`  Generated ${newsItems.length} news detail pages`);
+        }
 
         // ===== Generate per-technique pages =====
         console.log('Generating technique detail pages...');
@@ -1716,6 +1804,18 @@ async function generateStaticPages() {
         <lastmod>${today}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
+    </url>`;
+        }
+
+        // Add per-news URLs —— lastmod 用新聞本身的日期，不用建置日，
+        // 否則每次 build 都會把 27 篇舊聞的 lastmod 推成今天，對爬蟲是雜訊。
+        for (const nw of loadNewsItems()) {
+            sitemapContent += `
+    <url>
+        <loc>${BASE_URL}/news/${nw.id}</loc>
+        <lastmod>${nw.date}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
     </url>`;
         }
 

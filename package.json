@@ -11,7 +11,9 @@
     "preview": "vite preview",
     "og:font": "python3 scripts/build-og-font.py",
     "deploy": "npm run build && git add docs && git commit -m 'Deploy to GitHub Pages' && git push",
-    "ship": "git add . && git commit -m 'Update: Auto-deploy via Action' && git push"
+    "ship": "git add . && git commit -m 'Update: Auto-deploy via Action' && git push",
+    "audit:courts": "node scripts/audit-courts.cjs",
+    "audit:routes": "node scripts/audit-routes.cjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.100.0",

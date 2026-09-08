@@ -792,6 +792,22 @@ const pageSEO = {
     }
 };
 
+// 這兩頁原本不在 pageSEO 裡，因此既沒有預渲染也沒有進 sitemap，
+// 對 Googlebot 一律回 404（scripts/audit-routes.cjs 就是為了抓這種洞）。
+// 用賦值追加而非塞進物件字面值 —— 那個字面值裡有大量含大括號的字串，
+// 程式化插入很容易插到嵌套物件中間。
+pageSEO.contact = {
+    title: '聯絡我們 | 資料回報與合作洽詢 | 匹克球台灣',
+    description: '球場資訊有誤、想新增場地、或有合作提案？本站的球場與賽事資料全部人工查證，歡迎回報更正。可透過 GitHub Issues 提交問題與建議。',
+    keywords: '匹克球台灣 聯絡,匹克球場回報,匹克球資料更正,picklemaster taiwan contact',
+};
+pageSEO['privacy-policy'] = {
+    title: '隱私權政策 | 匹克球台灣',
+    description: '本站蒐集哪些資訊、如何使用、使用了哪些第三方服務，以及你的權利。純靜態網站，不需註冊即可使用全部功能。',
+    keywords: '匹克球台灣 隱私權政策,picklemaster taiwan privacy policy',
+};
+
+
 // Training programs (per-slug static pages)
 const PROGRAM_SLUGS = [
     { slug: 'beginner-8-week', title: '新手 8 週入門完整菜單', subtitle: '從 0 開始，8 週後能輕鬆下場打雙打' },
@@ -1330,6 +1346,25 @@ async function generateStaticPages() {
                     { href: '/aepl', label: '富瑞特科技', sub: '科技產業企業隊' },
                 ],
                 foot: '<a href="/articles/taiwan-pro-pickleball-2026" style="color:#0d9488;">深度專欄：台灣匹克球職業元年全解析</a>　·　<a href="/tournaments" style="color:#0d9488;">2026 賽事總覽</a>',
+            },
+            {
+                route: 'contact', h1: '聯絡我們', crumb: '聯絡我們',
+                intro: '本站的球場與賽事資料全部人工查證，但場館開關、價格與時段變動很快。發現資訊有誤、想新增場地、或有合作提案，都歡迎告訴我們。',
+                items: [
+                    { href: 'https://github.com/wutiger555/picklemaster-tw/issues', label: 'GitHub Issues', sub: '目前最直接的回報管道：資料錯誤、缺漏場地、功能建議都可以在這裡提交' },
+                    { href: '/courts', label: '球場資料回報', sub: '每個球場頁都標示「資料最後查證」日期；發現與現場不符，歡迎回報更正' },
+                ],
+                foot: '<a href="/about" style="color:#0d9488;">關於本站</a>　·　<a href="/privacy-policy" style="color:#0d9488;">隱私權政策</a>',
+            },
+            {
+                route: 'privacy-policy', h1: '隱私權政策', crumb: '隱私權政策',
+                intro: '本站是純靜態網站，不需註冊即可使用全部功能。以下說明我們蒐集哪些資訊、如何使用、使用了哪些第三方服務，以及你的權利。',
+                items: [
+                    { href: '/privacy-policy', label: '我們蒐集的資訊', sub: '不要求註冊或登入。工具類頁面（計分器、訓練菜單進度）的資料存在你自己的瀏覽器 localStorage，不會傳到本站' },
+                    { href: '/privacy-policy', label: '第三方服務', sub: '地圖圖磚、字型與外部影片由第三方提供，這些服務可能有自己的紀錄行為' },
+                    { href: '/privacy-policy', label: '你的權利', sub: '清除瀏覽器資料即可移除本站在你裝置上留下的所有內容' },
+                ],
+                foot: '<a href="/about" style="color:#0d9488;">關於本站</a>　·　<a href="/contact" style="color:#0d9488;">聯絡我們</a>',
             },
             {
                 route: 'techniques', h1: '匹克球技巧百科', crumb: '技巧百科',

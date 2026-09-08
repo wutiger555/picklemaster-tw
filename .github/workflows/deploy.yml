@@ -39,6 +39,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      # 擋住「使用者看得到但爬蟲看不到」的頁面回歸。
+      # 2026-09 就是這樣漏掉整組 /news/:id（27 篇對 Googlebot 全回 404）
+      # 以及 /contact 與 /privacy-policy。
+      - name: Audit route coverage
+        run: node scripts/audit-routes.cjs
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

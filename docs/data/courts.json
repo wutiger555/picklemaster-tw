@@ -1222,9 +1222,9 @@
       "id": 28,
       "name": "嘉義市國民運動中心",
       "location": {
-        "address": "嘉義市東區體育路2號",
-        "lat": 23.4825,
-        "lng": 120.4648,
+        "address": "嘉義市東區新開里彌陀路327巷15號",
+        "lat": 23.4718,
+        "lng": 120.4627,
         "city": "嘉義市",
         "district": "東區"
       },
@@ -1236,7 +1236,7 @@
       "net_type": "provided",
       "ownership": "public",
       "opening_hours": "06:00-22:00",
-      "contact": "05-275-5122",
+      "contact": "05-216-5788",
       "facilities": [
         "更衣室",
         "淋浴間",
@@ -1245,8 +1245,13 @@
         "冷氣"
       ],
       "website": "https://www.tmcysports.com.tw/",
-      "last_updated": "2025-12-10",
-      "reviews": "嘉義市主要運動中心，設施優良"
+      "last_updated": "2026-09-11",
+      "reviews": "嘉義市主要運動中心，設施優良",
+      "contact_details": {
+        "phone": "05-216-5788",
+        "instagram": "https://www.instagram.com/tmcysports/"
+      },
+      "booking_url": "https://17fit.com/tmcysports/court"
     },
     {
       "id": 29,
@@ -3039,7 +3044,7 @@
       "id": 74,
       "name": "淡水國民運動中心匹克球場",
       "location": {
-        "address": "新北市淡水區（三樓綜合球場）",
+        "address": "新北市淡水區崁頂里中山北路二段381巷2號",
         "lat": 25.187406,
         "lng": 121.443165,
         "city": "新北市",
@@ -3053,7 +3058,7 @@
       "net_type": "portable",
       "ownership": "public",
       "opening_hours": "06:00-22:00",
-      "contact": "依運動中心公告",
+      "contact": "02-2626-9222",
       "facilities": [
         "冷氣",
         "停車場",
@@ -3068,7 +3073,7 @@
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-11",
       "reviews": "2025 年封館整修後於 2026 年 1 月試營運重啟，正式支援匹克球",
       "iplay": {
         "venue": "淡水國民運動中心",
@@ -3098,6 +3103,9 @@
             "height": 450
           }
         ]
+      },
+      "contact_details": {
+        "phone": "02-2626-9222"
       }
     },
     {
@@ -3217,7 +3225,7 @@
       "id": 78,
       "name": "PPClub 酸黃瓜匹克球場",
       "location": {
-        "address": "新竹縣寶山鄉（詳細地址依官網公告）",
+        "address": "新竹縣寶山鄉大崎村大崎一路195-9號",
         "lat": 24.7601,
         "lng": 121.0105,
         "city": "新竹縣",
@@ -3242,7 +3250,7 @@
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-11",
       "reviews": "新竹寶山 24 小時智能匹克球場，2026 年新開幕（部分資訊待官方公告）",
       "website": "https://ppclub.tw/"
     },
@@ -3642,7 +3650,7 @@
       "id": 87,
       "name": "鶯歌國民運動中心匹克球場",
       "location": {
-        "address": "新北市鶯歌區（鶯歌國民運動中心）",
+        "address": "新北市鶯歌區東鶯里館前路250號",
         "lat": 24.953855,
         "lng": 121.35777,
         "city": "新北市",
@@ -3656,7 +3664,7 @@
       "net_type": "portable",
       "ownership": "public",
       "opening_hours": "06:00-22:00",
-      "contact": "依運動中心公告",
+      "contact": "02-8678-2677",
       "facilities": [
         "冷氣",
         "停車場"
@@ -3666,7 +3674,7 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-11",
       "reviews": "鶯歌國運中心開放匹克球時段",
       "iplay": {
         "venue": "鶯歌國民運動中心",
@@ -3695,7 +3703,11 @@
             "height": 337
           }
         ]
-      }
+      },
+      "contact_details": {
+        "phone": "02-8678-2677"
+      },
+      "website": "https://ygsc.teamxports.com/"
     },
     {
       "id": 88,
@@ -4471,7 +4483,7 @@
       "id": 109,
       "name": "長春國民暨兒童運動中心匹克球場",
       "location": {
-        "address": "台中市西屯區（長春國民暨兒童運動中心）",
+        "address": "台中市西屯區合作街46號",
         "lat": 24.1652,
         "lng": 120.6422,
         "city": "台中市",
@@ -4495,7 +4507,7 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-09-11",
       "reviews": "西屯長春運動中心開放匹克球"
     },
     {
@@ -4944,11 +4956,11 @@
     },
     {
       "id": 123,
-      "name": "高雄鼓山匹克球專用球場",
+      "name": "高雄市鼓山匹克球場",
       "location": {
-        "address": "高雄市鼓山區中華一路一帶",
-        "lat": 22.6562,
-        "lng": 120.2902,
+        "address": "高雄市鼓山區雄峰里雄峰路18號",
+        "lat": 22.669,
+        "lng": 120.2836,
         "city": "高雄市",
         "district": "鼓山區"
       },
@@ -4970,8 +4982,8 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
-      "reviews": "鼓山免費專用場，傍晚開放免預約"
+      "last_updated": "2026-09-11",
+      "reviews": "鼓山免費專用場，傍晚開放免預約。Google 地圖標示球場可使用至 00:00，本站記錄的 17:00-21:00 為主要開放時段，離峰時間請先確認。"
     },
     {
       "id": 124,

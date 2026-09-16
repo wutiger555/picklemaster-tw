@@ -37,6 +37,10 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription,
   const description = propDescription || customDescription || seoConfig.description;
   const keywords = seoConfig.keywords;
 
+  // 預渲染頁與 sitemap 都用帶尾斜線的網址（GitHub Pages 會把 /rules 轉到 /rules/），
+  // 但 SPA 內部導覽的 pathname 不帶尾斜線，直接套用會把 canonical 覆寫成會轉址的網址。
+  const canonicalUrl = `https://picklemastertw.com${location.pathname.replace(/\/?$/, '/')}`;
+
   useEffect(() => {
     // 更新 title
     document.title = title;
@@ -74,7 +78,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription,
 
     updateOGTag('og:title', title);
     updateOGTag('og:description', description);
-    updateOGTag('og:url', `https://picklemastertw.com${location.pathname}`);
+    updateOGTag('og:url', canonicalUrl);
     if (image) {
       updateOGTag('og:image', image);
     }
@@ -100,7 +104,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({ page, customTitle, customDescription,
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', `https://picklemastertw.com${location.pathname}`);
+    canonical.setAttribute('href', canonicalUrl);
 
     // 添加麵包屑結構化資料
     const breadcrumbItems = getBreadcrumbItems(currentPage);
@@ -197,7 +201,7 @@ const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> 
   if (page !== 'home' && pageNames[page]) {
     breadcrumbs.push({
       name: pageNames[page],
-      url: `${baseUrl}/${page}`
+      url: `${baseUrl}/${page}/`
     });
   }
 

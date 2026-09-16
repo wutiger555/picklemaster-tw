@@ -6,6 +6,10 @@ const { renderOg } = require('./og-image.cjs');
 const BUILD_DIR = path.join(__dirname, '../docs');
 const BASE_URL = 'https://picklemastertw.com';
 
+// 頁面網址一律帶尾斜線。GitHub Pages 以目錄提供頁面，/rules 會 301 到 /rules/，
+// canonical 或 sitemap 若寫成無尾斜線，等於自我指向一個會轉址的網址，
+// GSC 會標成「有重新導向的網頁」。只有頁面網址要加，圖片等資產不要。
+
 // 球場主檔（模組層先讀，供 /courts 的 ItemList 結構化資料使用；
 // 讀 public/ 而非 docs/，避免依賴 vite 的複製時序）
 const ALL_COURTS = JSON.parse(
@@ -91,7 +95,7 @@ const pageSEO = {
                         "@type": "ListItem",
                         "position": i + 1,
                         "name": c.name,
-                        "url": `${BASE_URL}/courts/court-${c.id}`
+                        "url": `${BASE_URL}/courts/court-${c.id}/`
                     }))
                 },
                 {
@@ -1002,7 +1006,7 @@ async function generateStaticPages() {
             );
 
             // Replace Canonical URL
-            const canonicalUrl = `${BASE_URL}/${route}`;
+            const canonicalUrl = `${BASE_URL}/${route}/`;
             content = content.replace(
                 /<link rel="canonical" href=".*?" \/>/,
                 `<link rel="canonical" href="${canonicalUrl}" />`
@@ -1059,7 +1063,7 @@ async function generateStaticPages() {
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${p.title} | 匹克球訓練菜單`;
             const desc = `${p.subtitle} - 系統化訓練計劃，每週逐日詳細安排，含進度追蹤。`;
-            const canonical = `${BASE_URL}/training-programs/${p.slug}`;
+            const canonical = `${BASE_URL}/training-programs/${p.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
             content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
@@ -1099,7 +1103,7 @@ async function generateStaticPages() {
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${p.name} 完整資料 | 球拍、戰績、打法 | 匹克球選手資料庫`;
             const desc = `${p.name} - ${p.country} 匹克球職業選手。${p.bio}`;
-            const canonical = `${BASE_URL}/players/${p.slug}`;
+            const canonical = `${BASE_URL}/players/${p.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
             content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
@@ -1143,7 +1147,7 @@ async function generateStaticPages() {
                 const full = `${pd.brand} ${pd.model}`;
                 const title = `${full} 規格與評測 | 厚度 ${pd.thickness}、${pd.face} | 匹克球拍資料庫`;
                 const desc = `${full}（${pd.year}）完整規格：${pd.shape}、核心 ${pd.thickness} ${pd.core}、拍面 ${pd.face}、重量 ${pd.weight}。拍型定位、力量控球旋轉容錯四項評比與台灣購買管道一次看。`;
-                const canonical = `${BASE_URL}/paddles/${pd.slug}`;
+                const canonical = `${BASE_URL}/paddles/${pd.slug}/`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
                 content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
@@ -1199,7 +1203,7 @@ async function generateStaticPages() {
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${a.title} | 匹克球深度專欄`;
             const desc = a.summary;
-            const canonical = `${BASE_URL}/articles/${a.slug}`;
+            const canonical = `${BASE_URL}/articles/${a.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
             content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
@@ -1249,7 +1253,7 @@ async function generateStaticPages() {
                 const catLabel = CAT_LABEL[nw.category] || nw.category;
                 const title = `${nw.title} | 匹克球新聞`;
                 const desc = nw.summary;
-                const canonical = `${BASE_URL}/news/${nw.id}`;
+                const canonical = `${BASE_URL}/news/${nw.id}/`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
                 content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(desc)}" />`);
@@ -1297,7 +1301,7 @@ async function generateStaticPages() {
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${t.name} (${t.nameEn}) 完整教學 | 匹克球技巧百科`;
             const desc = `${t.tagline} — 深度步驟分解、常見錯誤、練習菜單與職業選手心法。`;
-            const canonical = `${BASE_URL}/techniques/${t.slug}`;
+            const canonical = `${BASE_URL}/techniques/${t.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
             content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${desc}" />`);
@@ -1610,14 +1614,14 @@ async function generateStaticPages() {
             const courtStructured = (court) => {
                 const city = court.location.city || '';
                 const citySlug = citySlugOf(city);
-                const canonical = `${BASE_URL}/courts/court-${court.id}`;
+                const canonical = `${BASE_URL}/courts/court-${court.id}/`;
                 const typeLabel = typeLabelOf(court.type);
                 const faqs = buildCourtFaqs(court);
                 const crumbs = [
                     { "@type": "ListItem", "position": 1, "name": "首頁", "item": BASE_URL + "/" },
-                    { "@type": "ListItem", "position": 2, "name": "球場地圖", "item": BASE_URL + "/courts" },
+                    { "@type": "ListItem", "position": 2, "name": "球場地圖", "item": BASE_URL + "/courts/" },
                 ];
-                if (citySlug) crumbs.push({ "@type": "ListItem", "position": 3, "name": `${city}匹克球場`, "item": `${BASE_URL}/courts/${citySlug}` });
+                if (citySlug) crumbs.push({ "@type": "ListItem", "position": 3, "name": `${city}匹克球場`, "item": `${BASE_URL}/courts/${citySlug}/` });
                 crumbs.push({ "@type": "ListItem", "position": crumbs.length + 1, "name": court.name, "item": canonical });
                 return {
                     "@context": "https://schema.org",
@@ -1662,7 +1666,7 @@ async function generateStaticPages() {
                 const title = `${statusTag}${court.name}｜${city}${district}匹克球場・${typeLabel}${court.courts_count}面${feeLabel} | 地址、開放時間、導航`;
                 const statusDesc = court.status ? `${court.status === 'permanently_closed' ? '【本站查證：已歇業】' : '【本站查證：暫時關閉】'}${court.status_verified ? `（${court.status_verified}）` : ''}` : '';
                 const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}提供 GPS 開車導航與大眾運輸路線，${city}打匹克球的完整場地資訊。`;
-                const canonical = `${BASE_URL}/courts/${slug}`;
+                const canonical = `${BASE_URL}/courts/${slug}/`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
                 content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(desc)}" />`);
@@ -1707,7 +1711,7 @@ async function generateStaticPages() {
                     .map(o => ({ slug: o.slug, city: o.city, count: cityCountMap[o.city] }));
                 const title = `${city}匹克球場地圖 2026｜${cityCourts.length} 座場地完整名單（免費/室內/收費）`;
                 const desc = `${city}匹克球場完整攻略：免費場 ${free} 座、室內場 ${indoor} 座${open24 ? `、24 小時場 ${open24} 座` : ''}，共 ${cityCourts.length} 座場地。地址、開放時間、費用、特色一次看，附 GPS 導航。`;
-                const canonical = `${BASE_URL}/courts/${slug}`;
+                const canonical = `${BASE_URL}/courts/${slug}/`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
                 content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(desc)}" />`);
@@ -1725,14 +1729,14 @@ async function generateStaticPages() {
                                 "@type": "SportsActivityLocation", "position": i + 1, "name": c.name, "sport": "Pickleball",
                                 "address": { "@type": "PostalAddress", "streetAddress": c.location.address, "addressLocality": c.location.district, "addressRegion": c.location.city, "addressCountry": "TW" },
                                 "isAccessibleForFree": c.fee === 'free',
-                                "url": `${BASE_URL}/courts/court-${c.id}`
+                                "url": `${BASE_URL}/courts/court-${c.id}/`
                             }))
                         },
                         {
                             "@type": "BreadcrumbList",
                             "itemListElement": [
                                 { "@type": "ListItem", "position": 1, "name": "首頁", "item": BASE_URL + "/" },
-                                { "@type": "ListItem", "position": 2, "name": "球場地圖", "item": BASE_URL + "/courts" },
+                                { "@type": "ListItem", "position": 2, "name": "球場地圖", "item": BASE_URL + "/courts/" },
                                 { "@type": "ListItem", "position": 3, "name": `${city}匹克球場`, "item": canonical },
                             ]
                         },
@@ -1791,7 +1795,7 @@ async function generateStaticPages() {
             const meta = priorityMap[route] || { p: '0.7', f: 'monthly' };
             sitemapContent += `
     <url>
-        <loc>${BASE_URL}/${route}</loc>
+        <loc>${BASE_URL}/${route}/</loc>
         <lastmod>${today}</lastmod>
         <changefreq>${meta.f}</changefreq>
         <priority>${meta.p}</priority>
@@ -1802,7 +1806,7 @@ async function generateStaticPages() {
         for (const p of PROGRAM_SLUGS) {
             sitemapContent += `
     <url>
-        <loc>${BASE_URL}/training-programs/${p.slug}</loc>
+        <loc>${BASE_URL}/training-programs/${p.slug}/</loc>
         <lastmod>${today}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.85</priority>
@@ -1813,7 +1817,7 @@ async function generateStaticPages() {
         for (const p of PLAYER_SLUGS) {
             sitemapContent += `
     <url>
-        <loc>${BASE_URL}/players/${p.slug}</loc>
+        <loc>${BASE_URL}/players/${p.slug}/</loc>
         <lastmod>${today}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.85</priority>
@@ -1824,7 +1828,7 @@ async function generateStaticPages() {
         for (const pd of PADDLE_SLUGS) {
             sitemapContent += `
     <url>
-        <loc>${BASE_URL}/paddles/${pd.slug}</loc>
+        <loc>${BASE_URL}/paddles/${pd.slug}/</loc>
         <lastmod>${today}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -1835,7 +1839,7 @@ async function generateStaticPages() {
         for (const a of ARTICLE_SLUGS) {
             sitemapContent += `
     <url>
-        <loc>${BASE_URL}/articles/${a.slug}</loc>
+        <loc>${BASE_URL}/articles/${a.slug}/</loc>
         <lastmod>${today}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
@@ -1847,7 +1851,7 @@ async function generateStaticPages() {
         for (const nw of loadNewsItems()) {
             sitemapContent += `
     <url>
-        <loc>${BASE_URL}/news/${nw.id}</loc>
+        <loc>${BASE_URL}/news/${nw.id}/</loc>
         <lastmod>${nw.date}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
@@ -1858,7 +1862,7 @@ async function generateStaticPages() {
         for (const t of TECHNIQUE_SLUGS) {
             sitemapContent += `
     <url>
-        <loc>${BASE_URL}/techniques/${t.slug}</loc>
+        <loc>${BASE_URL}/techniques/${t.slug}/</loc>
         <lastmod>${today}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.85</priority>
@@ -1872,7 +1876,7 @@ async function generateStaticPages() {
                 if (!courtsData.courts.some(c => c.location.city === city)) continue;
                 sitemapContent += `
     <url>
-        <loc>${BASE_URL}/courts/${slug}</loc>
+        <loc>${BASE_URL}/courts/${slug}/</loc>
         <lastmod>${today}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
@@ -1886,7 +1890,7 @@ async function generateStaticPages() {
             for (const court of courtsData.courts) {
                 sitemapContent += `
     <url>
-        <loc>${BASE_URL}/courts/court-${court.id}</loc>
+        <loc>${BASE_URL}/courts/court-${court.id}/</loc>
         <lastmod>${today}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>

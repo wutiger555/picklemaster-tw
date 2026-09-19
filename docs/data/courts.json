@@ -265,12 +265,13 @@
       ],
       "features": [
         "設施完善",
-        "專業場地"
+        "專業場地",
+        "球敘時段：每週五 13:00~15:00（臺北市匹克球協會）"
       ],
       "website": "https://xysc.teamxports.com/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
       "booking_method": "現場或電話預約，僅開放三日內場地預約",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "台北市設施最完善的匹克球場之一",
       "iplay": {
         "venue": "臺北市信義運動中心",
@@ -338,11 +339,12 @@
       ],
       "features": [
         "運動後可泡溫泉",
-        "北投特色"
+        "北投特色",
+        "球敘時段：每週二、四 12:00~16:00／每週六 16:00~18:00，NT$200~300（臺北市匹克球協會）"
       ],
       "website": "https://www.btsport.org.tw/",
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "運動後可泡溫泉，北投特色球場",
       "iplay": {
         "venue": "臺北市北投運動中心",
@@ -400,9 +402,10 @@
       "features": [
         "免費場地",
         "需自備球網",
-        "永久標線"
+        "永久標線",
+        "球敘時段：每週二、四 18:30~22:00／每週六、日 14:00~18:00（臺北市匹克球協會）"
       ],
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "士林免費戶外球場，下午時段開放",
       "iplay": {
         "venue": "至善公園羽球場",
@@ -588,9 +591,10 @@
       ],
       "features": [
         "永久標線",
-        "亞洲匹克球錦標賽場地"
+        "亞洲匹克球錦標賽場地",
+        "球敘時段：每週三、五 19:00~21:00，每次 130 元（LINE 群組：國際網球中心匹克球）"
       ],
-      "last_updated": "2025-12-10",
+      "last_updated": "2026-09-19",
       "reviews": "台中最受歡迎匹克球場，曾辦亞洲錦標賽"
     },
     {
@@ -651,7 +655,7 @@
         "冷氣"
       ],
       "booking_url": "https://booking-tpsc.sporetrofit.com/",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "萬華區運動中心，社區球友活躍",
       "iplay": {
         "venue": "臺北市萬華運動中心",
@@ -687,7 +691,10 @@
             "height": 450
           }
         ]
-      }
+      },
+      "features": [
+        "球敘時段：每週三 16:00~18:00，NT$150~200（臺北市匹克球協會）"
+      ]
     },
     {
       "id": 16,
@@ -782,7 +789,7 @@
         "更衣室",
         "停車場"
       ],
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "北投區室內球場選擇",
       "iplay": {
         "venue": "臺北捷運北投會館",
@@ -819,7 +826,10 @@
             "height": 450
           }
         ]
-      }
+      },
+      "features": [
+        "球敘時段：每週一、五 13:00~17:00，NT$200~300（臺北市匹克球協會）"
+      ]
     },
     {
       "id": 18,
@@ -971,12 +981,15 @@
         "冷氣",
         "停車場"
       ],
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "潭子國運中心開放匹克球時段，非匹克球專用場",
       "contact_details": {
         "phone": "04-2532-5580"
       },
-      "website": "https://tzcsc.com.tw/"
+      "website": "https://tzcsc.com.tw/",
+      "features": [
+        "球敘時段：每週一 09:00~11:00（LINE 群組：北區運動中心匹克球）"
+      ]
     },
     {
       "id": 22,
@@ -1030,9 +1043,10 @@
         "廁所"
       ],
       "features": [
-        "社區開放時段"
+        "社區開放時段",
+        "球敘時段：週三、週日 18:00~21:00（魏法徵 0920-429-026）"
       ],
-      "last_updated": "2025-12-10",
+      "last_updated": "2026-09-19",
       "reviews": "高雄三民區戶外場地"
     },
     {
@@ -1096,7 +1110,7 @@
         "冷氣"
       ],
       "website": "https://www.xzsports.com.tw/",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "新莊區大型運動中心，球場數量充足",
       "iplay": {
         "venue": "新莊國民運動中心",
@@ -1117,7 +1131,10 @@
         "air_conditioning": true,
         "open_time": "06:00-22:00",
         "page": "https://iplay.sports.gov.tw/GymInfo/Index/20269"
-      }
+      },
+      "features": [
+        "球敘時段：星期二、四 13:00~16:00，NT$200~250（新北市匹克球 LINE @579urgnx）"
+      ]
     },
     {
       "id": 26,
@@ -1899,12 +1916,15 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "台南專用匹克球場，會員制經營",
       "iplay": {
         "verified": "2026-09-02",
         "note": "座標依 OpenStreetMap「哈赫拿爾森林」與 iPlay 永華體育園區（體育路）交叉定位，兩者相距約 400 公尺；園區型場地實際球場位置可能略有差異"
-      }
+      },
+      "features": [
+        "球敘時段：平日 07:00~09:00、17:00~22:00／假日 07:00~11:00、17:00~22:00（陳俊欽 0937-562-012）"
+      ]
     },
     {
       "id": 42,
@@ -1931,8 +1951,11 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "彰化地區新興運動公園球場"
+      "last_updated": "2026-09-19",
+      "reviews": "彰化地區新興運動公園球場",
+      "features": [
+        "球敘時段：星期一 19:00~22:00，免費（蔡桂郎 0952-519-037）"
+      ]
     },
     {
       "id": 43,
@@ -1959,7 +1982,7 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "埔里室內球場，適合下雨天打球",
       "iplay": {
         "venue": "埔里鎮立綜合球場",
@@ -1994,7 +2017,10 @@
             "height": 337
           }
         ]
-      }
+      },
+      "features": [
+        "球敘時段：週一~週五 15:00~20:00／週六日 09:00~12:00，免費（張永昌 0983-711-749）"
+      ]
     },
     {
       "id": 44,
@@ -2020,12 +2046,15 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "屏東歸來社區熱門球場",
       "iplay": {
         "verified": "2026-09-02",
         "note": "座標依 iPlay「華洲工家田徑場」（屏東市歸仁路63巷99號）定位——與本場地同一巷弄相鄰門牌"
-      }
+      },
+      "features": [
+        "球敘時段：週一~週五 18:30 起／週六日 16:30 起（阿誠 0931-737-731）"
+      ]
     },
     {
       "id": 45,
@@ -2053,8 +2082,11 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-01-05",
-      "reviews": "泰山地區新開放時段，需預約"
+      "last_updated": "2026-09-19",
+      "reviews": "泰山地區新開放時段，需預約",
+      "features": [
+        "球敘時段：星期五 13:00~16:00，NT$200~300（新北市匹克球 LINE @579urgnx）"
+      ]
     },
     {
       "id": 46,
@@ -2081,8 +2113,11 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
-      "reviews": "五股區室內好去處，價格親民"
+      "last_updated": "2026-09-19",
+      "reviews": "五股區室內好去處，價格親民",
+      "features": [
+        "球敘時段：星期三 15:00~20:00、17:30~19:50，NT$120~170（新北市匹克球 LINE @579urgnx）"
+      ]
     },
     {
       "id": 47,
@@ -2109,10 +2144,11 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "河濱公園空氣好，週末晨練好去處",
       "features": [
-        "2026/3/16 起 2 號羽球場改為羽球/匹克球共用"
+        "2026/3/16 起 2 號羽球場改為羽球/匹克球共用",
+        "球敘時段：每週六、日 07:00~11:30（臺北市匹克球協會）"
       ],
       "iplay": {
         "venue": "景美河濱公園溜冰場",
@@ -2167,7 +2203,7 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "內湖熱門學校場地，需提前預約",
       "iplay": {
         "venue": "南湖國小田徑場",
@@ -2181,7 +2217,10 @@
         "gym_id": 26132,
         "transit": "捷運文湖線東湖站2號出口即達。",
         "page": "https://iplay.sports.gov.tw/GymInfo/Index/26132"
-      }
+      },
+      "features": [
+        "球敘時段：星期六 18:00~21:00／星期日 18:00~20:00、20:00~22:00，NT$250~300（新北市匹克球 LINE @579urgnx）"
+      ]
     },
     {
       "id": 49,
@@ -2207,7 +2246,7 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "大安區市中心，交通便利",
       "iplay": {
         "venue": "幸安國小活動中心",
@@ -2228,7 +2267,10 @@
         "air_conditioning": true,
         "open_time": "18:00-22:00",
         "page": "https://iplay.sports.gov.tw/GymInfo/Index/14952"
-      }
+      },
+      "features": [
+        "球敘時段：星期六 16:00~18:00、18:00~20:00／星期日 10:00~12:00，NT$250~350（新北市匹克球 LINE @579urgnx）"
+      ]
     },
     {
       "id": 50,
@@ -2254,7 +2296,7 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "板橋地區學校場地，平日晚上開放",
       "iplay": {
         "venue": "新埔國小操場",
@@ -2263,7 +2305,10 @@
         "gym_id": 21979,
         "transit": "捷運板南線新埔站1號出口步行10分鐘即達；環狀線民生新埔站步行10分鐘即達。公車857於新埔國小站下車即達。YouBike 可停放於四維公園站點。",
         "page": "https://iplay.sports.gov.tw/GymInfo/Index/21979"
-      }
+      },
+      "features": [
+        "球敘時段：星期三、五 18:00~20:00，NT$250~350（新北市匹克球 LINE @579urgnx）"
+      ]
     },
     {
       "id": 51,
@@ -2289,7 +2334,7 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "天母公園戶外場地，環境清幽",
       "iplay": {
         "venue": "天母公園",
@@ -2323,7 +2368,10 @@
             "height": 450
           }
         ]
-      }
+      },
+      "features": [
+        "球敘時段：每週一~五 08:30~12:00（臺北市匹克球協會）"
+      ]
     },
     {
       "id": 52,
@@ -2472,11 +2520,12 @@
       "features": [
         "信義區中心地段",
         "僅晚間與週日開放",
-        "適合下班後打球"
+        "適合下班後打球",
+        "球敘時段：星期四 20:00~22:00／星期五 18:30~20:30、19:30~21:30，依人數收場租（臺北市匹克球協會）"
       ],
       "is_new": false,
       "added_date": "2026-02",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "信義區學校場地，下班後去打剛剛好",
       "iplay": {
         "venue": "永春高中活動中心",
@@ -2697,11 +2746,12 @@
       ],
       "features": [
         "彰化免費戶外場",
-        "社區球隊集中地"
+        "社區球隊集中地",
+        "球敘時段：星期二、四 19:00~21:30，免費（蔡桂郎 0952-519-037）"
       ],
       "is_new": false,
       "added_date": "2026-02",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-09-19",
       "reviews": "秀水鄉公園免費戶外場，固定週二週四開放打球"
     },
     {
@@ -3670,11 +3720,12 @@
         "停車場"
       ],
       "features": [
-        "每日開放"
+        "每日開放",
+        "需事先電話預約。離峰一面 290 元／尖峰一面 490 元（鶯歌國民運動中心 02-8678-2677）"
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-09-11",
+      "last_updated": "2026-09-19",
       "reviews": "鶯歌國運中心開放匹克球時段",
       "iplay": {
         "venue": "鶯歌國民運動中心",
@@ -3785,11 +3836,12 @@
       ],
       "features": [
         "3F 與羽球共用 2 面",
-        "2026 金碧盃賽場"
+        "2026 金碧盃賽場",
+        "球敘時段：星期一、二、五 18:00~22:00，暢打 4 小時 400 元/人（三峽國民運動中心 02-2674-9088）"
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-19",
       "reviews": "三峽國運中心 3F 開放匹克球，亦為金碧盃比賽場地",
       "iplay": {
         "venue": "三峽國民運動中心",
@@ -5532,6 +5584,771 @@
       "added_date": "2026-09",
       "last_updated": "2026-09-06",
       "reviews": "淡水真理大學旁，2025 年 11 月開幕。全台少數匹克球與網球共構的室內館，定位偏長期訓練。"
+    },
+    {
+      "id": 138,
+      "name": "臺北市北投區桃源國民小學",
+      "location": {
+        "address": "台北市北投區中央北路三段40巷45號",
+        "lat": 25.1397,
+        "lng": 121.4845,
+        "city": "台北市",
+        "district": "北投區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：每週六、日 09:00~12:00",
+      "contact": "臺北市匹克球協會 tpepa.tw@gmail.com",
+      "contact_details": {
+        "email": "tpepa.tw@gmail.com"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "臺北市匹克球協會固定球敘點。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 139,
+      "name": "台北科技大學中正館",
+      "location": {
+        "address": "台北市大安區忠孝東路三段1號",
+        "lat": 25.0432,
+        "lng": 121.5353,
+        "city": "台北市",
+        "district": "大安區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$200~250",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "school",
+      "opening_hours": "球敘時段：每週六、日 18:00~21:30",
+      "contact": "臺北市匹克球協會 tpepa.tw@gmail.com",
+      "contact_details": {
+        "email": "tpepa.tw@gmail.com"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "臺北市匹克球協會固定球敘點，大學體育館。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。",
+      "price_details": {
+        "weekday": "球敘每次 NT$200~250"
+      }
+    },
+    {
+      "id": 140,
+      "name": "臺北市蓬萊國民小學",
+      "location": {
+        "address": "台北市大同區寧夏路35號",
+        "lat": 25.056,
+        "lng": 121.5162,
+        "city": "台北市",
+        "district": "大同區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "NT$200~300",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期日 10:00~12:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 141,
+      "name": "臺北市立忠孝國民中學",
+      "location": {
+        "address": "台北市大同區西寧北路32號",
+        "lat": 25.0512,
+        "lng": 121.5082,
+        "city": "台北市",
+        "district": "大同區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "依開團公告",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期日 15:00~17:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 142,
+      "name": "臺北市立建成國民中學",
+      "location": {
+        "address": "台北市大同區長安西路37-1號",
+        "lat": 25.0516,
+        "lng": 121.5187,
+        "city": "台北市",
+        "district": "大同區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "NT$200~300（新手教學 NT$350）",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期四 20:00~22:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團，有新手教學場。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。",
+      "price_details": {
+        "weekday": "一般球敘 NT$200~300",
+        "membership": "新手教學場 NT$350"
+      }
+    },
+    {
+      "id": 143,
+      "name": "臺北市立明德國民中學",
+      "location": {
+        "address": "台北市北投區明德路50號",
+        "lat": 25.1079,
+        "lng": 121.519,
+        "city": "台北市",
+        "district": "北投區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "NT$150~250",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期日 16:00~18:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 144,
+      "name": "臺北市大安區古亭國民小學",
+      "location": {
+        "address": "台北市大安區羅斯福路三段201號",
+        "lat": 25.0205,
+        "lng": 121.5287,
+        "city": "台北市",
+        "district": "大安區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$200~300",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期六、日 17:00~20:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 145,
+      "name": "臺北市大安區新生國民小學",
+      "location": {
+        "address": "台北市大安區新生南路二段36號",
+        "lat": 25.0298,
+        "lng": 121.5332,
+        "city": "台北市",
+        "district": "大安區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "NT$200~300",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期一、三 18:50~20:50",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 146,
+      "name": "臺北市中山區長安國民小學",
+      "location": {
+        "address": "台北市中山區吉林路15號",
+        "lat": 25.0498,
+        "lng": 121.5302,
+        "city": "台北市",
+        "district": "中山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$200~300",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期日 14:00~16:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 147,
+      "name": "臺北市大安區銘傳國民小學",
+      "location": {
+        "address": "台北市大安區羅斯福路四段21號",
+        "lat": 25.0141,
+        "lng": 121.5354,
+        "city": "台北市",
+        "district": "大安區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "NT$200~300（新手教學 NT$350，早+午連報 NT$350~450）",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期四 17:50~19:50／星期六 09:00~11:00（早場）、11:00~13:00（午場）",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團，場次最多的學校場之一。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。",
+      "price_details": {
+        "weekday": "一般球敘 NT$200~300",
+        "membership": "新手教學場 NT$350；早場+午場連報 NT$350~450"
+      }
+    },
+    {
+      "id": 148,
+      "name": "新北市三重國民運動中心",
+      "location": {
+        "address": "新北市三重區福祉里集美街55號",
+        "lat": 25.0548,
+        "lng": 121.4882,
+        "city": "新北市",
+        "district": "三重區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$200~300",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期一、四 13:00~16:00／星期二 20:00~22:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。與本站收錄的「新北市三重運動中心」（大同南路195號）是不同場館。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 149,
+      "name": "新北市泰山體育館",
+      "location": {
+        "address": "新北市泰山區公園路54號",
+        "lat": 25.0557,
+        "lng": 121.4273,
+        "city": "新北市",
+        "district": "泰山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$250~300",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期六 17:00~20:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。與「泰山運動中心」（全興路167號）是不同場館。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 150,
+      "name": "新北市立碧華國民中學",
+      "location": {
+        "address": "新北市三重區三信路166號",
+        "lat": 25.0846,
+        "lng": 121.4918,
+        "city": "新北市",
+        "district": "三重區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$350~450",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期六 13:00~16:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 151,
+      "name": "新北市立林口國民中學",
+      "location": {
+        "address": "新北市林口區民治路25號",
+        "lat": 25.0761,
+        "lng": 121.3777,
+        "city": "新北市",
+        "district": "林口區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$200~300",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期日 18:00~20:00",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 152,
+      "name": "新北市中和區復興國民小學",
+      "location": {
+        "address": "新北市中和區復興路301巷6號",
+        "lat": 24.9897,
+        "lng": 121.5019,
+        "city": "新北市",
+        "district": "中和區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$250~350",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期二 18:40~20:40",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 153,
+      "name": "新北市中和區積穗國民小學",
+      "location": {
+        "address": "新北市中和區員山路154號",
+        "lat": 24.9992,
+        "lng": 121.4821,
+        "city": "新北市",
+        "district": "中和區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "NT$200~300",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：星期五 18:30~21:30",
+      "contact": "新北市匹克球 LINE 官方帳號 @579urgnx",
+      "contact_details": {
+        "line": "@579urgnx"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "新北市匹克球社群開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 154,
+      "name": "元智大學體育館",
+      "location": {
+        "address": "桃園市中壢區遠東路135號",
+        "lat": 24.9683,
+        "lng": 121.2658,
+        "city": "桃園市",
+        "district": "中壢區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "暢打 3 小時 150 元（停車費另計 50 元/次）",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "school",
+      "opening_hours": "不固定，需事先與帶團者約定",
+      "contact": "梁鳳紋 0934-353-010（LINE ID: liangfengwen）",
+      "contact_details": {
+        "phone": "0934-353-010",
+        "line": "liangfengwen"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "大學體育館，需事先約定。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。",
+      "price_details": {
+        "weekday": "暢打 3 小時 NT$150",
+        "rental": "停車費 NT$50/次"
+      }
+    },
+    {
+      "id": 155,
+      "name": "台中市賴興里活動中心",
+      "location": {
+        "address": "台中市北區山西路二段125號",
+        "lat": 24.1719,
+        "lng": 120.6758,
+        "city": "台中市",
+        "district": "北區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依開團公告",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：每星期日 15:00~17:00",
+      "contact": "Facebook 社團報名",
+      "contact_details": {
+        "facebook": "https://www.facebook.com/profile.php?id=61564142975031"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "里民活動中心，FB 社團開團報名。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 156,
+      "name": "南投縣埔里鎮埔里國民小學",
+      "location": {
+        "address": "南投縣埔里鎮西門里西康路127號",
+        "lat": 23.9687,
+        "lng": 120.9665,
+        "city": "南投縣",
+        "district": "埔里鎮"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依開團公告",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：每星期二、四、五 18:00~20:00",
+      "contact": "張永昌 0983-711-749",
+      "contact_details": {
+        "phone": "0983-711-749"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "埔里在地社群固定球敘點。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 157,
+      "name": "國立嘉義特殊教育學校",
+      "location": {
+        "address": "嘉義市西區港坪里世賢路二段123號",
+        "lat": 23.4811,
+        "lng": 120.4214,
+        "city": "嘉義市",
+        "district": "西區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場租分攤",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "school",
+      "opening_hours": "例假日場租場地，有人租用才開團",
+      "contact": "曾建儒 0953-915-400（LINE ID: kloklo0828）",
+      "contact_details": {
+        "phone": "0953-915-400",
+        "line": "kloklo0828"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "非固定開放，需先聯繫確認是否有開團。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 158,
+      "name": "台南市振興公園",
+      "location": {
+        "address": "台南市北區林森路三段181號",
+        "lat": 23.0063,
+        "lng": 120.2238,
+        "city": "台南市",
+        "district": "北區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "依開團公告",
+      "courts_count": 1,
+      "surface": "concrete",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：每週一、三 19:00~21:00",
+      "contact": "劉柏廷 0928-161-826",
+      "contact_details": {
+        "phone": "0928-161-826"
+      },
+      "facilities": [
+        "夜間照明"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "台南在地社群固定球敘點。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 159,
+      "name": "君毅正勤里社區活動中心",
+      "location": {
+        "address": "高雄市前鎮區忠純里中華五路969巷12號",
+        "lat": 22.6012,
+        "lng": 120.3044,
+        "city": "高雄市",
+        "district": "前鎮區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依開團公告",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "portable",
+      "ownership": "community",
+      "opening_hours": "球敘時段：每週一、三 17:00~20:00",
+      "contact": "仲躋陵 0912-920-558",
+      "contact_details": {
+        "phone": "0912-920-558"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "社群固定球敘",
+        "需透過帶團者參加"
+      ],
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-19",
+      "reviews": "社區活動中心，高雄在地社群固定球敘點。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
     }
   ]
 }

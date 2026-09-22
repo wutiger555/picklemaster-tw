@@ -36,6 +36,27 @@ const INTENTIONALLY_UNRENDERED = {
   // '/example': '理由寫在這裡',
 };
 
+/**
+ * 「檔案在、但 #root 是空的」的既有頁面基準線。
+ *
+ * 這些頁通過了檢查 ①（靜態檔存在），卻對不執行 JS 的爬蟲與 AI 引擎送出空白內容。
+ * 2026-09 就是這樣讓 /courts 帶著 353 筆曝光、2.8% 的 CTR 站在排名 7 —— 檢查 ①
+ * 只看 fs.existsSync()，看不出 #root 裡面是空的。
+ *
+ * 這是棘輪：清單只能變短。每補完一頁預渲染就把它從這裡刪掉；
+ * 新冒出來、不在清單上的空頁會讓建置失敗。
+ */
+const EMPTY_ROOT_BASELINE = new Set([
+  // 空了就對了。新增的空 #root 會讓建置失敗。
+]);
+
+/** #root 是不是空的（預渲染沒寫進去） */
+const hasEmptyRoot = (sitePath) => {
+  const f = sitePath === '/' ? path.join(DOCS, 'index.html') : path.join(DOCS, sitePath, 'index.html');
+  if (!fs.existsSync(f)) return false;
+  return fs.readFileSync(f, 'utf-8').includes('<div id="root"></div>');
+};
+
 function readRoutes() {
   const src = fs.readFileSync(path.join(ROOT, 'src/utils/constants.ts'), 'utf-8');
   const i = src.indexOf('export const ROUTES');
@@ -124,6 +145,20 @@ async function httpStatus(url) {
   for (const e of missingStatic) {
     line(`  ${e.route}　（ROUTES.${e.key}）—— 使用者到得了，爬蟲會拿到 404`);
     problems.push(`靜態路由 ${e.route} 沒有預渲染頁`);
+  }
+  line();
+
+  // ①b 頁面在、但 #root 是空的（爬蟲拿到空白頁）
+  const emptyRoots = rendered.filter(hasEmptyRoot);
+  const newEmpty = emptyRoots.filter((p) => !EMPTY_ROOT_BASELINE.has(p));
+  const fixedEmpty = [...EMPTY_ROOT_BASELINE].filter((p) => !emptyRoots.includes(p));
+  line(`■ 預渲染是空的　${emptyRoots.length} 頁（基準線 ${EMPTY_ROOT_BASELINE.size}・新增 ${newEmpty.length}）`);
+  if (!emptyRoots.length) line('  （無）');
+  for (const p of newEmpty) line(`  ${p}　✗ 新增的空頁`);
+  if (newEmpty.length) problems.push(`${newEmpty.length} 個路由的 #root 是空的：${newEmpty.join('、')}`);
+  if (fixedEmpty.length) {
+    line(`  ✓ 已補上預渲染，請從 EMPTY_ROOT_BASELINE 刪掉：${fixedEmpty.join('、')}`);
+    problems.push(`EMPTY_ROOT_BASELINE 有 ${fixedEmpty.length} 筆過期（${fixedEmpty.join('、')} 已經有內容了）`);
   }
   line();
 

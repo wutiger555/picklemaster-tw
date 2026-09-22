@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import type { Court, CourtsData } from '../types';
 import { courtSlug } from '../utils/slugify';
 import { CITY_INFO, getCityBySlug } from '../utils/cityData';
+import { is24h } from '../utils/courtAttributes';
+import CourtCard from '../components/court/CourtCard';
 import SEOHead from '../components/common/SEOHead';
 
 const PickleballIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
@@ -17,13 +19,6 @@ const PickleballIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
   </svg>
 );
 
-const is24h = (c: Court) => /24\s*小時/.test(c.opening_hours || '');
-
-const TYPE_STYLE: Record<string, { label: string; icon: string; chip: string; bar: string }> = {
-  indoor: { label: '室內', icon: '🏠', chip: 'bg-emerald-50 text-emerald-700 border-emerald-100', bar: 'from-emerald-400 to-teal-500' },
-  covered: { label: '風雨', icon: '☂️', chip: 'bg-violet-50 text-violet-700 border-violet-100', bar: 'from-violet-400 to-purple-500' },
-  outdoor: { label: '戶外', icon: '☀️', chip: 'bg-sky-50 text-sky-700 border-sky-100', bar: 'from-sky-400 to-cyan-500' },
-};
 
 const CityCourts = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -58,7 +53,7 @@ const CityCourts = () => {
     indoor: cityCourts.filter(c => c.type === 'indoor').length,
     outdoor: cityCourts.filter(c => c.type !== 'indoor').length,
     free: cityCourts.filter(c => c.fee === 'free').length,
-    open24h: cityCourts.filter(is24h).length,
+    open24h: cityCourts.filter(c => is24h(c.opening_hours)).length,
   }), [cityCourts]);
 
   const freeCourts = cityCourts.filter(c => c.fee === 'free');
@@ -111,7 +106,7 @@ const CityCourts = () => {
               addressCountry: 'TW',
             },
             isAccessibleForFree: c.fee === 'free',
-            url: `${base}/courts/${courtSlug(c.id)}`,
+            url: `${base}/courts/${courtSlug(c.id)}/`,
           })),
         },
         {
@@ -126,8 +121,8 @@ const CityCourts = () => {
           '@type': 'BreadcrumbList',
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: '首頁', item: base },
-            { '@type': 'ListItem', position: 2, name: '球場地圖', item: `${base}/courts` },
-            { '@type': 'ListItem', position: 3, name: `${cityInfo.city}匹克球場`, item: `${base}/courts/${cityInfo.slug}` },
+            { '@type': 'ListItem', position: 2, name: '球場地圖', item: `${base}/courts/` },
+            { '@type': 'ListItem', position: 3, name: `${cityInfo.city}匹克球場`, item: `${base}/courts/${cityInfo.slug}/` },
           ],
         },
       ],
@@ -157,7 +152,7 @@ const CityCourts = () => {
       <SEOHead
         page="courts"
         customTitle={`${cityInfo.city}匹克球場地圖 2026｜${cityCourts.length || ''} 座場地完整名單（免費/室內/收費）`}
-        customDescription={`${cityInfo.city}匹克球場完整攻略：免費戶外場 ${stats.free} 座、室內場 ${stats.indoor} 座${stats.open24h ? `、24 小時場 ${stats.open24h} 座` : ''}。地址、開放時間、費用、特色一次看，附 GPS 導航。`}
+        customDescription={`${cityInfo.city}匹克球場（皮克球場）完整攻略：免費戶外場 ${stats.free} 座、室內場 ${stats.indoor} 座${stats.open24h ? `、24 小時場 ${stats.open24h} 座` : ''}。地址、開放時間、費用、特色一次看，附 GPS 導航。`}
       />
 
       {/* Hero */}
@@ -248,73 +243,9 @@ const CityCourts = () => {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {cityCourts.map((court, i) => {
-              const t = TYPE_STYLE[court.type] || TYPE_STYLE.outdoor;
-              return (
-                <motion.div
-                  key={court.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(i * 0.04, 0.4), duration: 0.35 }}
-                  whileHover={{ y: -4 }}
-                  className="group relative bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:border-teal-200 hover:shadow-xl hover:shadow-teal-900/5 transition-all"
-                >
-                  {/* Type accent bar */}
-                  <div className={`h-1 bg-gradient-to-r ${t.bar}`} />
-                  <div className="p-5">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <Link to={`/courts/${courtSlug(court.id)}`} className="font-bold text-neutral-900 leading-snug group-hover:text-teal-700 transition-colors">
-                        {court.name}
-                      </Link>
-                      {court.is_new && (
-                        <span className="shrink-0 px-2 py-0.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-bold rounded-full border border-orange-200">
-                          NEW
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-neutral-500 mb-3 flex items-start gap-1">
-                      <svg className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span className="line-clamp-1">{court.location.address}</span>
-                    </p>
-                    <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full border ${t.chip}`}>
-                        {t.icon} {t.label}
-                      </span>
-                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${court.fee === 'free' ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-neutral-50 text-neutral-600 border-neutral-200'}`}>
-                        {court.fee === 'free' ? '免費' : '付費'}
-                      </span>
-                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-50 text-neutral-600 border border-neutral-200">
-                        {court.courts_count} 面
-                      </span>
-                      {is24h(court) && (
-                        <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-violet-50 text-violet-700 border border-violet-100">24H</span>
-                      )}
-                    </div>
-                    {court.features && court.features.length > 0 && (
-                      <p className="text-xs text-teal-700/80 mb-4 line-clamp-1">
-                        ✓ {court.features.slice(0, 2).join('　✓ ')}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
-                      <Link to={`/courts/${courtSlug(court.id)}`} className="text-sm text-teal-600 font-bold hover:text-teal-700 inline-flex items-center gap-1">
-                        詳細資訊
-                        <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5-5 5M6 12h12" /></svg>
-                      </Link>
-                      <a
-                        href={`https://www.google.com/maps/dir/?api=1&destination=${court.location.lat},${court.location.lng}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="text-sm text-neutral-400 hover:text-neutral-600 transition-colors inline-flex items-center gap-1"
-                      >
-                        🧭 導航
-                      </a>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {cityCourts.map((court, i) => (
+              <CourtCard key={court.id} court={court} index={i} />
+            ))}
           </div>
         )}
 

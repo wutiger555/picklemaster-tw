@@ -97,14 +97,14 @@ const CourtDetail = () => {
   useEffect(() => {
     if (!court || court === 'not-found') return;
     const base = 'https://picklemastertw.com';
-    const canonical = `${base}/courts/${courtSlug(court.id)}`;
+    const canonical = `${base}/courts/${courtSlug(court.id)}/`;
     const citySlug = cityInfo?.slug;
     const typeLabel = TYPE_LABEL(court.type);
     const crumbs: Array<Record<string, unknown>> = [
       { '@type': 'ListItem', position: 1, name: '首頁', item: base + '/' },
-      { '@type': 'ListItem', position: 2, name: '球場地圖', item: base + '/courts' },
+      { '@type': 'ListItem', position: 2, name: '球場地圖', item: base + '/courts/' },
     ];
-    if (citySlug) crumbs.push({ '@type': 'ListItem', position: 3, name: `${court.location.city}匹克球場`, item: `${base}/courts/${citySlug}` });
+    if (citySlug) crumbs.push({ '@type': 'ListItem', position: 3, name: `${court.location.city}匹克球場`, item: `${base}/courts/${citySlug}/` });
     crumbs.push({ '@type': 'ListItem', position: crumbs.length + 1, name: court.name, item: canonical });
 
     const data = {
@@ -169,8 +169,8 @@ const CourtDetail = () => {
   return (
     <LazyMotion features={domAnimation}>
       <SEOHead
-        customTitle={`${court.name}｜${court.location.city}${court.location.district || ''}匹克球場・${typeLabel}${court.courts_count}面${feeLabel} | 地址、開放時間、導航`}
-        customDescription={`${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}提供 GPS 開車導航與大眾運輸路線，${court.location.city}打匹克球的完整場地資訊。`}
+        customTitle={`${court.name}｜${court.location.city}${court.location.district || ''}${court.name.includes('匹克球') ? '' : '匹克球場'}・${typeLabel}${court.courts_count}面${feeLabel}`}
+        customDescription={`${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}`}
       />
       <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50/30 to-white">
         <section className="pt-8 pb-8 md:pt-12">

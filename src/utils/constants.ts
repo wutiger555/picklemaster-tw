@@ -62,6 +62,7 @@ export const ROUTES = {
   NEWS: '/news/:id',
   PRIVACY_POLICY: '/privacy-policy',
   CONTACT: '/contact',
+  DATA_METHOD: '/data-method',
 } as const;
 
 // 球場類型

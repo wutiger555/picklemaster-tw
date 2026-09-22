@@ -66,7 +66,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/courts#webpage",
-                    "url": "https://picklemastertw.com/courts",
+                    "url": "https://picklemastertw.com/courts/",
                     "name": "台灣匹克球場地圖 2026 | 全台 150+ 球場完整資訊",
                     "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" },
@@ -76,7 +76,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "找球場", "item": "https://picklemastertw.com/courts" }
+                        { "@type": "ListItem", "position": 2, "name": "找球場", "item": "https://picklemastertw.com/courts/" }
                     ]
                 },
                 {
@@ -120,7 +120,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/rules#webpage",
-                    "url": "https://picklemastertw.com/rules",
+                    "url": "https://picklemastertw.com/rules/",
                     "name": "3分鐘學會匹克球！超簡單 3D 互動規則教學",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -128,8 +128,8 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.com/newcomer" },
-                        { "@type": "ListItem", "position": 3, "name": "規則教學", "item": "https://picklemastertw.com/rules" }
+                        { "@type": "ListItem", "position": 2, "name": "新手懶人包", "item": "https://picklemastertw.com/newcomer-guide/" },
+                        { "@type": "ListItem", "position": 3, "name": "規則教學", "item": "https://picklemastertw.com/rules/" }
                     ]
                 },
                 {
@@ -156,7 +156,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/equipment#webpage",
-                    "url": "https://picklemastertw.com/equipment",
+                    "url": "https://picklemastertw.com/equipment/",
                     "name": "匹克球拍選購指南",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -164,48 +164,24 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "裝備指南", "item": "https://picklemastertw.com/equipment" }
+                        { "@type": "ListItem", "position": 2, "name": "裝備指南", "item": "https://picklemastertw.com/equipment/" }
                     ]
                 },
                 {
+                    // 2026-09：原本這裡是三筆 Product，各自帶 aggregateRating（4.3／50 則、
+                    // 4.6／120 則、4.8／80 則）、自家掛名的 Review，以及 AggregateOffer + InStock。
+                    // 那 250 則評論並不存在，本站也沒有評論系統、不販售商品，
+                    //「入門級匹克球拍」更是價位帶而非實際商品 —— 違反 Google 評論摘要政策，
+                    // 有招來「垃圾結構化標記」人工處罰的風險。改成只陳述得出來的事實。
+                    // 對應的執行期副本在 src/utils/seo.ts 的 equipmentProductData。
                     "@type": "ItemList",
-                    "name": "匹克球拍選購指南",
-                    "description": "專業匹克球拍推薦與選購指南，包含材質分析、重量選擇、價格範圍",
+                    "name": "匹克球拍價位帶選購指南",
+                    "description": "依預算區分的匹克球拍選購指南：材質、重量與適合程度說明",
                     "numberOfItems": 3,
                     "itemListElement": [
-                        {
-                            "@type": "Product",
-                            "position": 1,
-                            "name": "入門級匹克球拍",
-                            "description": "適合新手的複合材質匹克球拍，重量適中，價格實惠",
-                            "category": "匹克球拍",
-                            "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
-                            "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "2000", "highPrice": "4000", "offerCount": "8", "availability": "https://schema.org/InStock" },
-                            "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.3", "reviewCount": "50", "bestRating": "5", "worstRating": "1" },
-                            "review": [{ "@type": "Review", "author": { "@type": "Organization", "name": "Picklemaster Taiwan" }, "datePublished": "2026-01-15", "reviewBody": "入門級球拍價位親民、容錯率高，是初學者建立基本擊球感的最佳選擇。建議優先選擇複合材質、重量 7.6-8.0oz 的款式。", "reviewRating": { "@type": "Rating", "ratingValue": "4.3", "bestRating": "5", "worstRating": "1" } }]
-                        },
-                        {
-                            "@type": "Product",
-                            "position": 2,
-                            "name": "中階級匹克球拍",
-                            "description": "玻璃纖維材質，適合中級球員，提供良好的控球性和力量",
-                            "category": "匹克球拍",
-                            "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
-                            "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "4000", "highPrice": "8000", "offerCount": "12", "availability": "https://schema.org/InStock" },
-                            "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.6", "reviewCount": "120", "bestRating": "5", "worstRating": "1" },
-                            "review": [{ "@type": "Review", "author": { "@type": "Organization", "name": "Picklemaster Taiwan" }, "datePublished": "2026-02-08", "reviewBody": "中階拍兼顧控制與力量，玻纖或混碳面板手感佳，DUPR 3.0-3.5 球員首選價位帶。實測 Selkirk、Joola、Engage 等品牌在此區間表現穩定。", "reviewRating": { "@type": "Rating", "ratingValue": "4.6", "bestRating": "5", "worstRating": "1" } }]
-                        },
-                        {
-                            "@type": "Product",
-                            "position": 3,
-                            "name": "高階級碳纖維匹克球拍",
-                            "description": "職業級碳纖維材質，輕量化設計，提供最佳性能表現",
-                            "category": "匹克球拍",
-                            "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
-                            "offers": { "@type": "AggregateOffer", "priceCurrency": "TWD", "lowPrice": "8000", "highPrice": "15000", "offerCount": "18", "availability": "https://schema.org/InStock" },
-                            "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "80", "bestRating": "5", "worstRating": "1" },
-                            "review": [{ "@type": "Review", "author": { "@type": "Organization", "name": "Picklemaster Taiwan" }, "datePublished": "2026-03-20", "reviewBody": "頂級碳纖維拍的旋轉量與甜蜜點都遠勝中階拍，職業選手主流選擇。Joola Pro IV、Six Zero Black Diamond、CRBN1X 都在此價格區間，DUPR 4.0+ 推薦升級。", "reviewRating": { "@type": "Rating", "ratingValue": "4.8", "bestRating": "5", "worstRating": "1" } }]
-                        }
+                        { "@type": "ListItem", "position": 1, "name": "入門級匹克球拍（NT$2,000 - 4,000）", "description": "複合材質、重量適中、容錯率高，適合初學者建立基本擊球感。建議選擇重量 7.6-8.0 oz 的款式。" },
+                        { "@type": "ListItem", "position": 2, "name": "中階級匹克球拍（NT$4,000 - 8,000）", "description": "玻纖或混碳面板，兼顧控制與力量，適合 DUPR 3.0-3.5 的球員。" },
+                        { "@type": "ListItem", "position": 3, "name": "高階級碳纖維匹克球拍（NT$8,000 - 15,000）", "description": "碳纖維面板，旋轉量與甜蜜點明顯優於中階拍，為職業選手主流選擇，適合 DUPR 4.0 以上升級。" }
                     ]
                 }
             ]
@@ -221,7 +197,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/learning-paths#webpage",
-                    "url": "https://picklemastertw.com/learning-paths",
+                    "url": "https://picklemastertw.com/learning-paths/",
                     "name": "匹克球完整學習課程",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -229,7 +205,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "學習路徑", "item": "https://picklemastertw.com/learning-paths" }
+                        { "@type": "ListItem", "position": 2, "name": "學習路徑", "item": "https://picklemastertw.com/learning-paths/" }
                     ]
                 },
                 {
@@ -256,7 +232,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/learning#webpage",
-                    "url": "https://picklemastertw.com/learning",
+                    "url": "https://picklemastertw.com/learning/",
                     "name": "匹克球互動技巧教學",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -264,7 +240,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "實戰技巧", "item": "https://picklemastertw.com/learning" }
+                        { "@type": "ListItem", "position": 2, "name": "實戰技巧", "item": "https://picklemastertw.com/learning/" }
                     ]
                 },
                 {
@@ -286,7 +262,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/game#webpage",
-                    "url": "https://picklemastertw.com/game",
+                    "url": "https://picklemastertw.com/game/",
                     "name": "Pickle Master 互動遊戲",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -294,7 +270,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "互動遊戲", "item": "https://picklemastertw.com/game" }
+                        { "@type": "ListItem", "position": 2, "name": "互動遊戲", "item": "https://picklemastertw.com/game/" }
                     ]
                 },
                 {
@@ -317,7 +293,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/scorer#webpage",
-                    "url": "https://picklemastertw.com/scorer",
+                    "url": "https://picklemastertw.com/scorer/",
                     "name": "專業匹克球計分器",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -325,7 +301,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "計分器", "item": "https://picklemastertw.com/scorer" }
+                        { "@type": "ListItem", "position": 2, "name": "計分器", "item": "https://picklemastertw.com/scorer/" }
                     ]
                 },
                 {
@@ -348,7 +324,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/resources#webpage",
-                    "url": "https://picklemastertw.com/resources",
+                    "url": "https://picklemastertw.com/resources/",
                     "name": "匹克球學習資源彙整",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -356,7 +332,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "資源中心", "item": "https://picklemastertw.com/resources" }
+                        { "@type": "ListItem", "position": 2, "name": "資源中心", "item": "https://picklemastertw.com/resources/" }
                     ]
                 },
                 {
@@ -377,7 +353,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/about#webpage",
-                    "url": "https://picklemastertw.com/about",
+                    "url": "https://picklemastertw.com/about/",
                     "name": "關於 Picklemaster Taiwan",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -386,7 +362,7 @@ const pageSEO = {
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
                         { "@type": "ListItem", "position": 2, "name": "更多", "item": "" },
-                        { "@type": "ListItem", "position": 3, "name": "關於我們", "item": "https://picklemastertw.com/about" }
+                        { "@type": "ListItem", "position": 3, "name": "關於我們", "item": "https://picklemastertw.com/about/" }
                     ]
                 },
                 {
@@ -408,7 +384,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/faq#webpage",
-                    "url": "https://picklemastertw.com/faq",
+                    "url": "https://picklemastertw.com/faq/",
                     "name": "匹克球常見問題",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -416,8 +392,8 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.com/newcomer" },
-                        { "@type": "ListItem", "position": 3, "name": "常見問題", "item": "https://picklemastertw.com/faq" }
+                        { "@type": "ListItem", "position": 2, "name": "新手懶人包", "item": "https://picklemastertw.com/newcomer-guide/" },
+                        { "@type": "ListItem", "position": 3, "name": "常見問題", "item": "https://picklemastertw.com/faq/" }
                     ]
                 },
                 {
@@ -458,7 +434,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/pro-players#webpage",
-                    "url": "https://picklemastertw.com/pro-players",
+                    "url": "https://picklemastertw.com/pro-players/",
                     "name": "世界頂尖匹克球選手",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -466,8 +442,8 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "裝備與攻略", "item": "https://picklemastertw.com/equipment" },
-                        { "@type": "ListItem", "position": 3, "name": "頂尖選手", "item": "https://picklemastertw.com/pro-players" }
+                        { "@type": "ListItem", "position": 2, "name": "裝備與攻略", "item": "https://picklemastertw.com/equipment/" },
+                        { "@type": "ListItem", "position": 3, "name": "頂尖選手", "item": "https://picklemastertw.com/pro-players/" }
                     ]
                 },
                 {
@@ -496,13 +472,13 @@ const pageSEO = {
                     "sport": "Pickleball",
                     "foundingDate": "2026-05-22",
                     "areaServed": { "@type": "Country", "name": "Taiwan" },
-                    "url": "https://picklemastertw.com/aepl"
+                    "url": "https://picklemastertw.com/aepl/"
                 },
                 {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "AEPL 職業聯賽", "item": "https://picklemastertw.com/aepl" }
+                        { "@type": "ListItem", "position": 2, "name": "AEPL 職業聯賽", "item": "https://picklemastertw.com/aepl/" }
                     ]
                 }
             ]
@@ -518,7 +494,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/tournaments#webpage",
-                    "url": "https://picklemastertw.com/tournaments",
+                    "url": "https://picklemastertw.com/tournaments/",
                     "name": "2026 台灣匹克球賽事總覽",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -526,7 +502,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "2026 賽事", "item": "https://picklemastertw.com/tournaments" }
+                        { "@type": "ListItem", "position": 2, "name": "2026 賽事", "item": "https://picklemastertw.com/tournaments/" }
                     ]
                 },
                 {
@@ -556,7 +532,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/glossary#webpage",
-                    "url": "https://picklemastertw.com/glossary",
+                    "url": "https://picklemastertw.com/glossary/",
                     "name": "匹克球術語大全",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -564,7 +540,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "術語字典", "item": "https://picklemastertw.com/glossary" }
+                        { "@type": "ListItem", "position": 2, "name": "術語字典", "item": "https://picklemastertw.com/glossary/" }
                     ]
                 },
                 {
@@ -585,7 +561,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/ratings#webpage",
-                    "url": "https://picklemastertw.com/ratings",
+                    "url": "https://picklemastertw.com/ratings/",
                     "name": "DUPR 評級指南 2026",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -593,7 +569,7 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "DUPR 評級", "item": "https://picklemastertw.com/ratings" }
+                        { "@type": "ListItem", "position": 2, "name": "DUPR 評級", "item": "https://picklemastertw.com/ratings/" }
                     ]
                 },
                 {
@@ -612,7 +588,7 @@ const pageSEO = {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "匹克球系統訓練菜單",
-            "url": "https://picklemastertw.com/training-programs"
+            "url": "https://picklemastertw.com/training-programs/"
         }
     },
     playbook: {
@@ -633,7 +609,7 @@ const pageSEO = {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "匹克球名人堂",
-            "url": "https://picklemastertw.com/hall-of-fame"
+            "url": "https://picklemastertw.com/hall-of-fame/"
         }
     },
     paddles: {
@@ -646,7 +622,7 @@ const pageSEO = {
             "name": "匹克球拍完整資料庫",
             "description": "26 大品牌 45 款熱門匹克球拍完整規格對照",
             "numberOfItems": 45,
-            "url": "https://picklemastertw.com/paddles"
+            "url": "https://picklemastertw.com/paddles/"
         }
     },
     videos: {
@@ -657,7 +633,7 @@ const pageSEO = {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "匹克球教學影片中心",
-            "url": "https://picklemastertw.com/videos"
+            "url": "https://picklemastertw.com/videos/"
         }
     },
     history: {
@@ -682,7 +658,7 @@ const pageSEO = {
             "@type": "Blog",
             "name": "匹克球深度專欄",
             "description": "深度長文：器材評測、運動科學、技術戰術、族群指南",
-            "url": "https://picklemastertw.com/articles"
+            "url": "https://picklemastertw.com/articles/"
         }
     },
     techniques: {
@@ -694,7 +670,7 @@ const pageSEO = {
             "@type": "CollectionPage",
             "name": "匹克球技巧百科",
             "description": "12+ 個匹克球技巧深度教學頁面",
-            "url": "https://picklemastertw.com/techniques"
+            "url": "https://picklemastertw.com/techniques/"
         }
     },
     tools: {
@@ -744,7 +720,7 @@ const pageSEO = {
                 {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/newcomer-guide#webpage",
-                    "url": "https://picklemastertw.com/newcomer-guide",
+                    "url": "https://picklemastertw.com/newcomer-guide/",
                     "name": "新手匹克球入門指南",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" }
                 },
@@ -752,48 +728,12 @@ const pageSEO = {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
                         { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "新手懶人包", "item": "https://picklemastertw.com/newcomer-guide" }
+                        { "@type": "ListItem", "position": 2, "name": "新手懶人包", "item": "https://picklemastertw.com/newcomer-guide/" }
                     ]
                 }
             ]
         }
     },
-    newcomer: {
-        title: '第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南',
-        description: '想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算（球拍/場地費）、羽球轉匹克球技巧分析、甚至幫你判斷適不適合這項運動。不用爬文，這一頁就夠！',
-        keywords: '匹克球新手,匹克球入門,匹克球費用,匹克球拍價格,羽球轉匹克球,網球轉匹克球,匹克球教學,台灣匹克球',
-        structuredData: {
-            "@context": "https://schema.org",
-            "@graph": [
-                {
-                    "@type": "WebPage",
-                    "@id": "https://picklemastertw.com/newcomer#webpage",
-                    "url": "https://picklemastertw.com/newcomer",
-                    "name": "新手匹克球入門指南",
-                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
-                },
-                {
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "新手專區", "item": "https://picklemastertw.com/newcomer" },
-                        { "@type": "ListItem", "position": 3, "name": "新手懶人包", "item": "https://picklemastertw.com/newcomer" }
-                    ]
-                },
-                {
-                    "@type": "HowTo",
-                    "name": "新手匹克球入門指南",
-                    "description": "完整的台灣匹克球新手入門攻略，包含費用試算、規則教學與裝備選購",
-                    "step": [
-                        { "@type": "HowToStep", "position": 1, "name": "自我評估", "text": "確認自己是否適合匹克球運動（如有羽球背景、想找低負擔運動）" },
-                        { "@type": "HowToStep", "position": 2, "name": "預算規劃", "text": "透過費用計算機評估入門成本（球拍、場地費）" },
-                        { "@type": "HowToStep", "position": 3, "name": "學習規則", "text": "掌握雙彈跳、廚房區等核心規則" },
-                        { "@type": "HowToStep", "position": 4, "name": "尋找球場", "text": "搜尋住家附近的匹克球場地" }
-                    ]
-                }
-            ]
-        }
-    }
 };
 
 // 這兩頁原本不在 pageSEO 裡，因此既沒有預渲染也沒有進 sitemap，
@@ -809,6 +749,14 @@ pageSEO['privacy-policy'] = {
     title: '隱私權政策 | 匹克球台灣',
     description: '本站蒐集哪些資訊、如何使用、使用了哪些第三方服務，以及你的權利。純靜態網站，不需註冊即可使用全部功能。',
     keywords: '匹克球台灣 隱私權政策,picklemaster taiwan privacy policy',
+};
+// 資料方法頁：把「每座球場都人工查證並標示日期」這件事講清楚。
+// 這是本站相對於自動抓取的名錄站最難被取代的部分，但原本只散落在各球場頁的一行小字。
+// title/description 的實際數字在預渲染時由 courts.json 算出來覆蓋（見 INDEX_PAGES）。
+pageSEO['data-method'] = {
+    title: '球場資料怎麼來、怎麼查證｜Picklemaster 資料方法',
+    description: '本站的匹克球場資料來源、逐座人工查證流程、歇業複查方式與錯誤回報管道。每座球場都標示最後查證日期。',
+    keywords: '匹克球場資料來源,匹克球場資料查證,picklemaster 資料方法,匹克球場資訊正確性',
 };
 
 
@@ -891,6 +839,65 @@ const ARTICLE_SLUGS = [
     { slug: 'taiwan-pickleball-lessons-guide', title: '台灣匹克球課程與教練完整指南', summary: 'CTPF C 級、PPR、IPTPA 教練認證差異、體驗課/團體班/私人教練費用行情、各縣市找課管道與挑教練檢查點。', category: '族群指南' },
     { slug: 'first-open-play-guide', title: '第一次參加匹克球球敘（Open Play）完整指南', summary: '怎麼找球敘、DUPR 程度自報、排拍輪場規矩、費用分攤行情與球場禮儀 8 條。', category: '族群指南' },
 ];
+
+/**
+ * 把一支 TS/TSX 模組轉譯後載進來，取得真實資料（而不是手維護的鏡像清單，那一定會漂）。
+ * 用 esbuild 是因為它已經隨 vite 進來、而且比 regex 可靠得多 ——
+ * 例如 glossaryData 有一條 termEn 用雙引號，只吃單引號的 regex 會靜默漏掉它。
+ */
+const tsModuleCache = new Map();
+function loadTsModule(relPath) {
+    if (tsModuleCache.has(relPath)) return tsModuleCache.get(relPath);
+    const esbuild = require('esbuild');
+    const out = esbuild.buildSync({
+        entryPoints: [path.join(__dirname, '..', relPath)],
+        bundle: true, write: false, format: 'cjs', platform: 'node',
+        jsx: 'automatic', logLevel: 'silent',
+    });
+    const mod = { exports: {} };
+    new Function('module', 'exports', 'require', out.outputFiles[0].text)(mod, mod.exports, require);
+    tsModuleCache.set(relPath, mod.exports);
+    return mod.exports;
+}
+
+/**
+ * 術語字典：建置時直接解析 src/data/glossaryData.ts。
+ * /glossary 原本只送空的 #root，89 條術語對不執行 JS 的爬蟲完全不存在。
+ * 注意字串可能用單引號或雙引號（例如 termEn: "No Man's Land"），兩種都要吃。
+ */
+function loadGlossary() {
+    const src = fs.readFileSync(path.join(__dirname, '../src/data/glossaryData.ts'), 'utf-8');
+    const S = `(?:'((?:[^'\\\\]|\\\\.)*)'|"((?:[^"\\\\]|\\\\.)*)")`;
+    const re = new RegExp(
+        `\\{\\s*id:\\s*${S},\\s*term:\\s*${S},\\s*termEn:\\s*${S},\\s*category:\\s*${S},\\s*definition:\\s*${S}`,
+        'g'
+    );
+    const pick = (a, b) => (a !== undefined ? a : b).replace(/\\(['"])/g, '$1');
+    const out = [];
+    let m;
+    while ((m = re.exec(src)) !== null) {
+        out.push({
+            term: pick(m[3], m[4]), termEn: pick(m[5], m[6]),
+            category: pick(m[7], m[8]), definition: pick(m[9], m[10]),
+        });
+    }
+    return out;
+}
+
+/**
+ * 文章日期：建置時直接解析 src/data/articlesData.ts，回傳 slug → { published, updated }。
+ * 原本 Article schema 的 datePublished 是硬寫死的 '2026-04-25'，14 篇全都一樣、
+ * 而且沒有 dateModified —— 對一個以「資料查證日期」為賣點的站，這是直接餵錯訊號給 Google。
+ * 不抄成鏡像清單的理由同 loadNewsItems()：手維護的副本一定會漂。
+ */
+function loadArticleDates() {
+    const src = fs.readFileSync(path.join(__dirname, '../src/data/articlesData.ts'), 'utf-8');
+    const dates = {};
+    const re = /slug:\s*'([^']+)'[\s\S]*?publishedDate:\s*'([^']+)'[\s\S]*?updatedDate:\s*'([^']+)'/g;
+    let m;
+    while ((m = re.exec(src)) !== null) dates[m[1]] = { published: m[2], updated: m[3] };
+    return dates;
+}
 
 /**
  * 新聞頁：建置時直接解析 src/data/newsData.ts，不做手維護的鏡像清單。
@@ -1198,6 +1205,7 @@ async function generateStaticPages() {
 
         // ===== Generate per-article pages =====
         console.log('Generating article detail pages...');
+        const articleDates = loadArticleDates();
         for (const a of ARTICLE_SLUGS) {
             const dirPath = path.join(BUILD_DIR, 'articles', a.slug);
             fs.mkdirSync(dirPath, { recursive: true });
@@ -1219,7 +1227,10 @@ async function generateStaticPages() {
                 "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
                 "publisher": { "@type": "Organization", "name": "Picklemaster Taiwan", "logo": { "@type": "ImageObject", "url": "https://picklemastertw.com/android-chrome-v2-512x512.png" } },
                 "mainEntityOfPage": canonical,
-                "datePublished": "2026-04-25"
+                ...(articleDates[a.slug] ? {
+                    "datePublished": articleDates[a.slug].published,
+                    "dateModified": articleDates[a.slug].updated,
+                } : {}),
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`);
             {
@@ -1395,18 +1406,324 @@ async function generateStaticPages() {
                 foot: '<a href="/learning-paths" style="color:#0d9488;">學習路徑</a>　·　<a href="/courts" style="color:#0d9488;">找場地開練</a>',
             },
         ];
+
+        // ===== 其餘原本送空 #root 的頁面 =====
+        // 內容一律從真實資料來（loadTsModule），不手抄鏡像清單。
+        // 只有工具頁與純敘述頁的 intro 是手寫的 —— 那是「這頁在做什麼」的說明，
+        // 不是會隨資料變動的清單，漂移風險低。
+        {
+            const FAQ = loadTsModule('src/data/faqData.ts').FAQ_DATA;
+            const VIDEOS = loadTsModule('src/data/videosData.ts').VIDEO_TUTORIALS;
+            const TOURN = loadTsModule('src/data/tournamentsData.ts').TOURNAMENTS_2026;
+            const PLAYBOOK = loadTsModule('src/data/playbookData.ts').PLAYBOOK;
+            const HISTORY = loadTsModule('src/data/historyData.ts').HISTORY_TIMELINE;
+            const PATHS = loadTsModule('src/data/learning-modules.tsx').learningPaths;
+            const TIERS = loadTsModule('src/data/ratingsData.ts').RATING_TIERS;
+            const HOF_MOD = loadTsModule('src/data/hallOfFameData.ts');
+            const HOF = [...HOF_MOD.FOUNDERS, ...HOF_MOD.PIONEERS, ...HOF_MOD.LEGENDS, ...HOF_MOD.TAIWAN];
+            const RULE_TERMS = loadGlossary().filter(t => t.category === '規則');
+            const NAV = {
+                courts: '<a href="/courts" style="color:#0d9488;">找球場</a>',
+                rules: '<a href="/rules" style="color:#0d9488;">規則教學</a>',
+                newcomer: '<a href="/newcomer-guide" style="color:#0d9488;">新手懶人包</a>',
+                glossary: '<a href="/glossary" style="color:#0d9488;">術語字典</a>',
+                tools: '<a href="/tools" style="color:#0d9488;">實用工具</a>',
+                paddles: '<a href="/paddles" style="color:#0d9488;">球拍資料庫</a>',
+                equipment: '<a href="/equipment" style="color:#0d9488;">裝備選購</a>',
+                faq: '<a href="/faq" style="color:#0d9488;">常見問題</a>',
+            };
+            const foot = (...keys) => keys.map(k => NAV[k]).join('　·　');
+
+            INDEX_PAGES.push(
+                {
+                    route: 'faq', h1: '匹克球常見問題', crumb: '常見問題',
+                    intro: `新手到進階最常問的 ${FAQ.length} 個匹克球問題與解答，涵蓋規則、裝備、場地、費用與比賽。`,
+                    termsHeading: `常見問題（${FAQ.length}）`,
+                    terms: FAQ.map(f => ({ t: f.question, meta: f.category, d: f.answer })),
+                    foot: foot('rules', 'newcomer', 'glossary'),
+                },
+                {
+                    route: 'tournaments', h1: '2026 台灣匹克球賽事總覽', crumb: '賽事總覽',
+                    intro: `2026 年全台 ${TOURN.length} 場匹克球賽事：日期、場地、主辦單位、分組與報名截止一次看，含 CTPF 認證賽事與 AEPL 職業聯賽。`,
+                    termsHeading: `賽事列表（${TOURN.length}）`,
+                    terms: TOURN.map(t => ({
+                        t: t.name,
+                        meta: [t.dateLabel, t.venue, t.city, t.level].filter(Boolean).join('・'),
+                        d: [t.summary, t.organizer ? `主辦：${t.organizer}` : '', t.registrationDeadline ? `報名截止：${t.registrationDeadline}` : ''].filter(Boolean).join(' '),
+                    })),
+                    foot: '<a href="/aepl" style="color:#0d9488;">AEPL 職業聯賽</a>　·　' + foot('courts', 'rules'),
+                },
+                {
+                    route: 'playbook', h1: '匹克球實戰情境手冊', crumb: '實戰手冊',
+                    intro: `場上遇到狀況該怎麼處理？${PLAYBOOK.length} 個真實比賽情境，說明為什麼會發生、最佳應對與替代打法。`,
+                    termsHeading: `情境列表（${PLAYBOOK.length}）`,
+                    terms: PLAYBOOK.map(p => ({
+                        t: p.scenario, meta: [p.category, p.level].filter(Boolean).join('・'),
+                        d: `${p.whyHappens ? `成因：${p.whyHappens} ` : ''}建議：${p.bestResponse}`,
+                    })),
+                    foot: '<a href="/techniques" style="color:#0d9488;">技術教學</a>　·　' + foot('rules', 'glossary'),
+                },
+                {
+                    route: 'history', h1: '匹克球發展史', crumb: '發展史',
+                    intro: `從 1965 年美國華盛頓州 Bainbridge Island 的後院發明，到今天成為全球成長最快的球拍運動 —— ${HISTORY.length} 個關鍵時刻，含台灣發展歷程。`,
+                    termsHeading: `時間軸（${HISTORY.length}）`,
+                    terms: HISTORY.map(h => ({ t: `${h.year}　${h.title}`, meta: h.category, d: h.description })),
+                    foot: '<a href="/hall-of-fame" style="color:#0d9488;">名人堂</a>　·　' + foot('rules', 'glossary'),
+                },
+                {
+                    route: 'hall-of-fame', h1: '匹克球名人堂', crumb: '名人堂',
+                    intro: `從發明者到當代球王，${HOF.length} 位對匹克球有決定性貢獻的人物，含台灣推廣先驅。`,
+                    termsHeading: `入選人物（${HOF.length}）`,
+                    terms: HOF.map(m => ({ t: m.name, meta: [m.role, m.era, m.inducted].filter(Boolean).join('・'), d: m.contribution })),
+                    foot: '<a href="/history" style="color:#0d9488;">發展史</a>　·　<a href="/pro-players" style="color:#0d9488;">職業選手</a>',
+                },
+                {
+                    route: 'ratings', h1: 'DUPR 匹克球評級完整說明', crumb: '評級制度',
+                    intro: `DUPR（Dynamic Universal Pickleball Rating）是全球通用的匹克球技術評級，範圍 1.0 到 8.0。以下是 ${TIERS.length} 個級距各自的實際能力描述，幫你判斷自己大概在哪一段。`,
+                    termsHeading: `評級級距（${TIERS.length}）`,
+                    terms: TIERS.map(t => ({
+                        t: `${t.range}　${t.level}`, meta: t.levelEn,
+                        d: [t.description, t.skills && t.skills.length ? `典型能力：${t.skills.join('、')}` : '', t.typicalPlayer ? `典型球員：${t.typicalPlayer}` : ''].filter(Boolean).join(' '),
+                    })),
+                    foot: foot('glossary', 'newcomer') + '　·　<a href="/tools/dupr-simulator" style="color:#0d9488;">DUPR 分數試算</a>',
+                },
+                {
+                    route: 'rules', h1: '匹克球規則教學', crumb: '規則教學',
+                    intro: '匹克球規則的核心只有幾條：雙彈跳、廚房區禁止截擊、下手發球、發球方才能得分。本站提供 3D 互動式球場教學，點擊球場任一區域即可看到對應解說。以下是規則相關術語的完整定義。',
+                    termsHeading: `規則術語（${RULE_TERMS.length}）`,
+                    terms: RULE_TERMS.map(t => ({ t: t.term, meta: t.termEn, d: t.definition })),
+                    foot: foot('newcomer', 'glossary', 'courts'),
+                },
+                {
+                    route: 'learning-paths', h1: '匹克球學習路徑', crumb: '學習路徑',
+                    intro: `依程度規劃的匹克球學習路線，共 ${PATHS.length} 條，從零基礎到進階戰術，每條路徑都拆成逐課的學習目標。`,
+                    termsHeading: `學習路徑（${PATHS.length}）`,
+                    terms: PATHS.map(p => ({
+                        t: p.level, meta: [p.totalDuration, `${p.lessons.length} 課`].filter(Boolean).join('・'),
+                        d: `${p.description}。課程：${p.lessons.map(l => l.title).join('、')}`,
+                    })),
+                    foot: '<a href="/techniques" style="color:#0d9488;">技術教學</a>　·　<a href="/training-programs" style="color:#0d9488;">訓練菜單</a>　·　' + foot('rules'),
+                },
+                {
+                    route: 'videos', h1: '匹克球教學影片精選', crumb: '教學影片',
+                    intro: `精選 ${VIDEOS.length} 支國內外匹克球教學影片，逐支標註頻道、長度、適合程度與「為什麼值得看」。`,
+                    termsHeading: `影片清單（${VIDEOS.length}）`,
+                    terms: VIDEOS.map(v => ({
+                        t: v.title, meta: [v.channel, v.duration, v.level, v.category].filter(Boolean).join('・'),
+                        d: [v.description, v.whyWatch ? `值得看的理由：${v.whyWatch}` : ''].filter(Boolean).join(' '),
+                    })),
+                    foot: '<a href="/techniques" style="color:#0d9488;">技術教學</a>　·　' + foot('rules', 'newcomer'),
+                },
+                {
+                    route: 'paddles', h1: '匹克球拍資料庫', crumb: '球拍資料庫',
+                    intro: `${PADDLE_SLUGS.length} 支主流匹克球拍的規格與定位：核心厚度、重量、面板材質與適合的打法，逐支獨立頁面。`,
+                    itemsHeading: `球拍列表（${PADDLE_SLUGS.length}）`,
+                    items: PADDLE_SLUGS.map(p => ({
+                        href: `/paddles/${p.slug}`,
+                        label: `${p.brand} ${p.model}`,
+                        sub: [p.year, p.level, p.shape, p.thickness, p.weight, p.face].filter(Boolean).join('・'),
+                    })),
+                    foot: foot('equipment') + '　·　<a href="/articles/beginner-first-paddle-2026" style="color:#0d9488;">新手第一支球拍怎麼選</a>',
+                },
+                {
+                    route: 'tools', h1: '匹克球實用工具', crumb: '實用工具',
+                    intro: '打球與辦比賽會用到的計算工具，全部在瀏覽器本機執行，不需註冊。',
+                    itemsHeading: '工具列表（4）',
+                    items: [
+                        { href: '/tools/dupr-simulator', label: 'DUPR 分數試算', sub: '輸入比賽結果，估算這場對你的 DUPR 評級大約有什麼影響' },
+                        { href: '/tools/rotation', label: '輪場排點器', sub: '人數多於場地時，排出讓每個人上場次數平均的輪替表' },
+                        { href: '/tools/bracket', label: '賽程表產生器', sub: '單淘汰、雙淘汰與循環賽的對戰表自動編排' },
+                        { href: '/tools/court-lines', label: '場地劃線指南', sub: '在羽球場或網球場上加劃匹克球線的尺寸與步驟' },
+                    ],
+                    foot: foot('courts', 'rules'),
+                },
+                {
+                    route: 'tools/dupr-simulator', h1: 'DUPR 分數試算工具', crumb: 'DUPR 分數試算',
+                    intro: 'DUPR 評級會依每場比賽的比分與對手實力變動。輸入雙方目前評級與比賽結果，即可估算這場對你的評級大致影響，用來理解 DUPR 的計算邏輯。試算為概算，實際數值以 DUPR 官方為準。',
+                    itemsHeading: '延伸閱讀',
+                    items: [
+                        { href: '/ratings', label: 'DUPR 評級完整說明', sub: '1.0 到 8.0 各級距的實際能力描述' },
+                        { href: '/tools', label: '其他實用工具', sub: '輪場排點、賽程表、場地劃線' },
+                    ],
+                    foot: foot('glossary', 'courts'),
+                },
+                {
+                    route: 'tools/rotation', h1: '匹克球輪場排點器', crumb: '輪場排點器',
+                    intro: '球敘常見的問題：來了 11 個人但只有 2 面場地，怎麼排才公平。輸入人數與場地數，產生每個人上場次數平均、搭檔盡量不重複的輪替表。',
+                    itemsHeading: '延伸閱讀',
+                    items: [
+                        { href: '/glossary', label: '什麼是球敘、排拍？', sub: '台灣球敘現場的輪場規矩' },
+                        { href: '/tools/bracket', label: '賽程表產生器', sub: '要辦正式比賽時改用這個' },
+                    ],
+                    foot: foot('courts', 'faq'),
+                },
+                {
+                    route: 'tools/bracket', h1: '匹克球賽程表產生器', crumb: '賽程表產生器',
+                    intro: '辦小型比賽用的對戰表工具：輸入隊伍數，產生單淘汰、雙淘汰或循環賽的賽程與輪次安排。',
+                    itemsHeading: '延伸閱讀',
+                    items: [
+                        { href: '/tournaments', label: '2026 賽事總覽', sub: '全台正式賽事的日期與報名資訊' },
+                        { href: '/tools/rotation', label: '輪場排點器', sub: '一般球敘輪場用這個' },
+                    ],
+                    foot: foot('rules', 'courts'),
+                },
+                {
+                    route: 'tools/court-lines', h1: '匹克球場地劃線指南', crumb: '場地劃線指南',
+                    intro: '匹克球場標準尺寸為 20×44 英尺（6.10×13.41 公尺），與雙打羽球場幾乎相同，因此常直接在羽球場或網球場上加劃。本頁說明各項尺寸、廚房線位置與在既有場地上加線的步驟。',
+                    itemsHeading: '延伸閱讀',
+                    items: [
+                        { href: '/rules', label: '匹克球規則教學', sub: '廚房區、雙彈跳等與場地相關的規則' },
+                        { href: '/courts', label: '全台球場地圖', sub: '已經劃好線的場地在哪裡' },
+                    ],
+                    foot: foot('glossary', 'faq'),
+                },
+                {
+                    route: 'scorer', h1: '匹克球計分器', crumb: '計分器',
+                    intro: '匹克球的計分方式（發球方得分制、三碼報分 0-0-2）對新手不直覺。這個計分器幫你記住目前比分、發球方與第幾發球員，在場邊用手機就能操作，不需註冊。',
+                    itemsHeading: '延伸閱讀',
+                    items: [
+                        { href: '/rules', label: '匹克球計分規則', sub: '為什麼要報三個數字、什麼時候換發球' },
+                        { href: '/glossary', label: '術語字典', sub: '報分、換發、side out 等術語' },
+                    ],
+                    foot: foot('newcomer', 'courts'),
+                },
+                {
+                    route: 'game', h1: '匹克球規則小測驗', crumb: '規則測驗',
+                    intro: '用互動測驗檢查自己的匹克球規則觀念：發球、雙彈跳、廚房區、計分與界內外判定，答錯會告訴你正確規則與原因。',
+                    itemsHeading: '延伸閱讀',
+                    items: [
+                        { href: '/rules', label: '3D 互動規則教學', sub: '先看懂規則再來測驗' },
+                        { href: '/faq', label: '常見問題', sub: '規則爭議最常出現的狀況' },
+                    ],
+                    foot: foot('glossary', 'newcomer'),
+                },
+                {
+                    route: 'newcomer-guide', h1: '匹克球新手入門指南', crumb: '新手懶人包',
+                    intro: '第一次打匹克球需要知道的事：要花多少錢、第一支球拍怎麼挑、去哪裡找人一起打、球敘現場的規矩、以及從羽球或網球轉過來需要調整什麼。',
+                    itemsHeading: '新手該看的幾頁',
+                    items: [
+                        { href: '/rules', label: '先把規則看懂', sub: '3D 互動教學，雙彈跳與廚房區是新手最常搞錯的兩條' },
+                        { href: '/courts', label: '找離你最近的球場', sub: '全台場地地圖，可篩免費、室內、24 小時' },
+                        { href: '/glossary', label: '看懂球敘、排拍在說什麼', sub: '台灣球敘現場的用語與規矩' },
+                        { href: '/equipment', label: '裝備要買什麼', sub: '球拍、球鞋、球的選購重點與預算' },
+                        { href: '/articles/first-open-play-guide', label: '第一次參加球敘完整指南', sub: '怎麼找球敘、程度怎麼報、費用怎麼分攤' },
+                    ],
+                    foot: foot('faq', 'tools'),
+                },
+                {
+                    route: 'equipment', h1: '匹克球裝備選購指南', crumb: '裝備選購',
+                    intro: '匹克球裝備的三個重點：球拍（核心厚度、重量、面板材質）、球鞋（需要橫向支撐，跑鞋不適合）、球（室內 26 孔／戶外 40 孔）。本頁說明各項選購邏輯與台灣的購買管道。',
+                    itemsHeading: '延伸閱讀',
+                    items: [
+                        { href: '/paddles', label: '球拍資料庫', sub: '主流球拍規格逐支比較' },
+                        { href: '/articles/beginner-first-paddle-2026', label: '新手第一支球拍怎麼選', sub: '不是挑最好的，是挑最不會拖累你的' },
+                        { href: '/articles/paddle-specs-explained-2026', label: '球拍規格全解析', sub: '厚度、揮重、扭轉慣量到底在講什麼' },
+                        { href: '/articles/2026-best-pickleball-shoes', label: '匹克球鞋選購指南', sub: '專用鞋 vs 網球鞋 vs 羽球鞋' },
+                        { href: '/articles/indoor-vs-outdoor-balls', label: '室內球 vs 戶外球', sub: '26 孔還是 40 孔' },
+                        { href: '/articles/buy-paddle-taiwan-2026', label: '台灣買球拍完全指南', sub: '正版通路、水貨真相與價格行情' },
+                    ],
+                    foot: foot('newcomer', 'faq'),
+                },
+                {
+                    route: 'learning', h1: '匹克球互動學習', crumb: '互動學習',
+                    intro: '用 3D 球場與動畫理解匹克球：球場各區域的名稱與作用、球的飛行路線、站位與移動，搭配球拍選購建議與職業選手用拍參考。',
+                    itemsHeading: '延伸閱讀',
+                    items: [
+                        { href: '/learning-paths', label: '依程度規劃的學習路徑', sub: '從零基礎到進階戰術的逐課路線' },
+                        { href: '/rules', label: '3D 互動規則教學', sub: '點擊球場看對應規則解說' },
+                        { href: '/techniques', label: '技術教學', sub: '軟球、第三球下切、截擊等單項技巧' },
+                    ],
+                    foot: foot('glossary', 'courts'),
+                },
+                {
+                    route: 'resources', h1: '匹克球資源整理', crumb: '資源整理',
+                    intro: '打匹克球會用到的外部資源整理：官方組織與規則書、評級系統、賽事資訊、教學頻道與台灣在地社群。',
+                    itemsHeading: '站內相關頁面',
+                    items: [
+                        { href: '/videos', label: '教學影片精選', sub: '國內外教學頻道逐支評註' },
+                        { href: '/glossary', label: '中英術語字典', sub: '看英文教學前先補術語' },
+                        { href: '/ratings', label: 'DUPR 評級說明', sub: '國際通用的技術分級' },
+                        { href: '/tournaments', label: '2026 賽事總覽', sub: '全台賽事日期與報名' },
+                    ],
+                    foot: foot('courts', 'faq'),
+                },
+                {
+                    // 數字與 src/pages/DataMethod.tsx 用同一份 courts.json 算，兩邊一致。
+                    route: 'data-method', h1: '球場資料怎麼來、怎麼查證', crumb: '資料方法',
+                    ...(() => {
+                        const ages = ALL_COURTS.map(c => c.last_updated)
+                            .filter(Boolean)
+                            .map(d => Math.floor((Date.now() - Date.parse(d)) / 86400000))
+                            .sort((a, b) => a - b);
+                        const median = ages[Math.floor(ages.length / 2)];
+                        const within90 = ages.filter(d => d <= 90).length;
+                        const pct = Math.round((within90 / ages.length) * 100);
+                        const cities = new Set(ALL_COURTS.map(c => c.location.city)).size;
+                        const surfaces = ALL_COURTS.reduce((n, c) => n + (c.courts_count || 0), 0);
+                        return {
+                            title: '球場資料怎麼來、怎麼查證｜Picklemaster 資料方法',
+                            description: `本站 ${ALL_COURTS.length} 座匹克球場全部人工查證並標示查證日期，中位查證時距 ${median} 天、${pct}% 在 90 天內確認過。說明資料來源、查證流程、歇業複查方式與錯誤回報管道。`,
+                            intro: `場館會搬家、會漲價、會歇業，而過期的球場資訊比沒有資訊更糟 —— 你會白跑一趟。所以本站 ${ALL_COURTS.length} 座球場（${cities} 個縣市、合計 ${surfaces} 面）每一座都人工查證過，並把查證日期直接標在球場頁上：目前中位查證時距 ${median} 天，${within90} 座（${pct}%）在 90 天內確認過，最近一次是 ${ages[0]} 天前。`,
+                        };
+                    })(),
+                    termsHeading: '查證流程',
+                    terms: [
+                        { t: '01　收錄：先確認場地真的存在', d: '新場地來自匹克球協會名錄、運動部 iPlay 場館資訊網、場館社群公告與讀者回報。每一筆都要能對到具體地址與座標才會收錄，不會只憑一則貼文就上架。' },
+                        { t: '02　查證：逐座確認並記錄日期', d: '確認地址、球場面數、室內或戶外、收費方式、開放時間。每座球場都記下查證日期並顯示在該球場頁上 —— 你看得到這筆資料是什麼時候確認的，而不是只能猜。' },
+                        { t: '03　機械巡檢：每次更新都跑一遍', d: '自動檢查外部連結是否失效、哪些場地超過 120 天沒查證、資料是否有缺漏或格式錯誤，以及已標記關閉的場地是否該回頭複查。' },
+                        { t: '04　歇業複查：機器查不出來的部分人工看', d: '網站回 HTTP 200 不代表場館還在營業 —— 實際遇過官網正常、粉專已刪、Google 地圖標示永久歇業的情況。所以營業狀態一律人工查 Google 地圖確認，確認歇業的場地會直接在標題標示【已歇業】而不是悄悄刪掉。' },
+                        { t: '資料來源與授權', d: '部分場館的位置、聯絡方式、大眾運輸與實景照片來自運動部全國運動場館資訊網 iPlay，依政府網站資料開放宣告使用，並在各球場頁標註來源場館名稱。其餘資訊為本站自行查證整理。' },
+                        { t: '發現資料有誤怎麼辦', d: '查證再勤也追不上所有變動。發現地址、費用、時段與現場不符，或知道本站還沒收錄的場地，歡迎透過聯絡頁告訴我們 —— 更正會連同新的查證日期一起更新。' },
+                    ],
+                    foot: '<a href="/courts" style="color:#0d9488;">全台球場地圖</a>　·　<a href="/contact" style="color:#0d9488;">回報資料錯誤</a>　·　<a href="/about" style="color:#0d9488;">關於本站</a>',
+                },
+                {
+                    route: 'about', h1: '關於 Picklemaster', crumb: '關於我們',
+                    intro: '本站是台灣的匹克球資訊平台。球場資料逐座人工查證並標示查證日期，場館開關與費用變動快，發現與現場不符歡迎回報更正。內容涵蓋球場地圖、規則教學、賽事追蹤、裝備選購與術語字典。',
+                    itemsHeading: '站內主要單元',
+                    items: [
+                        { href: '/courts', label: '全台球場地圖', sub: '逐座查證的場地資訊與 GPS 導航' },
+                        { href: '/rules', label: '3D 互動規則教學', sub: '點擊球場看規則解說' },
+                        { href: '/tournaments', label: '賽事總覽', sub: 'CTPF 認證賽事與 AEPL 職業聯賽' },
+                        { href: '/contact', label: '聯絡我們', sub: '資料回報、新增場地、合作提案' },
+                        { href: '/privacy-policy', label: '隱私權政策', sub: '本站如何處理你的資料' },
+                    ],
+                    foot: foot('faq', 'glossary'),
+                },
+            );
+        }
         let indexPageCount = 0;
         for (const page of INDEX_PAGES) {
             const filePath = path.join(BUILD_DIR, page.route, 'index.html');
             if (!fs.existsSync(filePath)) continue;
             let content = fs.readFileSync(filePath, 'utf-8');
+            // items = 有內頁可連的清單；terms = 內容本身就是價值、沒有內頁可連的（問答、賽事、情境…），
+            // 用 dl 輸出全文，讓爬蟲讀得到答案而不是只讀到一串標題。
+            const items = page.items || [];
+            const terms = page.terms || [];
             const body = `
         <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(page.intro)}</p>
+        ${items.length ? `
         <section style="margin-bottom:24px;">
-          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">完整列表（${page.items.length}）</h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${page.items.map(it => `<li style="margin-bottom:8px;"><a href="${it.href}" style="color:#0d9488;font-weight:600;">${esc(it.label)}</a>${it.sub ? `<br><span style="color:#6b7280;font-size:13px;">${esc(it.sub)}</span>` : ''}</li>`).join('')}</ul>
-        </section>
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(page.itemsHeading || `完整列表（${items.length}）`)}</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${items.map(it => `<li style="margin-bottom:8px;"><a href="${it.href}" style="color:#0d9488;font-weight:600;">${esc(it.label)}</a>${it.sub ? `<br><span style="color:#6b7280;font-size:13px;">${esc(it.sub)}</span>` : ''}</li>`).join('')}</ul>
+        </section>` : ''}
+        ${terms.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(page.termsHeading || `完整內容（${terms.length}）`)}</h2>
+          <dl style="margin:0;">${terms.map(t => `<dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">${esc(t.t)}${t.meta ? `<span style="color:#6b7280;font-weight:400;font-size:14px;"> — ${esc(t.meta)}</span>` : ''}</dt><dd style="margin:0;font-size:15px;color:#4b5563;">${esc(t.d)}</dd>`).join('')}</dl>
+        </section>` : ''}
         <p style="font-size:15px;">${page.foot}</p>`;
+            // 有些頁的 title/description 需要用即時算出來的數字（例如 /data-method 的查證統計），
+            // 才能跟 React 端 SEOHead 產出的字串一致。
+            if (page.title) {
+                content = content.replace(/<title>.*<\/title>/, `<title>${esc(page.title)}</title>`);
+                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${esc(page.title)}" />`);
+            }
+            if (page.description) {
+                content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(page.description)}" />`);
+                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${esc(page.description)}" />`);
+            }
             content = injectPrerender(content, prerenderShell({
                 crumbs: [{ name: '首頁', href: '/' }, { name: page.crumb }],
                 h1: page.h1, bodyHtml: body,
@@ -1422,6 +1739,32 @@ async function generateStaticPages() {
         }
         console.log(`  Prerendered ${indexPageCount} index/hub pages`);
 
+        // ===== Prerender /glossary =====
+        // 術語的價值就是定義本身的文字（例如「球敘是什麼」），不預渲染等於整本字典不存在。
+        {
+            const glossaryPath = path.join(BUILD_DIR, 'glossary', 'index.html');
+            if (fs.existsSync(glossaryPath)) {
+                const terms = loadGlossary();
+                const byCategory = {};
+                for (const t of terms) (byCategory[t.category] = byCategory[t.category] || []).push(t);
+                const body = `
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">匹克球（皮克球）中英術語對照與解釋，共 ${terms.length} 條，涵蓋規則、技術、戰術、裝備、場地與賽制。</p>
+        ${Object.entries(byCategory).map(([cat, list]) => `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(cat)}（${list.length}）</h2>
+          <dl style="margin:0;">${list.map(t => `<dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">${esc(t.term)}<span style="color:#6b7280;font-weight:400;font-size:14px;"> — ${esc(t.termEn)}</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">${esc(t.definition)}</dd>`).join('')}</dl>
+        </section>`).join('')}
+        <p style="font-size:15px;"><a href="/rules" style="color:#0d9488;">匹克球規則教學</a>　·　<a href="/newcomer-guide" style="color:#0d9488;">新手入門指南</a>　·　<a href="/courts" style="color:#0d9488;">找球場</a></p>`;
+                const content = injectPrerender(fs.readFileSync(glossaryPath, 'utf-8'), prerenderShell({
+                    crumbs: [{ name: '首頁', href: '/' }, { name: '術語字典' }],
+                    h1: `匹克球術語字典｜${terms.length} 條中英對照`,
+                    bodyHtml: body,
+                }));
+                fs.writeFileSync(glossaryPath, content);
+                console.log(`  Prerendered /glossary (${terms.length} terms)`);
+            }
+        }
+
         // ===== Generate per-court pages =====
         console.log('Generating court detail pages...');
         try {
@@ -1430,7 +1773,10 @@ async function generateStaticPages() {
             // --- SEO helpers（球場頁：預渲染內容 + 結構化資料，讓不執行 JS 的爬蟲/AI 引擎也讀得到）---
             const typeLabelOf = (t) => t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外';
             const ownLabelOf = (o) => ({ public: '公營', private: '民營', school: '學校', community: '社區' }[o] || o || '');
-            const courtIs24h = (h) => /24\s*小時/.test(h || '');
+            // 與 src/utils/courtAttributes.ts 共用同一條規則，城市頁的「24 小時場 N 座」
+            // 才不會跟 /courts/24h 列出的數量對不起來。
+            const courtIs24h = loadTsModule('src/utils/courtAttributes.ts').is24h;
+            const ATTRS_FOR_CITY = loadTsModule('src/utils/courtAttributes.ts').COURT_ATTRIBUTES;
             const citySlugOf = (cityName) => (CITY_SLUG_MAP.find(c => c.city === cityName) || {}).slug;
 
             // 城市 hub：導言／簡稱取自 src/utils/cityData.ts（單一資料來源，避免重複維護）
@@ -1487,6 +1833,19 @@ async function generateStaticPages() {
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(city)}匹克球場完整名單</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${cityCourts.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${c.courts_count} 面・${c.fee === 'free' ? '免費' : '收費'}）— ${esc(c.location.address)}</li>`).join('')}</ul>
         </section>
+        ${(() => {
+                    // 屬性分組：直接回答「台中免費匹克球場地」這類查詢（GSC 上該查詢 73 曝光、排名 9.7）。
+                    // 不另開縣市 × 屬性頁 —— 56 種組合裡 33 種只有 1-2 座，拆頁就是薄頁。
+                    const groups = ATTRS_FOR_CITY
+                        .map(a => ({ a, list: cityCourts.filter(a.match) }))
+                        .filter(g => g.list.length > 0);
+                    if (!groups.length) return '';
+                    return `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(city)}依條件分類</h2>
+          ${groups.map(g => `<p style="font-size:15px;margin:0 0 8px;"><strong>${esc(g.a.label)}（${g.list.length} 座）：</strong>${g.list.map(c => `<a href="/courts/court-${c.id}" style="color:#0d9488;">${esc(c.name)}</a>`).join('、')}　<a href="/courts/${g.a.slug}" style="color:#6b7280;font-size:13px;">看全台${esc(g.a.label)}球場 →</a></p>`).join('')}
+        </section>`;
+                })()}
         ${faqs.length ? `
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(shortName)}匹克球常見問題</h2>
@@ -1663,9 +2022,10 @@ async function generateStaticPages() {
                 const feeLabel = court.fee === 'free' ? '免費' : '收費';
                 const siblings = courtsData.courts.filter(c => c.location.city === city && c.id !== court.id).slice(0, 6);
                 const statusTag = court.status === 'permanently_closed' ? '【已歇業】' : court.status === 'temporarily_closed' ? '【暫時關閉】' : '';
-                const title = `${statusTag}${court.name}｜${city}${district}匹克球場・${typeLabel}${court.courts_count}面${feeLabel} | 地址、開放時間、導航`;
+                // 場館名本身已含「匹克球」時不再補「匹克球場」，避免標題重複同一個詞被行動版截掉
+                const title = `${statusTag}${court.name}｜${city}${district}${court.name.includes('匹克球') ? '' : '匹克球場'}・${typeLabel}${court.courts_count}面${feeLabel}`;
                 const statusDesc = court.status ? `${court.status === 'permanently_closed' ? '【本站查證：已歇業】' : '【本站查證：暫時關閉】'}${court.status_verified ? `（${court.status_verified}）` : ''}` : '';
-                const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}提供 GPS 開車導航與大眾運輸路線，${city}打匹克球的完整場地資訊。`;
+                const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}`;
                 const canonical = `${BASE_URL}/courts/${slug}/`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
@@ -1710,7 +2070,9 @@ async function generateStaticPages() {
                     .filter(o => o.city !== city && (cityCountMap[o.city] || 0) > 0)
                     .map(o => ({ slug: o.slug, city: o.city, count: cityCountMap[o.city] }));
                 const title = `${city}匹克球場地圖 2026｜${cityCourts.length} 座場地完整名單（免費/室內/收費）`;
-                const desc = `${city}匹克球場完整攻略：免費場 ${free} 座、室內場 ${indoor} 座${open24 ? `、24 小時場 ${open24} 座` : ''}，共 ${cityCourts.length} 座場地。地址、開放時間、費用、特色一次看，附 GPS 導航。`;
+                // 「皮克球」是 Pickleball 的常見錯字寫法，GSC 上有可觀曝光但站內從未出現，
+                // 搜尋結果摘要因此不會標粗任何字。這裡在描述帶一次，不做關鍵字堆疊。
+                const desc = `${city}匹克球場（皮克球場）完整攻略：免費場 ${free} 座、室內場 ${indoor} 座${open24 ? `、24 小時場 ${open24} 座` : ''}，共 ${cityCourts.length} 座場地。地址、開放時間、費用、特色一次看，附 GPS 導航。`;
                 const canonical = `${BASE_URL}/courts/${slug}/`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
@@ -1756,13 +2118,189 @@ async function generateStaticPages() {
                 cityPageCount++;
             }
             console.log(`  Generated ${cityPageCount} city hub pages`);
+
+            // ===== Prerender /courts =====
+            // 這頁原本只送空的 #root 給爬蟲，而它是全站曝光第三高的頁，
+            // 也是 17 個城市頁唯一該有的上游入口（先前對它們零連結）。
+            {
+                const indexPath = path.join(BUILD_DIR, 'courts', 'index.html');
+                if (fs.existsSync(indexPath)) {
+                    const cities = CITY_SLUG_MAP
+                        .map(({ slug, city }) => ({
+                            slug, city,
+                            list: courtsData.courts
+                                .filter(c => c.location.city === city)
+                                .sort((a, b) => b.courts_count - a.courts_count),
+                        }))
+                        .filter(c => c.list.length > 0);
+                    const total = courtsData.courts.length;
+                    const free = courtsData.courts.filter(c => c.fee === 'free').length;
+                    const indoor = courtsData.courts.filter(c => c.type === 'indoor').length;
+                    const body = `
+        <p style="font-size:17px;color:#4b5563;margin:0 0 8px;">全台 ${cities.length} 縣市共 ${total} 座匹克球場（皮克球場）完整名單：室內 ${indoor} 座、免費 ${free} 座。每座球場都有地址、開放時間、費用與 GPS 導航，並標示本站資料最後查證日期。</p>
+        <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">互動地圖支援 GPS 定位找最近球場、依室內／戶外／免費／24 小時篩選。</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">依條件找匹克球場</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${loadTsModule('src/utils/courtAttributes.ts').COURT_ATTRIBUTES.map(a => {
+                        const n = courtsData.courts.filter(a.match).length;
+                        return n ? `<li style="margin-bottom:4px;"><a href="/courts/${a.slug}" style="color:#0d9488;font-weight:600;">${esc(a.h1)}</a>（${n} 座）</li>` : '';
+                    }).join('')}</ul>
+        </section>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">依縣市找匹克球場</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${cities.map(c => `<li style="margin-bottom:4px;"><a href="/courts/${c.slug}" style="color:#0d9488;font-weight:600;">${esc(c.city)}匹克球場</a>（${c.list.length} 座）</li>`).join('')}</ul>
+        </section>
+        ${cities.map(c => `
+        <section style="margin-bottom:20px;">
+          <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;"><a href="/courts/${c.slug}" style="color:#1f2937;text-decoration:none;">${esc(c.city)}匹克球場（${c.list.length} 座）</a></h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${c.list.map(x => `<li style="margin-bottom:4px;"><a href="/courts/court-${x.id}" style="color:#0d9488;">${esc(x.name)}</a>（${typeLabelOf(x.type)}・${x.courts_count} 面・${x.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
+        </section>`).join('')}
+        <p style="font-size:15px;"><a href="/rules" style="color:#0d9488;">匹克球規則教學</a>　·　<a href="/newcomer-guide" style="color:#0d9488;">新手入門指南</a>　·　<a href="/equipment" style="color:#0d9488;">裝備選購</a></p>`;
+                    const content = injectPrerender(fs.readFileSync(indexPath, 'utf-8'), prerenderShell({
+                        crumbs: [{ name: '首頁', href: '/' }, { name: '找球場' }],
+                        h1: `全台匹克球場地圖｜${cities.length} 縣市 ${total} 座場地`,
+                        bodyHtml: body,
+                    }));
+                    fs.writeFileSync(indexPath, content);
+                    console.log(`  Prerendered /courts (${cities.length} cities, ${total} courts)`);
+                }
+            }
+
+            // ===== 屬性型球場頁 /courts/free、/courts/indoor、/courts/outdoor、/courts/24h =====
+            // 屬性定義與文案由 src/utils/courtAttributes.ts 提供（React 頁面讀同一份）。
+            // 只做全國層級：縣市 × 屬性有 56 種組合，其中 33 種只有 1-2 座，拆頁就是薄頁。
+            {
+                const { COURT_ATTRIBUTES } = loadTsModule('src/utils/courtAttributes.ts');
+                for (const attr of COURT_ATTRIBUTES) {
+                    const matched = courtsData.courts.filter(attr.match);
+                    if (!matched.length) continue;
+                    const byCity = CITY_SLUG_MAP
+                        .map(({ slug, city }) => ({
+                            slug, city,
+                            list: matched.filter(c => c.location.city === city).sort((a, b) => b.courts_count - a.courts_count),
+                        }))
+                        .filter(g => g.list.length > 0)
+                        .sort((a, b) => b.list.length - a.list.length);
+                    const surfaces = matched.reduce((n, c) => n + (c.courts_count || 0), 0);
+                    const canonical = `${BASE_URL}/courts/${attr.slug}/`;
+                    const title = `${attr.h1} 2026｜${matched.length} 座完整名單、地址與開放時間`;
+                    const desc = `${attr.intro}本站收錄 ${matched.length} 座，分布 ${byCity.length} 個縣市，每座標示最後查證日期。`;
+                    const faqs = [
+                        {
+                            q: `全台有幾座${attr.label}匹克球場？`,
+                            a: `本站目前收錄 ${matched.length} 座${attr.label}匹克球場，分布於 ${byCity.length} 個縣市，合計 ${surfaces} 面球場。每座都標示本站最後查證日期。`,
+                        },
+                        {
+                            q: `哪個縣市的${attr.label}匹克球場最多？`,
+                            a: `${byCity.slice(0, 5).map(g => `${g.city} ${g.list.length} 座`).join('、')}。`,
+                        },
+                    ];
+                    const body = `
+        <p style="font-size:17px;color:#4b5563;margin:0 0 8px;">${esc(attr.intro)}</p>
+        <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">本站收錄 ${matched.length} 座，分布 ${byCity.length} 個縣市，合計 ${surfaces} 面球場。</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他分類</h2>
+          <p style="font-size:15px;margin:0;">${COURT_ATTRIBUTES.filter(a => a.slug !== attr.slug).map(a => `<a href="/courts/${a.slug}" style="color:#0d9488;">${esc(a.label)}匹克球場</a>`).join('　·　')}　·　<a href="/courts" style="color:#0d9488;">全部球場</a></p>
+        </section>
+        ${byCity.map(g => `
+        <section style="margin-bottom:20px;">
+          <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;"><a href="/courts/${g.slug}" style="color:#1f2937;text-decoration:none;">${esc(g.city)}</a>（${g.list.length} 座）</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${g.list.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${c.courts_count} 面・${c.fee === 'free' ? '免費' : '收費'}・${esc(c.opening_hours || '依現場公告')}）— ${esc(c.location.address)}</li>`).join('')}</ul>
+        </section>`).join('')}
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">常見問題</h2>
+          ${faqs.map(f => `<div style="margin-bottom:12px;"><h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">${esc(f.q)}</h3><p style="font-size:15px;margin:0;color:#4b5563;">${esc(f.a)}</p></div>`).join('')}
+        </section>`;
+                    const ldJson = {
+                        "@context": "https://schema.org",
+                        "@graph": [
+                            {
+                                "@type": "ItemList", "name": attr.h1, "numberOfItems": matched.length,
+                                "itemListElement": matched.map((c, i) => ({
+                                    "@type": "SportsActivityLocation", "position": i + 1, "name": c.name, "sport": "Pickleball",
+                                    "address": { "@type": "PostalAddress", "streetAddress": c.location.address, "addressLocality": c.location.district, "addressRegion": c.location.city, "addressCountry": "TW" },
+                                    "isAccessibleForFree": c.fee === 'free',
+                                    "url": `${BASE_URL}/courts/court-${c.id}/`,
+                                })),
+                            },
+                            { "@type": "FAQPage", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) },
+                            {
+                                "@type": "BreadcrumbList", "itemListElement": [
+                                    { "@type": "ListItem", "position": 1, "name": "首頁", "item": BASE_URL + "/" },
+                                    { "@type": "ListItem", "position": 2, "name": "球場地圖", "item": `${BASE_URL}/courts/` },
+                                    { "@type": "ListItem", "position": 3, "name": attr.h1, "item": canonical },
+                                ],
+                            },
+                        ],
+                    };
+                    const dirPath = path.join(BUILD_DIR, 'courts', attr.slug);
+                    fs.mkdirSync(dirPath, { recursive: true });
+                    let content = template;
+                    content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
+                    content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(desc)}" />`);
+                    content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+                    content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${esc(title)}" />`);
+                    content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${esc(desc)}" />`);
+                    content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+                    content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(ldJson).replace(/</g, '\\u003c')}</script>`);
+                    content = injectPrerender(content, prerenderShell({
+                        crumbs: [{ name: '首頁', href: '/' }, { name: '球場地圖', href: '/courts' }, { name: attr.label }],
+                        h1: `${attr.h1}｜${matched.length} 座`,
+                        bodyHtml: body,
+                    }));
+                    content = applyOg(content, `og/courts-${attr.slug}.png`, {
+                        title: attr.h1, type: 'city', badge: '球場分類',
+                        subtitle: `${matched.length} 座 · ${byCity.length} 縣市 · 合計 ${surfaces} 面`,
+                    });
+                    fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+                }
+                console.log(`  Prerendered ${COURT_ATTRIBUTES.length} attribute court pages`);
+            }
+
+            // ===== Prerender / =====
+            // 首頁同樣只送空的 #root。曝光不高，但它是全站權重起點，
+            // 也是不執行 JS 的 AI 引擎最常抓的一頁。
+            {
+                const homePath = path.join(BUILD_DIR, 'index.html');
+                if (fs.existsSync(homePath)) {
+                    const total = courtsData.courts.length;
+                    const cityCounts = CITY_SLUG_MAP
+                        .map(({ slug, city }) => ({ slug, city, n: courtsData.courts.filter(c => c.location.city === city).length }))
+                        .filter(c => c.n > 0)
+                        .sort((a, b) => b.n - a.n);
+                    const sections = [
+                        { href: '/courts', label: `全台匹克球場地圖（${total} 座）`, sub: `${cityCounts.length} 縣市球場名單，含地址、開放時間、費用與 GPS 導航` },
+                        { href: '/rules', label: '匹克球規則教學', sub: '3D 互動式教學，秒懂雙彈跳、廚房區與發球順序' },
+                        { href: '/newcomer-guide', label: '新手入門指南', sub: '第一次打匹克球需要準備什麼、怎麼找人一起打' },
+                        { href: '/equipment', label: '裝備選購指南', sub: '球拍、球鞋、球的選購重點與台灣購買管道' },
+                        { href: '/tournaments', label: '2026 賽事總覽', sub: 'CTPF 認證賽事、AEPL 職業聯賽賽程與戰報' },
+                        { href: '/glossary', label: '中英術語字典', sub: 'dink、ATP、第三球下切等術語的中英對照與解釋' },
+                    ];
+                    const body = `
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">Picklemaster 是台灣的匹克球（Pickleball，也常被寫成皮克球）資訊平台：全台 ${total} 座球場地圖、3D 互動規則教學、賽事追蹤、裝備選購與術語字典。球場資料逐座人工查證並標示查證日期。</p>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">主要單元</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${sections.map(s => `<li style="margin-bottom:8px;"><a href="${s.href}" style="color:#0d9488;font-weight:600;">${esc(s.label)}</a><br><span style="color:#6b7280;font-size:13px;">${esc(s.sub)}</span></li>`).join('')}</ul>
+        </section>
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">依縣市找球場</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${cityCounts.map(c => `<li style="margin-bottom:4px;"><a href="/courts/${c.slug}" style="color:#0d9488;">${esc(c.city)}匹克球場</a>（${c.n} 座）</li>`).join('')}</ul>
+        </section>`;
+                    const content = injectPrerender(fs.readFileSync(homePath, 'utf-8'), prerenderShell({
+                        crumbs: [{ name: '首頁' }],
+                        h1: '匹克球台灣 Picklemaster｜球場地圖、規則教學與賽事追蹤',
+                        bodyHtml: body,
+                    }));
+                    fs.writeFileSync(homePath, content);
+                    console.log('  Prerendered /');
+                }
+            }
         } catch (e) {
             console.warn('  Skip per-court generation:', e.message);
         }
 
         // Generate Sitemap.xml (2026 enhanced)
         console.log('Generating sitemap.xml...');
-        const today = new Date().toISOString().split('T')[0];
         const priorityMap = {
             courts: { p: '1.0', f: 'daily' },
             tournaments: { p: '1.0', f: 'weekly' },
@@ -1779,124 +2317,91 @@ async function generateStaticPages() {
             game: { p: '0.8', f: 'monthly' },
             scorer: { p: '0.75', f: 'monthly' },
             about: { p: '0.7', f: 'monthly' },
-            newcomer: { p: '0.7', f: 'monthly' },
         };
 
-        let sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        // lastmod 只在拿得到「真實異動日」時才寫。
+        // 原本 336 筆裡有 309 筆蓋的是建置日期 —— 每跑一次 build 就把全站推成今天，
+        // 而 Google 的作法是：lastmod 一旦被判定不可信，就整個忽略掉。
+        // 球場 155 筆本來就有人工查證日（last_updated），文章有 updatedDate，
+        // 新聞有發佈日；其餘拿不到真實日期的，寧可不寫 —— lastmod 本來就是選填。
+        const urlEntry = (loc, { lastmod, changefreq, priority }) => `
     <url>
-        <loc>${BASE_URL}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>1.0</priority>
+        <loc>${loc}</loc>${lastmod ? `
+        <lastmod>${lastmod}</lastmod>` : ''}
+        <changefreq>${changefreq}</changefreq>
+        <priority>${priority}</priority>
     </url>`;
+
+        // 球場異動日：城市頁取該市最新、/ 與 /courts 取全站最新
+        let courtsForSitemap = [];
+        try {
+            courtsForSitemap = JSON.parse(fs.readFileSync(path.join(BUILD_DIR, 'data', 'courts.json'), 'utf-8')).courts;
+        } catch (e) { /* skip if missing */ }
+        const newestOf = (list) => list.map(c => c.last_updated).filter(Boolean).sort().pop();
+        const courtsNewest = newestOf(courtsForSitemap);
+        const articleDatesForSitemap = loadArticleDates();
+
+        let sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
+        sitemapContent += urlEntry(`${BASE_URL}/`, { lastmod: courtsNewest, changefreq: 'daily', priority: '1.0' });
 
         for (const route of Object.keys(pageSEO)) {
             const meta = priorityMap[route] || { p: '0.7', f: 'monthly' };
-            sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/${route}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>${meta.f}</changefreq>
-        <priority>${meta.p}</priority>
-    </url>`;
+            sitemapContent += urlEntry(`${BASE_URL}/${route}/`, {
+                lastmod: route === 'courts' ? courtsNewest : undefined,
+                changefreq: meta.f, priority: meta.p,
+            });
         }
 
-        // Add per-program URLs
         for (const p of PROGRAM_SLUGS) {
-            sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/training-programs/${p.slug}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.85</priority>
-    </url>`;
+            sitemapContent += urlEntry(`${BASE_URL}/training-programs/${p.slug}/`, { changefreq: 'monthly', priority: '0.85' });
         }
 
-        // Add per-player URLs
         for (const p of PLAYER_SLUGS) {
-            sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/players/${p.slug}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.85</priority>
-    </url>`;
+            sitemapContent += urlEntry(`${BASE_URL}/players/${p.slug}/`, { changefreq: 'monthly', priority: '0.85' });
         }
 
-        // Add per-paddle URLs
         for (const pd of PADDLE_SLUGS) {
-            sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/paddles/${pd.slug}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>`;
+            sitemapContent += urlEntry(`${BASE_URL}/paddles/${pd.slug}/`, { changefreq: 'monthly', priority: '0.8' });
         }
 
-        // Add per-article URLs
         for (const a of ARTICLE_SLUGS) {
-            sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/articles/${a.slug}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
-    </url>`;
+            sitemapContent += urlEntry(`${BASE_URL}/articles/${a.slug}/`, {
+                lastmod: (articleDatesForSitemap[a.slug] || {}).updated,
+                changefreq: 'monthly', priority: '0.9',
+            });
         }
 
-        // Add per-news URLs —— lastmod 用新聞本身的日期，不用建置日，
-        // 否則每次 build 都會把 27 篇舊聞的 lastmod 推成今天，對爬蟲是雜訊。
         for (const nw of loadNewsItems()) {
-            sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/news/${nw.id}/</loc>
-        <lastmod>${nw.date}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>`;
+            sitemapContent += urlEntry(`${BASE_URL}/news/${nw.id}/`, { lastmod: nw.date, changefreq: 'monthly', priority: '0.7' });
         }
 
-        // Add per-technique URLs
         for (const t of TECHNIQUE_SLUGS) {
-            sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/techniques/${t.slug}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.85</priority>
-    </url>`;
+            sitemapContent += urlEntry(`${BASE_URL}/techniques/${t.slug}/`, { changefreq: 'monthly', priority: '0.85' });
         }
 
-        // Add city hub URLs
-        try {
-            const courtsData = JSON.parse(fs.readFileSync(path.join(BUILD_DIR, 'data', 'courts.json'), 'utf-8'));
-            for (const { slug, city } of CITY_SLUG_MAP) {
-                if (!courtsData.courts.some(c => c.location.city === city)) continue;
-                sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/courts/${slug}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.95</priority>
-    </url>`;
-            }
-        } catch (e) { /* skip if missing */ }
+        for (const { slug, city } of CITY_SLUG_MAP) {
+            const cityCourts = courtsForSitemap.filter(c => c.location.city === city);
+            if (!cityCourts.length) continue;
+            sitemapContent += urlEntry(`${BASE_URL}/courts/${slug}/`, {
+                lastmod: newestOf(cityCourts), changefreq: 'weekly', priority: '0.95',
+            });
+        }
 
-        // Add per-court URLs
-        try {
-            const courtsData = JSON.parse(fs.readFileSync(path.join(BUILD_DIR, 'data', 'courts.json'), 'utf-8'));
-            for (const court of courtsData.courts) {
-                sitemapContent += `
-    <url>
-        <loc>${BASE_URL}/courts/court-${court.id}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>`;
-            }
-        } catch (e) { /* skip if missing */ }
+        // 屬性型球場頁（/courts/free 等）
+        for (const attr of loadTsModule('src/utils/courtAttributes.ts').COURT_ATTRIBUTES) {
+            const matched = courtsForSitemap.filter(attr.match);
+            if (!matched.length) continue;
+            sitemapContent += urlEntry(`${BASE_URL}/courts/${attr.slug}/`, {
+                lastmod: newestOf(matched), changefreq: 'weekly', priority: '0.9',
+            });
+        }
+
+        for (const court of courtsForSitemap) {
+            sitemapContent += urlEntry(`${BASE_URL}/courts/court-${court.id}/`, {
+                lastmod: court.last_updated, changefreq: 'monthly', priority: '0.8',
+            });
+        }
 
         sitemapContent += `
 </urlset>`;

@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/pages/AttributeCourts.tsx"
+        ],
+        "createdAt": "2026-09-22T06:29:10.456Z",
+        "reason": "刻意沿用 CityCourts.tsx:196 的既有寫法（同一組 from-teal-600 to-cyan-500 漸層用在「｜N 座」計數）；屬性頁與城市頁並列，樣式不一致反而突兀"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          "src/components/court/CourtCard.tsx"
+        ],
+        "createdAt": "2026-09-22T06:48:13.590Z",
+        "reason": "TYPE_STYLE 自 CityCourts.tsx:22-26 原封搬出，逐字相同（git show HEAD 已比對）；三色是球場類型的語意編碼（emerald=室內／violet=風雨／sky=戶外），非裝飾漸層。改色會連帶改動既有城市頁外觀，超出本次範圍"
+      }
+    ]
+  }
+}

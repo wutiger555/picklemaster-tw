@@ -48,8 +48,8 @@ const PlayerDetail = () => {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: '首頁', item: base + '/' },
-        { '@type': 'ListItem', position: 2, name: '職業選手', item: base + '/pro-players' },
-        { '@type': 'ListItem', position: 3, name: player.name, item: `${base}/players/${player.slug}` },
+        { '@type': 'ListItem', position: 2, name: '職業選手', item: base + '/pro-players/' },
+        { '@type': 'ListItem', position: 3, name: player.name, item: `${base}/players/${player.slug}/` },
       ],
     };
     const inject = (obj: object, key: string) => {

@@ -28,11 +28,12 @@
       "features": [
         "全台首座河濱匹克球中心",
         "8面專用球場",
-        "2025年9月啟用"
+        "2025年9月啟用",
+        "永久廚房線（kitchen line）"
       ],
       "is_new": false,
       "added_date": "2025-09",
-      "last_updated": "2025-12-10",
+      "last_updated": "2026-09-22",
       "reviews": "2025年新開放，全台首座河濱專用匹克球中心"
     },
     {
@@ -380,7 +381,7 @@
       "id": 9,
       "name": "台北市士林至善公園",
       "location": {
-        "address": "台北市士林區至善路二段",
+        "address": "台北市士林區至善路一段",
         "lat": 25.098424,
         "lng": 121.537907,
         "city": "台北市",
@@ -402,10 +403,10 @@
       "features": [
         "免費場地",
         "需自備球網",
-        "永久標線",
-        "球敘時段：每週二、四 18:30~22:00／每週六、日 14:00~18:00（臺北市匹克球協會）"
+        "球敘時段：每週二、四 18:30~22:00／每週六、日 14:00~18:00（臺北市匹克球協會）",
+        "無廚房線（僅羽球場標線，需自備球網）"
       ],
-      "last_updated": "2026-09-19",
+      "last_updated": "2026-09-22",
       "reviews": "士林免費戶外球場，下午時段開放",
       "iplay": {
         "venue": "至善公園羽球場",
@@ -1149,7 +1150,7 @@
       "type": "outdoor",
       "fee": "free",
       "price": "免費",
-      "courts_count": 6,
+      "courts_count": 4,
       "surface": "concrete",
       "net_type": "permanent",
       "ownership": "public",
@@ -1163,9 +1164,12 @@
       ],
       "features": [
         "河濱公園",
-        "夜間照明佳"
+        "夜間照明佳",
+        "永久廚房線（kitchen line）",
+        "已架設擋風網",
+        "夜間照明至 00:00"
       ],
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-22",
       "reviews": "河濱公園球場，夜間照明佳，球友眾多",
       "iplay": {
         "venue": "華中河濱公園",
@@ -2334,7 +2338,7 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-19",
+      "last_updated": "2026-09-22",
       "reviews": "天母公園戶外場地，環境清幽",
       "iplay": {
         "venue": "天母公園",
@@ -2370,46 +2374,9 @@
         ]
       },
       "features": [
-        "球敘時段：每週一~五 08:30~12:00（臺北市匹克球協會）"
+        "球敘時段：每週一~五 08:30~12:00（臺北市匹克球協會）",
+        "永久廚房線（kitchen line）"
       ]
-    },
-    {
-      "id": 52,
-      "name": "臺北市網球中心匹克球場",
-      "location": {
-        "address": "台北市士林區福林路 170 號",
-        "lat": 25.1009,
-        "lng": 121.5281,
-        "city": "台北市",
-        "district": "士林區"
-      },
-      "type": "indoor",
-      "fee": "paid",
-      "price": "依場館定價，平日離峰較便宜",
-      "courts_count": 4,
-      "surface": "synthetic",
-      "net_type": "permanent",
-      "ownership": "public",
-      "opening_hours": "每日 06:00-22:00",
-      "contact": "02-2881-5799",
-      "facilities": [
-        "冷氣",
-        "停車場",
-        "淋浴間",
-        "球具租借",
-        "置物櫃"
-      ],
-      "features": [
-        "士林區指標性綜合運動場館",
-        "新納入匹克球場地",
-        "鄰近劍潭捷運站",
-        "設施完善品質穩定"
-      ],
-      "booking_url": "https://www.tsc.taipei/",
-      "is_new": false,
-      "added_date": "2026-03",
-      "last_updated": "2025-12-10",
-      "reviews": "台北頂級運動中心新增匹克球設施，環境專業舒適"
     },
     {
       "id": 53,
@@ -2570,7 +2537,8 @@
       "contact_details": {
         "website": "https://downstairspickleballclub.com/",
         "phone": "0919-471-309",
-        "email": "downstairspickleballclub@gmail.com"
+        "email": "downstairspickleballclub@gmail.com",
+        "line": "https://lin.ee/lInlKGm"
       },
       "facilities": [
         "冷氣",
@@ -2584,10 +2552,10 @@
         "4面標準球場",
         "捷運直達"
       ],
-      "booking_url": "https://downstairspickleballclub.com/collections/court",
+      "booking_url": "https://downstairspickleballclub.com/",
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-22",
       "reviews": "石牌捷運站旁地下室專用館，北投區第一座室內匹克球俱樂部",
       "website": "https://downstairspickleballclub.com/"
     },
@@ -2618,11 +2586,12 @@
       "features": [
         "羽匹共用場",
         "市中心免費場地",
-        "鄰近捷運龍山寺"
+        "鄰近捷運龍山寺",
+        "永久廚房線（kitchen line）"
       ],
       "is_new": false,
       "added_date": "2026-02",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-22",
       "reviews": "青年公園內羽球場改打匹克球，開放至凌晨，市區免費首選之一",
       "iplay": {
         "venue": "青年公園棒球場",
@@ -2667,11 +2636,12 @@
       ],
       "features": [
         "北投區公立免費場",
-        "專用球場"
+        "專用球場",
+        "永久廚房線（kitchen line）"
       ],
       "is_new": false,
       "added_date": "2026-02",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-22",
       "reviews": "北投明德路旁專用球場，僅日間開放",
       "iplay": {
         "venue": "明德國小活動中心",

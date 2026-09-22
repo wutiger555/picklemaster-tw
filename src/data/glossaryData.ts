@@ -655,6 +655,25 @@ export const GLOSSARY: GlossaryTerm[] = [
     category: '賽制',
     definition: '18 歲女子單打世界第一。雙手反手是她最強武器。與母親 Leigh Waters 搭檔女雙常勝軍。',
   },
+
+  // ===== 社群／打球形式 =====
+  {
+    id: 'open-play',
+    term: '球敘',
+    termEn: 'Open Play',
+    category: '賽制',
+    definition: '台灣匹克球社群對「開放打球場次」的稱呼，也就是 Open Play：由場館或社群發起，任何人都可以報名參加，不需要自己湊滿四個人。到場後依排拍規則輪流上場，和當下在場的人隨機配對。多半在社群或 LINE 群公告時段與費用，費用通常按人頭分攤場地費，一場 100–300 元不等。新手最常見的入門管道。',
+    example: '「今晚七點北屯有球敘，還有兩個名額」＝ 今晚七點那個場次還可以報名兩人。',
+    relatedTerms: ['排拍', 'DUPR 評級'],
+  },
+  {
+    id: 'paddle-stacking',
+    term: '排拍',
+    termEn: 'Paddle Stacking',
+    category: '賽制',
+    definition: '球敘現場決定上場順序的作法：把球拍依序排在場邊的架子或地上，輪到你的拍子時就上場。這是台灣球敘最通用的排隊規則，避免有人一直霸場、也讓新來的人知道還要等幾輪。部分場館改用白板寫名字或叫號，原理相同。',
+    relatedTerms: ['球敘'],
+  },
 ];
 
 export const GLOSSARY_CATEGORIES = ['規則', '技術', '戰術', '裝備', '場地', '賽制'] as const;

@@ -55,8 +55,8 @@ const ArticleDetail = () => {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: '首頁', item: base + '/' },
-        { '@type': 'ListItem', position: 2, name: '深度專欄', item: base + '/articles' },
-        { '@type': 'ListItem', position: 3, name: article.title, item: `${base}/articles/${article.slug}` },
+        { '@type': 'ListItem', position: 2, name: '深度專欄', item: base + '/articles/' },
+        { '@type': 'ListItem', position: 3, name: article.title, item: `${base}/articles/${article.slug}/` },
       ],
     };
     const s1 = inject(articleSchema, 'article');

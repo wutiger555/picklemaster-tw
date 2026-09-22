@@ -38,14 +38,14 @@ const Aepl = () => {
           sport: 'Pickleball',
           foundingDate: AEPL_LEAGUE.founded,
           areaServed: { '@type': 'Country', name: 'Taiwan' },
-          url: `${base}/aepl`,
+          url: `${base}/aepl/`,
           description: '台灣第一個匹克球職業聯賽：6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。',
         },
         {
           '@type': 'BreadcrumbList',
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: '首頁', item: base + '/' },
-            { '@type': 'ListItem', position: 2, name: 'AEPL 職業聯賽', item: `${base}/aepl` },
+            { '@type': 'ListItem', position: 2, name: 'AEPL 職業聯賽', item: `${base}/aepl/` },
           ],
         },
         {

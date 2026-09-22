@@ -473,136 +473,69 @@ export const howToStructuredData = {
       "position": 1,
       "name": "了解基本規則",
       "text": "學習匹克球的基本規則，包括雙彈跳、廚房區、發球規則等。使用我們的互動式規則教學快速掌握。",
-      "url": "https://picklemastertw.com/rules"
+      "url": "https://picklemastertw.com/rules/"
     },
     {
       "@type": "HowToStep",
       "position": 2,
       "name": "選擇適合的裝備",
       "text": "根據您的程度和預算選擇球拍。初學者建議選擇中等重量、複合材質的球拍，價格約1000-2000元。",
-      "url": "https://picklemastertw.com/equipment"
+      "url": "https://picklemastertw.com/equipment/"
     },
     {
       "@type": "HowToStep",
       "position": 3,
       "name": "尋找附近球場",
       "text": "使用我們的球場地圖功能，找到離您最近的匹克球場。台灣目前有 150+ 個球場可供選擇。",
-      "url": "https://picklemastertw.com/courts"
+      "url": "https://picklemastertw.com/courts/"
     },
     {
       "@type": "HowToStep",
       "position": 4,
       "name": "學習基本技巧",
       "text": "觀看教學影片學習發球、接發球、正反手等基本技巧。使用我們的3D互動教學理解站位和球路。",
-      "url": "https://picklemastertw.com/learning"
+      "url": "https://picklemastertw.com/learning/"
     },
     {
       "@type": "HowToStep",
       "position": 5,
       "name": "加入社群練習",
       "text": "加入本地匹克球社群，與球友交流學習。參加初學者友善的練習活動，累積實戰經驗。",
-      "url": "https://picklemastertw.com/resources"
+      "url": "https://picklemastertw.com/resources/"
     }
   ]
 };
 
-// Equipment 頁面 - 球拍產品結構化資料
+// Equipment 頁面 - 球拍價位帶結構化資料
+// 2026-09：原本這裡是三筆 Product，各自帶 aggregateRating（4.3／50 則、4.6／120 則、
+// 4.8／80 則）、自家掛名的 Review，以及 AggregateOffer + InStock。那 250 則評論並不存在，
+// 本站也沒有評論系統、不販售商品，「入門級匹克球拍」更是價位帶而非實際商品。
+// 這違反 Google 評論摘要政策（自家評論／捏造評分），有招來「垃圾結構化標記」人工處罰的風險，
+// 2026-07 Google 又特別補強了對造假評論的規範。改成只陳述得出來的事實：三個價位帶。
 export const equipmentProductData = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  "name": "匹克球拍選購指南",
-  "description": "專業匹克球拍推薦與選購指南，包含材質分析、重量選擇、價格範圍",
+  "name": "匹克球拍價位帶選購指南",
+  "description": "依預算區分的匹克球拍選購指南：材質、重量與適合程度說明",
   "numberOfItems": 3,
   "itemListElement": [
     {
-      "@type": "Product",
+      "@type": "ListItem",
       "position": 1,
-      "name": "入門級匹克球拍",
-      "description": "適合新手的複合材質匹克球拍，重量適中，價格實惠",
-      "category": "匹克球拍",
-      "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
-      "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "TWD",
-        "lowPrice": "2000",
-        "highPrice": "4000",
-        "offerCount": "8",
-        "availability": "https://schema.org/InStock"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.3",
-        "reviewCount": "50",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "review": [{
-        "@type": "Review",
-        "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
-        "datePublished": "2026-01-15",
-        "reviewBody": "入門級球拍價位親民、容錯率高，是初學者建立基本擊球感的最佳選擇。建議優先選擇複合材質、重量 7.6-8.0oz 的款式。",
-        "reviewRating": { "@type": "Rating", "ratingValue": "4.3", "bestRating": "5", "worstRating": "1" }
-      }]
+      "name": "入門級匹克球拍（NT$2,000 - 4,000）",
+      "description": "複合材質、重量適中、容錯率高，適合初學者建立基本擊球感。建議選擇重量 7.6-8.0 oz 的款式。"
     },
     {
-      "@type": "Product",
+      "@type": "ListItem",
       "position": 2,
-      "name": "中階級匹克球拍",
-      "description": "玻璃纖維材質，適合中級球員，提供良好的控球性和力量",
-      "category": "匹克球拍",
-      "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
-      "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "TWD",
-        "lowPrice": "4000",
-        "highPrice": "8000",
-        "offerCount": "12",
-        "availability": "https://schema.org/InStock"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.6",
-        "reviewCount": "120",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "review": [{
-        "@type": "Review",
-        "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
-        "datePublished": "2026-02-08",
-        "reviewBody": "中階拍兼顧控制與力量，玻纖或混碳面板手感佳，DUPR 3.0-3.5 球員首選價位帶。實測 Selkirk、Joola、Engage 等品牌在此區間表現穩定。",
-        "reviewRating": { "@type": "Rating", "ratingValue": "4.6", "bestRating": "5", "worstRating": "1" }
-      }]
+      "name": "中階級匹克球拍（NT$4,000 - 8,000）",
+      "description": "玻纖或混碳面板，兼顧控制與力量，適合 DUPR 3.0-3.5 的球員。"
     },
     {
-      "@type": "Product",
+      "@type": "ListItem",
       "position": 3,
-      "name": "高階級碳纖維匹克球拍",
-      "description": "職業級碳纖維材質，輕量化設計，提供最佳性能表現",
-      "category": "匹克球拍",
-      "brand": { "@type": "Brand", "name": "Picklemaster Taiwan 推薦" },
-      "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "TWD",
-        "lowPrice": "8000",
-        "highPrice": "15000",
-        "offerCount": "18",
-        "availability": "https://schema.org/InStock"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "80",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "review": [{
-        "@type": "Review",
-        "author": { "@type": "Organization", "name": "Picklemaster Taiwan" },
-        "datePublished": "2026-03-20",
-        "reviewBody": "頂級碳纖維拍的旋轉量與甜蜜點都遠勝中階拍，職業選手主流選擇。Joola Pro IV、Six Zero Black Diamond、CRBN1X 都在此價格區間，DUPR 4.0+ 推薦升級。",
-        "reviewRating": { "@type": "Rating", "ratingValue": "4.8", "bestRating": "5", "worstRating": "1" }
-      }]
+      "name": "高階級碳纖維匹克球拍（NT$8,000 - 15,000）",
+      "description": "碳纖維面板，旋轉量與甜蜜點明顯優於中階拍，為職業選手主流選擇，適合 DUPR 4.0 以上升級。"
     }
   ]
 };
@@ -614,7 +547,7 @@ export const courtsLocationData = {
     {
       "@type": "WebPage",
       "@id": "https://picklemastertw.com/courts#webpage",
-      "url": "https://picklemastertw.com/courts",
+      "url": "https://picklemastertw.com/courts/",
       "name": "台灣匹克球場地圖 2026 | 全台 150+ 球場完整資訊",
       "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
       "isPartOf": {

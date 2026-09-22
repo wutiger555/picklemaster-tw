@@ -47,6 +47,7 @@ const CourtLinesGuide = lazy(() => import('./pages/tools/CourtLinesGuide'));
 const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Contact = lazy(() => import('./pages/Contact'));
+const DataMethod = lazy(() => import('./pages/DataMethod'));
 
 // Lenis Smooth Scroll
 import Lenis from '@studio-freight/lenis';
@@ -128,6 +129,7 @@ function App() {
               <Route path={ROUTES.NEWS} element={<NewsDetail />} />
               <Route path={ROUTES.PRIVACY_POLICY} element={<PrivacyPolicy />} />
               <Route path={ROUTES.CONTACT} element={<Contact />} />
+              <Route path={ROUTES.DATA_METHOD} element={<DataMethod />} />
             </Routes>
           </Suspense>
         </main>

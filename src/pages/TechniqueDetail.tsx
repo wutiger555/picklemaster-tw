@@ -39,8 +39,8 @@ const TechniqueDetail = () => {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: '首頁', item: base + '/' },
-        { '@type': 'ListItem', position: 2, name: '技巧百科', item: base + '/techniques' },
-        { '@type': 'ListItem', position: 3, name: `${technique.name}（${technique.nameEn}）`, item: `${base}/techniques/${technique.slug}` },
+        { '@type': 'ListItem', position: 2, name: '技巧百科', item: base + '/techniques/' },
+        { '@type': 'ListItem', position: 3, name: `${technique.name}（${technique.nameEn}）`, item: `${base}/techniques/${technique.slug}/` },
       ],
     };
     const inject = (obj: object, key: string) => {

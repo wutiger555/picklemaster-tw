@@ -119,7 +119,7 @@ export const saveManageKey = (gameId: string, key: string) => store.set(MANAGE_K
 
 interface TurnstileApi {
   render(el: HTMLElement, opts: Record<string, unknown>): string;
-  execute(id: string): void;
+  execute(target: string | HTMLElement): void;
   reset(id: string): void;
   remove(id: string): void;
 }
@@ -151,13 +151,18 @@ async function turnstileToken(): Promise<string | undefined> {
   document.body.appendChild(host);
   try {
     return await new Promise<string>((resolve, reject) => {
-      const id = ts.render(host, {
+      // widget 本身是 invisible 模式（在 Cloudflare 建立時設定），這裡只負責執行、不顯示任何東西
+      ts.render(host, {
         sitekey: TURNSTILE_SITE_KEY,
-        size: 'invisible',
+        execution: 'execute',
+        appearance: 'interaction-only',
         callback: (t: string) => resolve(t),
-        'error-callback': () => reject(new PlayApiError(0, 'turnstile_failed', '驗證沒有通過，請重新整理頁面再試一次')),
+        'error-callback': () => {
+          reject(new PlayApiError(0, 'turnstile_failed', '驗證沒有通過，請重新整理頁面再試一次'));
+          return true;
+        },
       });
-      ts.execute(id);
+      ts.execute(host);
     });
   } finally {
     host.remove();
@@ -183,6 +188,8 @@ async function request<T>(path: string, opts: { method?: string; body?: unknown;
     throw new PlayApiError(0, 'network', '連不上伺服器，請確認網路後再試一次');
   }
   const data = await res.json().catch(() => null);
+  // 這支手機存的身分伺服器不認得（例如被刪除、或密鑰輪替過）：清掉，下次報名時重新取暱稱
+  if (res.status === 401 && token) forgetIdentity();
   if (!res.ok) {
     const err = data?.error;
     throw new PlayApiError(res.status, err?.code ?? 'unknown', err?.message ?? '發生錯誤，請稍後再試');

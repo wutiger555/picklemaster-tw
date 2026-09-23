@@ -8,7 +8,7 @@
     {
       "binding": "DB",
       "database_name": "picklemaster-play",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "0af64e5e-9617-4dcb-b869-f79c052a37e3",
       "migrations_dir": "migrations"
     }
   ],

@@ -6,9 +6,9 @@ name: Worker (揪團約打 API)
 on:
   push:
     branches: [main]
-    paths: ['worker/**', 'public/data/courts.json', 'src/utils/fixedSessions.ts', 'src/types/**', '.github/workflows/worker.yml']
+    paths: ['worker/**', 'public/data/courts.json', 'src/utils/fixedSessions.ts', 'src/utils/courtTags.ts', 'src/types/**', '.github/workflows/worker.yml']
   pull_request:
-    paths: ['worker/**', 'public/data/courts.json', 'src/utils/fixedSessions.ts', 'src/types/**', '.github/workflows/worker.yml']
+    paths: ['worker/**', 'public/data/courts.json', 'src/utils/fixedSessions.ts', 'src/utils/courtTags.ts', 'src/types/**', '.github/workflows/worker.yml']
   workflow_dispatch:
 
 permissions:

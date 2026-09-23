@@ -302,3 +302,19 @@ export const listInterests = (from: string, to: string) =>
 
 export const setInterest = (courtId: number, date: string, going: boolean) =>
   request<Interest>('/api/interests', { body: { courtId, date, going } });
+
+// ---------- 球場評論（標籤） ----------
+
+export interface CourtReviews {
+  courtId: number;
+  total: number;
+  tags: { tag: string; count: number }[];
+  updatedAt: number | null;
+  mine: string[] | null;
+}
+
+export const getCourtReviews = (courtId: number) => request<CourtReviews>(`/api/courts/${courtId}/reviews`);
+export const putCourtReview = (courtId: number, tags: string[]) =>
+  request<CourtReviews>(`/api/courts/${courtId}/reviews`, { method: 'PUT', body: { tags } });
+export const deleteCourtReview = (courtId: number) =>
+  request<CourtReviews>(`/api/courts/${courtId}/reviews`, { method: 'DELETE' });

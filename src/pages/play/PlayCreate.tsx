@@ -5,6 +5,9 @@ import { Toast, type ToastMsg } from '../../components/play/Sheet';
 import { useCourts } from '../../components/play/useCourts';
 import { FORMAT_LABEL, levelDesc, needsNet, taipeiDayStart, tp, weekdayName } from '../../components/play/playFormat';
 import { createGame, ensurePlayer, getCachedMe, type Format } from '../../utils/playApi';
+import { getFixedSessions } from '../../utils/fixedSessions';
+import { distanceKm } from '../../utils/geo';
+import { useGeolocation } from '../../hooks/useGeolocation';
 import type { Court } from '../../types';
 
 const TIMES: [string, string][] = [['06:30', '晨打'], ['08:00', '早上'], ['10:00', ''], ['14:00', '午後'], ['16:00', ''], ['18:30', '下班'], ['19:00', ''], ['20:00', '夜打']];
@@ -41,6 +44,11 @@ export default function PlayCreate() {
   const courts = useCourts();
   const [step, setStep] = useState(0);
   const [q, setQ] = useState('');
+  const [city, setCity] = useState('全部');
+  const [types, setTypes] = useState<Set<Court['type']>>(new Set());
+  const [freeOnly, setFreeOnly] = useState(false);
+  const [fixedOnly, setFixedOnly] = useState(false);
+  const geo = useGeolocation();
   const [court, setCourt] = useState<Court | null>(null);
   const [day, setDay] = useState(1);
   const [time, setTime] = useState('19:00');
@@ -83,11 +91,41 @@ export default function PlayCreate() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courts]);
 
+  const fixedIds = useMemo(() => new Set(courts ? getFixedSessions(courts).map((f) => f.courtId) : []), [courts]);
+  const cities = useMemo(() => {
+    const n = new Map<string, number>();
+    for (const c of courts ?? []) if (!c.status) n.set(c.location.city, (n.get(c.location.city) ?? 0) + 1);
+    return ['全部', ...[...n.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c)];
+  }, [courts]);
+
+  // 關鍵字、縣市、室內外、免費、固定球敘可以疊加；定位後改依距離排序
   const list = useMemo(() => {
-    const open = (courts ?? []).filter((c) => !c.status);
-    const s = q.trim();
-    return s ? open.filter((c) => `${c.name}${c.location.city}${c.location.district ?? ''}`.includes(s)) : open;
-  }, [courts, q]);
+    const kw = q.trim();
+    const out = (courts ?? []).filter((c) => {
+      if (c.status) return false;
+      if (kw && !`${c.name}${c.location.city}${c.location.district ?? ''}${c.location.address}`.includes(kw)) return false;
+      if (city !== '全部' && c.location.city !== city) return false;
+      if (types.size && !types.has(c.type)) return false;
+      if (freeOnly && c.fee !== 'free') return false;
+      if (fixedOnly && !fixedIds.has(c.id)) return false;
+      return true;
+    });
+    const loc = geo.location;
+    if (!loc) return out.map((c) => ({ c, km: null as number | null }));
+    return out
+      .map((c) => ({ c, km: distanceKm(loc.lat, loc.lng, c.location.lat, c.location.lng) }))
+      .sort((a, b) => (a.km ?? 0) - (b.km ?? 0));
+  }, [courts, q, city, types, freeOnly, fixedOnly, fixedIds, geo.location]);
+
+  const toggleType = (t: Court['type']) =>
+    setTypes((prev) => {
+      const n = new Set(prev);
+      if (n.has(t)) n.delete(t);
+      else n.add(t);
+      return n;
+    });
+  const chip = (on: boolean) =>
+    `flex-none whitespace-nowrap rounded-full border px-3 py-1.5 text-[13px] ${on ? 'border-teal-500 bg-teal-50 font-bold text-teal-700' : 'border-neutral-200 bg-white text-neutral-700'}`;
 
   const startsAt = useMemo(() => {
     const [hh, mm] = time.split(':').map(Number);
@@ -169,21 +207,47 @@ export default function PlayCreate() {
             <label className="mb-3 flex h-12 items-center gap-2 rounded-2xl bg-white px-4 shadow-sm">
               <span aria-hidden className="text-neutral-400">⌕</span>
               <span className="sr-only">搜尋球場</span>
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋球場或行政區，例如：北投、大安" className="h-full flex-1 bg-transparent text-base outline-none" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋球場、行政區或地址，例如：北投、大安" className="h-full flex-1 bg-transparent text-base outline-none" />
             </label>
-            <div className="grid gap-2">
-              {courts === null && <div className="h-[60vh] animate-pulse rounded-2xl bg-white" />}
-              {list.slice(0, 60).map((c) => (
-                <button key={c.id} type="button" onClick={() => pick(c)} aria-pressed={court?.id === c.id}
-                  className={`flex items-center gap-3 rounded-2xl border-2 bg-white p-3 text-left shadow-sm ${court?.id === c.id ? 'border-teal-500' : 'border-transparent'}`}>
-                  <span className={`grid h-11 w-11 flex-none place-items-center rounded-xl text-sm font-black text-white ${c.type === 'indoor' ? 'bg-emerald-500' : 'bg-[#2f6fd6]'}`}>{c.courts_count}面</span>
-                  <span className="min-w-0 flex-1">
-                    <b className="block truncate text-sm text-neutral-900">{c.name}</b>
-                    <small className="text-xs text-neutral-500">{c.location.city}{c.location.district ?? ''} · {TYPE[c.type]} · {c.fee === 'free' ? '免費' : '收費'}{needsNet(c.net_type) ? ' · 要帶網' : ''}</small>
-                  </span>
+            <div className="-mx-4 mb-2 flex gap-1.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none]" role="group" aria-label="篩選球場">
+              <button type="button" aria-pressed={!!geo.location} onClick={() => geo.locate()} className={chip(!!geo.location)}>
+                {geo.isLocating ? '定位中…' : geo.location ? '📍 依距離排序' : '📍 附近'}
+              </button>
+              {(['indoor', 'outdoor', 'covered'] as const).map((t) => (
+                <button key={t} type="button" aria-pressed={types.has(t)} onClick={() => toggleType(t)} className={chip(types.has(t))}>{TYPE[t]}</button>
+              ))}
+              <button type="button" aria-pressed={freeOnly} onClick={() => setFreeOnly(!freeOnly)} className={chip(freeOnly)}>免費</button>
+              <button type="button" aria-pressed={fixedOnly} onClick={() => setFixedOnly(!fixedOnly)} className={chip(fixedOnly)}>有固定球敘</button>
+            </div>
+            <div className="-mx-4 mb-3 flex gap-1.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none]" role="group" aria-label="縣市">
+              {cities.map((c) => (
+                <button key={c} type="button" aria-pressed={city === c} onClick={() => setCity(c)}
+                  className={`flex-none whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] ${city === c ? 'bg-neutral-900 font-bold text-white' : 'bg-white text-neutral-700 shadow-sm'}`}>
+                  {c === '全部' ? '全部縣市' : c}
                 </button>
               ))}
-              {courts && !list.length && <p className="rounded-2xl bg-white p-4 text-sm text-neutral-600">找不到符合「{q}」的球場。</p>}
+            </div>
+            {geo.error && <p className="mb-2 text-xs text-amber-700">{geo.error}，改用上面的縣市篩選也可以。</p>}
+            {courts && <p className="mb-2 text-xs text-neutral-500">符合 {list.length} 座</p>}
+            <div className="grid gap-2">
+              {courts === null && <div className="h-[60vh] animate-pulse rounded-2xl bg-white" />}
+              {list.map(({ c, km }) => (
+                <button key={c.id} type="button" onClick={() => pick(c)} aria-pressed={court?.id === c.id}
+                  className={`flex items-center gap-3 rounded-2xl border-2 bg-white p-3 text-left shadow-sm ${court?.id === c.id ? 'border-teal-500' : 'border-transparent'}`}>
+                  <span className={`grid h-11 w-11 flex-none place-items-center rounded-xl text-sm font-black text-white ${c.type === 'indoor' ? 'bg-emerald-500' : c.type === 'covered' ? 'bg-violet-500' : 'bg-[#2f6fd6]'}`}>{c.courts_count}面</span>
+                  <span className="min-w-0 flex-1">
+                    <b className="block truncate text-sm text-neutral-900">{c.name}</b>
+                    <small className="text-xs text-neutral-500">{c.location.city}{c.location.district ?? ''} · {TYPE[c.type]} · {c.fee === 'free' ? '免費' : '收費'}{needsNet(c.net_type) ? ' · 要帶網' : ''}{fixedIds.has(c.id) ? ' · 有固定球敘' : ''}</small>
+                  </span>
+                  {km !== null && <span className="flex-none font-mono text-xs font-bold text-teal-700">{km < 10 ? km.toFixed(1) : Math.round(km)} km</span>}
+                </button>
+              ))}
+              {courts && !list.length && (
+                <div className="rounded-2xl bg-white p-4 text-sm text-neutral-600">
+                  沒有符合條件的球場。
+                  <button type="button" className="ml-1 font-bold text-teal-700 underline" onClick={() => { setQ(''); setCity('全部'); setTypes(new Set()); setFreeOnly(false); setFixedOnly(false); }}>清除篩選</button>
+                </div>
+              )}
             </div>
           </section>
         )}

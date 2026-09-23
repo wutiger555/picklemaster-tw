@@ -26,3 +26,7 @@ dist-ssr
 # impeccable 設計檢查：config.json 要進版控（裡面是抑制規則與理由），
 # hook.cache.json 是每個 session 的暫存，含本機絕對路徑，不要進。
 .impeccable/hook.cache.json
+
+# Cloudflare Worker（worker/）本機狀態與密鑰
+worker/.wrangler
+worker/.dev.vars

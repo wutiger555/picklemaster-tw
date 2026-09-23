@@ -747,12 +747,20 @@ pageSEO.contact = {
 };
 pageSEO['privacy-policy'] = {
     title: '隱私權政策 | 匹克球台灣',
-    description: '本站蒐集哪些資訊、如何使用、使用了哪些第三方服務，以及你的權利。純靜態網站，不需註冊即可使用全部功能。',
+    description: '本站蒐集哪些資訊、如何使用、存在哪裡、保存多久，以及你的權利。瀏覽不需註冊；揪團約打只存暱稱與報名紀錄，可隨時自行刪除。',
     keywords: '匹克球台灣 隱私權政策,picklemaster taiwan privacy policy',
 };
 // 資料方法頁：把「每座球場都人工查證並標示日期」這件事講清楚。
 // 這是本站相對於自動抓取的名錄站最難被取代的部分，但原本只散落在各球場頁的一行小字。
 // title/description 的實際數字在預渲染時由 courts.json 算出來覆蓋（見 INDEX_PAGES）。
+// 揪團約打。React 端在 src/utils/seo.ts 的 pageSEO.play，兩邊要一致。
+// 動態內容（使用者開的團）都在 /play/?g=… 由前端載入並 noindex；這裡只預渲染本站查證的固定球敘。
+pageSEO['play'] = {
+    title: '匹克球揪團約打｜臨打報名・固定球敘，不用註冊',
+    description: '找匹克球臨打與球友：全台各地球場的固定球敘時段（本站逐筆查證）與線上揪團。挑一團、取個暱稱就能報名，額滿自動候補、有人取消自動遞補，不用註冊也不用下載 App。',
+    keywords: '匹克球揪團,匹克球臨打,匹克球零打,匹克球約打,匹克球球敘,匹克球找球友,pickleball open play taiwan',
+};
+
 pageSEO['data-method'] = {
     title: '球場資料怎麼來、怎麼查證｜Picklemaster 資料方法',
     description: '本站的匹克球場資料來源、逐座人工查證流程、歇業複查方式與錯誤回報管道。每座球場都標示最後查證日期。',
@@ -1373,11 +1381,12 @@ async function generateStaticPages() {
             },
             {
                 route: 'privacy-policy', h1: '隱私權政策', crumb: '隱私權政策',
-                intro: '本站是純靜態網站，不需註冊即可使用全部功能。以下說明我們蒐集哪些資訊、如何使用、使用了哪些第三方服務，以及你的權利。',
+                intro: '瀏覽本站不需要註冊或登入。以下依個人資料保護法第 8 條說明我們蒐集哪些資料、為什麼蒐集、存在哪裡、保存多久，以及你的權利。',
                 items: [
-                    { href: '/privacy-policy', label: '我們蒐集的資訊', sub: '不要求註冊或登入。工具類頁面（計分器、訓練菜單進度）的資料存在你自己的瀏覽器 localStorage，不會傳到本站' },
-                    { href: '/privacy-policy', label: '第三方服務', sub: '地圖圖磚、字型與外部影片由第三方提供，這些服務可能有自己的紀錄行為' },
-                    { href: '/privacy-policy', label: '你的權利', sub: '清除瀏覽器資料即可移除本站在你裝置上留下的所有內容' },
+                    { href: '/privacy-policy', label: '瀏覽網站與工具', sub: '一般瀏覽不需要個人資料。計分器、訓練菜單進度等工具的資料只存在你自己瀏覽器的 localStorage，不會傳到本站' },
+                    { href: '/play', label: '揪團約打', sub: '只在報名或開團時建立資料：暱稱、頭像樣式、自填程度、報名紀錄與一組隨機代號，存於 Cloudflare 雲端（境外），不蒐集姓名、email 或電話。IP 只以雜湊暫存 2 天用於防濫用。報名明細一年後自動刪除，可隨時在「我的球拍」自行刪除' },
+                    { href: '/privacy-policy', label: '第三方服務', sub: 'Google AdSense 可能使用 Cookies 顯示廣告；地圖圖磚、天氣資料、字型與外部影片由第三方提供，這些服務可能有自己的紀錄行為' },
+                    { href: '/privacy-policy', label: '你的權利', sub: '可查詢、更正、要求停止使用或刪除你的資料。揪團資料可在「我的球拍」直接修改或刪除，其他需求請透過聯絡頁面' },
                 ],
                 foot: '<a href="/about" style="color:#0d9488;">關於本站</a>　·　<a href="/contact" style="color:#0d9488;">聯絡我們</a>',
             },
@@ -1678,6 +1687,25 @@ async function generateStaticPages() {
                     foot: '<a href="/courts" style="color:#0d9488;">全台球場地圖</a>　·　<a href="/contact" style="color:#0d9488;">回報資料錯誤</a>　·　<a href="/about" style="color:#0d9488;">關於本站</a>',
                 },
                 {
+                    // 揪團大廳：預渲染本站查證的固定球敘（自有資料）。使用者開的團是前端即時載入、noindex，不進這裡。
+                    // 解析規則與 React 大廳共用 src/utils/fixedSessions.ts。
+                    route: 'play', h1: '匹克球揪團約打', crumb: '揪團約打',
+                    ...(() => {
+                        const sessions = loadTsModule('src/utils/fixedSessions.ts').getFixedSessions(ALL_COURTS);
+                        const cities = new Set(sessions.map(x => x.city)).size;
+                        return {
+                            intro: `挑一團、取個暱稱就能報名，不用註冊也不用下載 App：額滿自動候補，有人取消自動遞補，開打前 3 小時人數不足會自動取消並通知。下面是全台 ${cities} 個縣市、${sessions.length} 個球場公告的固定球敘時段，由本站逐筆查證，直接到場或聯絡主辦即可參加。`,
+                            termsHeading: `每週固定球敘（${sessions.length}）`,
+                            terms: sessions.map(x => ({
+                                t: x.courtName,
+                                meta: `${x.city}${x.district || ''}`,
+                                d: `${x.schedule}${x.organizer ? `（主辦／聯絡：${x.organizer}）` : ''}${x.verified ? `　${x.verified} 查證` : ''}`,
+                            })),
+                        };
+                    })(),
+                    foot: '<a href="/courts" style="color:#0d9488;">全台球場地圖</a>　·　<a href="/tools/rotation" style="color:#0d9488;">輪場排點器</a>　·　<a href="/ratings" style="color:#0d9488;">程度（DUPR）說明</a>',
+                },
+                {
                     route: 'about', h1: '關於 Picklemaster', crumb: '關於我們',
                     intro: '本站是台灣的匹克球資訊平台。球場資料逐座人工查證並標示查證日期，場館開關與費用變動快，發現與現場不符歡迎回報更正。內容涵蓋球場地圖、規則教學、賽事追蹤、裝備選購與術語字典。',
                     itemsHeading: '站內主要單元',
@@ -1728,6 +1756,13 @@ async function generateStaticPages() {
                 crumbs: [{ name: '首頁', href: '/' }, { name: page.crumb }],
                 h1: page.h1, bodyHtml: body,
             }));
+            if (page.route === 'play') {
+                // 分享到 LINE 的每一團都會顯示這張卡（團的細節寫在分享訊息文字裡）
+                content = applyOg(content, 'og/play.png', {
+                    title: '揪團約打', type: 'court', badge: '臨打報名',
+                    subtitle: '取個暱稱就能報名 · 額滿自動候補 · 不用下載 App',
+                });
+            }
             if (page.route === 'aepl') {
                 content = applyOg(content, 'og/aepl.png', {
                     title: 'AEPL 職業聯賽專區', type: 'player', badge: '職業聯賽',
@@ -2317,6 +2352,7 @@ async function generateStaticPages() {
             game: { p: '0.8', f: 'monthly' },
             scorer: { p: '0.75', f: 'monthly' },
             about: { p: '0.7', f: 'monthly' },
+            play: { p: '0.85', f: 'daily' },
         };
 
         // lastmod 只在拿得到「真實異動日」時才寫。

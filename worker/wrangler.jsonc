@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "picklemaster-play",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-22",
+  // database_id 在 Cloudflare 帳號建立 D1 後填入（Phase 0）
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "picklemaster-play",
+      "database_id": "0af64e5e-9617-4dcb-b869-f79c052a37e3",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // API 放在獨立帳號的 workers.dev 網址（只有網頁在背後呼叫，球友看不到）。
+  // 網域 picklemastertw.com 留在原帳號不動；分享連結直接用主站的 /play/?g=…
+  "workers_dev": true,
+  // 每 5 分鐘：自動取消／結束／產生下一場固定團；每天 UTC 19:00（台灣 03:00）：清理
+  "triggers": { "crons": ["*/5 * * * *", "0 19 * * *"] },
+  "vars": {
+    "SITE_ORIGIN": "https://picklemastertw.com",
+    "ALLOWED_ORIGINS": "https://picklemastertw.com,https://www.picklemastertw.com,http://localhost:5173",
+    "TURNSTILE_MODE": "enforce"
+  },
+  // 密鑰（wrangler secret put）：TOKEN_SECRET、TURNSTILE_SECRET
+  "observability": { "enabled": true }
+}

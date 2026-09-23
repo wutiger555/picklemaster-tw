@@ -9,6 +9,7 @@ import SEOHead from '../components/common/SEOHead';
 import OpenNowBadge from '../components/court/OpenNowBadge';
 import CourtStatusNotice, { CourtStatusChip } from '../components/court/CourtStatusNotice';
 import { reportUrl } from '../config/community';
+import CourtReviews from '../components/court/CourtReviews';
 
 const TYPE_LABEL = (t: Court['type']) => (t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外');
 const PRICE_TIERS = [
@@ -533,6 +534,8 @@ const CourtDetail = () => {
                 </section>
               )}
 
+              {!court.status && <CourtReviews courtId={court.id} courtName={court.name} />}
+
               {court.reviews && (
                 <section className="bg-white rounded-2xl border border-neutral-100 p-6">
                   <h2 className="text-xl font-bold text-neutral-900 mb-3">場地說明</h2>
@@ -593,6 +596,14 @@ const CourtDetail = () => {
                   >
                     📍 Google 地圖檢視
                   </a>
+                  {!court.status && (
+                    <Link
+                      to={`/play/?new&court=${court.id}`}
+                      className="block w-full text-center bg-lime-300 hover:bg-lime-400 text-lime-950 font-bold px-4 py-3 rounded-xl transition-colors"
+                    >
+                      🏓 在這裡開一團揪人
+                    </Link>
+                  )}
                   {court.booking_url && (
                     <a
                       href={court.booking_url}

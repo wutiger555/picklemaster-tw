@@ -10,13 +10,14 @@ import * as players from './players';
 import { runDaily, runMaintenance } from './cron';
 import { shareHtml } from './share';
 import { listInterests, setInterest } from './interests';
+import { deleteReview, getReviews, putReview } from './reviews';
 
 const app = new Hono<AppEnv>();
 
 app.use('/api/*', (c, next) =>
   cors({
     origin: (origin) => (c.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim()).includes(origin) ? origin : null),
-    allowMethods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Manage-Key'],
     maxAge: 86400,
   })(c, next),
@@ -174,6 +175,25 @@ app.post('/api/interests', async (c) => {
   const pid = requirePlayer(c);
   await rateLimit(c, 'join', now);
   return c.json(await setInterest(c.env, pid, await readJson(c.req.raw), now));
+});
+
+// ---------- 球場評論（標籤） ----------
+
+app.get('/api/courts/:id/reviews', async (c) => {
+  c.header('Cache-Control', 'public, max-age=60');
+  return c.json(await getReviews(c.env, Number(c.req.param('id')), c.get('playerId'), Date.now()));
+});
+
+app.put('/api/courts/:id/reviews', async (c) => {
+  const now = Date.now();
+  const pid = requirePlayer(c);
+  await rateLimit(c, 'report', now);
+  return c.json(await putReview(c.env, Number(c.req.param('id')), pid, await readJson(c.req.raw), now));
+});
+
+app.delete('/api/courts/:id/reviews', async (c) => {
+  const pid = requirePlayer(c);
+  return c.json(await deleteReview(c.env, Number(c.req.param('id')), pid, Date.now()));
 });
 
 // ---------- 分享頁（給 LINE 預覽用） ----------

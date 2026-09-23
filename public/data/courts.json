@@ -6392,6 +6392,49 @@
       "last_updated": "2026-09-23",
       "reviews": "台中南屯 24 小時自助匹克球館，向上路（精銳汽車音響）與嶺東路97號（順風停車場）兩處入口。租場即附球拍與練習球。官方 Trainge 預約系統目前列 1、2 號場，本站暫記 2 面待查證。",
       "website": "https://trainge.com/gymtrainer/sunset"
+    },
+    {
+      "id": 161,
+      "name": "雪匹克 SNOWPICK Pickleball Club",
+      "location": {
+        "address": "新北市新莊區中華路一段166巷1號",
+        "lat": 25.042,
+        "lng": 121.4534,
+        "city": "新北市",
+        "district": "新莊區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場租 NT$760/小時起（平日 19:00 前）",
+      "price_details": {
+        "offpeak": "平日 06:00–19:00 NT$760/小時",
+        "peak": "平日 19:00 後 NT$1,020/小時",
+        "weekend": "週末與國定假日 NT$1,020/小時"
+      },
+      "courts_count": 1,
+      "ownership": "private",
+      "opening_hours": "每日 06:00–01:00",
+      "contact": "LINE 官方帳號（官網未公開電話）",
+      "contact_details": {
+        "line": "https://lin.ee/yrUdi5y",
+        "instagram": "https://www.instagram.com/snowpick26"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "單面室內匹克球場",
+        "官網線上選時段、線上付款",
+        "每場最多 8 人"
+      ],
+      "booking_url": "https://snowpick.club",
+      "booking_method": "官網線上選時段並付款",
+      "website": "https://snowpick.club",
+      "navigation_tips": "館方沒有附設停車場，官網列有附近的收費停車場。",
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-23",
+      "reviews": "新莊中華路一段的單面室內匹克球館，2026 年 9 月新開。官網線上訂場付款，每場最多 8 人。Google 地圖標示的打烊時間（22:00）與官網（01:00）不同，本站以官網為準。"
     }
   ]
 }

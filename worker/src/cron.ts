@@ -72,6 +72,8 @@ export async function runDaily(env: Env, now: number) {
   const cutoff = now - RETENTION;
   await env.DB.batch([
     env.DB.prepare(`DELETE FROM rate_limits WHERE window_start < ?1`).bind(now - 2 * DAY),
+    // 「我會去」只對當次球敘有意義，過了兩天就刪
+    env.DB.prepare(`DELETE FROM session_interests WHERE date < ?1`).bind(new Date(now + 8 * 3600_000 - 2 * DAY).toISOString().slice(0, 10)),
     env.DB.prepare(`DELETE FROM game_players WHERE game_id IN (SELECT id FROM games WHERE starts_at < ?1)`).bind(cutoff),
     env.DB.prepare(`DELETE FROM reports WHERE game_id IN (SELECT id FROM games WHERE starts_at < ?1)`).bind(cutoff),
     env.DB.prepare(`DELETE FROM games WHERE starts_at < ?1`).bind(cutoff),

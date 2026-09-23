@@ -9,6 +9,7 @@ import * as games from './games';
 import * as players from './players';
 import { runDaily, runMaintenance } from './cron';
 import { shareHtml } from './share';
+import { listInterests, setInterest } from './interests';
 
 const app = new Hono<AppEnv>();
 
@@ -159,6 +160,20 @@ app.post('/api/games/:id/report', async (c) => {
     c.env.DB.prepare(`UPDATE games SET hidden = 1, updated_at = ?2 WHERE id = ?1 AND (SELECT COUNT(*) FROM reports WHERE game_id = ?1) >= 3`).bind(g.id, now),
   ]);
   return c.json({ ok: true });
+});
+
+// ---------- 固定球敘的「我會去」 ----------
+
+app.get('/api/interests', async (c) => {
+  const list = await listInterests(c.env, c.req.query('from') ?? '', c.req.query('to') ?? '', c.get('playerId'));
+  return c.json({ interests: list });
+});
+
+app.post('/api/interests', async (c) => {
+  const now = Date.now();
+  const pid = requirePlayer(c);
+  await rateLimit(c, 'join', now);
+  return c.json(await setInterest(c.env, pid, await readJson(c.req.raw), now));
 });
 
 // ---------- 分享頁（給 LINE 預覽用） ----------

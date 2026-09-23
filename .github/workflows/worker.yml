@@ -1,13 +1,14 @@
 name: Worker (揪團約打 API)
 
 # worker/ 或球場資料變動時：先跑測試，main 上才部署。
-# 球場資料會打包進 Worker（只能在站內球場開團），所以 courts.json 變動也要重新部署。
+# 球場資料與固定球敘的解析規則會打包進 Worker（只能在站內球場開團、驗證「我會去」），
+# 所以 courts.json 與 src/utils/fixedSessions.ts 變動也要重新部署。
 on:
   push:
     branches: [main]
-    paths: ['worker/**', 'public/data/courts.json', '.github/workflows/worker.yml']
+    paths: ['worker/**', 'public/data/courts.json', 'src/utils/fixedSessions.ts', 'src/types/**', '.github/workflows/worker.yml']
   pull_request:
-    paths: ['worker/**', 'public/data/courts.json', '.github/workflows/worker.yml']
+    paths: ['worker/**', 'public/data/courts.json', 'src/utils/fixedSessions.ts', 'src/types/**', '.github/workflows/worker.yml']
   workflow_dispatch:
 
 permissions:

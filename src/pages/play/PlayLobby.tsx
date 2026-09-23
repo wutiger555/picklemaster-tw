@@ -1,13 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import GameCard from '../../components/play/GameCard';
 import PaddleAvatar from '../../components/play/PaddleAvatar';
 import { useCourts } from '../../components/play/useCourts';
-import { dayOffset, taipeiDayStart, tp, weekdayName } from '../../components/play/playFormat';
-import { getFixedSessions } from '../../utils/fixedSessions';
-import { courtSlug } from '../../utils/slugify';
-import { getCachedMe, listGames, type GameSummary } from '../../utils/playApi';
+import SessionCard from '../../components/play/SessionCard';
+import ProfileSheet, { type Profile } from '../../components/play/ProfileSheet';
+import { Toast, type ToastMsg } from '../../components/play/Sheet';
+import { dayLabel, dayOffset, taipeiDayStart, tp, weekdayName } from '../../components/play/playFormat';
+import { getFixedSessions, taipeiDate, upcomingOccurrences, type Occurrence } from '../../utils/fixedSessions';
+import { ensurePlayer, getCachedMe, listGames, listInterests, setInterest, type GameSummary } from '../../utils/playApi';
+
+const ikey = (courtId: number, date: string) => `${courtId}|${date}`;
 
 type Filter = 'beginner' | 'indoor' | 'free' | 'almost';
 const FILTERS: { key: Filter; label: string }[] = [
@@ -25,6 +29,25 @@ export default function PlayLobby() {
   const [day, setDay] = useState<number | 'all'>('all');
   const [filters, setFilters] = useState<Set<Filter>>(new Set());
   const [city, setCity] = useState<string>('全部');
+  const [now, setNow] = useState(Date.now());
+  const [interests, setInterests] = useState<Map<string, { count: number; mine: boolean }>>(new Map());
+  const [pending, setPending] = useState<Occurrence | null>(null);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [sheetError, setSheetError] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastMsg | null>(null);
+  const [showAllDays, setShowAllDays] = useState(false);
+
+  // 「進行中／幾點開始」每分鐘更新一次
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    listInterests(taipeiDate(Date.now()), taipeiDate(Date.now() + 6 * 86400_000))
+      .then((list) => setInterests(new Map(list.map((i) => [ikey(i.courtId, i.date), { count: i.count, mine: i.mine }]))))
+      .catch(() => undefined); // 讀不到就當作 0，不影響看球敘
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -66,8 +89,40 @@ export default function PlayLobby() {
     return true;
   });
 
-  const selectedWd = day === 'all' ? null : days[day].wd;
-  const fixedShown = fixed.filter((f) => (city === '全部' || f.city === city) && (selectedWd === null || f.weekdays.includes(selectedWd)));
+  const occurrences = useMemo(() => upcomingOccurrences(fixed, now, 7), [fixed, now]);
+  const occShown = occurrences.filter((o) => (city === '全部' || o.session.city === city) && (day === 'all' || dayOffset(o.startsAt, now) === day));
+  const byDay = useMemo(() => {
+    const m = new Map<number, Occurrence[]>();
+    for (const o of occShown) {
+      const d = dayOffset(o.startsAt, now);
+      m.set(d, [...(m.get(d) ?? []), o]);
+    }
+    return [...m.entries()].sort((a, b) => a[0] - b[0]);
+  }, [occShown, now]);
+  const todayCount = occurrences.filter((o) => dayOffset(o.startsAt, now) === 0).length;
+  const weekGoing = [...interests.values()].reduce((n, i) => n + i.count, 0);
+
+  const toggleInterest = useCallback(async (o: Occurrence, profile?: Profile) => {
+    const k = ikey(o.session.courtId, o.date);
+    const cur = interests.get(k) ?? { count: 0, mine: false };
+    setBusyKey(k);
+    setSheetError(null);
+    try {
+      if (profile) await ensurePlayer(profile);
+      const r = await setInterest(o.session.courtId, o.date, !cur.mine);
+      setInterests((prev) => new Map(prev).set(k, { count: r.count, mine: r.mine }));
+      setPending(null);
+      if (r.mine) setToast({ title: '已標記「我會去」', sub: `${dayLabel(o.startsAt)} ${o.session.courtName}，到場直接找主辦就好` });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '沒有成功';
+      if (profile) setSheetError(msg);
+      else setToast({ title: '沒有成功', sub: msg });
+    } finally {
+      setBusyKey(null);
+    }
+  }, [interests]);
+
+  const onInterest = (o: Occurrence) => (getCachedMe() ? toggleInterest(o) : setPending(o));
 
   const toggle = (k: Filter) =>
     setFilters((prev) => {
@@ -101,6 +156,24 @@ export default function PlayLobby() {
                 <PaddleAvatar name={me?.nickname ?? '球友'} seed={me?.avatarSeed ?? 0} size={22} />
                 {me ? `${me.nickname} 的球拍` : '我的球拍'}
               </Link>
+            </div>
+            {/* 即時數字：全部是真的（球敘來自查證資料、團與人數來自資料庫） */}
+            <div className="mt-5 flex flex-wrap gap-2 text-[13px]" aria-live="polite">
+              {courts && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500" />今天 <b className="font-mono text-neutral-900">{todayCount}</b> 場球敘
+                </span>
+              )}
+              {games && games.length > 0 && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-[#2f6fd6]" /><b className="font-mono text-neutral-900">{games.length}</b> 個線上可報名的團
+                </span>
+              )}
+              {weekGoing > 0 && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-lime-400" />這週 <b className="font-mono text-neutral-900">{weekGoing}</b> 人次說會去
+                </span>
+              )}
             </div>
           </motion.div>
         </div>
@@ -138,63 +211,105 @@ export default function PlayLobby() {
           </select>
         </div>
 
-        {/* 可報名的團 */}
-        <section className="mt-7" aria-labelledby="play-open">
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 id="play-open" className="text-lg font-black text-neutral-900">可以報名的團</h2>
-            <span className="text-xs text-neutral-500">{games ? `${shown.length} 團` : ''}</span>
-          </div>
-          {games === null ? (
-            <div className="grid min-h-[70vh] content-start gap-3 md:grid-cols-2" aria-busy="true">
-              {[0, 1, 2, 3].map((i) => <div key={i} className="h-44 animate-pulse rounded-2xl bg-white shadow-sm" />)}
-            </div>
-          ) : error ? (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-              <b className="block">暫時讀不到揪團資料</b>{error}。下面的固定球敘不受影響，可以直接聯絡主辦。
-            </div>
-          ) : shown.length ? (
-            <div className="grid gap-3 md:grid-cols-2">{shown.map((g) => <GameCard key={g.id} g={g} />)}</div>
-          ) : (
-            <EmptyState />
-          )}
-        </section>
-
-        {/* 固定球敘（本站查證的自有資料） */}
-        <section className="mt-10" aria-labelledby="play-fixed">
-          <div className="mb-1 flex items-baseline justify-between">
-            <h2 id="play-fixed" className="text-lg font-black text-neutral-900">
-              {selectedWd === null ? '每週固定球敘' : `${weekdayName(selectedWd)}的固定球敘`}
-            </h2>
-            <span className="text-xs text-neutral-500">{fixedShown.length} 個</span>
-          </div>
-          <p className="mb-3 text-[13px] text-neutral-500">各地球場公告的球敘時段，由本站逐筆查證。直接到場或聯絡主辦即可參加；你是主辦的話，可以把它開成站上的團，讓大家線上報名。</p>
-          <div className="grid gap-3 md:grid-cols-2">
-            {fixedShown.map((f) => {
-              const c = courtById.get(f.courtId);
-              return (
-                <article key={f.courtId} className="rounded-2xl border-[1.5px] border-dashed border-neutral-200 bg-white/80 p-4">
-                  <span className="rounded-md bg-neutral-900 px-2 py-0.5 text-[11px] font-black text-white">固定球敘</span>
-                  <h3 className="mt-2 text-[15px] font-black text-neutral-900">
-                    <Link to={`/courts/${courtSlug(f.courtId)}/`} className="hover:text-teal-700">{f.courtName}</Link>
-                  </h3>
-                  <p className="text-[13px] text-neutral-600">{f.schedule}</p>
-                  {f.organizer && <p className="mt-0.5 text-[12px] text-neutral-500">主辦／聯絡：{f.organizer}</p>}
-                  <div className="mt-2.5 flex items-center justify-between gap-2">
-                    <span className="text-[11px] text-neutral-400">{f.city}{f.district ? ` ${f.district}` : ''}{f.verified ? ` · ${f.verified} 查證` : ''}</span>
-                    {c && <Link to={`/play/?new&court=${f.courtId}`} className="whitespace-nowrap text-[12px] font-bold text-teal-700">我是主辦，開成線上團 →</Link>}
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
+        {(() => {
+          const gamesSection = (
+            <section key="games" className="mt-7" aria-labelledby="play-open">
+              <div className="mb-3 flex items-baseline justify-between">
+                <h2 id="play-open" className="text-lg font-black text-neutral-900">線上可報名的團</h2>
+                <span className="text-xs text-neutral-500">{games ? `${shown.length} 團` : ''}</span>
+              </div>
+              {games === null ? (
+                <div className="grid min-h-[40vh] content-start gap-3 md:grid-cols-2" aria-busy="true">
+                  {[0, 1].map((i) => <div key={i} className="h-44 animate-pulse rounded-2xl bg-white shadow-sm" />)}
+                </div>
+              ) : error ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                  <b className="block">暫時讀不到揪團資料</b>{error}。固定球敘不受影響，可以直接到場或聯絡主辦。
+                </div>
+              ) : shown.length ? (
+                <div className="grid gap-3 md:grid-cols-2">{shown.map((g) => <GameCard key={g.id} g={g} />)}</div>
+              ) : (
+                <EmptyState compact={games.length === 0} />
+              )}
+            </section>
+          );
+          const sessionsSection = (
+            <section key="sessions" className="mt-7" aria-labelledby="play-fixed">
+              <div className="mb-1 flex items-baseline justify-between">
+                <h2 id="play-fixed" className="text-lg font-black text-neutral-900">
+                  {day === 'all' ? '近 7 天的固定球敘' : `${days[day].label}的固定球敘`}
+                </h2>
+                <span className="text-xs text-neutral-500">{courts ? `${occShown.length} 場` : ''}</span>
+              </div>
+              <p className="mb-3 text-[13px] text-neutral-500">各地球場公告的固定球敘，由本站逐筆查證。直接到場或聯絡主辦就能參加；按「我會去」讓其他球友知道有人要去。</p>
+              {courts === null ? (
+                <div className="grid min-h-[60vh] content-start gap-3 md:grid-cols-2" aria-busy="true">
+                  {[0, 1, 2, 3].map((i) => <div key={i} className="h-40 animate-pulse rounded-2xl bg-white shadow-sm" />)}
+                </div>
+              ) : !occShown.length ? (
+                <p className="rounded-2xl bg-white p-4 text-sm text-neutral-600 shadow-sm">這個條件下沒有固定球敘，換一天或換個縣市看看。</p>
+              ) : (
+                <div className="space-y-5">
+                  {(showAllDays || day !== 'all' ? byDay : byDay.slice(0, 2)).map(([d, list]) => (
+                    <div key={d}>
+                      {day === 'all' && (
+                        <h3 className="mb-2 text-sm font-black text-neutral-700">
+                          {d === 0 ? '今天' : d === 1 ? '明天' : weekdayName(tp(taipeiDayStart(d, now)).wd)}
+                          <span className="ml-1.5 font-mono text-xs font-medium text-neutral-400">{tp(taipeiDayStart(d, now)).m}/{tp(taipeiDayStart(d, now)).d} · {list.length} 場</span>
+                        </h3>
+                      )}
+                      <div className="grid gap-3 md:grid-cols-2">
+                        {list.map((o) => {
+                          const k = ikey(o.session.courtId, o.date);
+                          const i = interests.get(k);
+                          return (
+                            <SessionCard key={k} o={o} now={now} count={i?.count ?? 0} mine={!!i?.mine} busy={busyKey === k}
+                              onToggle={() => onInterest(o)} canHost={courtById.has(o.session.courtId)} />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  {day === 'all' && !showAllDays && byDay.length > 2 && (
+                    <button type="button" onClick={() => setShowAllDays(true)} className="h-11 w-full rounded-2xl border border-neutral-200 bg-white font-bold text-neutral-700">
+                      顯示之後 {byDay.length - 2} 天的球敘（{byDay.slice(2).reduce((n, [, l]) => n + l.length, 0)} 場）
+                    </button>
+                  )}
+                </div>
+              )}
+            </section>
+          );
+          // 還沒有線上的團時，先讓真的在發生的球敘出現在最上面
+          return games && games.length === 0 ? [sessionsSection, gamesSection] : [gamesSection, sessionsSection];
+        })()}
       </div>
+
+      <ProfileSheet
+        open={!!pending}
+        onClose={() => setPending(null)}
+        title="標記「我會去」"
+        confirmLabel="我會去"
+        note="只會顯示「幾位球友說會去」，不會列出你的暱稱。"
+        busy={!!busyKey}
+        error={sheetError}
+        onConfirm={(p) => pending && toggleInterest(pending, p)}
+      />
+      <Toast msg={toast} onDone={() => setToast(null)} />
     </div>
   );
 }
 
-function EmptyState() {
+function EmptyState({ compact }: { compact?: boolean }) {
   const reduce = useReducedMotion();
+  if (compact) {
+    return (
+      <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
+        <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-lime-300 text-lg" aria-hidden>🏓</span>
+        <p className="flex-1 text-sm text-neutral-600"><b className="block text-neutral-900">還沒有線上可報名的團</b>你平常就在揪球的話，把它開在這裡，大家就能直接報名。</p>
+        <Link to="/play/?new" className="flex-none rounded-xl bg-neutral-900 px-3 py-2 text-sm font-bold text-white">開一團</Link>
+      </div>
+    );
+  }
   return (
     <div className="rounded-2xl bg-white px-6 py-8 text-center shadow-sm">
       <svg viewBox="0 0 100 100" className="mx-auto mb-2 h-20 w-20" aria-hidden>

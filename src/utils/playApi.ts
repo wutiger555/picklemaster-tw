@@ -287,3 +287,18 @@ export const leaveGame = (id: string) =>
 
 export const reportGame = (id: string, reason: string) =>
   request<{ ok: true }>(`/api/games/${encodeURIComponent(id)}/report`, { body: { reason } });
+
+// ---------- 固定球敘的「我會去」 ----------
+
+export interface Interest {
+  courtId: number;
+  date: string;
+  count: number;
+  mine: boolean;
+}
+
+export const listInterests = (from: string, to: string) =>
+  request<{ interests: Interest[] }>(`/api/interests?from=${from}&to=${to}`).then((r) => r.interests);
+
+export const setInterest = (courtId: number, date: string, going: boolean) =>
+  request<Interest>('/api/interests', { body: { courtId, date, going } });

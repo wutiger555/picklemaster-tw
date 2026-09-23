@@ -124,6 +124,7 @@ export async function deleteMe(env: Env, id: string, now: number) {
         WHERE player_id = ?1 AND status IN ('confirmed', 'waitlist')
           AND game_id IN (SELECT id FROM games WHERE status = 'open')`,
     ).bind(id, now),
+    env.DB.prepare(`DELETE FROM session_interests WHERE player_id = ?1`).bind(id),
     env.DB.prepare(`UPDATE players SET nickname = '已刪除的球友', avatar_seed = 0, level = NULL, dupr = NULL, code_hash = NULL, deleted_at = ?2 WHERE id = ?1`).bind(id, now),
   ]);
   for (const r of results) await promoteAll(env, r.game_id, now);

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import type { StyleSpecification } from 'maplibre-gl';
 import type { Court } from '../../types';
 import type { UserLocation } from '../../hooks/useGeolocation';
 import { distanceKm, formatDistance } from '../../utils/geo';
@@ -17,6 +18,56 @@ const DefaultIcon = L.icon({
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
+
+// 底圖：OpenFreeMap 向量圖磚（免費、免金鑰、無用量上限，OSM 資料）。
+// 原本的 CARTO 點陣圖磚自 2026-08 起對無金鑰請求回傳模糊＋浮水印圖磚，且點陣服務將退役。
+const BASEMAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
+const BASEMAP_ATTRIBUTION =
+  '<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> &copy; <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+
+const hasWebGL = () => {
+  try {
+    const c = document.createElement('canvas');
+    return !!(c.getContext('webgl2') || c.getContext('webgl'));
+  } catch {
+    return false;
+  }
+};
+
+// 樣式預設標籤為「英文＋在地名」兩行；台灣的 name 即中文，只顯示在地名以減少擁擠
+const localizeLabels = (style: StyleSpecification): StyleSpecification => ({
+  ...style,
+  layers: style.layers.map(layer => {
+    const layout = 'layout' in layer ? layer.layout : undefined;
+    const field = layout && 'text-field' in layout ? layout['text-field'] : undefined;
+    if (!field || !JSON.stringify(field).includes('name:latin')) return layer;
+    return { ...layer, layout: { ...layout, 'text-field': ['coalesce', ['get', 'name'], ['get', 'name:latin']] } } as typeof layer;
+  }),
+});
+
+// isAlive：底圖是非同步載入，地圖若已在載完前被移除（離開頁面、StrictMode 重掛載）就不再加圖層
+const addBasemap = async (map: L.Map, isAlive: () => boolean) => {
+  try {
+    if (!hasWebGL()) throw new Error('no webgl');
+    // MapLibre 約 285 KB（gzip），動態載入讓標記與列表先出來，底圖隨後補上
+    const [res, { maplibreGL }] = await Promise.all([
+      fetch(BASEMAP_STYLE),
+      import('@maplibre/maplibre-gl-leaflet'),
+      import('maplibre-gl/dist/maplibre-gl.css'),
+    ]);
+    if (!res.ok) throw new Error(`style ${res.status}`);
+    const style = localizeLabels(await res.json());
+    if (!isAlive()) return;
+    maplibreGL({ style, attributionControl: { customAttribution: BASEMAP_ATTRIBUTION } }).addTo(map);
+  } catch {
+    // 不支援 WebGL 或樣式載入失敗時退回 OSM 標準點陣圖磚
+    if (!isAlive()) return;
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(map);
+  }
+};
 
 export interface MapViewBounds {
   north: number;
@@ -143,10 +194,8 @@ const CourtMap = ({
       zoomControl: true,
     }).setView([23.6, 121.0], 8);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      maxZoom: 19,
-    }).addTo(map);
+    let alive = true;
+    void addBasemap(map, () => alive);
 
     map.on('zoomend', () => setZoom(map.getZoom()));
 
@@ -162,6 +211,7 @@ const CourtMap = ({
     ro.observe(mapContainerRef.current);
 
     return () => {
+      alive = false;
       ro.disconnect();
       if (mapRef.current) {
         mapRef.current.remove();

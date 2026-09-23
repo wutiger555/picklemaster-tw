@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon-v2.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-v2-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-v2-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- iOS PWA Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Picklemaster TW" />
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#10b981" />
+
+  <!-- SEO Meta Tags (2026 Revision) -->
+  <meta name="description" content="找匹克球臨打與球友：全台各地球場的固定球敘時段（本站逐筆查證）與線上揪團。挑一團、取個暱稱就能報名，額滿自動候補、有人取消自動遞補，不用註冊也不用下載 App。" />
+  <meta name="keywords" content="匹克球揪團,匹克球臨打,匹克球零打,匹克球約打,匹克球球敘,匹克球找球友,pickleball open play taiwan" />
+  <meta name="author" content="Picklemaster Taiwan" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="geo.region" content="TW" />
+  <meta name="geo.placename" content="Taiwan" />
+  <meta name="geo.position" content="23.5;121.0" />
+  <meta name="ICBM" content="23.5, 121.0" />
+  <meta name="language" content="zh-TW" />
+  <meta name="revisit-after" content="3 days" />
+  <meta name="rating" content="general" />
+  <meta name="distribution" content="global" />
+  <!-- AI Crawler friendly hints -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://picklemastertw.com/play/" />
+  <meta property="og:title" content="匹克球揪團約打｜臨打報名・固定球敘，不用註冊" />
+  <meta property="og:description" content="找匹克球臨打與球友：全台各地球場的固定球敘時段（本站逐筆查證）與線上揪團。挑一團、取個暱稱就能報名，額滿自動候補、有人取消自動遞補，不用註冊也不用下載 App。" />
+  <meta property="og:image" content="https://picklemastertw.com/og/play.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="揪團約打" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:site_name" content="Picklemaster Taiwan" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://picklemastertw.com/play/" />
+  <meta name="twitter:title" content="匹克球揪團約打｜臨打報名・固定球敘，不用註冊" />
+  <meta name="twitter:description" content="找匹克球臨打與球友：全台各地球場的固定球敘時段（本站逐筆查證）與線上揪團。挑一團、取個暱稱就能報名，額滿自動候補、有人取消自動遞補，不用註冊也不用下載 App。" />
+  <meta name="twitter:image" content="https://picklemastertw.com/og/play.png" />
+  <meta name="twitter:image:alt" content="Picklemaster Taiwan" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://picklemastertw.com/play/" />
+
+  <!-- Preconnect to critical external origins (saves ~100-300ms on first paint) -->
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
+  <link rel="dns-prefetch" href="https://api.open-meteo.com">
+  <link rel="dns-prefetch" href="https://www.youtube.com">
+
+  <!-- JSON-LD Structured Data (2026 AI-Search Optimized) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://picklemastertw.com/#website",
+          "url": "https://picklemastertw.com/",
+          "name": "匹克大師台灣 | Picklemaster Taiwan",
+          "alternateName": ["Picklemaster TW", "匹克球台灣", "台灣匹克球"],
+          "description": "台灣最完整的匹克球權威資訊平台，提供 156 座球場地圖、2026 賽事總覽、DUPR 評級、3D 互動規則、術語字典與裝備指南",
+          "inLanguage": "zh-TW",
+          "publisher": { "@id": "https://picklemastertw.com/#organization" },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://picklemastertw.com/?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://picklemastertw.com/#organization",
+          "name": "Picklemaster Taiwan",
+          "alternateName": "匹克大師台灣",
+          "url": "https://picklemastertw.com/",
+          "foundingDate": "2024-06",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://picklemastertw.com/android-chrome-v2-512x512.png",
+            "width": 512,
+            "height": 512
+          },
+          "image": "https://picklemastertw.com/og-image.png",
+          "description": "台灣匹克球權威資訊平台，涵蓋球場、賽事、教學、裝備、評級與術語。",
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "url": "https://picklemastertw.com/contact/",
+            "availableLanguage": ["zh-TW", "en"]
+          },
+          "areaServed": {
+            "@type": "Country",
+            "name": "Taiwan"
+          },
+          "knowsAbout": [
+            "Pickleball", "匹克球", "匹克球規則", "匹克球場地", "DUPR 評級",
+            "匹克球裝備", "匹克球技巧", "匹克球戰術", "CTPF", "Taiwan Pickleball"
+          ],
+          "sameAs": [
+            "https://github.com/wutiger555/picklemaster-tw"
+          ]
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "@id": "https://picklemastertw.com/#navigation",
+          "name": ["球場地圖", "2026 賽事", "新手入門", "規則教學", "術語字典", "DUPR 評級", "裝備指南", "學習路徑"],
+          "url": [
+            "https://picklemastertw.com/courts/",
+            "https://picklemastertw.com/tournaments/",
+            "https://picklemastertw.com/newcomer-guide/",
+            "https://picklemastertw.com/rules/",
+            "https://picklemastertw.com/glossary/",
+            "https://picklemastertw.com/ratings/",
+            "https://picklemastertw.com/equipment/",
+            "https://picklemastertw.com/learning-paths/"
+          ]
+        },
+        {
+          "@type": "SportsOrganization",
+          "@id": "https://picklemastertw.com/#sports-info",
+          "name": "Taiwan Pickleball Information Hub",
+          "sport": "Pickleball",
+          "areaServed": { "@type": "Country", "name": "Taiwan" },
+          "parentOrganization": {
+            "@type": "SportsOrganization",
+            "name": "中華民國匹克球協會",
+            "alternateName": "Chinese Taipei Pickleball Federation (CTPF)",
+            "url": "https://www.ctpf.org.tw/"
+          }
+        },
+        {
+          "@type": "AboutPage",
+          "@id": "https://picklemastertw.com/#sport",
+          "about": {
+            "@type": "Sport",
+            "name": "匹克球 (Pickleball)",
+            "description": "結合網球、羽毛球與桌球特色的球拍運動，1965 年發源於美國華盛頓州。場地 20×44 英尺，使用實心球拍與有孔塑膠球。適合各年齡層，易學易玩。"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Speakable Schema for AI voice readers -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["h1", "h2", ".speakable"]
+      }
+    }
+    </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+  </noscript>
+
+  <title>匹克球揪團約打｜臨打報名・固定球敘，不用註冊</title>
+  <script type="module" crossorigin src="/assets/index-Dufwaaa0.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-DxGOteWr.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-Dd_m_y-1.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-DYi0JzXy.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-SQzcZn-a.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-B_88zE-H.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-lenis-BbENNM21.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-D0gKBCMB.css">
+</head>
+
+<body>
+  <!-- GitHub Pages SPA 路由恢復腳本 -->
+  <script>
+    // 檢查是否有從 404.html 重定向過來的路徑
+    (function () {
+      var redirect = sessionStorage.getItem('redirect');
+      if (redirect) {
+        sessionStorage.removeItem('redirect');
+        history.replaceState(null, '', redirect);
+      }
+    })();
+  </script>
+  <div id="root">
+      <main style="max-width:880px;margin:0 auto;padding:24px 16px;font-family:system-ui,-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;color:#1f2937;line-height:1.7;">
+        <nav aria-label="breadcrumb" style="font-size:13px;color:#6b7280;margin-bottom:16px;"><a href="/" style="color:#0d9488;text-decoration:none;">首頁</a> › <span>揪團約打</span></nav>
+        <h1 style="font-size:30px;font-weight:800;margin:0 0 12px;">匹克球揪團約打</h1>
+        
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">挑一團、取個暱稱就能報名，不用註冊也不用下載 App：額滿自動候補，有人取消自動遞補，開打前 3 小時人數不足會自動取消並通知。下面是全台 8 個縣市、43 個球場公告的固定球敘時段，由本站逐筆查證，直接到場或聯絡主辦即可參加。</p>
+        
+        
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">每週固定球敘（43）</h2>
+          <dl style="margin:0;"><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北市信義運動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市信義區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週五 13:00~15:00（主辦／聯絡：臺北市匹克球協會）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北市北投運動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市北投區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週二、四 12:00~16:00／每週六 16:00~18:00，NT$200~300（主辦／聯絡：臺北市匹克球協會）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北市士林至善公園<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市士林區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週二、四 18:30~22:00／每週六、日 14:00~18:00（主辦／聯絡：臺北市匹克球協會）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台中市國際網球中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台中市北區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週三、五 19:00~21:00，每次 130 元（主辦／聯絡：LINE 群組：國際網球中心匹克球）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北市萬華運動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市萬華區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週三 16:00~18:00，NT$150~200（主辦／聯絡：臺北市匹克球協會）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">捷運北投會館<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市北投區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週一、五 13:00~17:00，NT$200~300（主辦／聯絡：臺北市匹克球協會）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺中市潭子國民暨兒童運動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台中市潭子區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週一 09:00~11:00（主辦／聯絡：LINE 群組：北區運動中心匹克球）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">高雄三民公園<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 高雄市三民區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">週三、週日 18:00~21:00（主辦／聯絡：魏法徵 0920-429-026）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市新莊國民運動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市新莊區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期二、四 13:00~16:00，NT$200~250（主辦／聯絡：新北市匹克球 LINE @579urgnx）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台南市哈赫拿爾匹克球場<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台南市南區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">平日 07:00~09:00、17:00~22:00／假日 07:00~11:00、17:00~22:00（主辦／聯絡：陳俊欽 0937-562-012）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">彰化縣中彰運動公園<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 彰化縣彰化市</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期一 19:00~22:00，免費（主辦／聯絡：蔡桂郎 0952-519-037）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">南投縣埔里鎮立綜合球場<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 南投縣埔里鎮</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">週一~週五 15:00~20:00／週六日 09:00~12:00，免費（主辦／聯絡：張永昌 0983-711-749）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">屏東歸來匹克球場<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 屏東縣屏東市</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">週一~週五 18:30 起／週六日 16:30 起（主辦／聯絡：阿誠 0931-737-731）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市泰山運動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市泰山區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期五 13:00~16:00，NT$200~300（主辦／聯絡：新北市匹克球 LINE @579urgnx）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市五股公民會館<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市五股區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期三 15:00~20:00、17:30~19:50，NT$120~170（主辦／聯絡：新北市匹克球 LINE @579urgnx）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北市景美河濱球場<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市文山區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週六、日 07:00~11:30（主辦／聯絡：臺北市匹克球協會）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北市南湖國小<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市內湖區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期六 18:00~21:00／星期日 18:00~20:00、20:00~22:00，NT$250~300（主辦／聯絡：新北市匹克球 LINE @579urgnx）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北市幸安國小<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市大安區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期六 16:00~18:00、18:00~20:00／星期日 10:00~12:00，NT$250~350（主辦／聯絡：新北市匹克球 LINE @579urgnx）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市板橋新埔國小<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市板橋區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期三、五 18:00~20:00，NT$250~350（主辦／聯絡：新北市匹克球 LINE @579urgnx）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北市士林天母公園<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市士林區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週一~五 08:30~12:00（主辦／聯絡：臺北市匹克球協會）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">永春高中匹克球場<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市信義區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期四 20:00~22:00／星期五 18:30~20:30、19:30~21:30，依人數收場租（主辦／聯絡：臺北市匹克球協會）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">彰化秀水公園匹克球場<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 彰化縣秀水鄉</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期二、四 19:00~21:30，免費（主辦／聯絡：蔡桂郎 0952-519-037）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">三峽國民運動中心匹克球場<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市三峽區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期一、二、五 18:00~22:00，暢打 4 小時 400 元/人（主辦／聯絡：三峽國民運動中心 02-2674-9088）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市北投區桃源國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市北投區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週六、日 09:00~12:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台北科技大學中正館<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市大安區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週六、日 18:00~21:30　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市蓬萊國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市大同區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期日 10:00~12:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市立忠孝國民中學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市大同區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期日 15:00~17:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市立建成國民中學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市大同區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期四 20:00~22:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市立明德國民中學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市北投區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期日 16:00~18:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市大安區古亭國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市大安區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期六、日 17:00~20:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市大安區新生國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市大安區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期一、三 18:50~20:50　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市中山區長安國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市中山區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期日 14:00~16:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">臺北市大安區銘傳國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台北市大安區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期四 17:50~19:50／星期六 09:00~11:00（早場）、11:00~13:00（午場）　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市三重國民運動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市三重區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期一、四 13:00~16:00／星期二 20:00~22:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市泰山體育館<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市泰山區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期六 17:00~20:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市立碧華國民中學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市三重區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期六 13:00~16:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市立林口國民中學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市林口區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期日 18:00~20:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市中和區復興國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市中和區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期二 18:40~20:40　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新北市中和區積穗國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 新北市中和區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">星期五 18:30~21:30　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台中市賴興里活動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台中市北區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每星期日 15:00~17:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">南投縣埔里鎮埔里國民小學<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 南投縣埔里鎮</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每星期二、四、五 18:00~20:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">台南市振興公園<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 台南市北區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週一、三 19:00~21:00　2026-09-19 查證</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">君毅正勤里社區活動中心<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 高雄市前鎮區</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">每週一、三 17:00~20:00　2026-09-19 查證</dd></dl>
+        </section>
+        <p style="font-size:15px;"><a href="/courts" style="color:#0d9488;">全台球場地圖</a>　·　<a href="/tools/rotation" style="color:#0d9488;">輪場排點器</a>　·　<a href="/ratings" style="color:#0d9488;">程度（DUPR）說明</a></p>
+      </main></div>
+
+  <!-- Service Worker Registration for PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered:', registration);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+
+  <!-- Lazy Load Google AdSense -->
+  <script>
+    const loadAdSense = () => {
+      const script = document.createElement('script');
+      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      document.head.appendChild(script);
+
+      // Remove event listeners after loading the script
+      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
+        window.removeEventListener(event, loadAdSense, { once: true })
+      );
+    };
+
+    // Add event listeners to trigger AdSense loading on user interaction
+    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
+      window.addEventListener(event, loadAdSense, { once: true, passive: true })
+    );
+  </script>
+</body>
+
+</html>

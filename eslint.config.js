@@ -5,7 +5,8 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  // worker/ 是 Cloudflare Worker，有自己的 tsconfig 與型別檢查（npm run typecheck --prefix worker）
+  { ignores: ['dist', 'worker'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],

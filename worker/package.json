@@ -1,0 +1,28 @@
+{
+  "name": "picklemaster-play",
+  "version": "1.0.0",
+  "description": "PickleMaster 揪團約打 API（Cloudflare Worker + D1）",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 migrations apply picklemaster-play --remote"
+  },
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "hono": "^4.13.8"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
+    "@cloudflare/workers-types": "^5.20260923.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.136.3"
+  },
+  "private": true
+}

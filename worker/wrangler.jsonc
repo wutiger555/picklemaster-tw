@@ -12,9 +12,9 @@
       "migrations_dir": "migrations"
     }
   ],
-  // API 與分享頁的網域（zone 要先在新帳號 Active 才能部署）
-  "routes": [{ "pattern": "go.picklemastertw.com", "custom_domain": true }],
-  "workers_dev": false,
+  // API 放在獨立帳號的 workers.dev 網址（只有網頁在背後呼叫，球友看不到）。
+  // 網域 picklemastertw.com 留在原帳號不動；分享連結直接用主站的 /play/?g=…
+  "workers_dev": true,
   // 每 5 分鐘：自動取消／結束／產生下一場固定團；每天 UTC 19:00（台灣 03:00）：清理
   "triggers": { "crons": ["*/5 * * * *", "0 19 * * *"] },
   "vars": {

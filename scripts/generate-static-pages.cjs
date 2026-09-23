@@ -1756,6 +1756,13 @@ async function generateStaticPages() {
                 crumbs: [{ name: '首頁', href: '/' }, { name: page.crumb }],
                 h1: page.h1, bodyHtml: body,
             }));
+            if (page.route === 'play') {
+                // 分享到 LINE 的每一團都會顯示這張卡（團的細節寫在分享訊息文字裡）
+                content = applyOg(content, 'og/play.png', {
+                    title: '揪團約打', type: 'court', badge: '臨打報名',
+                    subtitle: '取個暱稱就能報名 · 額滿自動候補 · 不用下載 App',
+                });
+            }
             if (page.route === 'aepl') {
                 content = applyOg(content, 'og/aepl.png', {
                     title: 'AEPL 職業聯賽專區', type: 'player', badge: '職業聯賽',

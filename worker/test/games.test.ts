@@ -216,7 +216,7 @@ describe('分享頁', () => {
     expect(r.text).toContain('og:title');
     expect(r.text).toContain('&lt;script&gt;');
     expect(r.text).not.toContain('<script>alert(1)');
-    expect(r.text).toContain(`https://picklemastertw.com/play/g/${game.id}/`);
+    expect(r.text).toContain(`https://picklemastertw.com/play/?g=${game.id}`);
     expect(r.text).toContain('https://picklemastertw.com/og/court-8.png');
     expect(r.text).toContain('還有 5 位');
     expect(r.text).toContain('noindex');

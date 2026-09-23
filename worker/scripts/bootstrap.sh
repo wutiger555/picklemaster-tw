@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-ZONE_NAME=picklemastertw.com
+SITE_DOMAIN=picklemastertw.com   # 主站網域，只給 Turnstile 白名單用；網域本身留在原帳號
 DB_NAME=picklemaster-play
 WIDGET_NAME=picklemaster-play
 REPO=wutiger555/picklemaster-tw
@@ -28,13 +28,21 @@ jqpy() { python3 -c "import json,sys; d=json.load(sys.stdin); $1"; }
 say "驗證 token"
 cf GET /user/tokens/verify | jqpy "assert d['success'] and d['result']['status']=='active', d; print('token 有效')"
 
-say "找帳號與網域"
+say "找帳號"
 CLOUDFLARE_ACCOUNT_ID="$(cf GET '/accounts?per_page=5' | jqpy "r=d['result']; assert len(r)==1, f'token 看得到 {len(r)} 個帳號，應該只有 1 個'; print(r[0]['id'])")"
 export CLOUDFLARE_ACCOUNT_ID
-cf GET "/zones?name=$ZONE_NAME" | jqpy "
-r=d['result']; assert r, '新帳號裡找不到 $ZONE_NAME'
-z=r[0]; print('zone 狀態:', z['status'], '| NS:', ', '.join(z['name_servers']))
-assert z['status']=='active', 'zone 還不是 active，請等搬移完成'"
+echo "帳號 ID：$CLOUDFLARE_ACCOUNT_ID"
+
+say "workers.dev 子網域"
+SUB="$(cf GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | jqpy "print((d.get('result') or {}).get('subdomain') or '')")"
+if [ -z "$SUB" ]; then
+  SUB="picklemaster-$(openssl rand -hex 3)"
+  cf PUT "/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" "{\"subdomain\":\"$SUB\"}" | jqpy "assert d['success'], d['errors']"
+  echo "已建立 $SUB.workers.dev"
+else
+  echo "沿用 $SUB.workers.dev"
+fi
+API_URL="https://picklemaster-play.$SUB.workers.dev"
 
 say "D1 資料庫"
 DB_ID="$(npx wrangler d1 list --json 2>/dev/null | jqpy "print(next((x['uuid'] for x in d if x['name']=='$DB_NAME'), ''))")"
@@ -54,7 +62,7 @@ print('wrangler.jsonc 的 database_id 已更新' if s2 != s else 'database_id �
 PY
 npx wrangler d1 migrations apply "$DB_NAME" --remote
 
-say "部署 Worker 並綁定 go.$ZONE_NAME"
+say "部署 Worker"
 npx wrangler deploy
 
 say "密鑰"
@@ -71,7 +79,7 @@ WIDGET="$(cf GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/challenges/widgets?per_page=5
 w=[x for x in d['result'] if x['name']=='$WIDGET_NAME']; print(w[0]['sitekey'] if w else '')")"
 if [ -z "$WIDGET" ]; then
   RESP="$(cf POST "/accounts/$CLOUDFLARE_ACCOUNT_ID/challenges/widgets" \
-    "{\"name\":\"$WIDGET_NAME\",\"domains\":[\"$ZONE_NAME\",\"www.$ZONE_NAME\",\"localhost\"],\"mode\":\"invisible\"}")"
+    "{\"name\":\"$WIDGET_NAME\",\"domains\":[\"$SITE_DOMAIN\",\"www.$SITE_DOMAIN\",\"localhost\"],\"mode\":\"invisible\"}")"
   WIDGET="$(printf '%s' "$RESP" | jqpy "assert d['success'], d['errors']; print(d['result']['sitekey'])")"
   printf '%s' "$RESP" | jqpy "print(d['result']['secret'], end='')" | npx wrangler secret put TURNSTILE_SECRET >/dev/null
   echo "已建立 widget，TURNSTILE_SECRET 已設定"
@@ -92,7 +100,14 @@ echo "CLOUDFLARE_API_TOKEN、CLOUDFLARE_ACCOUNT_ID、BACKUP_PASSPHRASE 已設定
 
 say "健康檢查"
 for i in 1 2 3 4 5 6; do
-  if curl -sf "https://go.$ZONE_NAME/api/health" >/dev/null; then echo "https://go.$ZONE_NAME/api/health 正常"; exit 0; fi
-  echo "等待網域憑證生效（$i/6）…"; sleep 20
+  if curl -sf "$API_URL/api/health" >/dev/null; then
+    echo "$API_URL/api/health 正常"
+    echo
+    echo "前端要填的兩個值（公開值，不是密鑰）："
+    echo "  PLAY_API = $API_URL"
+    echo "  TURNSTILE_SITE_KEY = $WIDGET"
+    exit 0
+  fi
+  echo "等待 workers.dev 生效（$i/6）…"; sleep 15
 done
-die "go.$ZONE_NAME 還連不上，可能是憑證還在簽發，幾分鐘後再試：curl https://go.$ZONE_NAME/api/health"
+die "$API_URL 還連不上，幾分鐘後再試：curl $API_URL/api/health"

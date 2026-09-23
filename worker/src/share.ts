@@ -21,7 +21,7 @@ export function shareHtml(env: Env, g: GameRow | null, confirmed: number): strin
     return page(`${site}/play/`, '揪團約打｜PickleMaster', '找球友、看場況，全台匹克球揪團', `${site}/og-image.png`);
   }
   const court = getCourt(g.court_id);
-  const target = `${site}/play/g/${encodeURIComponent(g.id)}/`;
+  const target = `${site}/play/?g=${encodeURIComponent(g.id)}`;
   const left = Math.max(g.capacity - confirmed, 0);
   const level = g.level_min !== null && g.level_max !== null ? `程度 ${g.level_min.toFixed(1)}–${g.level_max.toFixed(1)}` : '程度不限';
   const state =

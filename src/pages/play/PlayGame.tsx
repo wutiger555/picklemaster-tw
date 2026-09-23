@@ -7,7 +7,7 @@ import ProfileSheet, { type Profile } from '../../components/play/ProfileSheet';
 import { Sheet, Toast, type ToastMsg } from '../../components/play/Sheet';
 import { useCourts } from '../../components/play/useCourts';
 import { FORMAT_LABEL, SCORING_LABEL, dayLabel, hm, levelText, needsNet, perPerson } from '../../components/play/playFormat';
-import { PLAY_SHARE_ORIGIN } from '../../config/play';
+import { shareUrlFor } from '../../config/play';
 import { courtSlug } from '../../utils/slugify';
 import {
   PlayApiError, ensurePlayer, getCachedMe, getGame, getManageKey, joinGame, leaveGame, reportGame, saveManageKey, updateGame, type GameDetail,
@@ -46,7 +46,7 @@ function Countdown({ to }: { to: number }) {
 function icsFor(g: GameDetail) {
   const f = (ms: number) => new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
   const esc = (s: string) => s.replace(/[\\,;]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
-  const url = `${PLAY_SHARE_ORIGIN}/g/${g.id}`;
+  const url = shareUrlFor(g.id);
   return [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//PickleMaster//Play//ZH', 'BEGIN:VEVENT',
     `UID:${g.id}@picklemastertw.com`, `DTSTAMP:${f(Date.now())}`, `DTSTART:${f(g.startsAt)}`, `DTEND:${f(g.startsAt + g.durationMin * 60000)}`,
@@ -100,7 +100,7 @@ export default function PlayGame({ id }: { id: string }) {
   }, [reload]);
 
   const court = useMemo(() => courts?.find((c) => c.id === game?.court.id), [courts, game]);
-  const shareUrl = `${PLAY_SHARE_ORIGIN}/g/${id}`;
+  const shareUrl = shareUrlFor(id);
 
   const share = async () => {
     if (!game) return;

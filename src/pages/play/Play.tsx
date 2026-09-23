@@ -10,7 +10,7 @@ import PlayMe from './PlayMe';
 //   ?g=<id>  團頁（使用者建立、會過期的內容 → noindex，canonical 回 /play/）
 //   ?new     開團
 //   ?me      我的球拍
-// 分享到 LINE 的連結是 go.picklemastertw.com/g/<id>，由 Worker 給 OG 卡片後轉回這裡。
+// 分享到 LINE 的連結就是 /play/?g=<id>，LINE 預覽卡顯示 /play/ 的統一卡片（og/play.png）。
 export default function Play() {
   const [params] = useSearchParams();
   const gameId = params.get('g');

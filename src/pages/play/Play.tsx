@@ -9,7 +9,7 @@ import PlayMe from './PlayMe';
 // 整個揪團功能只有 /play/ 一條路由（有預渲染、HTTP 200），用 query 切換畫面：
 //   ?g=<id>  團頁（使用者建立、會過期的內容 → noindex，canonical 回 /play/）
 //   ?new     開團
-//   ?me      我的球拍
+//   ?me      我的團（即將開打的團、球友名片、換手機、刪除資料）
 // 分享到 LINE 的連結就是 /play/?g=<id>，LINE 預覽卡顯示 /play/ 的統一卡片（og/play.png）。
 export default function Play() {
   const [params] = useSearchParams();

@@ -9,7 +9,7 @@ import ProfileSheet, { type Profile } from '../../components/play/ProfileSheet';
 import { Toast, type ToastMsg } from '../../components/play/Sheet';
 import { dayLabel, dayOffset, taipeiDayStart, tp, weekdayName } from '../../components/play/playFormat';
 import { getFixedSessions, taipeiDate, upcomingOccurrences, type Occurrence } from '../../utils/fixedSessions';
-import { ensurePlayer, getCachedMe, listGames, listInterests, setInterest, type GameSummary } from '../../utils/playApi';
+import { ensurePlayer, fetchMe, getCachedMe, getToken, listGames, listInterests, setInterest, type GameSummary } from '../../utils/playApi';
 
 const ikey = (courtId: number, date: string) => `${courtId}|${date}`;
 
@@ -36,6 +36,13 @@ export default function PlayLobby() {
   const [sheetError, setSheetError] = useState<string | null>(null);
   const [toast, setToast] = useState<ToastMsg | null>(null);
   const [showAllDays, setShowAllDays] = useState(false);
+  const [myUpcoming, setMyUpcoming] = useState(0);
+
+  // 有球友身分的話，「我的團」按鈕上顯示即將開打的團數
+  useEffect(() => {
+    if (!getToken()) return;
+    fetchMe().then((r) => setMyUpcoming(r.games.filter((g) => g.startsAt > Date.now()).length)).catch(() => undefined);
+  }, []);
 
   // 「進行中／幾點開始」每分鐘更新一次
   useEffect(() => {
@@ -153,8 +160,9 @@ export default function PlayLobby() {
                 <span className="text-xl leading-none">＋</span> 開一團
               </Link>
               <Link to="/play/?me" className="inline-flex h-12 items-center gap-2 rounded-2xl border border-neutral-200 bg-white px-4 font-bold text-neutral-800 shadow-sm">
-                <PaddleAvatar name={me?.nickname ?? '球友'} seed={me?.avatarSeed ?? 0} size={22} />
-                {me ? `${me.nickname} 的球拍` : '我的球拍'}
+                {me ? <PaddleAvatar name={me.nickname} seed={me.avatarSeed} size={22} /> : <span aria-hidden>📋</span>}
+                我的團
+                {myUpcoming > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-orange-500 px-1.5 font-mono text-[11px] font-black text-white" aria-label={`${myUpcoming} 團即將開打`}>{myUpcoming}</span>}
               </Link>
             </div>
             {/* 即時數字：全部是真的（球敘來自查證資料、團與人數來自資料庫） */}

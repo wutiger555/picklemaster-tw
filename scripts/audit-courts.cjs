@@ -29,6 +29,8 @@ const CONCURRENCY = 6; // 再高會讓 DNS 誤報 ENOTFOUND
 
 // Facebook / Instagram 對非瀏覽器客戶端會回 400/302，不代表連結壞掉
 const SOCIAL_HOSTS = /(^|\.)(facebook|instagram|threads|line|lin)\.(com|me|ee)$/i;
+// 預約平台也擋非瀏覽器客戶端：trainge 一律回 403，瀏覽器開得起來（2026-09-23 實測）
+const BOT_BLOCKING_HOSTS = /(^|\.)trainge\.com$/i;
 
 const asJson = process.argv.includes('--json');
 
@@ -98,6 +100,9 @@ async function probe(item) {
     if (res.ok) return { ...item, ok: true, code: res.status };
     if (SOCIAL_HOSTS.test(host)) {
       return { ...item, ok: true, code: res.status, reason: '社群平台阻擋非瀏覽器請求，需人工開啟確認' };
+    }
+    if (BOT_BLOCKING_HOSTS.test(host)) {
+      return { ...item, ok: true, code: res.status, reason: '預約平台阻擋非瀏覽器請求，需人工開啟確認' };
     }
     const alt = await curlStatus(item.url);
     if (alt >= 200 && alt < 400) {

@@ -2322,7 +2322,7 @@ async function generateStaticPages() {
         // lastmod 只在拿得到「真實異動日」時才寫。
         // 原本 336 筆裡有 309 筆蓋的是建置日期 —— 每跑一次 build 就把全站推成今天，
         // 而 Google 的作法是：lastmod 一旦被判定不可信，就整個忽略掉。
-        // 球場 155 筆本來就有人工查證日（last_updated），文章有 updatedDate，
+        // 球場 156 筆本來就有人工查證日（last_updated），文章有 updatedDate，
         // 新聞有發佈日；其餘拿不到真實日期的，寧可不寫 —— lastmod 本來就是選填。
         const urlEntry = (loc, { lastmod, changefreq, priority }) => `
     <url>

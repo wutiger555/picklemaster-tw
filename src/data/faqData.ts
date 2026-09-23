@@ -384,7 +384,7 @@ export const FAQ_DATA: FAQItem[] = [
   {
     category: '球場設施',
     question: '台灣有多少匹克球場？',
-    answer: '2026 年 9 月本站《球場地圖》已收錄 155 座，覆蓋全台 17 個縣市（含共用場地全台估計超過 200 處）。其中台北 42 座、新北 31 座、台中 19 座、桃園 10 座、彰化 10 座、高雄 9 座、新竹縣 7 座，雲林、嘉義縣、基隆、新竹市也在 2026 年迎來首批場地。',
+    answer: '2026 年 9 月本站《球場地圖》已收錄 156 座，覆蓋全台 17 個縣市（含共用場地全台估計超過 200 處）。其中台北 42 座、新北 31 座、台中 20 座、桃園 10 座、彰化 10 座、高雄 9 座、新竹縣 7 座，雲林、嘉義縣、基隆、新竹市也在 2026 年迎來首批場地。',
     relatedLinks: [{ text: '全台球場地圖', url: '/courts' }],
   },
   {
@@ -396,7 +396,7 @@ export const FAQ_DATA: FAQItem[] = [
   {
     category: '球場設施',
     question: '台灣有 24 小時匹克球場嗎？',
-    answer: '有！目前至少 4 處：桃園 Social N Pickle（龜山）、台中 PICKZONE 凱旋館與朝馬館、台北內湖 PicklePickle（無人智慧場館）、新竹寶山 PPClub。多採線上預約、智能門禁，適合夜貓球友與輪班族。',
+    answer: '有！目前至少 5 處：桃園 Social N Pickle（龜山）、台中 PICKZONE 凱旋館與朝馬館、台中南屯日落匹克球、台北內湖 PicklePickle（無人智慧場館）、新竹寶山 PPClub。多採線上預約、智能門禁，適合夜貓球友與輪班族。',
     relatedLinks: [{ text: '找 24 小時球場', url: '/courts' }],
   },
   {

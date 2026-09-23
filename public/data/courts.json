@@ -2584,10 +2584,9 @@
         "4面標準球場",
         "捷運直達"
       ],
-      "booking_url": "https://downstairspickleballclub.com/collections/court",
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-09-23",
       "reviews": "石牌捷運站旁地下室專用館，北投區第一座室內匹克球俱樂部",
       "website": "https://downstairspickleballclub.com/"
     },
@@ -6349,6 +6348,50 @@
       "added_date": "2026-09",
       "last_updated": "2026-09-19",
       "reviews": "社區活動中心，高雄在地社群固定球敘點。資料來源：中華民國匹克球協會「找球場」（pickleball.org.tw/stadium）。場地數與設施細節官方未公告，本站暫記 1 面待查證。"
+    },
+    {
+      "id": 160,
+      "name": "日落匹克球 Sunset Pickleball",
+      "location": {
+        "address": "台中市南屯區文山里嶺東路109-12號",
+        "lat": 24.1505,
+        "lng": 120.612,
+        "city": "台中市",
+        "district": "南屯區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "NT$200/30分鐘（約 NT$400/小時）",
+      "courts_count": 2,
+      "surface": "synthetic",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "24 小時營業",
+      "contact": "0918-807-886",
+      "contact_details": {
+        "phone": "0918-807-886",
+        "line": "@185eiybw",
+        "instagram": "https://www.instagram.com/sunset.pickleball",
+        "facebook": "https://www.facebook.com/share/1DD88cuBS8/"
+      },
+      "facilities": [
+        "室內",
+        "挑高場地",
+        "免費球拍與練習球",
+        "停車場"
+      ],
+      "features": [
+        "24 小時全天候開放",
+        "線上預約自助入場",
+        "挑高球場",
+        "新手友善"
+      ],
+      "booking_url": "https://trainge.com/gymtrainer/sunset",
+      "is_new": true,
+      "added_date": "2026-09",
+      "last_updated": "2026-09-23",
+      "reviews": "台中南屯 24 小時自助匹克球館，向上路（精銳汽車音響）與嶺東路97號（順風停車場）兩處入口。租場即附球拍與練習球。官方 Trainge 預約系統目前列 1、2 號場，本站暫記 2 面待查證。",
+      "website": "https://trainge.com/gymtrainer/sunset"
     }
   ]
 }

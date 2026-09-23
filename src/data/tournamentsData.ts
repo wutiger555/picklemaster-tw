@@ -76,7 +76,7 @@ export const TOURNAMENTS_2026: Tournament[] = [
     city: '屏東縣',
     region: '南部',
     level: '區域',
-    status: 'upcoming',
+    status: 'completed',
     organizer: '屏東縣匹克球委員會 / 國立屏東大學',
     summary: '原規劃於 3 月的屏東邀請賽併入國民體育日系列，於 9 月 12 日在國立屏東大學舉行。南台灣重要的區域邀請賽，適合各級選手交流切磋。',
     categories: ['公開組', '分齡組'],
@@ -334,7 +334,7 @@ export const TOURNAMENTS_2026: Tournament[] = [
     city: '屏東縣',
     region: '南部',
     level: '公益',
-    status: 'upcoming',
+    status: 'completed',
     organizer: '運動部全民運動署 / 屏東大學',
     summary: '國民體育日官方系列推廣活動：9/6 身心障礙匹克球推廣、9/12 屏東縣全民邀請賽、9/13 屏商校區推廣活動。以免費體驗與表演賽讓民眾認識匹克球，適合家庭與初學者。',
     categories: ['體驗活動', '表演賽', '親子組', '身心障礙組'],
@@ -415,7 +415,7 @@ export const TOURNAMENTS_2026: Tournament[] = [
     city: '嘉義縣',
     region: '南部',
     level: '全國',
-    status: 'upcoming',
+    status: 'ongoing',
     organizer: '中華民國匹克球總會 / 南華大學',
     summary: '為期兩個月的青銀共融全國聯賽，於南華大學舉行，鼓勵青年與銀髮世代同場競技交流，是 CTPF 下半年推廣全齡運動的重點賽事。',
     categories: ['青銀共融組', '公開組'],
@@ -497,9 +497,9 @@ export const getTournamentsByLevel = (level: TournamentLevel): Tournament[] => {
 export const TAIWAN_PICKLEBALL_STATS_2026 = {
   estimatedPlayers: 1_200_000,    // 預估 2026 年球友人數（遠見：2024=14萬, 2025=50萬, 2026=120萬）
   certifiedCoaches: 1400,          // CTPF 已認證 C 級教練
-  knownCourts: 155,                // 全台已知球場（本站收錄 155 座，持續新增）
+  knownCourts: 156,                // 全台已知球場（本站收錄 156 座，持續新增）
   tournamentsYear: TOURNAMENTS_2026.length,
   governingBody: '中華民國匹克球協會 (CTPF)',
   chairman: '陳朝鍵',
-  lastUpdated: '2026-09-02',
+  lastUpdated: '2026-09-23',
 };

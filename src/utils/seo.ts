@@ -113,6 +113,12 @@ export const pageSEO: Record<string, SEOConfig> = {
     description: '輸入你與對手 DUPR 評分、比賽結果，即時預估你下一場的 DUPR 變動。純前端 Elo 簡化演算法，零後端、即時計算。',
     keywords: 'DUPR 模擬器,DUPR 計算,匹克球評分預估,DUPR simulator,DUPR calculator'
   },
+  // 揪團約打。預渲染的 title/description 在 scripts/generate-static-pages.cjs 的 pageSEO['play']，兩邊要一致
+  play: {
+    title: '匹克球揪團約打｜臨打報名・固定球敘，不用註冊',
+    description: '找匹克球臨打與球友：全台各地球場的固定球敘時段（本站逐筆查證）與線上揪團。挑一團、取個暱稱就能報名，額滿自動候補、有人取消自動遞補，不用註冊也不用下載 App。',
+    keywords: '匹克球揪團,匹克球臨打,匹克球零打,匹克球約打,匹克球球敘,匹克球找球友,pickleball open play taiwan',
+  },
   'tool-rotation': {
     title: '雙打輪轉排程器 | 5-16 人約球自動排輪次',
     description: '球友約球不再手忙腳亂！輸入人數、場次、場地數，自動產生避免重複配對的雙打輪轉表，支援列印帶到球場用。',

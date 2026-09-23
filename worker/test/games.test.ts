@@ -154,6 +154,13 @@ describe('團主管理', () => {
     expect(down.json.error.code).toBe('capacity_below_confirmed');
   });
 
+  it('人數上限調到低於最低成團人數時，最低成團人數跟著降', async () => {
+    const host = await newPlayer();
+    const { game } = await newGame(host, { capacity: 6, minPlayers: 4 });
+    const r = await api(`/api/games/${game.id}`, { method: 'PATCH', token: host, body: { capacity: 2 } });
+    expect(r.json.game).toMatchObject({ capacity: 2, minPlayers: 2 });
+  });
+
   it('取消這一團後就不能再報名', async () => {
     const host = await newPlayer();
     const { game } = await newGame(host);

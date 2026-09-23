@@ -49,3 +49,15 @@
     @apply w-full h-full;
   }
 }
+/* 揪團約打：程度雙滑桿。軌道不接收點擊，只有兩個把手可以拖 */
+.play-range::-webkit-slider-runnable-track { background: transparent; }
+.play-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; pointer-events: auto; cursor: grab;
+  width: 26px; height: 26px; border-radius: 9999px; background: #fff; border: 3px solid #171717;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
+}
+.play-range::-moz-range-thumb {
+  pointer-events: auto; cursor: grab; width: 22px; height: 22px; border-radius: 9999px;
+  background: #fff; border: 3px solid #171717;
+}
+.play-range:focus-visible::-webkit-slider-thumb { outline: 3px solid #14b8a6; outline-offset: 2px; }

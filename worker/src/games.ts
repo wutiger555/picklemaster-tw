@@ -387,6 +387,8 @@ export async function updateGame(env: Env, g: GameRow, body: Record<string, unkn
       .first<{ n: number }>();
     if (cap < (n?.n ?? 0)) throw bad('capacity_below_confirmed', `已經有 ${n?.n} 人報名，人數上限不能低於這個數字`);
     set('capacity', cap);
+    // 人數上限調到比最低成團人數還低時，最低成團跟著降，否則這團永遠湊不滿、一定會被自動取消
+    if (cap < g.min_players) set('min_players', cap);
     capacityChanged = cap > g.capacity;
   }
   if (!sets.length) throw bad('nothing_to_update', '沒有要修改的內容');

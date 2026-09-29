@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="一支燈柱、10 顆線雷射，晚上在沒有燈、沒有線的空地打出整個匹克球場的產品企劃與原型做法。">
+<meta property="og:title" content="夜打雷射場線">
+<meta property="og:description" content="一支燈柱、10 顆線雷射，打出整個匹克球場。產品設計、3D 模擬與原型做法。">
+<meta property="og:type" content="article">
+<title>夜打雷射場線</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column; the product itself is shown in dark "night windows"; build docs sit on the light page. */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --sunk:#E3E8EE; --ink:#14202B; --muted:#56667A;
+  --rule:#CAD3DC; --accent:#0B8A4B; --good:#0B8A4B; --warn:#B8691A; --bad:#B23A3A;
+  --night:#0F1822; --night-ink:#D5DEE7; --night-muted:#8FA0B2; --night-rule:#26384A;
+  --f-body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C131A; --surface:#141E28; --sunk:#1A2632; --ink:#E2E9EF; --muted:#9AABBB;
+    --rule:#283847; --accent:#3DDC84; --good:#3DDC84; --warn:#E3A04E; --bad:#E57373;
+    --night:#0A1119; --night-ink:#D5DEE7; --night-muted:#8FA0B2; --night-rule:#22313F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C131A; --surface:#141E28; --sunk:#1A2632; --ink:#E2E9EF; --muted:#9AABBB;
+  --rule:#283847; --accent:#3DDC84; --good:#3DDC84; --warn:#E3A04E; --bad:#E57373;
+  --night:#0A1119; --night-ink:#D5DEE7; --night-muted:#8FA0B2; --night-rule:#22313F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;margin:0}
+.wrap{max-width:940px;margin:0 auto;padding-inline:20px;padding-block:40px 80px}
+h1,h2,h3{text-wrap:balance;line-height:1.3;margin:0}
+h1{font-weight:900;font-size:clamp(28px,4.8vw,42px)}
+h2{font-weight:900;font-size:clamp(21px,3vw,27px)}
+h3{font-weight:700;font-size:17px}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.lede{font-size:18px;max-width:60ch}
+.muted{color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+header{display:grid;gap:16px;padding-block:8px 28px}
+section{display:grid;gap:16px;padding-block:38px;border-top:1px solid var(--rule)}
+.prose{display:grid;gap:12px;max-width:64ch}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.fact{border-left:3px solid var(--accent);padding:2px 12px;display:grid;gap:2px}
+.fact .k{font-size:12px;color:var(--muted)}
+.fact .v{font-size:15px;font-weight:700}
+.fact .s{font-size:13px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px;width:max-content;white-space:nowrap}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.chip.good{color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
+.chip.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.chip.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+
+.win{background:var(--night);color:var(--night-ink);border-radius:14px;overflow:hidden;border:1px solid var(--night-rule)}
+.win-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--night-rule)}
+.win-head .t{font-weight:700;font-size:14px}
+.win-body{padding:14px 16px;display:grid;gap:14px}
+.win .note{color:var(--night-muted)}
+.win canvas{display:block;width:100%;height:auto;border-radius:8px;touch-action:none;cursor:grab}
+.win canvas:active{cursor:grabbing}
+.row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--night-rule);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;padding:6px 12px;border:0;background:transparent;color:var(--night-ink);cursor:pointer}
+.seg button+button{border-left:1px solid var(--night-rule)}
+.seg button[aria-pressed="true"]{background:#3DDC84;color:#07140C;font-weight:700}
+.lbl{font-size:12px;color:var(--night-muted)}
+button:focus-visible,input:focus-visible{outline:2px solid #3DDC84;outline-offset:2px}
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.st{background:#152231;border-radius:8px;padding:8px 12px;display:grid;gap:4px}
+.st .k{font-size:12px;color:var(--night-muted)}
+.st .v{font-family:var(--f-mono);font-size:16px;font-weight:600}
+.st .chip.good{color:#3DDC84;background:#3DDC8420}
+.st .chip.warn{color:#F2B64B;background:#F2B64B20}
+.st .chip.bad{color:#F08080;background:#F0808020}
+
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+th{font-size:12.5px;color:var(--muted);font-weight:500;white-space:nowrap}
+td.r,th.r{text-align:right}
+tfoot td{font-weight:700;border-bottom:0}
+#aimtbl tbody tr{cursor:pointer}
+#aimtbl tbody tr:hover{background:var(--sunk)}
+#aimtbl tbody tr[aria-selected="true"]{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.mid{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--sunk);font-family:var(--f-mono);font-size:12px;font-weight:600}
+.kw{font-family:var(--f-mono);font-size:12.5px;background:var(--sunk);padding:1px 6px;border-radius:4px;white-space:nowrap}
+
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.fig{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:14px;display:grid;gap:10px;min-width:0}
+.fig svg{display:block;width:100%;height:auto}
+.fig h3{font-size:15px}
+.legend{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:6px 18px;font-size:14px}
+.legend li{display:flex;gap:10px;align-items:baseline}
+.legend .mid{flex:none;background:var(--accent);color:var(--bg)}
+.tol{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.tol div{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 14px;display:grid;gap:4px}
+.tol .k{font-size:13px;color:var(--muted)}
+.tol .v{font-family:var(--f-mono);font-size:18px;font-weight:600}
+.tol .s{font-size:13px}
+
+ol.build{margin:0;padding:0;list-style:none;display:grid;gap:0;counter-reset:b}
+ol.build>li{display:grid;grid-template-columns:52px 1fr;gap:0 14px;counter-increment:b}
+ol.build>li::before{content:counter(b);width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);display:grid;place-items:center;font-family:var(--f-mono);font-weight:600;color:var(--accent);background:var(--surface);grid-row:1/3}
+ol.build>li>div{padding-bottom:22px;display:grid;gap:6px;min-width:0}
+ol.build h3{padding-top:7px}
+ol.build ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14.5px}
+.tag{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+
+.flow{display:grid;gap:12px}
+.stage{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:grid;gap:10px}
+.stage .meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted)}
+.stage .meta b{color:var(--ink);font-family:var(--f-mono)}
+.decide{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.decide div{border-radius:8px;padding:10px 12px;font-size:14px;display:grid;gap:4px}
+.decide .yes{background:color-mix(in srgb,var(--good) 10%,transparent)}
+.decide .no{background:color-mix(in srgb,var(--bad) 9%,transparent)}
+.decide b{font-size:13px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
+.box ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14.5px}
+.warnbox{border-color:color-mix(in srgb,var(--bad) 45%,var(--rule))}
+@media (max-width:560px){.decide{grid-template-columns:1fr}.wrap{padding-inline:16px}ol.build>li{grid-template-columns:44px 1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">專案簡報 v2 · 單機版 · 2026-09-29</div>
+  <h1>一支燈柱，打出整個匹克球場</h1>
+  <p class="lede">一台機器架在網柱旁邊 2.5 公尺高，裡面 10 顆綠光線雷射各自負責一條場線。開機後整套場線一起出現，晚上在沒有燈、沒有線的空地也能開場。</p>
+  <div class="facts">
+    <div class="fact"><span class="k">擺在哪</span><span class="v">網柱外 25cm、2.5m 高</span><span class="s">用標準網寬當尺，每次位置都一樣</span></div>
+    <div class="fact"><span class="k">裡面有什麼</span><span class="v">10 顆綠光線雷射</span><span class="s">每顆 1～5mW，一顆負責一條線</span></div>
+    <div class="fact"><span class="k">用在哪</span><span class="v">晚上沒有燈的空地</span><span class="s">羽球場上可以只開廚房線</span></div>
+    <div class="fact"><span class="k">原型成本</span><span class="v">約 NT$8,000～14,500</span><span class="s">不用焊接、不用寫程式</span></div>
+  </div>
+</header>
+
+<!-- ============ 產品 3D ============ -->
+<section id="product">
+  <div class="eyebrow">產品設計</div>
+  <h2>機器打出來的樣子</h2>
+  <p class="prose muted">用滑鼠或手指拖動可以轉視角。點下面角度表的任一列，會單獨顯示那顆模組打出的光。</p>
+  <div class="win">
+    <div class="win-head">
+      <span class="t">3D 模擬：網柱旁的單機</span>
+      <div class="row">
+        <div class="seg" role="group" aria-label="視角">
+          <button id="v-orbit" aria-pressed="true">斜上方</button>
+          <button id="v-player" aria-pressed="false">球員視角</button>
+          <button id="v-top" aria-pressed="false">俯視</button>
+        </div>
+        <div class="seg" role="group" aria-label="光平面">
+          <button id="pl-on" aria-pressed="true">顯示光平面</button>
+          <button id="pl-off" aria-pressed="false">只看線</button>
+        </div>
+      </div>
+    </div>
+    <div class="win-body">
+      <canvas id="c3d" width="960" height="520" aria-label="雷射單機 3D 模擬，可拖動旋轉"></canvas>
+      <div class="row">
+        <span class="lbl">模式</span>
+        <div class="seg" role="group" aria-label="模式">
+          <button id="m-full" aria-pressed="true">完整匹克球場（10 顆）</button>
+          <button id="m-bad" aria-pressed="false">羽球場只開廚房線（2 顆）</button>
+        </div>
+        <span class="lbl">環境</span>
+        <div class="seg" role="group" aria-label="環境">
+          <button id="lx-3" aria-pressed="false">全暗 3 lux</button>
+          <button id="lx-10" aria-pressed="true">路燈旁 10</button>
+          <button id="lx-200" aria-pressed="false">活動中心 200</button>
+        </div>
+        <span class="lbl">每顆功率</span>
+        <div class="seg" role="group" aria-label="功率">
+          <button id="pw-1" aria-pressed="true">1mW</button>
+          <button id="pw-5" aria-pressed="false">5mW</button>
+          <button id="pw-20" aria-pressed="false">20mW</button>
+        </div>
+      </div>
+      <div class="status" id="s3d"></div>
+      <p class="note">螢幕無法重現人眼在暗處的適應，畫面上的線有加亮；狀態列的對比數字才是估算值。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 構造 ============ -->
+<section id="anatomy">
+  <div class="eyebrow">機器構造</div>
+  <h2>九個零件，全部買得到</h2>
+  <div class="figs">
+    <div class="fig"><h3>側面：整支燈柱</h3><svg id="side" viewBox="0 0 360 420" role="img" aria-label="燈柱側面構造圖"></svg></div>
+    <div class="fig"><h3>俯視：底板上的 10 顆模組各自朝向哪裡</h3><svg id="plate" viewBox="0 0 360 300" role="img" aria-label="底板俯視圖"></svg>
+      <p class="note">箭頭是每顆模組的水平朝向，箭頭越短代表往下壓得越多。球場在圖的左邊。</p></div>
+  </div>
+  <ul class="legend">
+    <li><span class="mid">1</span><span><b>雷射模組 × 10</b>：綠光 520nm 一字線，5V，扇角 90°，每顆裝在一個迷你球型雲台上</span></li>
+    <li><span class="mid">2</span><span><b>底板</b>：30 × 20cm 的木板或鋁板，鎖 10 個雲台，中間有螺孔接燈架</span></li>
+    <li><span class="mid">3</span><span><b>圓形水平泡</b>：黏在底板上，用來確認機器有沒有擺平</span></li>
+    <li><span class="mid">4</span><span><b>對位點雷射</b>：1mW 的紅點，對準對面的網柱，確認機器沒有轉歪</span></li>
+    <li><span class="mid">5</span><span><b>燈架</b>：2.8m 攝影燈架，在 2.5m 的地方貼刻度，每次都拉到同一個高度</span></li>
+    <li><span class="mid">6</span><span><b>USB 開關集線器</b>：每顆模組一個開關，按一下就能切換成羽球場模式</span></li>
+    <li><span class="mid">7</span><span><b>行動電源</b>：20,000mAh，放在燈架上的掛袋裡，大約可以用 10 小時以上</span></li>
+    <li><span class="mid">8</span><span><b>沙袋</b>：壓住燈架的腳，防風、防撞</span></li>
+    <li><span class="mid">9</span><span><b>球網網柱</b>：不是機器的一部分，但它是每次擺放的定位參考</span></li>
+  </ul>
+</section>
+
+<!-- ============ 角度表 ============ -->
+<section id="aim">
+  <div class="eyebrow">每顆模組的角度</div>
+  <h2>10 顆模組各自怎麼對準</h2>
+  <div class="prose">
+    <p class="muted">以機器位置（網柱外 25cm、在網子正下方的延長線上、雷射出口離地 2.5m）計算。A 半場和 B 半場左右對稱，所以數字成對出現，只差正負號。</p>
+    <p class="note"><b>水平轉角</b>：0° 是沿著網子正對對面網柱，正值往 A 半場轉。<b>往下傾角</b>：從水平往下壓幾度。<b>旋轉角</b>：模組繞自己的軸轉幾度，0° 表示打出的線是水平的。<b>遮光</b>：買來的模組扇角是 90°，要用黑色電工膠帶把兩側各遮掉一部分，線才不會超出球場。</p>
+  </div>
+  <div class="tbl"><table id="aimtbl">
+    <thead><tr><th>#</th><th>負責的線</th><th class="r">水平轉角</th><th class="r">往下傾角</th><th class="r">旋轉角</th><th class="r">需要的扇角</th><th class="r">兩側各遮</th><th class="r">線寬</th><th class="r">每 mW 照度</th><th class="r">晃 0.1° 位移</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="note">這張表是「粗調」用的起點。便宜模組的光軸本身就可能歪 1～3°，所以最後一定要在量好的場地上逐顆校正（見「怎麼做」的第 5 步）。</p>
+</section>
+
+<!-- ============ 擺放 ============ -->
+<section id="place">
+  <div class="eyebrow">擺放與容許誤差</div>
+  <h2>每次都擺在同一個位置，線才會對</h2>
+  <div class="figs">
+    <div class="fig"><h3>俯視：機器相對於球網的位置</h3><svg id="placesvg" viewBox="0 0 400 300" role="img" aria-label="機器擺放位置俯視圖"></svg></div>
+    <div class="fig" style="align-content:start"><h3>擺放三步驟（約 1 分鐘）</h3>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;font-size:14.5px">
+        <li><b>定位</b>：燈架中心放在網柱外 25cm、網子的延長線上。可以在燈架腳上綁一根 25cm 的定位棒，頂住網柱就好。</li>
+        <li><b>整平</b>：燈架拉到 2.5m 的刻度，調整雲台讓水平泡置中。</li>
+        <li><b>對準</b>：打開對位紅點，旋轉機器，直到紅點打在對面網柱的正中央。再打開 10 顆模組就完成了。</li>
+      </ul></div>
+  </div>
+  <div class="tol" id="tol">
+    <div><span class="k">燈架高度差 1cm</span><span class="v">線移 2.7～3.8cm</span><span class="s">所以燈架要貼刻度、用固定高度</span></div>
+    <div><span class="k">位置偏 1cm</span><span class="v">線移約 1cm</span><span class="s">用定位棒頂住網柱就夠準</span></div>
+    <div><span class="k">轉歪 0.1°</span><span class="v">遠角偏約 1.7cm</span><span class="s">對位紅點打在網柱上就能確認</span></div>
+    <div><span class="k">傾斜 0.1°</span><span class="v">底線偏約 3.6cm</span><span class="s">水平泡置中大約就是 0.1° 以內</span></div>
+  </div>
+  <p class="note">目標是每條線誤差在 3cm 以內（線寬的一半多一點）。</p>
+</section>
+
+<!-- ============ 怎麼做 ============ -->
+<section id="build">
+  <div class="eyebrow">怎麼做</div>
+  <h2>從買料到出門開場，七個步驟</h2>
+  <ol class="build">
+    <li><div><h3>買料</h3><p class="muted">照下方「材料清單」買。淘寶和 Amazon 要 1～2 週，第一週先下單。模組建議先買 3 顆不同功率，確認亮度後再補齊（見「驗證計畫」第一關）。</p></div></li>
+    <li><div><h3>做底板</h3><ul><li>找一塊 30 × 20cm 的木板或鋁板，特力屋可以代切。</li><li>在板子上鑽 10 個孔，分成兩排：上排 5 個給 A 半場，下排 5 個給 B 半場，孔距 5cm 以上。</li><li>每個孔鎖一個迷你球型雲台（1/4 吋螺絲），中間再鎖一個接燈架用的轉接螺絲。</li></ul></div></li>
+    <li><div><h3>裝模組、接電</h3><ul><li>每個雲台裝一個模組夾，把模組夾上去，並依角度表貼上 1～10 的編號。</li><li>模組的電線接到 USB 端子線：紅接紅、黑接黑，用快速接線端子，不用焊接。</li><li>10 條 USB 線插進開關集線器，集線器接行動電源，每顆模組都能單獨開關。</li><li>黏上水平泡，在底板左側中央裝對位紅點。</li></ul></div></li>
+    <li><div><h3>粗調</h3><p>照角度表先大致轉好每個雲台：水平轉角看箭頭方向、往下傾角看壓多低。這一步只要差不多就好，在家就能做。</p></div></li>
+    <li><div><h3>第一次校正（最重要，約 1～2 小時）</h3><ul><li>找一個晚上，到空地用捲尺量出球場：6.10 × 13.41m，兩條對角線都要是 14.74m。用紙膠帶貼出所有的線。</li><li>架好網子和燈架，照「擺放三步驟」放好機器。<b>全程戴護目鏡。</b></li><li>一次只開一顆模組：先轉雲台讓線打到膠帶上，再轉模組本身讓線跟膠帶完全重疊。</li><li>用黑色電工膠帶貼住鏡頭兩側，把超出球場的部分遮掉。</li><li>全部對好後鎖緊雲台，再點一點熱熔膠固定。</li></ul></div></li>
+    <li><div><h3>驗收</h3><ul><li>每條線抽 1～2 個點，量雷射和膠帶差幾公分，全部都要在 3cm 以內。</li><li><b>重複性測試</b>：把燈架收起來、重新擺一次，再量一次，重複 3 次都要在 3cm 以內。這一項決定「一台機器、每次擺好就能用」到底成不成立。</li></ul></div></li>
+    <li><div><h3>出門使用</h3><p>到了場地：架網子，照擺放三步驟放好機器（約 1 分鐘），打開開關就能打。在羽球場上只開 2 號和 7 號（兩條廚房線）。</p></div></li>
+  </ol>
+</section>
+
+<!-- ============ 材料 ============ -->
+<section id="bom">
+  <div class="eyebrow">材料清單</div>
+  <h2>一台原型要買什麼</h2>
+  <p class="prose muted">價格是 2026 年 9 月查到的大概行情，淘寶通常比較便宜。</p>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>東西</th><th>搜尋關鍵字與規格</th><th>去哪裡買</th><th class="r">約多少（NT$）</th></tr></thead>
+    <tbody>
+      <tr><td><span class="mid">1</span></td><td>綠光線雷射模組 × 10</td><td><span class="kw">520nm 一字線 雷射模組 5V</span><br>扇角 90°、<b>均勻線（鮑威爾稜鏡）</b>、12mm 粗、1～5mW</td><td>淘寶、蝦皮、露天、<a href="https://tw.iadiy.com/%E7%B4%85%E5%85%89-%E7%B6%A0%E5%85%89-%E8%97%8D%E5%85%89-%E9%9B%B7%E5%B0%84%E6%A8%A1%E7%B5%84">IADIY 創客</a></td><td class="r num">3,000～6,000</td></tr>
+      <tr><td><span class="mid">1</span></td><td>迷你球型雲台 × 10</td><td><span class="kw">迷你球型雲台 1/4</span>，要能鎖緊</td><td>蝦皮</td><td class="r num">600～1,500</td></tr>
+      <tr><td><span class="mid">1</span></td><td>模組夾 × 10</td><td><span class="kw">12mm 雷射模組 固定座</span>，買不到就用水管夾加 1/4 吋螺絲</td><td>蝦皮、五金行</td><td class="r num">300～800</td></tr>
+      <tr><td><span class="mid">2</span></td><td>底板＋螺絲</td><td>30 × 20cm 木板或鋁板、1/4 吋螺絲 × 10、3/8 轉 1/4 轉接螺絲</td><td>特力屋、五金行</td><td class="r num">200～400</td></tr>
+      <tr><td><span class="mid">3</span></td><td>圓形水平泡</td><td><span class="kw">圓形水平泡</span></td><td>五金行、蝦皮</td><td class="r num">50</td></tr>
+      <tr><td><span class="mid">4</span></td><td>對位點雷射</td><td>1mW 紅光點雷射，要有標準檢驗局的合格標示</td><td>蝦皮、文具店</td><td class="r num">200</td></tr>
+      <tr><td><span class="mid">5</span></td><td>攝影燈架 2.8m</td><td>附 3/8 或 1/4 吋螺絲</td><td>蝦皮、相機街</td><td class="r num">500～800</td></tr>
+      <tr><td><span class="mid">6</span></td><td>USB 開關集線器</td><td><span class="kw">USB 集線器 獨立開關</span>，10 孔，或兩個 7 孔</td><td>蝦皮、PChome</td><td class="r num">300～600</td></tr>
+      <tr><td><span class="mid">6</span></td><td>USB 端子線 × 10＋快速接線端子</td><td><span class="kw">USB 公頭 端子線</span></td><td>蝦皮、光華商場</td><td class="r num">300</td></tr>
+      <tr><td><span class="mid">7</span></td><td>行動電源 20,000mAh</td><td>5V 輸出 3A 以上</td><td>各大賣場</td><td class="r num">600～900</td></tr>
+      <tr><td><span class="mid">8</span></td><td>沙袋</td><td>攝影沙袋，或用裝水的桶子代替</td><td>蝦皮</td><td class="r num">200</td></tr>
+      <tr><td></td><td>雷射護目鏡</td><td>要涵蓋 520nm（常見標示 190～540nm），OD4 以上，校正時一定要戴</td><td>蝦皮</td><td class="r num">300～800</td></tr>
+      <tr><td></td><td>校正用品</td><td>30m 布捲尺、紙膠帶、黑色電工膠帶、熱熔膠槍、束帶</td><td>五金行、文具店</td><td class="r num">500～700</td></tr>
+      <tr><td></td><td>LED 發光匹克球 4 顆</td><td><span class="kw">LED pickleball</span>，例如 GlowCity</td><td>Amazon、淘寶</td><td class="r num">800～1,200</td></tr>
+    </tbody>
+    <tfoot><tr><td></td><td colspan="3">合計</td><td class="r num">約 7,850～14,450</td></tr></tfoot>
+  </table></div>
+</section>
+
+<!-- ============ 驗證 ============ -->
+<section id="plan">
+  <div class="eyebrow">驗證計畫</div>
+  <h2>三關，每一關沒過就停</h2>
+  <div class="flow">
+    <div class="stage"><h3>第一關：一顆模組，確認要用多少 mW</h3>
+      <div class="meta"><span>花費 <b>NT$3,000～4,500</b></span><span>時間 <b>第 1～2 週</b></span><span>買 <b>1mW、5mW、20mW 各一顆＋燈架＋護目鏡</b></span></div>
+      <p>把模組架在網柱旁 2.5m 高，對準遠邊線（最暗的那條線）。晚上 10 lux 和室內 200 lux 各測一次，做壓線測試：把球放在線附近 10 個位置，請對面的人判斷界內或出界。</p>
+      <div class="decide"><div class="yes"><b>過關：晚上 1mW 或 5mW 答對 9／10 以上</b>決定模組功率，補齊到 10 顆。20mW 在室內也過的話，另外去問驗證單位能不能合法賣。</div><div class="no"><b>沒過</b>晚上連 5mW 都不夠清楚，就要先換成更亮的模組或改擺法，再重測。</div></div>
+    </div>
+    <div class="stage"><h3>第二關：做出單機原型，測「每次擺好就對得準」</h3>
+      <div class="meta"><span>花費 <b>再加 NT$4,000～8,000</b></span><span>時間 <b>第 3～4 週</b></span><span>照 <b>「怎麼做」第 2～6 步</b></span></div>
+      <p>這一關最重要的是重複性測試：收起來、重新擺，量 3 次。</p>
+      <div class="decide"><div class="yes"><b>過關：3 次都在 3cm 以內，擺放 2 分鐘內完成</b>單機概念成立，進第三關。</div><div class="no"><b>沒過</b>改善定位方式（例如做一個卡住網柱的夾具）再測。</div></div>
+    </div>
+    <div class="stage"><h3>第三關：帶去開夜打揪團，看有沒有人要</h3>
+      <div class="meta"><span>花費 <b>發光球＋露營燈 NT$1,100～1,800</b></span><span>時間 <b>第 5～6 週</b></span><span>用 <b>站上的揪團功能招人</b></span></div>
+      <p>開 2～3 場，每場 8～12 人。打完問：好不好打、會不會再來、願意付多少錢。</p>
+      <div class="decide"><div class="yes"><b>過關：大多數人想再來，也說得出價格</b>開始做正式產品：一體成型的外殼、出廠校正、防水。</div><div class="no"><b>沒過</b>技術可行但沒有市場，構想先放著。</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 安全 ============ -->
+<section id="safety">
+  <div class="eyebrow">安全與法規</div>
+  <h2>做原型時一定要遵守</h2>
+  <div class="two">
+    <div class="box"><h3>使用時</h3>
+      <ul><li>機器在 2.5m 高、光只往地板打，一般情況不會照到眼睛。</li><li>燈架腳要壓沙袋，燈柱包一層泡棉，球員追球撞到才不會受傷。</li><li>不要讓小孩爬燈架或靠近機器看。</li></ul></div>
+    <div class="box warnbox"><h3>校正與法規</h3>
+      <ul><li>校正時人會靠近模組，就算只有 5mW 也要戴護目鏡。</li><li>20mW 屬於 Class 3B，只在第一關量測時使用，不要裝進揪團用的機器。</li><li>要拿來賣，一定要先送雷射安全驗證，也要確認標準檢驗局怎麼歸類這個產品。</li></ul></div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const HW=3.048,HL=6.706,KIT=2.134,POSTX=3.353,EFF=485;
+const BOX=[3.6,0,2.5];
+/* computed with aim.py: box at (3.6, 0, 2.5); yaw 0 = toward opposite post, + toward A side */
+const MODS=[
+ {n:'A 底線',a:[-HW,HL],b:[HW,HL],yaw:65.0,pitch:18.7,roll:8.5,fan:38.5,w:0.99,epm:8.0,sens:3.6},
+ {n:'A 廚房線',a:[-HW,KIT],b:[HW,KIT],yaw:41.1,pitch:37.6,roll:34.9,fan:54.2,w:0.33,epm:24.0,sens:1.3},
+ {n:'A 近邊線',a:[HW,0],b:[HW,HL],yaw:72.6,pitch:53.5,roll:-68.7,fan:69.1,w:0.24,epm:30.2,sens:1.3},
+ {n:'A 遠邊線',a:[-HW,0],b:[-HW,HL],yaw:23.0,pitch:19.1,roll:-7.9,fan:43.4,w:0.97,epm:7.4,sens:3.5},
+ {n:'A 中線',a:[0,KIT],b:[0,HL],yaw:47.0,pitch:25.3,roll:-24.7,fan:30.9,w:0.51,epm:20.9,sens:1.4},
+ {n:'B 底線',a:[-HW,-HL],b:[HW,-HL],yaw:-65.0,pitch:18.7,roll:-8.5,fan:38.5,w:0.99,epm:8.0,sens:3.6},
+ {n:'B 廚房線',a:[-HW,-KIT],b:[HW,-KIT],yaw:-41.1,pitch:37.6,roll:-34.9,fan:54.2,w:0.33,epm:24.0,sens:1.3},
+ {n:'B 近邊線',a:[HW,0],b:[HW,-HL],yaw:-72.6,pitch:53.5,roll:68.7,fan:69.1,w:0.24,epm:30.2,sens:1.3},
+ {n:'B 遠邊線',a:[-HW,0],b:[-HW,-HL],yaw:-23.0,pitch:19.1,roll:7.9,fan:43.4,w:0.97,epm:7.4,sens:3.5},
+ {n:'B 中線',a:[0,-KIT],b:[0,-HL],yaw:-47.0,pitch:25.3,roll:24.7,fan:30.9,w:0.51,epm:20.9,sens:1.4}
+];
+const S={view:'orbit',planes:true,mode:'full',lux:10,pw:1,sel:null,az:-0.75,el:0.55,R:19};
+
+/* ---------- table ---------- */
+const tb=document.querySelector('#aimtbl tbody');
+tb.innerHTML=MODS.map((m,i)=>`<tr data-i="${i}" tabindex="0" aria-selected="false"><td><span class="mid">${i+1}</span></td><td>${m.n}</td><td class="r num">${m.yaw>0?'+':''}${m.yaw.toFixed(1)}°</td><td class="r num">${m.pitch.toFixed(1)}°</td><td class="r num">${m.roll>0?'+':''}${m.roll.toFixed(1)}°</td><td class="r num">${m.fan.toFixed(0)}°</td><td class="r num">${((90-m.fan)/2).toFixed(0)}°</td><td class="r num">${(m.w*10).toFixed(0)} mm</td><td class="r num">${m.epm.toFixed(1)} lux</td><td class="r num">${m.sens.toFixed(1)} cm</td></tr>`).join('');
+function selectMod(i){S.sel=S.sel===i?null:i;[...tb.children].forEach(r=>r.setAttribute('aria-selected',+r.dataset.i===S.sel));draw3d();}
+tb.addEventListener('click',e=>{const r=e.target.closest('tr');if(r)selectMod(+r.dataset.i);});
+tb.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const r=e.target.closest('tr');if(r){e.preventDefault();selectMod(+r.dataset.i);}}});
+
+/* ---------- 3D ---------- */
+const cv=$('c3d'),cx=cv.getContext('2d');
+const sub=(p,q)=>[p[0]-q[0],p[1]-q[1],p[2]-q[2]],dot=(p,q)=>p[0]*q[0]+p[1]*q[1]+p[2]*q[2];
+const cross=(p,q)=>[p[1]*q[2]-p[2]*q[1],p[2]*q[0]-p[0]*q[2],p[0]*q[1]-p[1]*q[0]];
+const norm=p=>{const l=Math.hypot(...p);return p.map(v=>v/l);};
+let CAM;
+function setCam(){
+  let P,T;
+  if(S.view==='player'){P=[0,-9.8,1.6];T=[0,0,0.2];}
+  else if(S.view==='top'){P=[0.01,-0.5,21];T=[0,0,0];}
+  else{T=[0,0,0.4];P=[T[0]+S.R*Math.cos(S.el)*Math.sin(S.az),T[1]-S.R*Math.cos(S.el)*Math.cos(S.az),T[2]+S.R*Math.sin(S.el)];}
+  const f=norm(sub(T,P)),r=norm(cross(f,[0,0,1])),u=cross(r,f);
+  CAM={P,f,r,u,F:cv.width*(S.view==='top'?1.35:S.view==='player'?0.46:1.0)};
+}
+function pj(X){const v=sub(X,CAM.P),z=dot(v,CAM.f);if(z<0.15)return null;return [cv.width/2+CAM.F*dot(v,CAM.r)/z,cv.height/2-CAM.F*dot(v,CAM.u)/z,CAM.F/z];}
+function poly(pts,fill,stroke){const q=pts.map(pj);if(q.some(p=>!p))return;cx.beginPath();q.forEach((p,i)=>i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]));cx.closePath();if(fill){cx.fillStyle=fill;cx.fill();}if(stroke){cx.strokeStyle=stroke;cx.stroke();}}
+function seg(a,b,col,w){const p=pj(a),q=pj(b);if(!p||!q)return;cx.strokeStyle=col;cx.lineWidth=w;cx.beginPath();cx.moveTo(p[0],p[1]);cx.lineTo(q[0],q[1]);cx.stroke();}
+const s2l=c=>{c/=255;return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4)};
+const l2s=c=>{c=Math.max(0,Math.min(1,c));return Math.round(255*(c<=0.0031308?c*12.92:1.055*Math.pow(c,1/2.4)-0.055))};
+const rgb=c=>`rgb(${l2s(c[0])},${l2s(c[1])},${l2s(c[2])})`;
+const ASPH=[70,78,88].map(s2l);
+const expo=l=>Math.max(0.05,Math.min(1,0.45+0.2*Math.log10(l/30)));
+function active(i){return S.mode==='full'||i===1||i===6;}
+function draw3d(){
+  setCam();
+  const ex=expo(S.lux),W=cv.width,H=cv.height;
+  const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,rgb([0.01*ex,0.015*ex,0.03*ex]));g.addColorStop(1,rgb([0.03*ex,0.04*ex,0.06*ex]));
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+  const base=ASPH.map(c=>c*ex);
+  poly([[-14,-14,0],[14,-14,0],[14,14,0],[-14,14,0]],rgb(base));
+  // faint 1m grid
+  cx.lineWidth=1;
+  for(let k=-12;k<=12;k+=2){seg([k,-12,0],[k,12,0],rgb(base.map(c=>c*1.25)),0.6);seg([-12,k,0],[12,k,0],rgb(base.map(c=>c*1.25)),0.6);}
+  // lines
+  let worst=null;
+  MODS.forEach((m,i)=>{
+    if(!active(i))return;
+    const C=S.pw*m.epm/S.lux; if(!worst||C<worst.C)worst={C,n:m.n};
+    const hi=S.sel===null||S.sel===i;
+    const add=Math.min(1,0.02+C*0.06);
+    let col=[base[0]+add*0.12,base[1]+add,base[2]+add*0.3];const mx=Math.max(...col);if(mx>1)col=col.map(c=>c/mx);
+    cx.save();
+    if(C>0.5&&hi){cx.shadowColor='rgba(80,255,150,0.85)';cx.shadowBlur=Math.min(14,4+5*Math.log10(C*2));}
+    cx.globalAlpha=(hi?1:0.25)*(0.15+0.85*Math.min(1,C*2));
+    seg([m.a[0],m.a[1],0],[m.b[0],m.b[1],0],rgb(col),S.sel===i?3:2.2);
+    cx.restore();
+  });
+  // planes
+  if(S.planes){
+    MODS.forEach((m,i)=>{
+      if(!active(i))return;
+      const sel=S.sel===i; if(S.sel!==null&&!sel)return;
+      poly([BOX,[m.a[0],m.a[1],0],[m.b[0],m.b[1],0]],`rgba(61,240,138,${sel?0.22:0.07})`,`rgba(61,240,138,${sel?0.6:0.18})`);
+    });
+  }
+  // net + posts
+  poly([[-POSTX,0,0],[POSTX,0,0],[POSTX,0,0.914],[-POSTX,0,0.914]],'rgba(8,12,16,0.45)');
+  seg([-POSTX,0,0.914],[POSTX,0,0.864*0+0.914],rgb([0.8*ex+0.1,0.8*ex+0.1,0.8*ex+0.1]),2.2);
+  [-POSTX,POSTX].forEach(x=>seg([x,0,0],[x,0,0.914],'#2a2f35',4));
+  // aiming dot to opposite post
+  seg(BOX,[-POSTX,0,0.6],'rgba(255,80,80,0.55)',1.2);
+  const dp=pj([-POSTX,0,0.6]);if(dp){cx.fillStyle='#ff5a5a';cx.beginPath();cx.arc(dp[0],dp[1],3,0,7);cx.fill();}
+  // stand
+  const foot=[BOX[0],BOX[1],0];
+  [[0.45,0],[-0.22,0.39],[-0.22,-0.39]].forEach(([dx,dy])=>seg([BOX[0]+dx,BOX[1]+dy,0],[BOX[0],BOX[1],0.7],'#9aa7b3',2));
+  seg(foot,[BOX[0],BOX[1],2.45],'#c3ccd4',3);
+  const bp=pj(BOX);if(bp){const s=Math.max(6,0.22*bp[2]);cx.fillStyle='#E9EEF2';cx.fillRect(bp[0]-s/2,bp[1]-s/2,s,s*0.6);cx.strokeStyle='#3DDC84';cx.lineWidth=2;cx.strokeRect(bp[0]-s/2,bp[1]-s/2,s,s*0.6);}
+  // labels
+  cx.font='600 15px "Noto Sans TC", sans-serif';cx.fillStyle='rgba(255,255,255,0.85)';
+  if(bp&&S.view!=='player')cx.fillText('機器（2.5m 高）',bp[0]+12,bp[1]-10);
+  const la=pj([0,HL+0.9,0]),lb=pj([0,-HL-0.9,0]);
+  cx.font='600 14px "IBM Plex Mono", monospace';cx.fillStyle='rgba(213,222,231,0.7)';
+  if(la)cx.fillText('A',la[0]-4,la[1]);if(lb)cx.fillText('B',lb[0]-4,lb[1]);
+  if(S.sel!==null){const m=MODS[S.sel],mp=pj([(m.a[0]+m.b[0])/2,(m.a[1]+m.b[1])/2,0]);if(mp){cx.font='700 15px "Noto Sans TC", sans-serif';cx.fillStyle='#9FFFC8';cx.fillText(`${S.sel+1} 號 · ${m.n}`,mp[0]+8,mp[1]-8);}}
+  // status
+  const v=C=>C>=0.5?['good','清楚']:C>=0.2?['good','看得到']:C>=0.05?['warn','淡淡的']:['bad','看不到'];
+  const [c1,t1]=v(worst.C);
+  const cls=S.pw<=1?['good','Class 2 範圍']:S.pw<=5?['warn','Class 3R，校正戴護目鏡']:['bad','Class 3B，只做量測'];
+  const on=MODS.filter((m,i)=>active(i)).length;
+  $('s3d').innerHTML=
+    `<div class="st"><span class="k">最暗的線（${worst.n}）</span><span class="v">對比 ${worst.C>=10?Math.round(worst.C*100):(worst.C*100).toFixed(worst.C<0.1?1:0)}%</span><span class="chip ${c1}">${t1}</span></div>`+
+    `<div class="st"><span class="k">開啟的模組</span><span class="v">${on} 顆</span><span class="k">${S.mode==='full'?'完整匹克球場':'羽球場：只打 2、7 號廚房線'}</span></div>`+
+    `<div class="st"><span class="k">雷射等級</span><span class="v">${S.pw} mW／顆</span><span class="chip ${cls[0]}">${cls[1]}</span></div>`;
+}
+// orbit drag
+let drag=null;
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:S.az,el:S.el};cv.setPointerCapture(e.pointerId);if(S.view!=='orbit'){setView('orbit');}});
+cv.addEventListener('pointermove',e=>{if(!drag)return;S.az=drag.az+(e.clientX-drag.x)*0.008;S.el=Math.max(0.08,Math.min(1.45,drag.el+(e.clientY-drag.y)*0.006));draw3d();});
+const endDrag=()=>{drag=null;};cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+function group(ids,fn){ids.forEach(([id,v])=>$(id).addEventListener('click',()=>{ids.forEach(([j])=>$(j).setAttribute('aria-pressed',j===id));fn(v);draw3d();}));}
+function setView(v){S.view=v;[['v-orbit','orbit'],['v-player','player'],['v-top','top']].forEach(([id,x])=>$(id).setAttribute('aria-pressed',x===v));}
+group([['v-orbit','orbit'],['v-player','player'],['v-top','top']],v=>{S.view=v;});
+group([['pl-on',true],['pl-off',false]],v=>{S.planes=v;});
+group([['m-full','full'],['m-bad','bad']],v=>{S.mode=v;});
+group([['lx-3',3],['lx-10',10],['lx-200',200]],v=>{S.lux=v;});
+group([['pw-1',1],['pw-5',5],['pw-20',20]],v=>{S.pw=v;});
+draw3d();
+
+/* ---------- side view anatomy ---------- */
+(function(){
+  const g=[];const ink='var(--ink)',mut='var(--muted)',acc='var(--accent)',rule='var(--rule)';
+  const tag=(n,x,y)=>`<g><circle cx="${x}" cy="${y}" r="10" fill="${acc}"/><text x="${x}" y="${y+4}" font-size="11" font-weight="700" text-anchor="middle" fill="var(--bg)" font-family="IBM Plex Mono,monospace">${n}</text></g>`;
+  const lead=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${mut}" stroke-width="1"/>`;
+  g.push(`<line x1="10" y1="392" x2="350" y2="392" stroke="${rule}" stroke-width="2"/>`);
+  // net post + net
+  g.push(`<rect x="40" y="300" width="6" height="92" fill="${mut}"/><line x1="46" y1="304" x2="10" y2="304" stroke="${mut}" stroke-width="2" stroke-dasharray="3 3"/>`);
+  g.push(`<text x="12" y="296" font-size="11" fill="${mut}" font-family="Noto Sans TC,sans-serif">網子</text>`);
+  // stand (x=150)
+  g.push(`<line x1="150" y1="92" x2="150" y2="330" stroke="${ink}" stroke-width="4"/>`);
+  g.push(`<line x1="150" y1="330" x2="105" y2="392" stroke="${ink}" stroke-width="3"/><line x1="150" y1="330" x2="195" y2="392" stroke="${ink}" stroke-width="3"/><line x1="150" y1="330" x2="150" y2="392" stroke="${ink}" stroke-width="2"/>`);
+  // locator rod to post
+  g.push(`<line x1="46" y1="380" x2="105" y2="380" stroke="${acc}" stroke-width="3"/><text x="75" y="374" font-size="10.5" text-anchor="middle" fill="${acc}" font-family="IBM Plex Mono,monospace">25 cm</text>`);
+  // sandbag
+  g.push(`<rect x="178" y="378" width="30" height="14" rx="5" fill="${mut}" opacity=".7"/>`);
+  // pouch + hub
+  g.push(`<rect x="156" y="220" width="30" height="42" rx="5" fill="none" stroke="${ink}" stroke-width="2"/><rect x="161" y="230" width="20" height="10" rx="2" fill="${mut}"/><rect x="161" y="245" width="20" height="10" rx="2" fill="${acc}" opacity=".6"/>`);
+  g.push(`<path d="M171 220 C 171 150, 160 110, 156 96" stroke="${mut}" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/>`);
+  // plate + modules
+  g.push(`<rect x="100" y="74" width="100" height="10" rx="2" fill="${ink}"/>`);
+  g.push(`<circle cx="150" cy="88" r="6" fill="${mut}"/>`);
+  [[108,-150],[122,-140],[136,-160],[164,-130],[178,-145],[192,-165]].forEach(([x,a])=>{const r=a*Math.PI/180,dx=Math.cos(r)*16,dy=-Math.sin(r)*16;
+    g.push(`<line x1="${x}" y1="72" x2="${x+dx}" y2="${72-dy}" stroke="${acc}" stroke-width="5" stroke-linecap="round"/>`);});
+  // laser fan hint
+  g.push(`<path d="M120 80 L20 250 L60 250 Z" fill="${acc}" opacity=".08"/>`);
+  // bubble level + dot laser
+  g.push(`<ellipse cx="186" cy="70" rx="7" ry="3" fill="none" stroke="${ink}" stroke-width="1.5"/>`);
+  g.push(`<rect x="92" y="76" width="10" height="6" fill="#d24b4b"/>`);
+  // height dimension
+  g.push(`<line x1="300" y1="78" x2="300" y2="392" stroke="${mut}" stroke-width="1"/><line x1="292" y1="78" x2="308" y2="78" stroke="${mut}"/><line x1="292" y1="392" x2="308" y2="392" stroke="${mut}"/>`);
+  g.push(`<text x="306" y="240" font-size="12" fill="${ink}" font-family="IBM Plex Mono,monospace" transform="rotate(-90 306 240)" text-anchor="middle">2.50 m（貼刻度）</text>`);
+  // tags
+  g.push(lead(200,60,230,40)+tag(1,240,36));
+  g.push(lead(200,79,244,70)+tag(2,254,68));
+  g.push(lead(186,66,210,20)+tag(3,218,16));
+  g.push(lead(92,79,70,50)+tag(4,62,44));
+  g.push(lead(150,170,230,160)+tag(5,240,160));
+  g.push(lead(186,250,240,250)+tag(6,250,250));
+  g.push(lead(171,238,230,210)+tag(7,240,206));
+  g.push(lead(208,384,250,360)+tag(8,258,356));
+  g.push(lead(43,300,30,270)+tag(9,24,262));
+  $('side').innerHTML=g.join('');
+})();
+
+/* ---------- plate top view ---------- */
+(function(){
+  const g=[];const ink='var(--ink)',mut='var(--muted)',acc='var(--accent)',rule='var(--rule)';
+  g.push(`<rect x="40" y="30" width="280" height="220" rx="8" fill="var(--sunk)" stroke="${rule}"/>`);
+  g.push(`<text x="36" y="22" font-size="11" fill="${mut}" font-family="Noto Sans TC,sans-serif">← 球場方向（對面網柱）</text>`);
+  g.push(`<text x="180" y="272" font-size="11" fill="${mut}" text-anchor="middle" font-family="IBM Plex Mono,monospace">底板 30 × 20 cm</text>`);
+  g.push(`<text x="330" y="80" font-size="11" fill="${mut}" font-family="Noto Sans TC,sans-serif">A</text><text x="330" y="200" font-size="11" fill="${mut}" font-family="Noto Sans TC,sans-serif">B</text>`);
+  MODS.forEach((m,i)=>{
+    const col=i%5,rowA=i<5;const x=85+col*52,y=rowA?90:190;
+    const len=34*Math.cos(m.pitch*Math.PI/180);
+    const a=m.yaw*Math.PI/180; // 0 = left (toward court), + toward A (up)
+    const dx=-Math.cos(a)*len,dy=-Math.sin(a)*len;
+    g.push(`<line x1="${x}" y1="${y}" x2="${x+dx}" y2="${y+dy}" stroke="${acc}" stroke-width="2.5" marker-end="url(#ah)"/>`);
+    g.push(`<circle cx="${x}" cy="${y}" r="9" fill="var(--surface)" stroke="${ink}" stroke-width="1.5"/><text x="${x}" y="${y+4}" font-size="10" text-anchor="middle" font-weight="700" fill="${ink}" font-family="IBM Plex Mono,monospace">${i+1}</text>`);
+    g.push(`<text x="${x}" y="${rowA?y+26:y-16}" font-size="9.5" text-anchor="middle" fill="${mut}" font-family="Noto Sans TC,sans-serif">${m.n.replace(/^[AB] /,'')}</text>`);
+  });
+  g.push(`<circle cx="215" cy="140" r="8" fill="none" stroke="${ink}" stroke-width="1.5"/><circle cx="215" cy="140" r="2.5" fill="${ink}"/><text x="228" y="144" font-size="9.5" fill="${mut}" font-family="Noto Sans TC,sans-serif">水平泡</text>`);
+  g.push(`<rect x="44" y="134" width="14" height="10" fill="#d24b4b"/><text x="64" y="143" font-size="9.5" fill="${mut}" font-family="Noto Sans TC,sans-serif">對位紅點</text>`);
+  $('plate').innerHTML=`<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs>`+g.join('');
+})();
+
+/* ---------- placement ---------- */
+(function(){
+  const S2=22,cx0=200,cy0=150,X=y=>cx0+y*S2,Y=x=>cy0-x*S2;
+  const ink='var(--ink)',mut='var(--muted)',acc='var(--accent)',rule='var(--rule)';
+  let o=`<rect x="${X(-HL)}" y="${Y(HW)}" width="${2*HL*S2}" height="${2*HW*S2}" fill="none" stroke="${mut}" stroke-width="1.5"/>`;
+  [KIT,-KIT].forEach(k=>{o+=`<line x1="${X(k)}" y1="${Y(HW)}" x2="${X(k)}" y2="${Y(-HW)}" stroke="${mut}" stroke-width="1"/>`;});
+  [[KIT,HL],[-KIT,-HL]].forEach(([a,b])=>{o+=`<line x1="${X(a)}" y1="${Y(0)}" x2="${X(b)}" y2="${Y(0)}" stroke="${mut}" stroke-width="1"/>`;});
+  o+=`<line x1="${X(0)}" y1="${Y(POSTX)}" x2="${X(0)}" y2="${Y(-POSTX)}" stroke="${ink}" stroke-width="2" stroke-dasharray="3 3"/>`;
+  [POSTX,-POSTX].forEach(x=>{o+=`<circle cx="${X(0)}" cy="${Y(x)}" r="4" fill="${ink}"/>`;});
+  o+=`<line x1="${X(0)}" y1="${Y(3.6)}" x2="${X(0)}" y2="${Y(-POSTX)}" stroke="#d24b4b" stroke-width="1.2" stroke-dasharray="5 3"/>`;
+  o+=`<rect x="${X(0)-7}" y="${Y(3.6)-7}" width="14" height="14" rx="3" fill="var(--surface)" stroke="${acc}" stroke-width="2.5"/>`;
+  o+=`<text x="${X(0)+12}" y="${Y(3.6)-2}" font-size="12" fill="${ink}" font-family="Noto Sans TC,sans-serif">機器</text>`;
+  o+=`<text x="${X(0)+12}" y="${Y(POSTX)+12}" font-size="11" fill="${mut}" font-family="Noto Sans TC,sans-serif">網柱外 25cm</text>`;
+  o+=`<text x="${X(0)+8}" y="${Y(-POSTX)+16}" font-size="11" fill="#d24b4b" font-family="Noto Sans TC,sans-serif">紅點打在對面網柱</text>`;
+  o+=`<text x="${X(HL)-4}" y="${Y(HW)-8}" font-size="11" text-anchor="end" fill="${mut}" font-family="Noto Sans TC,sans-serif">A 半場</text><text x="${X(-HL)+4}" y="${Y(HW)-8}" font-size="11" fill="${mut}" font-family="Noto Sans TC,sans-serif">B 半場</text>`;
+  o+=`<text x="${cx0}" y="292" font-size="11" text-anchor="middle" fill="${mut}" font-family="IBM Plex Mono,monospace">13.41 × 6.10 m · 網柱間距 6.71 m</text>`;
+  $('placesvg').innerHTML=o;
+})();
+})();
+</script>
+
+</body>
+</html>

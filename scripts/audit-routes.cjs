@@ -80,7 +80,8 @@ function collectRenderedPaths() {
   const out = [];
   // 只跳純資產目錄。注意不能跳 videos —— 它同時放 mp4 和 /videos 的 index.html，
   // 整個跳掉會讓 /videos 被誤報成「sitemap 指向不存在的頁面」。
-  const skip = new Set(['assets', 'og', 'data', 'images']);
+  // lab 放的是 noindex、刻意不進 sitemap 的內部企劃頁（只給拿到網址的人看），不是給爬蟲的頁面。
+  const skip = new Set(['assets', 'og', 'data', 'images', 'lab']);
   (function walk(dir, rel) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       if (entry.isDirectory()) {

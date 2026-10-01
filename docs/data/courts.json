@@ -3998,7 +3998,7 @@
       },
       "status": "temporarily_closed",
       "status_note": "Google 地圖標示「暫時關閉」，官方 Facebook 粉專已移除、LINE 官方帳號亦查無。前往前務必先電話確認。",
-      "status_verified": "2026-09-02"
+      "status_verified": "2026-10-01"
     },
     {
       "id": 93,
@@ -4670,8 +4670,8 @@
       "name": "PIKA PIKA Pickleball Club",
       "location": {
         "address": "彰化縣花壇鄉中山路一段220-1號",
-        "lat": 24.0292,
-        "lng": 120.5382,
+        "lat": 24.0181,
+        "lng": 120.549,
         "city": "彰化縣",
         "district": "花壇鄉"
       },
@@ -4694,7 +4694,7 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-10-01",
       "reviews": "花壇專業比賽場地（原匹克王運動俱樂部）",
       "contact_details": {
         "facebook": "https://www.facebook.com/people/Pickle-King-Sports-Club-%E5%8C%B9%E5%85%8B%E7%8E%8B/61581330136338/"
@@ -6392,6 +6392,46 @@
       "last_updated": "2026-09-23",
       "reviews": "台中南屯 24 小時自助匹克球館，向上路（精銳汽車音響）與嶺東路97號（順風停車場）兩處入口。租場即附球拍與練習球。官方 Trainge 預約系統目前列 1、2 號場，本站暫記 2 面待查證。",
       "website": "https://trainge.com/gymtrainer/sunset"
+    },
+    {
+      "id": 161,
+      "name": "DNA Pickleball Club 匹克球俱樂部",
+      "location": {
+        "address": "桃園市桃園區春日路1731巷10之1號",
+        "lat": 25.0276,
+        "lng": 121.3045,
+        "city": "桃園市",
+        "district": "桃園區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方線上預約頁公告",
+      "courts_count": 2,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方線上預約頁開放時段",
+      "contact": "LINE 官方帳號／IG（官網未公告電話）",
+      "contact_details": {
+        "line": "https://lin.ee/UOgTefa",
+        "instagram": "https://www.instagram.com/dna.pickleballclub/",
+        "facebook": "https://www.facebook.com/DNApbclub"
+      },
+      "facilities": [
+        "室內",
+        "線上預約"
+      ],
+      "features": [
+        "2 面匹克球專用場",
+        "私人教練課",
+        "入門體驗課",
+        "Open Play 球敘"
+      ],
+      "booking_url": "https://dnapickleball.club/",
+      "website": "https://dnapickleball.club/",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-01",
+      "reviews": "桃園區春日路的匹克球專用館，由兩位教練共同經營，提供場地租借、私人教練課、入門體驗課與 Open Play 球敘。官網標示 2 面標準場，收費與開放時段以官方線上預約頁為準。地板材質官方未公告，暫記待查證。"
     }
   ]
 }

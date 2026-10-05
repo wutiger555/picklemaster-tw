@@ -6836,6 +6836,40 @@
       "is_new": true,
       "added_date": "2026-10",
       "last_updated": "2026-10-05"
+    },
+    {
+      "id": 174,
+      "name": "Heavy Dinker",
+      "location": {
+        "address": "台南市南區鯤鯓里鯤鯓路26-9號",
+        "lat": 22.9591082,
+        "lng": 120.1776322,
+        "city": "台南市",
+        "district": "南區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方 IG 公告",
+      "courts_count": 2,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "約至 24:00（詳細時段依官方 IG 公告）",
+      "contact": "0906-823-287",
+      "contact_details": {
+        "phone": "0906-823-287",
+        "instagram": "https://www.instagram.com/heavydinkerpb"
+      },
+      "facilities": [
+        "線上預約"
+      ],
+      "features": [
+        "匹克球專用場",
+        "LUZZ 球拍合作場域"
+      ],
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05",
+      "reviews": "台南南區鯤鯓路的匹克球專用場，為 LUZZ 球拍免費體驗合作場域之一。官方未公告是否為室內場與場地面數，本站依建物型態暫列室內、2 面，皆待查證。"
     }
   ]
 }

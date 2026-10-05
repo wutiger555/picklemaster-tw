@@ -188,9 +188,9 @@ const Home = () => {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="font-black text-lg md:text-xl">AEPL 職業聯賽專區</span>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-neutral-900 text-[10px] font-black">🏆 首站冠軍出爐</span>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-neutral-900 text-[10px] font-black">🏆 雲豹三站三冠</span>
                   </div>
-                  <p className="text-sm text-neutral-300 truncate">首站戰報：雲豹 Dreambreaker 封王・下一站 9/19 高雄駁二</p>
+                  <p className="text-sm text-neutral-300 truncate">宜蘭站戰報：15 歲邱子恩拿下冠軍點・下一站 10/17 新竹</p>
                 </div>
               </div>
               <svg className="w-6 h-6 text-teal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5-5 5M6 12h12" /></svg>

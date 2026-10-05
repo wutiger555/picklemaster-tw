@@ -1,6 +1,6 @@
 // 2026 台灣匹克球賽事資料
 // 資料來源：中華民國匹克球總會 (CTPF) 公開賽事行事曆（2026-08 版）、TMLP、AEPL
-// 最後更新：2026-09-02
+// 最後更新：2026-10-05
 
 export type TournamentLevel = '國際' | '全國' | '區域' | '公益' | '分齡';
 export type TournamentStatus = 'upcoming' | 'registration' | 'ongoing' | 'completed';
@@ -28,7 +28,7 @@ export interface Tournament {
   featured?: boolean;        // 是否為重點賽事
 }
 
-export const TOURNAMENTS_2026: Tournament[] = [
+const RAW_TOURNAMENTS: Tournament[] = [
   {
     id: 'taiwan-cup-2026',
     name: '2026 臺灣盃全國匹克球公開賽',
@@ -131,7 +131,7 @@ export const TOURNAMENTS_2026: Tournament[] = [
     level: '全國',
     status: 'ongoing',
     organizer: '亞洲菁英匹克球股份有限公司 (AEPL)',
-    summary: '台灣第一個匹克球職業聯賽，2026 年 5 月宣布成立，創始賽季 8 月 29、30 日於台中火車站空中廊道開幕。6 支企業隊參戰（台南旭日雷霆〔尚騰汽車集團與寶嘉聯合共同成立〕、桃園雲豹、Ahhh、蘆沐、富瑞特科技等，橫跨汽車、能源、科技產業），賽季 8 至 11 月朝全台 8 站推進、11 月總決賽，總獎金新台幣 100 萬元。首站台中站由桃園永豐雲豹奪冠（冠軍戰 Dreambreaker 21:18 勝旭日雷霆），第 2 站 9/19-20 高雄駁二特區。藝人林志穎擔任賽事大使。',
+    summary: '台灣第一個匹克球職業聯賽，2026 年 5 月宣布成立，創始賽季 8 月 29、30 日於台中火車站空中廊道開幕。6 支企業隊參戰（台南旭日雷霆〔尚騰汽車集團與寶嘉聯合共同成立〕、桃園雲豹、Ahhh、蘆沐、富瑞特科技等，橫跨汽車、能源、科技產業），賽季 8 至 11 月朝全台 8 站推進、11 月總決賽，總獎金新台幣 100 萬元。前三站台中（8/30）、高雄（9/20）、宜蘭（10/4）冠軍皆由桃園永豐雲豹拿下，三場冠軍戰都以 3:2 在第 5 回合 Dreambreaker 分出勝負；第 4 站 10/17-18 移師新竹。藝人林志穎擔任賽事大使。',
     categories: ['職業隊際賽'],
     featured: true,
   },
@@ -285,7 +285,7 @@ export const TOURNAMENTS_2026: Tournament[] = [
     level: '全國',
     status: 'upcoming',
     organizer: '中華民國匹克球總會',
-    summary: '全台首個以女子選手為主體的全國公開賽，列於總會 2026 年行事曆 10 月檔期，確切日期與地點待公告。',
+    summary: '全台首個以女子選手為主體的全國公開賽，列於總會 2026 年行事曆 10 月檔期。截至 10 月 5 日官方仍未公告確切日期與地點，本站持續追蹤。',
     categories: ['女子單打', '女子雙打'],
     officialUrl: 'https://www.ctpf.org.tw/',
   },
@@ -439,6 +439,45 @@ export const TOURNAMENTS_2026: Tournament[] = [
     officialUrl: 'https://www.ctpf.org.tw/',
   },
   {
+    id: 'taichung-international-open-2026',
+    name: '2026 台中國際匹克球公開賽',
+    nameEn: 'Taichung International Pickleball Open 2026',
+    date: '2026-10-14',
+    endDate: '2026-10-17',
+    dateLabel: '2026 年 10 月 14 - 17 日',
+    venue: '台中國際網球中心',
+    city: '台中市',
+    region: '中部',
+    level: '國際',
+    status: 'upcoming',
+    organizer: '台中市政府運動局 / 中華民國匹克球協會 / 台中市匹克球協會',
+    summary: '獲運動部「台灣品牌國際賽事計畫」補助的國際賽，預計 10 國約 1,300 名選手參賽，四天賽程涵蓋團體賽、單打、雙打與混雙，總獎金 43,500 美元。10 月 14 日團體賽導入美國匹克球小聯盟（MiLP）賽制，各組冠軍取得 2027 年美國小聯盟賽外卡。賽期同步舉辦「亞洲匹克球運動產業趨勢論壇」，玖壹壹洋蔥出席宣傳。報名已於 9 月 26 日截止。',
+    categories: ['團體賽（MiLP 賽制）', '單打', '雙打', '混合雙打'],
+    registrationDeadline: '2026-09-26',
+    prizeInfo: '總獎金 43,500 美元；團體賽各組冠軍獲 2027 美國小聯盟賽外卡',
+    officialUrl: 'https://udn.com/news/story/7241/9765281',
+    featured: true,
+  },
+  {
+    id: 'shin-kong-cup-2026',
+    name: '2026 新光認真盃匹克球公開賽',
+    nameEn: 'Shin Kong Life Pickleball Open 2026',
+    date: '2026-11-14',
+    endDate: '2026-11-15',
+    dateLabel: '2026 年 11 月 14 - 15 日',
+    venue: '國立臺北教育大學',
+    city: '台北市',
+    region: '北部',
+    level: '公益',
+    status: 'registration',
+    organizer: '新光人壽',
+    summary: '新光人壽首屆主辦的全民公開賽，依 DUPR 分級設新手組、初階組、中階組，各級皆有男雙、女雙、混雙，預計招募約 216 人（108 組雙打）。報名至 10 月 18 日。',
+    categories: ['新手組', '初階組', '中階組（各組皆含男雙／女雙／混雙）'],
+    registrationUrl: 'https://bao-ming.com/eb/content/7211',
+    registrationDeadline: '2026-10-18',
+    officialUrl: 'https://sports.ltn.com.tw/news/breakingnews/5591005',
+  },
+  {
     id: 'tci-app-asia-tour-2026',
     name: 'TCI APP ASIA TOUR 台北站',
     nameEn: 'TCI APP Asia Tour Taipei 2026',
@@ -474,9 +513,26 @@ export const TOURNAMENTS_2026: Tournament[] = [
   },
 ];
 
+// 狀態依日期自動推算，避免手動維護的 status 過期（以台灣日期為準）。
+// 只套用在日期已確定的賽事：dateLabel 含「待」（待定／待公告／待確認）的維持手動狀態。
+const todayInTaiwan = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' });
+
+const withLiveStatus = (t: Tournament, today: string): Tournament => {
+  if (t.dateLabel.includes('待')) return t;
+  const end = t.endDate ?? t.date;
+  if (end < today) return { ...t, status: 'completed' };
+  if (t.date <= today) return { ...t, status: 'ongoing' };
+  if (t.status === 'registration' && t.registrationDeadline && t.registrationDeadline < today) {
+    return { ...t, status: 'upcoming' };
+  }
+  return t;
+};
+
+export const TOURNAMENTS_2026: Tournament[] = RAW_TOURNAMENTS.map(t => withLiveStatus(t, todayInTaiwan()));
+
 // 取得即將到來的賽事（依照今天日期）
 export const getUpcomingTournaments = (limit?: number): Tournament[] => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = todayInTaiwan();
   const upcoming = TOURNAMENTS_2026
     .filter(t => t.date >= today && t.status !== 'completed')
     .sort((a, b) => a.date.localeCompare(b.date));
@@ -501,5 +557,5 @@ export const TAIWAN_PICKLEBALL_STATS_2026 = {
   tournamentsYear: TOURNAMENTS_2026.length,
   governingBody: '中華民國匹克球協會 (CTPF)',
   chairman: '陳朝鍵',
-  lastUpdated: '2026-10-01',
+  lastUpdated: '2026-10-05',
 };

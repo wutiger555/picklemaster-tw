@@ -6,8 +6,10 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import {
   AEPL_LEAGUE, AEPL_FORMAT, AEPL_TEAMS, AEPL_STATIONS,
   AEPL_PLAYERS_SPOTLIGHT, AEPL_PRESEASON_RESULTS, AEPL_INTEL, AEPL_SOURCES,
-  AEPL_STATION1_REPORT,
+  AEPL_STATION_REPORTS,
 } from '../data/aeplData';
+
+const [LATEST, ...EARLIER] = AEPL_STATION_REPORTS;
 
 const STATION_STATUS: Record<string, { label: string; cls: string }> = {
   live: { label: '● 進行中', cls: 'bg-red-500 text-white animate-pulse' },
@@ -128,13 +130,13 @@ const Aepl = () => {
             <h2 className="text-2xl md:text-3xl font-black">🗓️ 賽季進度</h2>
             <span className="text-xs text-neutral-500">更新於 {AEPL_LEAGUE.lastUpdated}</span>
           </div>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {AEPL_STATIONS.map(st => {
               const badge = STATION_STATUS[st.status];
               return (
                 <div key={st.station} className={`rounded-2xl border p-5 ${st.status === 'live' ? 'border-red-500/50 bg-red-500/5' : 'border-white/10 bg-white/5'}`}>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-neutral-400 tracking-widest">STATION {String(st.station).padStart(2, '0')}{st.station === 3 ? '+' : ''}</span>
+                    <span className="text-xs font-bold text-neutral-400 tracking-widest">STATION {String(st.station).padStart(2, '0')}{st.status === 'tba' ? '+' : ''}</span>
                     <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${badge.cls}`}>{badge.label}</span>
                   </div>
                   <div className="text-xl font-black mb-1">{st.city}</div>
@@ -147,22 +149,23 @@ const Aepl = () => {
           <p className="text-xs text-neutral-500 mt-3">後續分站的日期與場地由聯盟陸續公布，本站將即時更新。執行長張智維：「我們接下來的比賽都會選人潮最多的地方。」</p>
         </section>
 
-        {/* ===== 首站戰報 ===== */}
+        {/* ===== 最新戰報 ===== */}
         <section>
-          <h2 className="text-2xl md:text-3xl font-black mb-2">📰 首站戰報：台中站</h2>
-          <p className="text-neutral-400 text-sm mb-6">{AEPL_STATION1_REPORT.dateLabel}</p>
+          <h2 className="text-2xl md:text-3xl font-black mb-2">📰 最新戰報：{LATEST.title}</h2>
+          <p className="text-neutral-400 text-sm mb-6">{LATEST.dateLabel}</p>
           <div className="grid md:grid-cols-5 gap-4">
             <div className="md:col-span-3 rounded-2xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 to-red-500/5 p-6">
               <div className="text-[11px] font-bold text-amber-300 tracking-widest mb-2">FINAL・冠軍戰</div>
-              <div className="flex items-center gap-3 mb-3 flex-wrap">
-                <span className="text-2xl font-black">🏆 {AEPL_STATION1_REPORT.champion}</span>
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <span className="text-2xl font-black">🏆 {LATEST.champion}</span>
                 <span className="text-neutral-500 font-bold">def.</span>
-                <span className="text-lg font-bold text-neutral-300">{AEPL_STATION1_REPORT.runnerUp}</span>
+                <span className="text-lg font-bold text-neutral-300">{LATEST.runnerUp}</span>
                 <span className="px-2 py-0.5 rounded-full bg-white/10 text-xs font-black">3:2</span>
               </div>
-              <p className="text-sm text-neutral-300 leading-relaxed mb-4">{AEPL_STATION1_REPORT.final}</p>
+              {LATEST.scores && <p className="text-xs text-neutral-400 mb-3 tabular-nums">各回合：{LATEST.scores}</p>}
+              <p className="text-sm text-neutral-300 leading-relaxed mb-4">{LATEST.final}</p>
               <div className="space-y-2">
-                {AEPL_STATION1_REPORT.quotes.map(q => (
+                {LATEST.quotes.map(q => (
                   <div key={q.who} className="rounded-xl bg-black/30 border border-white/5 p-3 text-sm">
                     <span className="text-teal-300 font-bold">{q.who}</span>
                     <span className="text-neutral-400">：「{q.text}」</span>
@@ -171,9 +174,9 @@ const Aepl = () => {
               </div>
             </div>
             <div className="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-6">
-              <div className="text-[11px] font-bold text-neutral-400 tracking-widest mb-3">SEMIFINALS・4 強戰</div>
+              <div className="text-[11px] font-bold text-neutral-400 tracking-widest mb-3">本站賽果</div>
               <ul className="space-y-3">
-                {AEPL_STATION1_REPORT.semis.map((m, i) => (
+                {LATEST.semis.map((m, i) => (
                   <li key={i} className="flex gap-2 text-sm text-neutral-300 leading-relaxed">
                     <span className="text-teal-400 shrink-0">▸</span>{m}
                   </li>
@@ -184,6 +187,35 @@ const Aepl = () => {
               </div>
             </div>
           </div>
+
+          {EARLIER.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-sm font-bold text-neutral-400 tracking-widest mb-3">前幾站戰報</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                {EARLIER.map(r => (
+                  <details key={r.station} className="group rounded-2xl border border-white/10 bg-white/5 p-5">
+                    <summary className="cursor-pointer list-none">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="font-black">第 {r.station} 站・{r.title}</span>
+                        <span className="text-xs text-neutral-500 group-open:hidden">展開 ▾</span>
+                      </div>
+                      <div className="text-sm text-neutral-300">🏆 {r.champion} <span className="text-neutral-500">3:2</span> {r.runnerUp}</div>
+                      <div className="text-xs text-neutral-500 mt-1">{r.dateLabel}</div>
+                    </summary>
+                    <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
+                      {r.scores && <p className="text-xs text-neutral-400 tabular-nums">各回合：{r.scores}</p>}
+                      <p className="text-sm text-neutral-300 leading-relaxed">{r.final}</p>
+                      <ul className="space-y-1.5">
+                        {r.semis.map((m, i) => (
+                          <li key={i} className="flex gap-2 text-xs text-neutral-400"><span className="text-teal-400">▸</span>{m}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ===== 賽制解析 ===== */}

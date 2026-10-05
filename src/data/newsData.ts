@@ -1,6 +1,95 @@
 import type { NewsItem } from '../types/news';
 
 export const NEWS_DATA: NewsItem[] = [
+  // ===== 2026 Q4 最新消息 =====
+  {
+    id: 'tw-202610-aepl-station3',
+    title: '雲豹三站三冠！15 歲邱子恩拿下 AEPL 宜蘭站冠軍點',
+    summary: 'AEPL 第 3 站宜蘭站 10 月 4 日落幕，桃園永豐雲豹冠軍戰 1:2 落後再逆轉台南旭日雷霆，Dreambreaker 由 15 歲邱子恩拿下冠軍點，完成台中、高雄、宜蘭三站三冠。本站創下開季以來最多觀戰人潮。',
+    content: `
+      <p><strong>AEPL 亞洲菁英匹克球聯盟</strong>創始賽季第 3 站於 10 月 3、4 日在<strong>宜蘭運動公園</strong>舉行，冠軍戰再度是<strong>桃園永豐雲豹</strong>對<strong>台南旭日雷霆</strong>——台中站冠軍戰的重演。</p>
+
+      <p>雲豹拿下首回合後連丟兩回合，1:2 落後再追平，比數 21:18、13:21、18:21、21:19、21:19。第 5 回合 Dreambreaker 一度 14:18 落後，<strong>林洸賢</strong>連拿 4 分追成 18:18，此站決勝回合獨得 10 分；最後的冠軍點，由第一次代表球隊出賽的 <strong>15 歲邱子恩</strong>拿下。</p>
+
+      <p>邱子恩賽後說：「我想說隊友已經很辛苦了，不拿下不行！」雷霆隊長<strong>蔡萱</strong>則認為差距在縮小：「前次冠軍賽交手，我們單打都處於落後，這次是領先的。」季軍戰由新竹 YANKEY ACE 以 21:16、21:10、21:12 直落三擊敗台北 Ahhh。</p>
+
+      <p>三站打完，冠軍全是雲豹，而且三場冠軍戰都是 3:2、都打到第 5 回合——沒有一場贏得輕鬆。旭日雷霆兩亞一季、YANKEY ACE 一亞一季，是頒獎台常客。第 4 站將於 <strong>10 月 17、18 日在新竹</strong>登場。</p>
+
+      <p>三站完整比分與各隊戰績，見本站 <a href="/aepl" class="text-primary-600 hover:underline">AEPL 職業聯賽專區</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://udn.com/news/story/7005/9795674" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a>、<a href="https://news.nextapple.com/sports/20261004/477FE3E0D6DF9C7F48659657271E8272" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">壹蘋新聞網</a></p>
+    `,
+    date: '2026-10-04',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '2026']
+  },
+  {
+    id: 'tw-202609-taichung-international-open',
+    title: '台中國際匹克球公開賽 10/14 登場：10 國 1,300 人搶美國小聯盟外卡',
+    summary: '2026 台中國際匹克球公開賽 10 月 14 至 17 日在台中國際網球中心舉行，預計 10 國約 1,300 名選手參賽、總獎金 43,500 美元。開幕日團體賽採美國匹克球小聯盟（MiLP）賽制，各組冠軍取得 2027 年美國小聯盟賽外卡。',
+    content: `
+      <p>由台中市政府運動局、中華民國匹克球協會與台中市匹克球協會合辦的<strong>2026 台中國際匹克球公開賽</strong>，將於 <strong>10 月 14 至 17 日</strong>在<strong>台中國際網球中心</strong>舉行。賽事獲運動部「台灣品牌國際賽事計畫」補助，預計吸引 <strong>10 個國家、約 1,300 名選手</strong>，總獎金 <strong>43,500 美元</strong>。</p>
+
+      <p>四天賽程涵蓋團體賽、單打、雙打與混雙。最特別的是 10 月 14 日的團體賽導入<strong>美國匹克球小聯盟（MiLP）賽制</strong>，各組冠軍可取得 <strong>2027 年美國小聯盟賽</strong>外卡——對台灣業餘球友來說，這是少數能從國內直通美國賽事的管道。</p>
+
+      <p>賽期同步舉辦「亞洲匹克球運動產業趨勢論壇」與運動派對，玖壹壹成員洋蔥也出席宣傳。報名已於 9 月 26 日截止。</p>
+
+      <p>完整賽事列表見本站 <a href="/tournaments" class="text-primary-600 hover:underline">2026 賽事總覽</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://udn.com/news/story/7241/9765281" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a>、<a href="https://newtalk.tw/news/view/2026-09-19/1060745" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Newtalk</a></p>
+    `,
+    date: '2026-09-19',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '國際賽', '台中', 'MiLP', '2026']
+  },
+  {
+    id: 'tw-202609-shinkong-cup-registration',
+    title: '新光認真盃匹克球公開賽開放報名：依 DUPR 分新手／初階／中階組',
+    summary: '新光人壽首屆主辦的「新光認真盃匹克球公開賽」11 月 14、15 日在國立臺北教育大學舉行，依 DUPR 分級設新手、初階、中階三組，各組皆有男雙、女雙、混雙，預計 216 人參賽，報名至 10 月 18 日。',
+    content: `
+      <p><strong>2026 新光認真盃匹克球公開賽</strong>由新光人壽首度主辦，<strong>11 月 14、15 日</strong>在<strong>國立臺北教育大學</strong>開打，報名即日起至 <strong>10 月 18 日</strong>。</p>
+
+      <p>這場賽事對一般球友特別友善：依 <strong>DUPR 分級</strong>設<strong>新手組、初階組、中階組</strong>，每個級別都有男雙、女雙、混雙，預計招募約 216 位選手、108 組雙打——不用是高手也找得到自己的舞台。</p>
+
+      <p>還不確定自己是哪個級別？可以先看本站的 <a href="/ratings" class="text-primary-600 hover:underline">DUPR 評級指南</a>；完整賽事列表見 <a href="/tournaments" class="text-primary-600 hover:underline">2026 賽事總覽</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://sports.ltn.com.tw/news/breakingnews/5591005" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由體育</a>、<a href="https://udn.com/news/story/7003/9786106" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a>｜報名：<a href="https://bao-ming.com/eb/content/7211" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">官方報名頁</a></p>
+    `,
+    date: '2026-09-30',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '公開賽', '台北', 'DUPR', '2026']
+  },
+  {
+    id: 'tw-202609-aepl-station2',
+    title: 'AEPL 高雄站：林洸賢 Dreambreaker 獨得 8 分，雲豹逆轉二連霸',
+    summary: 'AEPL 第 2 站高雄駁二特區 9 月 20 日落幕，桃園永豐雲豹冠軍戰 1:2 落後新竹 YANKEY ACE，靠林洸賢在 Dreambreaker 獨得 8 分逆轉封王，連拿兩站冠軍。',
+    content: `
+      <p><strong>AEPL</strong> 創始賽季第 2 站於 9 月 19、20 日在<strong>高雄駁二特區</strong>舉行。冠軍戰<strong>桃園永豐雲豹</strong>對上首站 4 強的<strong>新竹 YANKEY ACE</strong>，比數 21:11、10:21、13:21、21:12、21:12——雲豹 1:2 落後，追平後進入第 5 回合 Dreambreaker。</p>
+
+      <p>決勝回合由 <strong>林洸賢</strong>主宰：首度上場就打出 4:0，第二輪再拿 3 分把比數推到 15:5，全場獨得 8 分逆轉封王。林洸賢也是季前暖身賽男單冠軍。</p>
+
+      <p>4 強戰雲豹以 21:15、18:21、21:19、21:15 擊敗首站對手台南旭日雷霆，YANKEY ACE 則 21:16、21:18、21:13 直落三擊敗新北蘆沐；季軍由旭日雷霆拿下。</p>
+
+      <p>各站比分與六隊戰績，見本站 <a href="/aepl" class="text-primary-600 hover:underline">AEPL 職業聯賽專區</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://tw.sports.yahoo.com/news/aepl-%E6%9E%97%E6%B4%B8%E8%B3%A2-dreambreaker-%E5%BC%B7%E5%8B%A2%E6%BC%94%E5%87%BA-%E6%A1%83%E5%9C%92%E6%B0%B8%E8%B1%90%E9%9B%B2%E8%B1%B9%E9%AB%98%E9%9B%84%E7%AB%99%E5%86%8D%E6%BC%94%E9%80%86%E8%BD%89%E7%A7%80%E5%A5%AA%E5%86%A0-013319158.html" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Yahoo 運動</a></p>
+    `,
+    date: '2026-09-20',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '2026']
+  },
   // ===== 2026 Q3 最新消息 =====
   {
     id: 'tw-202609-aepl-station2-preview',

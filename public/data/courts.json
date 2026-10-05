@@ -601,9 +601,9 @@
       "id": 14,
       "name": "台南府平公園匹克球專用場",
       "location": {
-        "address": "台南市安平區府平路旁",
-        "lat": 22.998,
-        "lng": 120.165,
+        "address": "台南市安平區郡平路（府平公園內）",
+        "lat": 22.9884186,
+        "lng": 120.1716463,
         "city": "台南市",
         "district": "安平區"
       },
@@ -625,7 +625,7 @@
         "晴雨遮棚",
         "社區經營"
       ],
-      "last_updated": "2025-12-10",
+      "last_updated": "2026-10-05",
       "reviews": "台南安平區專用匹克球場，有遮陽設施"
     },
     {
@@ -4802,9 +4802,9 @@
       "id": 117,
       "name": "PK Park 匹克帕克",
       "location": {
-        "address": "雲林縣虎尾鎮興南里竹圍50號（國道1號斗南/虎尾交流道旁）",
-        "lat": 23.7262,
-        "lng": 120.4182,
+        "address": "雲林縣虎尾鎮興南里30-6號（國道1號斗南/虎尾交流道旁）",
+        "lat": 23.6933829,
+        "lng": 120.4621346,
         "city": "雲林縣",
         "district": "虎尾鎮"
       },
@@ -4829,7 +4829,7 @@
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-10-05",
       "reviews": "雲林第一座匹克球專用館，交流道旁交通方便",
       "contact_details": {
         "line": "@132zvqky",
@@ -5086,9 +5086,9 @@
       "id": 125,
       "name": "高雄橋頭公園匹克球場",
       "location": {
-        "address": "高雄市橋頭區橋頭公園",
-        "lat": 22.7582,
-        "lng": 120.3052,
+        "address": "高雄市橋頭區隆豐路11號（橋頭公園）",
+        "lat": 22.7562735,
+        "lng": 120.3057311,
         "city": "高雄市",
         "district": "橋頭區"
       },
@@ -5107,7 +5107,7 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-10-05",
       "reviews": "橋頭免費戶外場"
     },
     {
@@ -6432,6 +6432,410 @@
       "added_date": "2026-10",
       "last_updated": "2026-10-01",
       "reviews": "桃園區春日路的匹克球專用館，由兩位教練共同經營，提供場地租借、私人教練課、入門體驗課與 Open Play 球敘。官網標示 2 面標準場，收費與開放時段以官方線上預約頁為準。地板材質官方未公告，暫記待查證。"
+    },
+    {
+      "id": 162,
+      "name": "GooDink 匹克球俱樂部",
+      "location": {
+        "address": "台中市西屯區甘河路108號1樓、2樓",
+        "lat": 24.1740129,
+        "lng": 120.6593384,
+        "city": "台中市",
+        "district": "西屯區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方線上預約頁公告",
+      "courts_count": 5,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方線上預約頁開放時段",
+      "contact": "04-2311-0368",
+      "contact_details": {
+        "phone": "04-2311-0368"
+      },
+      "facilities": [
+        "室內",
+        "線上預約"
+      ],
+      "features": [
+        "上下兩層共 5 面場"
+      ],
+      "booking_url": "https://goodink.ainfolink.net/",
+      "website": "https://goodink.ainfolink.net/",
+      "reviews": "西屯甘河路的匹克球專用館，1、2 樓共 5 面場，透過官方線上系統預約。收費與開放時段以預約頁為準，地板材質待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 163,
+      "name": "瘋匹克 龜山館",
+      "location": {
+        "address": "桃園市龜山區大華里興華三街28巷8號",
+        "lat": 25.0538693,
+        "lng": 121.3649065,
+        "city": "桃園市",
+        "district": "龜山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方線上預約頁公告",
+      "courts_count": 3,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方線上預約頁開放時段",
+      "contact": "線上預約（官方未公告電話）",
+      "facilities": [
+        "室內",
+        "線上預約",
+        "飲水機"
+      ],
+      "features": [
+        "匹克球專用館"
+      ],
+      "reviews": "龜山大華里的匹克球專用館，採線上預約。場地面數官方未公告，本站暫記 3 面待查證；收費以預約頁為準。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 164,
+      "name": "匹克智治區 台中冷氣匹克球場",
+      "location": {
+        "address": "台中市南屯區龍德路一段128號",
+        "lat": 24.1482008,
+        "lng": 120.6242145,
+        "city": "台中市",
+        "district": "南屯區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依 gobooking 預約頁公告",
+      "courts_count": 2,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "24 小時營業（以 gobooking 可預約時段為準）",
+      "contact": "0905-733-063",
+      "contact_details": {
+        "phone": "0905-733-063"
+      },
+      "facilities": [
+        "室內",
+        "冷氣",
+        "線上預約"
+      ],
+      "features": [
+        "冷氣球場",
+        "24 小時可預約"
+      ],
+      "booking_url": "https://gobooking.tw/",
+      "reviews": "南屯龍德路的冷氣室內匹克球場，標示 24 小時營業、透過 gobooking 預約。場地面數官方未公告，本站暫記 2 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 165,
+      "name": "羽克打球聚會所",
+      "location": {
+        "address": "台南市永康區塩行里中正五街26之12號",
+        "lat": 23.0362305,
+        "lng": 120.2446813,
+        "city": "台南市",
+        "district": "永康區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方粉專公告",
+      "courts_count": 2,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "約至 23:00（詳細時段依官方公告）",
+      "contact": "06-243-2282",
+      "contact_details": {
+        "phone": "06-243-2282"
+      },
+      "facilities": [
+        "室內",
+        "冷氣"
+      ],
+      "features": [
+        "匹克球專用館",
+        "親子友善"
+      ],
+      "reviews": "永康塩行的室內冷氣匹克球館，台南少數的專用室內場。場地面數官方未公告，本站暫記 2 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 166,
+      "name": "新羽力羽球俱樂部（匹克球）",
+      "location": {
+        "address": "新北市新店區安康路二段295-3號",
+        "lat": 24.9576164,
+        "lng": 121.5035561,
+        "city": "新北市",
+        "district": "新店區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "洽官方 LINE",
+      "courts_count": 1,
+      "net_type": "provided",
+      "ownership": "private",
+      "opening_hours": "週一至週五 09:00-24:00，週六日 07:00-24:00",
+      "opening_details": {
+        "weekday": "09:00-24:00",
+        "weekend": "07:00-24:00"
+      },
+      "contact": "LINE @xylclub／0970-761-500",
+      "contact_details": {
+        "phone": "0970-761-500",
+        "line": "@xylclub"
+      },
+      "facilities": [
+        "室內",
+        "PU 地板",
+        "淋浴間",
+        "器材租借"
+      ],
+      "features": [
+        "羽球館兼營匹克球",
+        "匹克球課程"
+      ],
+      "website": "https://xylclub.lovable.app/",
+      "booking_method": "LINE 或電話專人預約",
+      "reviews": "新店安康的羽球館，官網列有匹克球場地、器材租借與初階／進階課程。匹克球可用面數未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 167,
+      "name": "羽神拍拍館（匹克球）",
+      "location": {
+        "address": "新北市泰山區楓樹里楓江路46巷34-3號",
+        "lat": 25.05995,
+        "lng": 121.43631,
+        "city": "新北市",
+        "district": "泰山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "洽官方 LINE",
+      "courts_count": 1,
+      "net_type": "provided",
+      "ownership": "private",
+      "opening_hours": "約至 01:00（詳細時段依官方公告）",
+      "contact": "02-2296-6656",
+      "contact_details": {
+        "phone": "02-2296-6656"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "羽球館兼營匹克球"
+      ],
+      "reviews": "泰山楓江路的羽球館，提供羽球與匹克球場地租借。匹克球可用面數未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 168,
+      "name": "PAW SPORTS 昌益園區運動會館（匹克球）",
+      "location": {
+        "address": "新竹縣竹北市環科一路9號D棟3樓",
+        "lat": 24.8444246,
+        "lng": 121.0089541,
+        "city": "新竹縣",
+        "district": "竹北市"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方線上預約頁公告",
+      "courts_count": 1,
+      "surface": "wood",
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "約至 22:00（依線上預約時段）",
+      "contact": "03-656-8177",
+      "contact_details": {
+        "phone": "03-656-8177"
+      },
+      "facilities": [
+        "室內",
+        "木質地板",
+        "線上預約",
+        "球拍租借"
+      ],
+      "features": [
+        "標準匹克球場線",
+        "Kasaca 專業球網"
+      ],
+      "booking_url": "https://pawsports.17fit.com/01?tab=appointments",
+      "website": "https://pawsports.com.tw/pickleball-court/",
+      "reviews": "竹北昌益園區的綜合運動會館，設有依規範劃線的匹克球場、專業球網與木質地板，現場可租球拍。場地面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 169,
+      "name": "THE COURT by Draft Land",
+      "location": {
+        "address": "台北市中山區玉門街1號（花博公園圓山園區 Maji Square）",
+        "lat": 25.0697913,
+        "lng": 121.521964,
+        "city": "台北市",
+        "district": "中山區"
+      },
+      "type": "outdoor",
+      "fee": "paid",
+      "price": "官方尚未公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "週日至週四 15:00-24:00，週五六 15:00-03:00",
+      "opening_details": {
+        "weekday": "週日至週四 15:00-24:00",
+        "weekend": "週五六 15:00-03:00"
+      },
+      "contact": "IG @thecourt.tw",
+      "contact_details": {
+        "instagram": "https://www.instagram.com/thecourt.tw/"
+      },
+      "facilities": [
+        "戶外",
+        "酒吧"
+      ],
+      "features": [
+        "匹克球場結合酒吧",
+        "定期球聚與 DJ 夜"
+      ],
+      "reviews": "Draft Land 在花博 Maji Square 的新空間，2026/10/4 開幕，以一座戶外匹克球場為核心結合酒吧，定期辦球聚與訓練。打球收費與預約方式官方尚未公告。與本站「花博 MAJI 匹克庭園」為不同經營者。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 170,
+      "name": "台中大里康橋匹克球場",
+      "location": {
+        "address": "台中市大里區興大南街（國光公園內）",
+        "lat": 24.1169785,
+        "lng": 120.6775738,
+        "city": "台中市",
+        "district": "大里區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "約至 21:30（待查證）",
+      "contact": "大里區公所",
+      "facilities": [
+        "戶外"
+      ],
+      "features": [
+        "公園內免費場"
+      ],
+      "reviews": "大里國光公園內的戶外匹克球場（與本站「大里二二八公園」為不同地點）。場地面數未見官方公告，本站暫記 2 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 171,
+      "name": "新店交通公園匹克球場",
+      "location": {
+        "address": "新北市新店區明德里（友誼交通公園）",
+        "lat": 24.9769751,
+        "lng": 121.5384774,
+        "city": "新北市",
+        "district": "新店區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "約至 22:00（待查證）",
+      "contact": "新店區公所",
+      "facilities": [
+        "戶外"
+      ],
+      "features": [
+        "公園內免費場"
+      ],
+      "reviews": "新店友誼交通公園內的戶外匹克球場。場地面數與網子形式未見官方公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 172,
+      "name": "台南華府匹克球球場",
+      "location": {
+        "address": "台南市安平區國平里府平路77號",
+        "lat": 22.9865965,
+        "lng": 120.1736843,
+        "city": "台南市",
+        "district": "安平區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 2,
+      "net_type": "permanent",
+      "ownership": "community",
+      "opening_hours": "約至 22:00（待查證）",
+      "contact": "待查證",
+      "facilities": [
+        "戶外"
+      ],
+      "features": [
+        "安平免費場"
+      ],
+      "reviews": "安平府平路上的戶外匹克球場，距府平公園專用場約 300 公尺，為不同場地。場地面數未見官方公告，本站暫記 2 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
+    },
+    {
+      "id": 173,
+      "name": "台南水鳥匹克球／籃球場",
+      "location": {
+        "address": "台南市安平區王城里",
+        "lat": 23.0019058,
+        "lng": 120.1524642,
+        "city": "台南市",
+        "district": "安平區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "約至 22:00（待查證）",
+      "contact": "待查證",
+      "facilities": [
+        "戶外"
+      ],
+      "features": [
+        "與籃球場共用"
+      ],
+      "reviews": "安平王城里水鳥公園一帶的戶外場，匹克球與籃球共用。場地面數未見官方公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-05"
     }
   ]
 }

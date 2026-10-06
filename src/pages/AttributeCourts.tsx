@@ -208,6 +208,12 @@ const AttributeCourts = () => {
               >
                 全部球場
               </Link>
+              <Link
+                to="/courts/updates"
+                className="px-3 py-1.5 bg-white border border-neutral-200 rounded-full text-sm text-neutral-600 hover:border-teal-300 hover:text-teal-700 transition-colors"
+              >
+                球場動態
+              </Link>
             </div>
           </motion.div>
         </div>

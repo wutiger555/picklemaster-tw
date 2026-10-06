@@ -53,13 +53,13 @@ const NewCourtsTicker = () => {
     <div className="relative bg-neutral-900 text-white overflow-hidden border-y border-white/10 h-12 flex items-center">
       {/* Label Badge - Absolute positioned to stay on top */}
       <div className="absolute left-0 top-0 bottom-0 z-20 bg-gradient-to-r from-accent-600 to-accent-500 pl-4 pr-8 flex items-center shadow-[4px_0_24px_rgba(0,0,0,0.5)] clip-path-slant">
-        <span className="flex items-center gap-2 font-bold tracking-wider text-sm whitespace-nowrap z-10">
+        <Link to="/courts/updates" className="flex items-center gap-2 font-bold tracking-wider text-sm whitespace-nowrap z-10 hover:underline underline-offset-4">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
           </span>
           新球場快訊
-        </span>
+        </Link>
         {/* Slanted edge effect created by CSS clip-path or overlay */}
         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-r from-accent-500 to-transparent translate-x-full"></div>
       </div>

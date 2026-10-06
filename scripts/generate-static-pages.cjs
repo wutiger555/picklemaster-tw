@@ -2292,6 +2292,67 @@ async function generateStaticPages() {
                 console.log(`  Prerendered ${COURT_ATTRIBUTES.length} attribute court pages`);
             }
 
+            // ===== 球場動態 /courts/updates =====
+            // 資料由 src/data/courtUpdates.ts 提供（React 頁面讀同一份）；球場名稱取 courts.json 目前值。
+            {
+                const { COURT_UPDATES, COURT_UPDATE_KIND_LABEL } = loadTsModule('src/data/courtUpdates.ts');
+                const courtById = new Map(courtsData.courts.map(c => [c.id, c]));
+                const byMonth = new Map();
+                for (const u of COURT_UPDATES) {
+                    const ym = u.date.slice(0, 7);
+                    byMonth.set(ym, [...(byMonth.get(ym) || []), u]);
+                }
+                const canonical = `${BASE_URL}/courts/updates/`;
+                const lastDate = COURT_UPDATES[0].date;
+                const title = '匹克球場動態 2026｜新開球場、位置修正與歇業紀錄';
+                const desc = `台灣匹克球場地變動很快。這裡按月記錄本站新增的球場、修正的位置與地址、以及確認歇業或重複而移除的資料，最近更新 ${lastDate}。`;
+                const body = `
+        <p style="font-size:17px;color:#4b5563;margin:0 0 20px;">台灣的匹克球場一個月就能多出十幾座，舊資料也常有地址或位置對不上。這裡記錄本站每一次新增、修正與移除，每筆都經過查證才上線。目前收錄 ${courtsData.courts.length} 座。</p>
+        ${[...byMonth.entries()].map(([ym, list]) => `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${ym.slice(0, 4)} 年 ${Number(ym.slice(5))} 月</h2>
+          ${list.map(u => `<div style="margin-bottom:14px;">
+            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">${u.date}【${esc(COURT_UPDATE_KIND_LABEL[u.kind])}】${esc(u.title)}</h3>
+            <p style="font-size:15px;margin:0 0 4px;color:#4b5563;">${esc(u.detail)}</p>
+            ${(u.courtIds || []).filter(id => courtById.has(id)).length ? `<p style="font-size:14px;margin:0;">${(u.courtIds || []).filter(id => courtById.has(id)).map(id => `<a href="/courts/court-${id}" style="color:#0d9488;">${esc(courtById.get(id).name)}</a>`).join('、')}</p>` : ''}
+          </div>`).join('')}
+        </section>`).join('')}`;
+                const ldJson = {
+                    "@context": "https://schema.org",
+                    "@graph": [
+                        { "@type": "WebPage", "name": title, "url": canonical, "dateModified": lastDate, "inLanguage": "zh-TW" },
+                        {
+                            "@type": "BreadcrumbList", "itemListElement": [
+                                { "@type": "ListItem", "position": 1, "name": "首頁", "item": BASE_URL + "/" },
+                                { "@type": "ListItem", "position": 2, "name": "球場地圖", "item": `${BASE_URL}/courts/` },
+                                { "@type": "ListItem", "position": 3, "name": "球場動態", "item": canonical },
+                            ],
+                        },
+                    ],
+                };
+                const dirPath = path.join(BUILD_DIR, 'courts', 'updates');
+                fs.mkdirSync(dirPath, { recursive: true });
+                let content = template;
+                content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
+                content = content.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(desc)}" />`);
+                content = content.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+                content = content.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${esc(title)}" />`);
+                content = content.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${esc(desc)}" />`);
+                content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+                content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(ldJson).replace(/</g, '\\u003c')}</script>`);
+                content = injectPrerender(content, prerenderShell({
+                    crumbs: [{ name: '首頁', href: '/' }, { name: '球場地圖', href: '/courts' }, { name: '球場動態' }],
+                    h1: '球場動態',
+                    bodyHtml: body,
+                }));
+                content = applyOg(content, 'og/courts-updates.png', {
+                    title: '球場動態', type: 'city', badge: '每月更新',
+                    subtitle: `目前收錄 ${courtsData.courts.length} 座 · 最近更新 ${lastDate}`,
+                });
+                fs.writeFileSync(path.join(dirPath, 'index.html'), content);
+                console.log(`  Prerendered /courts/updates (${COURT_UPDATES.length} entries)`);
+            }
+
             // ===== Prerender / =====
             // 首頁同樣只送空的 #root。曝光不高，但它是全站權重起點，
             // 也是不執行 JS 的 AI 引擎最常抓的一頁。
@@ -2358,7 +2419,7 @@ async function generateStaticPages() {
         // lastmod 只在拿得到「真實異動日」時才寫。
         // 原本 336 筆裡有 309 筆蓋的是建置日期 —— 每跑一次 build 就把全站推成今天，
         // 而 Google 的作法是：lastmod 一旦被判定不可信，就整個忽略掉。
-        // 球場 170 筆本來就有人工查證日（last_updated），文章有 updatedDate，
+        // 球場 181 筆本來就有人工查證日（last_updated），文章有 updatedDate，
         // 新聞有發佈日；其餘拿不到真實日期的，寧可不寫 —— lastmod 本來就是選填。
         const urlEntry = (loc, { lastmod, changefreq, priority }) => `
     <url>
@@ -2432,6 +2493,11 @@ async function generateStaticPages() {
                 lastmod: newestOf(matched), changefreq: 'weekly', priority: '0.9',
             });
         }
+
+        // 球場動態：lastmod 用最新一筆異動的實際日期
+        sitemapContent += urlEntry(`${BASE_URL}/courts/updates/`, {
+            lastmod: loadTsModule('src/data/courtUpdates.ts').COURT_UPDATES[0].date, changefreq: 'weekly', priority: '0.85',
+        });
 
         for (const court of courtsForSitemap) {
             sitemapContent += urlEntry(`${BASE_URL}/courts/court-${court.id}/`, {

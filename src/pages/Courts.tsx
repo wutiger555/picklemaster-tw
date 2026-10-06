@@ -479,6 +479,12 @@ const Courts = () => {
                   {stats.newCourts} 新場地
                 </motion.span>
               )}
+              <Link
+                to="/courts/updates"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-neutral-200 rounded-full text-sm text-neutral-600 hover:border-teal-300 hover:text-teal-700 transition-colors"
+              >
+                球場動態 →
+              </Link>
             </div>
           </motion.div>
         </div>

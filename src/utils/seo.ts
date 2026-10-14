@@ -337,6 +337,7 @@ export const tournamentsEventData = {
         "position": i + 1,
         "name": t.name,
         ...(t.nameEn ? { "alternateName": t.nameEn } : {}),
+        "description": t.summary,
         "sport": "Pickleball",
         "startDate": t.date,
         ...(t.endDate ? { "endDate": t.endDate } : {}),

@@ -508,16 +508,10 @@ const pageSEO = {
                 {
                     "@type": "ItemList",
                     "name": "2026 台灣匹克球賽事",
-                    "numberOfItems": 11,
-                    "itemListElement": [
-                        { "@type": "SportsEvent", "position": 1, "name": "2026 臺灣盃全國匹克球公開賽", "sport": "Pickleball", "startDate": "2026-01-30", "endDate": "2026-02-01", "location": { "@type": "Place", "name": "國立宜蘭大學體育館" } },
-                        { "@type": "SportsEvent", "position": 2, "name": "2026 NAPA 盃全國匹克球錦標賽", "sport": "Pickleball", "startDate": "2026-02-28", "endDate": "2026-03-01" },
-                        { "@type": "SportsEvent", "position": 3, "name": "2026 港都盃全國匹克球錦標賽", "sport": "Pickleball", "startDate": "2026-04-18", "location": { "@type": "Place", "name": "樹德科技大學" } },
-                        { "@type": "SportsEvent", "position": 4, "name": "2026 全國中正盃匹克球錦標賽", "sport": "Pickleball", "startDate": "2026-06-20", "location": { "@type": "Place", "name": "台北市大安運動中心" } },
-                        { "@type": "SportsEvent", "position": 5, "name": "2026 噶瑪蘭盃匹克球錦標賽", "sport": "Pickleball", "startDate": "2026-08-15", "location": { "@type": "Place", "name": "宜蘭運動公園" } },
-                        { "@type": "SportsEvent", "position": 6, "name": "2026 臺北匹克球公開賽", "sport": "Pickleball", "startDate": "2026-09-12", "location": { "@type": "Place", "name": "臺北體育館" } },
-                        { "@type": "SportsEvent", "position": 7, "name": "2026 亞洲匹克球運動會 (APG)", "sport": "Pickleball", "startDate": "2026-10-15" }
-                    ]
+                    // 由 tournamentsData.ts 產生（與 src/utils/seo.ts 同形），避免手抄清單漏 location 被 Search Console 判重大錯誤。
+                    // 用 getter 延後到序列化時才載入：此物件在 loadTsModule 的 tsModuleCache 宣告之前就會被求值。
+                    get numberOfItems() { return loadTsModule('src/data/tournamentsData.ts').TOURNAMENTS_2026.length; },
+                    get itemListElement() { return tournamentEvents(); }
                 }
             ]
         }
@@ -866,6 +860,29 @@ function loadTsModule(relPath) {
     new Function('module', 'exports', 'require', out.outputFiles[0].text)(mod, mod.exports, require);
     tsModuleCache.set(relPath, mod.exports);
     return mod.exports;
+}
+
+/** 賽事 SportsEvent：只放資料裡真的有的欄位（image、performer、offers 沒有就不寫，不捏造）。 */
+function tournamentEvents() {
+    return loadTsModule('src/data/tournamentsData.ts').TOURNAMENTS_2026.map((t, i) => ({
+        "@type": "SportsEvent",
+        "position": i + 1,
+        "name": t.name,
+        ...(t.nameEn ? { "alternateName": t.nameEn } : {}),
+        "description": t.summary,
+        "sport": "Pickleball",
+        "startDate": t.date,
+        ...(t.endDate ? { "endDate": t.endDate } : {}),
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": {
+            "@type": "Place",
+            "name": t.venue,
+            "address": { "@type": "PostalAddress", "addressLocality": t.city, "addressCountry": "TW" }
+        },
+        "organizer": { "@type": "SportsOrganization", "name": t.organizer },
+        ...(t.officialUrl ? { "url": t.officialUrl } : {}),
+    }));
 }
 
 /**

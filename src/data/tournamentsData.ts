@@ -302,7 +302,7 @@ const RAW_TOURNAMENTS: Tournament[] = [
     level: '區域',
     status: 'registration',
     organizer: 'TMLP 台灣匹克球積分巡迴賽',
-    summary: 'TMLP 積分巡迴賽 2026 賽季第 5 站，10 月 17、18 日於新北市林口高中舉行，官網顯示報名中。採男雙／女雙／混雙三項，成績計入 TMLP 年度積分，年終台北站為積分邀請制。',
+    summary: 'TMLP 積分巡迴賽 2026 賽季第 5 站，也是分站賽最終戰，10 月 17、18 日於新北市林口高中舉行，兩天吸引超過千人報名。本巡迴賽今年首辦，4 月起依序造訪高雄、嘉義、苗栗、新竹，每站規模都在 600 人以上。採男雙／女雙／混雙三項，成績計入 TMLP 年度積分，11 月台北年終站為積分邀請制。',
     categories: ['公開組', '積分組'],
     registrationUrl: 'https://www.tmlp.com.tw/events',
     officialUrl: 'https://www.tmlp.com.tw/',
@@ -451,7 +451,7 @@ const RAW_TOURNAMENTS: Tournament[] = [
     level: '國際',
     status: 'upcoming',
     organizer: '台中市政府運動局 / 中華民國匹克球協會 / 台中市匹克球協會',
-    summary: '獲運動部「台灣品牌國際賽事計畫」補助的國際賽，預計 10 國約 1,300 名選手參賽，四天賽程涵蓋團體賽、單打、雙打與混雙，總獎金 43,500 美元。10 月 14 日團體賽導入美國匹克球小聯盟（MiLP）賽制，各組冠軍取得 2027 年美國小聯盟賽外卡。賽期同步舉辦「亞洲匹克球運動產業趨勢論壇」，玖壹壹洋蔥出席宣傳。報名已於 9 月 26 日截止。',
+    summary: '獲運動部「台灣品牌國際賽事計畫」補助的國際賽，10 月 14 日開幕當日媒體報導實到 16 國、逾 1,000 名選手（賽前預估為 10 國 1,300 人），四天賽程涵蓋團體賽、單打、雙打與混雙，總獎金 43,500 美元。團體賽導入美國匹克球小聯盟（MiLP）賽制，各組冠軍取得 2027 年美國小聯盟賽外卡。開幕典禮由台中市副市長鄭照新代表出席，亞洲匹克球聯合會秘書長與匹克球協會副理事長、玖壹壹成員洋蔥（陳皓宇）到場。',
     categories: ['團體賽（MiLP 賽制）', '單打', '雙打', '混合雙打'],
     registrationDeadline: '2026-09-26',
     prizeInfo: '總獎金 43,500 美元；團體賽各組冠軍獲 2027 美國小聯盟賽外卡',
@@ -553,7 +553,7 @@ export const getTournamentsByLevel = (level: TournamentLevel): Tournament[] => {
 export const TAIWAN_PICKLEBALL_STATS_2026 = {
   estimatedPlayers: 1_200_000,    // 預估 2026 年球友人數（遠見：2024=14萬, 2025=50萬, 2026=120萬）
   certifiedCoaches: 1400,          // CTPF 已認證 C 級教練
-  knownCourts: 181,                // 全台已知球場（本站收錄 181 座，持續新增）
+  knownCourts: 183,                // 全台已知球場（本站收錄 183 座，持續新增）
   tournamentsYear: TOURNAMENTS_2026.length,
   governingBody: '中華民國匹克球協會 (CTPF)',
   chairman: '陳朝鍵',

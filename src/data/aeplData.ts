@@ -1,7 +1,7 @@
 // AEPL 亞洲菁英匹克球聯盟 — 專區資料
 // 資料來源：中央社（2026-05-22、08-17）、自由體育、聯合新聞網、Newtalk（08-25）等公開報導
 // 誠實原則:僅收錄可查證事實；未公布資訊以 confirmed: false 或 'TBA' 標示,不臆測
-// 最後更新：2026-10-05（前三站完賽：台中、高雄、宜蘭冠軍皆為桃園永豐雲豹；第 4 站新竹 10/17-18）
+// 最後更新：2026-10-21（前四站完賽：台中、高雄、宜蘭冠軍皆為桃園永豐雲豹，第 4 站新竹由地主新竹 YANKEY ACE 奪冠、終結雲豹連勝）
 
 export interface AeplTeam {
   id: string;
@@ -37,7 +37,7 @@ export const AEPL_LEAGUE = {
   operator: '亞洲菁英匹克球股份有限公司',
   ceo: '張智維',
   ambassador: '林志穎',
-  season: '2026 創始賽季（8 - 11 月）・桃園永豐雲豹三站三冠',
+  season: '2026 創始賽季（8 - 11 月）・四站完賽，雲豹三冠、新竹 YANKEY ACE 主場封王',
   totalPrize: '新台幣 100 萬元',
   teamsCount: 6,
   stationsPlanned: 8,
@@ -47,7 +47,7 @@ export const AEPL_LEAGUE = {
     { year: '2027', milestone: '啟動與東南亞國家的聯賽合作' },
     { year: '2028', milestone: '目標擴大為全亞洲巡迴賽' },
   ],
-  lastUpdated: '2026-10-05',
+  lastUpdated: '2026-10-21',
 };
 
 // 賽制規則（依公開報導整理）
@@ -196,7 +196,7 @@ export const AEPL_STATIONS: AeplStation[] = [
   { station: 1, city: '台中', venue: '台中火車站空中廊道（二樓平台）', dateLabel: '8 月 29 - 30 日', status: 'done', note: '🏆 冠軍：桃園永豐雲豹' },
   { station: 2, city: '高雄', venue: '高雄駁二特區', dateLabel: '9 月 19 - 20 日', status: 'done', note: '🏆 冠軍：桃園永豐雲豹' },
   { station: 3, city: '宜蘭', venue: '宜蘭運動公園', dateLabel: '10 月 3 - 4 日', status: 'done', note: '🏆 冠軍：桃園永豐雲豹' },
-  { station: 4, city: '新竹', venue: '場地待公布', dateLabel: '10 月 17 - 18 日', status: 'scheduled', note: '賽季第 4 站' },
+  { station: 4, city: '新竹', venue: '新竹孔廟前廣場', dateLabel: '10 月 17 - 18 日', status: 'done', note: '🏆 冠軍：新竹 YANKEY ACE（終結雲豹開季 3 連冠）' },
   { station: 5, city: '待公布', venue: '剩餘分站地區池：雙北、桃園、台南', dateLabel: '10 - 11 月', status: 'tba' },
 ];
 
@@ -214,6 +214,28 @@ export interface AeplStationReport {
 
 // 各站戰報（新到舊）。來源：聯合新聞網、Yahoo 運動、壹蘋新聞網、Newtalk
 export const AEPL_STATION_REPORTS: AeplStationReport[] = [
+  {
+    station: 4,
+    title: '新竹站',
+    dateLabel: '2026 年 10 月 17 - 18 日・新竹孔廟前廣場',
+    champion: '新竹 YANKEY ACE',
+    runnerUp: '桃園永豐雲豹',
+    scores: '11:21、21:13、21:19、21:20',
+    final: '地主隊先丟男雙首回合，接著連拿三回合逆轉：女雙易楷芬／陳懷恕 21:13 扳平，混雙陳懷恕搭王耀城 21:19 聽牌，最後一回合易楷芬／陳昱翰在 21:20 的一分差中守住冠軍點——YANKEY ACE 拿下隊史首座分站冠軍，也終結雲豹開季三連冠。',
+    semis: [
+      '冠軍戰：新竹 YANKEY ACE 3:1 桃園永豐雲豹',
+      '4 強：新竹 YANKEY ACE 3:1 台南旭日雷霆（21:18、21:11、15:21、21:18）',
+      '4 強：桃園永豐雲豹 3:0 高雄富瑞特（21:12、21:15、21:13）',
+      '季軍戰：台南旭日雷霆 3:0 高雄富瑞特（21:20、21:15、21:16）',
+      '分組賽 A 組：雲豹 2 勝 0 敗、旭日雷霆 1 勝 1 敗、台北 Ahhh 2 敗',
+      '分組賽 B 組：YANKEY ACE 2 勝 0 敗、高雄富瑞特 1 勝 1 敗、新北蘆沐 2 敗',
+    ],
+    quotes: [
+      { who: '陳懷恕（YANKEY ACE）', text: '主場奪冠很開心，但仍要保持謙虛，前次和他們爭冠，我們表現也差不多，但這次身為地主，壓力確實較大。' },
+      { who: '易楷芬（YANKEY ACE）', text: '冠軍賽真的很害怕敗在最後 1 分，因為對手後來打很好，洸賢越打越兇，佩庭也減少失誤。' },
+      { who: '鍾振煒（雲豹隊長）', text: '輸要知道輸在哪，並將其改善。' },
+    ],
+  },
   {
     station: 3,
     title: '宜蘭站',
@@ -321,7 +343,7 @@ export const AEPL_INTEL = {
     '新竹站場地，以及第 5 站之後的日期與場地',
     '賽季積分排名的官方發布管道',
     '總決賽晉級機制細節',
-    '富瑞特科技目前三站未有公開戰績報導',
+    '新竹站（第 4 站）首度留下公開戰績：分組賽 3:1 勝新北蘆沐、1:3 不敵新竹 YANKEY ACE，4 強 0:3 不敵雲豹，季軍戰 0:3 不敵台南旭日雷霆，分站第 4 名',
     '轉播／直播平台',
   ],
 };

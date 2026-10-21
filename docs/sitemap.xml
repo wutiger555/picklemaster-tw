@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     <url>
         <loc>https://picklemastertw.com/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
@@ -647,6 +647,24 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://picklemastertw.com/news/tw-202610-aepl-hsinchu/</loc>
+        <lastmod>2026-10-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202610-tmlp-final-stop/</loc>
+        <lastmod>2026-10-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202610-taichung-open-opening/</loc>
+        <lastmod>2026-10-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
         <loc>https://picklemastertw.com/news/tw-202610-aepl-station3/</loc>
         <lastmod>2026-10-04</lastmod>
         <changefreq>monthly</changefreq>
@@ -900,7 +918,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/new-taipei/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -912,7 +930,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/taoyuan/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -930,7 +948,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/taichung/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -1002,7 +1020,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/indoor/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -1014,13 +1032,13 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/24h/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/updates/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.85</priority>
     </url>
@@ -1440,7 +1458,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-74/</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -1620,7 +1638,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-104/</loc>
-        <lastmod>2026-09-02</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -1956,7 +1974,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-161/</loc>
-        <lastmod>2026-10-06</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -2107,6 +2125,18 @@
     <url>
         <loc>https://picklemastertw.com/courts/court-186/</loc>
         <lastmod>2026-10-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-187/</loc>
+        <lastmod>2026-10-21</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-188/</loc>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>

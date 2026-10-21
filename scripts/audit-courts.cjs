@@ -86,6 +86,20 @@ async function probe(item) {
       await new Promise((r) => setTimeout(r, 400));
       await dns.lookup(host); // 序列重試一次，避免並行造成的假性失敗
     } catch {
+      // 連序列重試都失敗，仍要問 curl 一次才敢說它死了。
+      // 2026-10-21 一次誤報 4 條：gym.e-land.gov.tw、www.bqsports.com.tw、www.aligh.co、
+      // wulili810.booknow.com.tw 全被判「網域已無 DNS 紀錄」，但 curl 都回 200，
+      // 事後單獨重查 dns.lookup 也全部成功——就是上面那個註解說的並行假性失敗，
+      // 只是 400ms 重試一次還不夠。這條路徑原本直接 return，繞過了下面的第二意見。
+      const alt = await curlStatus(item.url);
+      if (alt >= 200 && alt < 400) {
+        return {
+          ...item,
+          ok: true,
+          code: alt,
+          reason: `Node 查不到 DNS 紀錄但 curl 回 ${alt}（${host}）—— 多半是並行查詢造成的假性失敗`,
+        };
+      }
       return { ...item, ok: false, code: 0, reason: `網域已無 DNS 紀錄（${host}）` };
     }
   }

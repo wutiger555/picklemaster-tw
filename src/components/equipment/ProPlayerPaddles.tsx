@@ -32,11 +32,11 @@ const ProPlayerPaddles = () => {
       ranking: '世界排名 #1（男子單打）',
       paddle: {
         brand: 'JOOLA',
-        model: 'Perseus Pro IV',
+        model: 'Perseus Pro V',
         type: '控制型',
         weight: '8.1 oz (230g)',
-        core: 'Polymer Honeycomb',
-        surface: 'Carbon Friction Surface',
+        core: 'Thermoformed 熱壓',
+        surface: 'T700 Carbon Fiber',
         price: '$249.99',
       },
       achievements: [

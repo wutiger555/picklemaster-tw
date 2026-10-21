@@ -7436,6 +7436,53 @@
       "is_new": true,
       "added_date": "2026-10",
       "last_updated": "2026-10-21"
+    },
+    {
+      "id": 191,
+      "name": "雪匹克 SNOWPICK Pickleball Club",
+      "location": {
+        "address": "新北市新莊區中華路一段166巷1號",
+        "lat": 25.0419786,
+        "lng": 121.4534072,
+        "city": "新北市",
+        "district": "新莊區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "平日離峰 NT$900／小時；平日尖峰與假日 NT$1,280／小時",
+      "price_details": {
+        "offpeak": "平日離峰 週一至週五 06:00–19:00 NT$900/小時",
+        "peak": "平日尖峰 週一至週五 19:00–24:00 NT$1,280/小時",
+        "weekend": "假日全天 週六、週日及國定假日 NT$1,280/小時（週六 06:00 至週日 01:00 皆屬假日費率）"
+      },
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "每日 06:00–00:00",
+      "contact": "無人化球館，無現場電話；全程線上預約",
+      "contact_details": {
+        "line": "https://lin.ee/yrUdi5y",
+        "instagram": "https://www.instagram.com/snowpick26",
+        "website": "https://snowpick.club/"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "室內 1 面",
+        "無人化球館，掃 QR code 進場",
+        "線上選時段並付款，30 分鐘為計價單位、最少 1 小時",
+        "可提前 14 天預約，開始前 24 小時免費取消",
+        "Open Play 每場最多 8 人，可單人報名"
+      ],
+      "website": "https://snowpick.club/",
+      "booking_url": "https://snowpick.club/",
+      "booking_method": "官網線上選時段並付款，付款後寄送進場 QR code（時段前後 10 分鐘有效）",
+      "navigation_tips": "館方沒有附設停車位，官網列有鄰近付費停車場：正好停-新莊體育館地下停車場、台灣聯通停車場-中華場、小北百貨-新北新莊中港二店、新馥豪特約停車場。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-21",
+      "reviews": "新莊中華路一段的單面室內匹克球館，2026 年 9 月開幕，無人化經營、全程線上預約並掃碼進場。官網公告 10 月 19 日起恢復原價並開始提供 10% 點數回饋，本站價格已依該公告更新。Google 地圖顯示營業中、打烊 00:00，與官網營業時間一致。"
     }
   ]
 }

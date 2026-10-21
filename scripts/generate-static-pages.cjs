@@ -862,6 +862,16 @@ function loadTsModule(relPath) {
     return mod.exports;
 }
 
+/**
+ * 面數顯示走和前端同一份 src/utils/courtsCount.ts，不在這裡手抄一份——
+ * 鏡像一定會漂，而 courts_count === 0 是「未公告」不是「0 面」，
+ * 抄錯會直接讓 SEO title/description 印出「0 面球場」這種假資訊。
+ */
+const courtsCountUtil = () => loadTsModule('src/utils/courtsCount.ts');
+const fmtCourts = (n, compact) => courtsCountUtil().formatCourts(n, compact);
+const fmtCourtsPhrase = (n) => courtsCountUtil().formatCourtsPhrase(n);
+const fmtCourtsTitleSeg = (n) => courtsCountUtil().formatCourtsTitleSegment(n);
+
 /** 賽事 SportsEvent：只放資料裡真的有的欄位（image、performer、offers 沒有就不寫，不捏造）。 */
 function tournamentEvents() {
     return loadTsModule('src/data/tournamentsData.ts').TOURNAMENTS_2026.map((t, i) => ({
@@ -1883,7 +1893,7 @@ async function generateStaticPages() {
         <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">室內 ${indoor} 座・戶外/風雨 ${outdoor} 座・免費 ${free} 座${open24 ? `・24 小時 ${open24} 座` : ''}</p>
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(city)}匹克球場完整名單</h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${cityCourts.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${c.courts_count} 面・${c.fee === 'free' ? '免費' : '收費'}）— ${esc(c.location.address)}</li>`).join('')}</ul>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${cityCourts.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${fmtCourts(c.courts_count)}・${c.fee === 'free' ? '免費' : '收費'}）— ${esc(c.location.address)}</li>`).join('')}</ul>
         </section>
         ${(() => {
                     // 屬性分組：直接回答「台中免費匹克球場地」這類查詢（GSC 上該查詢 73 曝光、排名 9.7）。
@@ -1933,7 +1943,7 @@ async function generateStaticPages() {
                 });
                 faqs.push({
                     q: `${court.name}有幾面球場？是室內還是戶外？`,
-                    a: `${court.name}共有 ${court.courts_count} 面球場，屬於${typeLabel}場地${court.surface ? `，場地材質為${court.surface}` : ''}。`,
+                    a: `${court.name}${fmtCourtsPhrase(court.courts_count)}，屬於${typeLabel}場地${court.surface ? `，場地材質為${court.surface}` : ''}。`,
                 });
                 if (court.facilities && court.facilities.length) {
                     faqs.push({
@@ -1964,14 +1974,14 @@ async function generateStaticPages() {
         <h1 style="font-size:30px;font-weight:800;margin:0 0 8px;">${esc(court.name)}</h1>
         ${court.status ? `<p style="margin:0 0 10px;padding:10px 14px;border:2px solid #fecdd3;background:#fff1f2;border-radius:10px;color:#881337;font-size:15px;"><strong>⚠️ 此場地目前${court.status === 'permanently_closed' ? '已歇業' : '暫時關閉'}</strong>${court.status_note ? `　${esc(court.status_note)}` : ''}${court.status_verified ? `（查證日期 ${esc(court.status_verified)}）` : ''}</p>` : ''}
         <p style="color:#4b5563;margin:0 0 4px;">📍 ${esc(court.location.address)}</p>
-        <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">${esc(city)}${esc(district)}・${typeLabel}球場・${court.courts_count} 面・${esc(feeText)}${courtIs24h(court.opening_hours) ? '・24 小時開放' : ''}</p>
+        <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">${esc(city)}${esc(district)}・${typeLabel}球場・${fmtCourts(court.courts_count)}・${esc(feeText)}${courtIs24h(court.opening_hours) ? '・24 小時開放' : ''}</p>
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">基本資訊</h2>
           <ul style="list-style:none;padding:0;margin:0;font-size:15px;">
             <li><strong>地址：</strong>${esc(court.location.address)}</li>
             <li><strong>開放時間：</strong>${esc(court.opening_hours || '依現場公告')}</li>
             <li><strong>費用：</strong>${esc(feeText)}</li>
-            <li><strong>球場數：</strong>${court.courts_count} 面</li>
+            <li><strong>球場數：</strong>${fmtCourts(court.courts_count)}</li>
             <li><strong>類型：</strong>${typeLabel}${court.surface ? `（${esc(court.surface)}）` : ''}</li>
             ${ownLabel ? `<li><strong>經營類型：</strong>${esc(ownLabel)}</li>` : ''}
             ${court.contact ? `<li><strong>聯絡電話：</strong>${esc(court.contact)}</li>` : ''}
@@ -2015,7 +2025,7 @@ async function generateStaticPages() {
         ${siblings && siblings.length ? `
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(city)}其他匹克球場</h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${siblings.map(s => `<li><a href="/courts/court-${s.id}" style="color:#0d9488;">${esc(s.name)}</a>（${typeLabelOf(s.type)}・${s.courts_count} 面・${s.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${siblings.map(s => `<li><a href="/courts/court-${s.id}" style="color:#0d9488;">${esc(s.name)}</a>（${typeLabelOf(s.type)}・${fmtCourts(s.courts_count)}・${s.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
           ${citySlug ? `<p style="margin:12px 0 0;font-size:15px;"><a href="/courts/${citySlug}" style="color:#0d9488;font-weight:600;">查看${esc(city)}全部匹克球場 →</a></p>` : ''}
         </section>` : ''}
         <p style="font-size:14px;"><a href="/courts" style="color:#0d9488;">← 返回全台匹克球場地圖</a></p>
@@ -2042,7 +2052,7 @@ async function generateStaticPages() {
                             "@id": `${canonical}#place`,
                             "name": court.name,
                             "sport": "Pickleball",
-                            "description": `${court.name}是位於${city}${court.location.district || ''}的${typeLabel}匹克球場，共 ${court.courts_count} 面球場，${court.fee === 'free' ? '免費開放' : '收費'}。`,
+                            "description": `${court.name}是位於${city}${court.location.district || ''}的${typeLabel}匹克球場，${fmtCourtsPhrase(court.courts_count)}，${court.fee === 'free' ? '免費開放' : '收費'}。`,
                             "address": { "@type": "PostalAddress", "streetAddress": court.location.address, "addressLocality": court.location.district, "addressRegion": city, "addressCountry": "TW" },
                             "geo": { "@type": "GeoCoordinates", "latitude": court.location.lat, "longitude": court.location.lng },
                             ...(court.status ? {} : { "openingHours": court.opening_hours }),
@@ -2075,9 +2085,9 @@ async function generateStaticPages() {
                 const siblings = courtsData.courts.filter(c => c.location.city === city && c.id !== court.id).slice(0, 6);
                 const statusTag = court.status === 'permanently_closed' ? '【已歇業】' : court.status === 'temporarily_closed' ? '【暫時關閉】' : '';
                 // 場館名本身已含「匹克球」時不再補「匹克球場」，避免標題重複同一個詞被行動版截掉
-                const title = `${statusTag}${court.name}｜${city}${district}${court.name.includes('匹克球') ? '' : '匹克球場'}・${typeLabel}${court.courts_count}面${feeLabel}`;
+                const title = `${statusTag}${court.name}｜${city}${district}${court.name.includes('匹克球') ? '' : '匹克球場'}・${typeLabel}${fmtCourtsTitleSeg(court.courts_count)}${feeLabel}`;
                 const statusDesc = court.status ? `${court.status === 'permanently_closed' ? '【本站查證：已歇業】' : '【本站查證：暫時關閉】'}${court.status_verified ? `（${court.status_verified}）` : ''}` : '';
-                const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}`;
+                const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，${fmtCourtsPhrase(court.courts_count)}。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}`;
                 const canonical = `${BASE_URL}/courts/${slug}/`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
@@ -2090,7 +2100,7 @@ async function generateStaticPages() {
                 content = content.replace('<div id="root"></div>', `<div id="root">${courtPrerender(court, siblings)}</div>`);
                 content = applyOg(content, `og/court-${court.id}.png`, {
                     title: court.name, type: 'court', badge: '球場',
-                    subtitle: `${city}${district} · ${typeLabel} · ${court.fee === 'free' ? '免費' : '付費'} · ${court.courts_count} 面`,
+                    subtitle: `${city}${district} · ${typeLabel} · ${court.fee === 'free' ? '免費' : '付費'} · ${fmtCourts(court.courts_count)}`,
                 });
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
             }
@@ -2205,7 +2215,7 @@ async function generateStaticPages() {
         ${cities.map(c => `
         <section style="margin-bottom:20px;">
           <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;"><a href="/courts/${c.slug}" style="color:#1f2937;text-decoration:none;">${esc(c.city)}匹克球場（${c.list.length} 座）</a></h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${c.list.map(x => `<li style="margin-bottom:4px;"><a href="/courts/court-${x.id}" style="color:#0d9488;">${esc(x.name)}</a>（${typeLabelOf(x.type)}・${x.courts_count} 面・${x.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${c.list.map(x => `<li style="margin-bottom:4px;"><a href="/courts/court-${x.id}" style="color:#0d9488;">${esc(x.name)}</a>（${typeLabelOf(x.type)}・${fmtCourts(x.courts_count)}・${x.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
         </section>`).join('')}
         <p style="font-size:15px;"><a href="/rules" style="color:#0d9488;">匹克球規則教學</a>　·　<a href="/newcomer-guide" style="color:#0d9488;">新手入門指南</a>　·　<a href="/equipment" style="color:#0d9488;">裝備選購</a></p>`;
                     const content = injectPrerender(fs.readFileSync(indexPath, 'utf-8'), prerenderShell({
@@ -2257,7 +2267,7 @@ async function generateStaticPages() {
         ${byCity.map(g => `
         <section style="margin-bottom:20px;">
           <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;"><a href="/courts/${g.slug}" style="color:#1f2937;text-decoration:none;">${esc(g.city)}</a>（${g.list.length} 座）</h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${g.list.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${c.courts_count} 面・${c.fee === 'free' ? '免費' : '收費'}・${esc(c.opening_hours || '依現場公告')}）— ${esc(c.location.address)}</li>`).join('')}</ul>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${g.list.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${fmtCourts(c.courts_count)}・${c.fee === 'free' ? '免費' : '收費'}・${esc(c.opening_hours || '依現場公告')}）— ${esc(c.location.address)}</li>`).join('')}</ul>
         </section>`).join('')}
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">常見問題</h2>
@@ -2436,7 +2446,7 @@ async function generateStaticPages() {
         // lastmod 只在拿得到「真實異動日」時才寫。
         // 原本 336 筆裡有 309 筆蓋的是建置日期 —— 每跑一次 build 就把全站推成今天，
         // 而 Google 的作法是：lastmod 一旦被判定不可信，就整個忽略掉。
-        // 球場 183 筆本來就有人工查證日（last_updated），文章有 updatedDate，
+        // 球場 185 筆本來就有人工查證日（last_updated），文章有 updatedDate，
         // 新聞有發佈日；其餘拿不到真實日期的，寧可不寫 —— lastmod 本來就是選填。
         const urlEntry = (loc, { lastmod, changefreq, priority }) => `
     <url>

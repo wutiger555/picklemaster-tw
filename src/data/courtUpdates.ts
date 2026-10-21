@@ -30,6 +30,13 @@ export const COURT_UPDATE_KIND_LABEL: Record<CourtUpdateKind, string> = {
 export const COURT_UPDATES: CourtUpdate[] = [
   {
     date: '2026-10-21',
+    kind: 'added',
+    title: '再收 2 座：OIN 匹克基地 林口場、泰山匹克立——兩座都沒有公開面數',
+    detail: 'OIN 林口場 Google 地圖累積 26 則評論、4.9 星，不是新館而是本站先前漏收；匹克立在泰山中港南路，地圖標示 24 小時營業。兩座的面數在官網、社群與各家場地目錄都查不到，本站不以推測數字填補，頁面一律顯示「面數未公告」。',
+    courtIds: [189, 190],
+  },
+  {
+    date: '2026-10-21',
     kind: 'corrected',
     title: '一一匹克的線上訂場連結已無法連線',
     detail: '原本指向 ipickleball 的訂場子網域 app.ipickleball.tw，該網域雖仍有 DNS 紀錄但連線不通。移除失效連結，改註明預約管道待查證——網路上找到的替代聯絡資訊地址與本場館不符，未予採用。',

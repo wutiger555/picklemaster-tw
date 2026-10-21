@@ -7,6 +7,7 @@ import { GLOSSARY } from './glossaryData';
 import { ROUTES } from '../utils/constants';
 import type { CourtsData, Court } from '../types';
 import type { SearchEntry } from './searchFilter';
+import { formatCourts } from '../utils/courtsCount';
 
 export type { SearchEntry } from './searchFilter';
 
@@ -89,7 +90,7 @@ export async function buildSearchIndex(): Promise<SearchEntry[]> {
     for (const c of data.courts) {
       entries.push({
         title: c.name,
-        description: `${c.location.city}${c.location.district || ''} · ${typeLabel(c.type)} · ${c.fee === 'free' ? '免費' : '付費'} · ${c.courts_count} 面`,
+        description: `${c.location.city}${c.location.district || ''} · ${typeLabel(c.type)} · ${c.fee === 'free' ? '免費' : '付費'} · ${formatCourts(c.courts_count)}`,
         path: `/courts/court-${c.id}`,
         category: '球場',
         keywords: clean([c.name, c.location.city, c.location.district, c.location.address, ...(c.features || [])]),

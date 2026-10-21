@@ -7365,6 +7365,77 @@
       "is_new": true,
       "added_date": "2026-10",
       "last_updated": "2026-10-21"
+    },
+    {
+      "id": 189,
+      "name": "OIN 匹克基地 林口場",
+      "location": {
+        "address": "新北市林口區後湖路16-1號",
+        "lat": 25.0982161,
+        "lng": 121.384397,
+        "city": "新北市",
+        "district": "林口區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請洽 LINE 官方帳號",
+      "courts_count": 0,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "未公告，請洽 LINE 官方帳號",
+      "contact": "無公開電話，採 LINE 官方帳號聯繫",
+      "contact_details": {
+        "line": "https://lin.ee/SOz8JTB"
+      },
+      "facilities": [
+        "室內",
+        "冷氣",
+        "更衣室",
+        "飲水機"
+      ],
+      "features": [
+        "面數未對外公告",
+        "2026 年 9 月重新劃線",
+        "Google 地圖 4.9 星（26 則評論）"
+      ],
+      "reviews": "林口後湖路的室內球館，Google 地圖累積 26 則評論、4.9 星，球友評價集中在冷氣夠涼、場地空間大、有更衣室與飲水機，評論中提到 2026 年 9 月重新劃線。不是新開的館，是本站先前漏收。場館未在官網、社群或任何場地目錄公開面數與時段，需透過 LINE 官方帳號詢問——本站不以推測數字填補。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-21"
+    },
+    {
+      "id": 190,
+      "name": "匹克立 PickleRi",
+      "location": {
+        "address": "新北市泰山區中港南路172-7號",
+        "lat": 25.0601998,
+        "lng": 121.4427313,
+        "city": "新北市",
+        "district": "泰山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "24 小時營業（Google 地圖標示）",
+      "contact": "0911-729-728",
+      "contact_details": {
+        "phone": "0911-729-728"
+      },
+      "facilities": [
+        "室內",
+        "24 小時"
+      ],
+      "features": [
+        "24 小時營業",
+        "面數未對外公告"
+      ],
+      "reviews": "泰山中港南路的室內球館，Google 地圖標示 24 小時營業並列有聯絡電話。面數、收費與預約方式都查不到公開資料——官網、社群與各家場地目錄皆無——需去電確認，本站不以推測數字填補。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-21"
     }
   ]
 }

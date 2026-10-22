@@ -5,6 +5,7 @@ import { SHOT_LABEL } from './engine/shots';
 import { SPECIALS } from './engine/paddles';
 import { SKILLS } from './engine/skills';
 import { CutIn, type CutInInfo } from './CutIn';
+import { ReviewOverlay } from './ReviewOverlay';
 
 export interface Toast {
   id: number;
@@ -189,20 +190,33 @@ interface HudProps {
   cutIn: CutInInfo | null;
   oppName: string;
   touch: boolean;
+  onChallenge: () => void;
+  onAccept: () => void;
 }
 
-export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName }: HudProps) => {
+export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, onChallenge, onAccept }: HudProps) => {
   const humanServing = hud.phase === 'serve' && hud.serving === 0 && hud.mode === 'match';
+  // 判決重播時收起比分和能量條，畫面留給轉播
+  const replay = hud.review?.state === 'reviewing' ? 'opacity-0' : '';
   return (
     <div className="pointer-events-none absolute inset-0 z-10 select-none">
-      <div className="absolute inset-x-0 top-3 flex justify-center max-md:justify-start max-md:pl-3">
+      <div className={`absolute inset-x-0 top-3 flex justify-center transition-opacity max-md:justify-start max-md:pl-3 ${replay}`}>
         <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
       </div>
 
       {hud.specials && (
-        <div className={`absolute left-3 ${touch ? 'top-[7.5rem]' : 'bottom-4'}`}>
+        <div className={`absolute left-3 transition-opacity ${touch ? 'top-[7.5rem]' : 'bottom-4'} ${replay}`}>
           <EnergyBar hud={hud} touch={touch} />
           <SkillChip hud={hud} touch={touch} />
+          {hud.mode === 'match' && (
+            <div className="mt-1.5 flex w-56 items-center justify-between rounded-xl bg-slate-950/50 px-3 py-1 text-[11px] font-bold text-white/70 backdrop-blur-md">
+              <span>電視輔助判決</span>
+              <span className="tracking-widest text-amber-300">
+                {'●'.repeat(hud.challenges[0])}
+                <span className="text-white/25">{'●'.repeat(Math.max(0, 2 - hud.challenges[0]))}</span>
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -336,6 +350,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
 
       <AnimatePresence>
         {cutIn && <CutIn key={cutIn.id} spec={cutIn.spec} skill={cutIn.skill} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />}
+        <ReviewOverlay review={hud.review} onChallenge={onChallenge} onAccept={onAccept} />
       </AnimatePresence>
     </div>
   );

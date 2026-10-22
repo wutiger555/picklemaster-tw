@@ -86,7 +86,7 @@ const Game = () => {
           <span className="text-xs font-bold uppercase tracking-wider text-fuchsia-300">Special Moves</span>
           <h2 className="mt-1 text-2xl font-bold">球拍就是武器：四招必殺技</h2>
           <p className="mt-2 max-w-2xl text-sm text-white/70">
-            完美擊球、致勝球和長來回都會累積能量，滿了按空白鍵（手機點「必殺」）蓄勢，下一拍放出。接到對手的必殺球時打出「完美」或「蓄滿」就能破解，還會反過來大量回能量。每位選手另外還有自己的絕招（按 U 或點「絕招」），像秒蹲重砲、跳起轉體扣殺、噴水讓對手腳滑、雙拍曲球，用掉後打完 4 分再充好。
+            完美擊球、致勝球和長來回都會累積能量，滿了按空白鍵（手機點「必殺」）蓄勢，下一拍放出。接到對手的必殺球時打出「完美」或「蓄滿」就能破解，還會反過來大量回能量。每位選手另外還有自己的絕招（按 U 或點「絕招」），像秒蹲重砲、跳起轉體扣殺、噴水讓對手腳滑、雙拍曲球，用掉後打完 4 分再充好。比賽中遇到壓線球，判決對你不利時還能申請電視輔助判決：多角度慢動作重播加上鷹眼落點分析，每局 2 次，判決被推翻就不扣次數。
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {SPECIAL_LIST.map((sp) => (

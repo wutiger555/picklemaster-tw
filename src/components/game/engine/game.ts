@@ -1,4 +1,4 @@
-import { COURT, NET_TOTAL_HALF_WIDTH, PHYSICS_DT, PLAYER, netHeightAt } from './constants';
+import { BALL, COURT, NET_TOTAL_HALF_WIDTH, PHYSICS_DT, PLAYER, netHeightAt } from './constants';
 import { type BallState, type PathSample, createBall, isInCourt, predictPath, stepBall } from './ball';
 import {
   type Perturb,
@@ -19,6 +19,7 @@ import {
 import { type PaddleSpec, type SpecialId, ENERGY, PADDLES, SPECIALS, paddleById } from './paddles';
 import { type SkillId, SKILLS, SKILL_RECHARGE_POINTS } from './skills';
 import {
+  type CourtLine,
   type FaultReason,
   type MatchScore,
   type Team,
@@ -26,6 +27,7 @@ import {
   awardRally,
   feetInKitchen,
   judgeServe,
+  lineMargin,
   newMatch,
   other,
   scoreCall,
@@ -176,6 +178,9 @@ export type GameEvent =
   | { type: 'special'; team: Team; id: SpecialId }
   | { type: 'skill'; team: Team; id: SkillId }
   | { type: 'skillReady'; team: Team }
+  | { type: 'closeCall'; challenger: Team; calledIn: boolean }
+  | { type: 'reviewStart'; team: Team }
+  | { type: 'reviewVerdict'; team: Team; overturned: boolean }
   | { type: 'counter'; team: Team; id: SpecialId }
   | { type: 'blown'; team: Team; id: SpecialId }
   | { type: 'energyFull'; team: Team }
@@ -226,7 +231,79 @@ export interface HudState {
   winner: Team | null;
   /** 蓄力中這一拍會打出的球路 */
   aimKind: ShotKind | null;
+  /** 雙方剩下的電視輔助判決次數 */
+  challenges: [number, number];
+  /** 電視輔助判決進行中 */
+  review: {
+    state: 'offer' | 'reviewing';
+    angle: ReviewAngle;
+    mine: boolean;
+    /** 申請方剩幾次 */
+    left: number;
+    /** offer 剩幾秒 */
+    countdown: number;
+    calledIn: boolean;
+    line: CourtLine;
+    /** 揭曉判決後才有 */
+    verdict: { overturned: boolean; truthIn: boolean; marginCm: number } | null;
+  } | null;
 }
+
+/** 壓線球的現場判決（司線員可能誤判，可以申請電視輔助判決） */
+export interface LineCall {
+  pos: V3;
+  /** 球心離判定邊界多遠（公尺，正 = 界內） */
+  margin: number;
+  line: CourtLine;
+  truthIn: boolean;
+  calledIn: boolean;
+  hitter: Team;
+  serve: boolean;
+  /** 落地時間（重播定位用） */
+  t: number;
+  /** 落地當下的總拍數：之後有人回擊，這個判決就不影響得分了 */
+  hits: number;
+  /** 實際出界時的犯規原因 */
+  truthReason: PointReason | null;
+}
+
+export interface ReviewState {
+  /** offer：問要不要申請（背景播落地慢動作）；reviewing：多角度重播 */
+  state: 'offer' | 'reviewing';
+  challenger: Team;
+  call: LineCall;
+  /** 原判決的結果，判決確定後才計分 */
+  pending: { winner: Team; reason: PointReason; faultTeam: Team | null };
+  start: number;
+  deadline: number;
+  samples: { t: number; pos: V3 }[];
+  overturned: boolean;
+  revealed: boolean;
+}
+
+export type ReviewAngle = 'mini' | 'broadcast' | 'line' | 'hawk';
+
+/** 每人每局可申請的電視輔助判決次數（判決推翻就不扣，MLB 規則） */
+export const CHALLENGES = 2;
+/** 離線多近算壓線球（公尺），越近司線員越容易看錯 */
+const CLOSE_CALL = 0.15;
+const MISCALL_MAX = 0.38;
+/** 玩家考慮要不要申請的時間（秒） */
+const REVIEW_OFFER = 7;
+/** 多角度重播各段的時間點（秒） */
+const REVIEW_ANGLE2 = 2.4;
+const REVIEW_HAWK = 4.8;
+const REVIEW_REVEAL = 6.4;
+const REVIEW_END = 8.6;
+/** 判決結束後球停在落點 */
+const BALL_REST_Y = BALL.radius;
+/** 發球被（誤）判出界時，依最近的線決定犯規種類 */
+const SERVE_FAULT_BY_LINE: Record<CourtLine, FaultReason> = {
+  kitchen: 'serveShort',
+  center: 'serveWide',
+  side: 'serveLong',
+  base: 'serveLong',
+};
 
 const SWING_TOTAL = PLAYER.swingWindup + PLAYER.swingFollow;
 /** 理想擊球點：身體前方 0.3 m、側邊 0.55 m */
@@ -313,6 +390,12 @@ export class GameEngine {
   timeScale = 1;
   /** 正在播放的必殺切入演出 */
   cinematic: { team: Team; id: SpecialId; start: number } | null = null;
+  /** 電視輔助判決 */
+  review: ReviewState | null = null;
+  challenges: [number, number] = [CHALLENGES, CHALLENGES];
+  private lastCall: LineCall | null = null;
+  /** 最近 3.5 秒的球路（重播用） */
+  private ballHistory: { t: number; pos: V3 }[] = [];
   /** 目前在飛的是絕招球（球的軌跡特效用），下一拍或下一分清掉 */
   skillShot: { team: Team; id: SkillId } | null = null;
   /** 玩家的擊球導引（球朝玩家飛來時才有） */
@@ -436,6 +519,8 @@ export class GameEngine {
     this.landingMarker = null;
     this.pendingServe = null;
     this.pointsPlayed += 1;
+    this.lastCall = null;
+    this.ballHistory = [];
     this.skillShot = null;
     for (const a of this.athletes) {
       a.vel = v3();
@@ -561,6 +646,11 @@ export class GameEngine {
     const dt = realDt * this.timeScale;
     if (this.cinematic && this.real > this.slowUntil) this.cinematic = null;
     this.input = input;
+    // 電視輔助判決中：比賽暫停，只跑重播
+    if (this.review) {
+      this.updateReview();
+      return;
+    }
     if (input.special && !this.prevSpecial) this.tryArm(this.human);
     this.prevSpecial = !!input.special;
     if (input.skill && !this.prevSkill) this.tryArmSkill(this.human);
@@ -599,6 +689,9 @@ export class GameEngine {
       const prev = clone(this.ball.pos);
       const ev = stepBall(this.ball, dt);
       if (this.phase === 'rally') {
+        const hist = this.ballHistory;
+        hist.push({ t: this.time, pos: clone(this.ball.pos) });
+        while (hist.length && hist[0].t < this.time - 3.5) hist.shift();
         if ((prev.z > 0) !== (this.ball.pos.z > 0) && Math.abs(this.ball.pos.x) > NET_TOTAL_HALF_WIDTH) {
           if (this.ball.pos.y < netHeightAt(NET_TOTAL_HALF_WIDTH) + 0.15) this.rally.atp = true;
         }
@@ -1330,14 +1423,20 @@ export class GameEngine {
         return;
       }
       if (r.hits === 1 && this.mode === 'match') {
-        const fault = judgeServe(pos, hitter, r.serveTargetSign);
+        const truth = judgeServe(pos, hitter, r.serveTargetSign);
+        const call = this.lineCall(pos, hitter, r.serveTargetSign, truth);
+        const fault = call && call.calledIn !== call.truthIn ? (call.calledIn ? null : SERVE_FAULT_BY_LINE[call.line]) : truth;
         if (fault) {
           this.endRally(other(hitter), fault, hitter);
           return;
         }
-      } else if (!isInCourt(pos)) {
-        this.endRally(other(hitter), 'out', hitter);
-        return;
+      } else {
+        const truthIn = isInCourt(pos);
+        const call = this.lineCall(pos, hitter, null, truthIn ? null : 'out');
+        if (!(call ? call.calledIn : truthIn)) {
+          this.endRally(other(hitter), 'out', hitter);
+          return;
+        }
       }
       r.bouncesSinceHit = 1;
       if (r.atp) this.emit({ type: 'highlight', text: 'ATP！繞柱球' });
@@ -1378,7 +1477,168 @@ export class GameEngine {
     else this.endRally(r.lastTeam!, 'winner', null);
   }
 
+  /** 壓線落點的現場判決：離線很近時司線員可能看錯（越近越容易錯） */
+  private lineCall(pos: V3, hitter: Team, serveTargetSign: number | null, truthReason: PointReason | null): LineCall | null {
+    this.lastCall = null;
+    if (this.mode !== 'match') return null;
+    const { margin, line } = lineMargin(pos, serveTargetSign);
+    if (Math.abs(margin) >= CLOSE_CALL) return null;
+    const truthIn = truthReason === null;
+    const wrong = this.rand() < MISCALL_MAX * (1 - Math.abs(margin) / CLOSE_CALL);
+    this.lastCall = {
+      pos: clone(pos),
+      margin,
+      line,
+      truthIn,
+      calledIn: wrong ? !truthIn : truthIn,
+      hitter,
+      serve: serveTargetSign !== null,
+      t: this.time,
+      hits: this.rally.hits,
+      truthReason,
+    };
+    return this.lastCall;
+  }
+
+  /** 結束這一分：如果是被壓線判決決定的，先開放電視輔助判決，確定後才計分 */
   private endRally(winner: Team, reason: PointReason, faultTeam: Team | null) {
+    if (this.phase !== 'rally') return;
+    const c = this.lastCall;
+    this.lastCall = null;
+    const decided =
+      c !== null &&
+      c.hits === this.rally.hits &&
+      (c.calledIn ? faultTeam === null && winner === c.hitter && (reason === 'winner' || reason === 'ace') : faultTeam === c.hitter);
+    if (c && decided) {
+      this.openReview(c, { winner, reason, faultTeam });
+      return;
+    }
+    this.finishRally(winner, reason, faultTeam);
+  }
+
+  private openReview(call: LineCall, pending: ReviewState['pending']) {
+    this.phase = 'dead';
+    this.phaseUntil = Infinity;
+    const challenger = call.calledIn ? other(call.hitter) : call.hitter;
+    this.review = {
+      state: 'offer',
+      challenger,
+      call,
+      pending,
+      start: this.real,
+      deadline: this.real + REVIEW_OFFER,
+      samples: this.ballHistory.map((s) => ({ t: s.t, pos: clone(s.pos) })),
+      overturned: call.calledIn !== call.truthIn,
+      revealed: false,
+    };
+    this.emit({ type: 'closeCall', challenger, calledIn: call.calledIn });
+  }
+
+  /** 玩家申請電視輔助判決 */
+  requestReview() {
+    const rv = this.review;
+    if (!rv || rv.state !== 'offer' || this.athletes[rv.challenger].ai || this.challenges[rv.challenger] <= 0) return false;
+    this.startReviewing();
+    return true;
+  }
+
+  /** 玩家接受原判決 */
+  declineReview() {
+    const rv = this.review;
+    if (!rv || rv.state !== 'offer' || this.athletes[rv.challenger].ai) return;
+    this.closeReview(false);
+  }
+
+  private startReviewing() {
+    const rv = this.review!;
+    rv.state = 'reviewing';
+    rv.start = this.real;
+    this.emit({ type: 'reviewStart', team: rv.challenger });
+  }
+
+  private updateReview() {
+    const rv = this.review!;
+    const u = this.real - rv.start;
+    const bt = rv.call.t;
+    if (rv.state === 'offer') {
+      // 背景循環播落地前後的慢動作
+      this.showReplayBall(bt - 0.45 + ((u * 0.35) % 0.75));
+      const ch = rv.challenger;
+      if (this.challenges[ch] <= 0) {
+        if (u > 2.2) this.closeReview(false);
+      } else if (this.athletes[ch].ai) {
+        if (u > 1.8) {
+          // AI：看錯的球多半會申請；判對但很近的偶爾賭一把
+          const wants = rv.overturned ? this.rand() < 0.75 : Math.abs(rv.call.margin) < 0.025 && this.rand() < 0.25;
+          if (wants) this.startReviewing();
+          else this.closeReview(false);
+        }
+      } else if (this.real > rv.deadline) this.closeReview(false);
+      return;
+    }
+    if (u < REVIEW_ANGLE2) this.showReplayBall(bt - 1.5 + u * 0.65);
+    else if (u < REVIEW_HAWK) this.showReplayBall(bt - 0.3 + (u - REVIEW_ANGLE2) * 0.22);
+    // 鷹眼：球落下、彈走，留下球印（揭曉前就已經飛出畫面）
+    else this.showReplayBall(bt - 0.3 + Math.min(0.55, (u - REVIEW_HAWK) * 0.35));
+    if (!rv.revealed && u > REVIEW_REVEAL) {
+      rv.revealed = true;
+      this.emit({ type: 'reviewVerdict', team: rv.challenger, overturned: rv.overturned });
+    }
+    if (u > REVIEW_END) this.closeReview(true);
+  }
+
+  /** 重播：把球放到歷史軌跡上的某個時間點 */
+  private showReplayBall(t: number) {
+    const s = this.review!.samples;
+    if (!s.length) return;
+    let i = s.findIndex((x) => x.t >= t);
+    if (i < 0) i = s.length - 1;
+    const b = s[Math.max(0, i - 1)];
+    const c = s[i];
+    const k = c.t > b.t ? clamp((t - b.t) / (c.t - b.t), 0, 1) : 0;
+    this.ball.pos = v3(b.pos.x + (c.pos.x - b.pos.x) * k, b.pos.y + (c.pos.y - b.pos.y) * k, b.pos.z + (c.pos.z - b.pos.z) * k);
+    this.ball.vel = v3(c.pos.x - b.pos.x, c.pos.y - b.pos.y, c.pos.z - b.pos.z);
+    this.prevBall.x = this.ball.pos.x;
+    this.prevBall.y = this.ball.pos.y;
+    this.prevBall.z = this.ball.pos.z;
+    this.alpha = 1;
+  }
+
+  private closeReview(reviewed: boolean) {
+    const rv = this.review!;
+    this.review = null;
+    this.ball.pos = v3(rv.call.pos.x, BALL_REST_Y, rv.call.pos.z);
+    this.ball.vel = v3();
+    let { winner, reason, faultTeam } = rv.pending;
+    if (reviewed) {
+      if (rv.overturned) {
+        // 判決推翻：申請方保留次數
+        if (rv.call.calledIn) {
+          winner = other(rv.call.hitter);
+          reason = rv.call.truthReason ?? 'out';
+          faultTeam = rv.call.hitter;
+        } else {
+          winner = rv.call.hitter;
+          reason = 'winner';
+          faultTeam = null;
+        }
+      } else this.challenges[rv.challenger] -= 1;
+    }
+    this.phase = 'rally';
+    this.finishRally(winner, reason, faultTeam);
+  }
+
+  /** 目前重播要用哪個鏡頭（給場景） */
+  reviewView(): { angle: ReviewAngle; pos: V3; line: CourtLine; truthIn: boolean; revealed: boolean } | null {
+    const rv = this.review;
+    if (!rv) return null;
+    const u = this.real - rv.start;
+    const angle: ReviewAngle =
+      rv.state === 'offer' ? 'mini' : u < REVIEW_ANGLE2 ? 'broadcast' : u < REVIEW_HAWK ? 'line' : 'hawk';
+    return { angle, pos: rv.call.pos, line: rv.call.line, truthIn: rv.call.truthIn, revealed: rv.revealed };
+  }
+
+  private finishRally(winner: Team, reason: PointReason, faultTeam: Team | null) {
     if (this.phase !== 'rally') return;
     this.phase = 'dead';
     this.phaseUntil = this.time + POINT_PAUSE;
@@ -1525,6 +1785,24 @@ export class GameEngine {
       kitchenLocked: this.time < h.kitchenLockUntil,
       winner: this.match.winner,
       aimKind: this.aimPreview()?.kind ?? null,
+      challenges: [this.challenges[0], this.challenges[1]],
+      review: this.reviewHud(),
+    };
+  }
+
+  private reviewHud(): HudState['review'] {
+    const rv = this.review;
+    if (!rv) return null;
+    const v = this.reviewView()!;
+    return {
+      state: rv.state,
+      angle: v.angle,
+      mine: rv.challenger === this.human.team,
+      left: this.challenges[rv.challenger],
+      countdown: Math.max(0, rv.deadline - this.real),
+      calledIn: rv.call.calledIn,
+      line: rv.call.line,
+      verdict: rv.revealed ? { overturned: rv.overturned, truthIn: rv.call.truthIn, marginCm: Math.abs(rv.call.margin) * 100 } : null,
     };
   }
 

@@ -161,6 +161,18 @@ const PickleballGame = () => {
     return () => clearInterval(t);
   }, [engine]);
 
+  // 電視輔助判決：詢問時按 C 申請、Enter 接受
+  const offering = hud.review?.state === 'offer' && hud.review.mine && hud.review.left > 0;
+  useEffect(() => {
+    if (!offering || paused) return;
+    const down = (e: KeyboardEvent) => {
+      if (e.code === 'KeyC') engine.requestReview();
+      else if (e.code === 'Enter' || e.code === 'NumpadEnter') engine.declineReview();
+    };
+    window.addEventListener('keydown', down);
+    return () => window.removeEventListener('keydown', down);
+  }, [offering, paused, engine]);
+
   // 分頁切到背景時自動暫停
   useEffect(() => {
     const vis = () => document.hidden && screen === 'play' && setPaused(true);
@@ -322,6 +334,16 @@ const PickleballGame = () => {
             later(() => setCard((x) => (x?.id === c.id ? null : x)), 1900);
             break;
           }
+          case 'closeCall':
+            audio.whoosh();
+            break;
+          case 'reviewStart':
+            audio.highlight();
+            break;
+          case 'reviewVerdict':
+            if (e.overturned) audio.counter();
+            audio.cheer(e.overturned);
+            break;
           case 'gameOver':
             finish(engine);
             break;
@@ -420,6 +442,8 @@ const PickleballGame = () => {
             cutIn={cutIn}
             touch={touch}
             oppName={characters[1].name}
+            onChallenge={() => engine.requestReview()}
+            onAccept={() => engine.declineReview()}
           />
           {touch && !paused && (
             <TouchControls

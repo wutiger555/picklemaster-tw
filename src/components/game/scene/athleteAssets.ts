@@ -20,7 +20,7 @@ type Entry<T> = { status: 'pending'; promise: Promise<T> } | { status: 'done'; v
 const cache = new Map<string, Entry<unknown>>();
 
 /** 極簡版 suspense 資源：第一次丟出 promise，載好之後回傳結果 */
-const suspend = <T>(key: string, load: () => Promise<T>): T => {
+export const suspend = <T>(key: string, load: () => Promise<T>): T => {
   let e = cache.get(key) as Entry<T> | undefined;
   if (!e) {
     const promise = load().then(
@@ -36,7 +36,7 @@ const suspend = <T>(key: string, load: () => Promise<T>): T => {
 };
 
 const gltfLoader = new GLTFLoader();
-const loadGltf = (url: string) => gltfLoader.loadAsync(url);
+export const loadGltf = (url: string) => gltfLoader.loadAsync(url);
 
 export const useAthleteAssets = (): AthleteAssets =>
   suspend('athlete', async () => {
@@ -52,7 +52,8 @@ export const useAthleteAssets = (): AthleteAssets =>
     return { body, clips };
   });
 
-export const useHair = (style: HairStyle): GLTF => suspend(`hair-${style}`, () => loadGltf(`${base}/hair_${style}.gltf`));
+export const useHair = (style: HairStyle | null): GLTF | null =>
+  style === null ? null : suspend(`hair-${style}`, () => loadGltf(`${base}/hair_${style}.gltf`));
 
 /** 一般圖片（照片臉） */
 export const useImage = (url: string | null): HTMLImageElement | null =>
@@ -63,19 +64,3 @@ export const useImage = (url: string | null): HTMLImageElement | null =>
         img.src = url;
         return img.decode().then(() => img);
       });
-
-/** 只留上半身的動作（揮拍時下半身繼續跑步，腳才不會滑） */
-const UPPER = /^(spine_0[123]|neck_01|Head|clavicle_[lr]|upperarm_[lr]|lowerarm_[lr]|hand_[lr])\./;
-const upperCache = new WeakMap<THREE.AnimationClip, THREE.AnimationClip>();
-export const upperBody = (clip: THREE.AnimationClip) => {
-  let c = upperCache.get(clip);
-  if (!c) {
-    c = new THREE.AnimationClip(
-      `${clip.name}_upper`,
-      clip.duration,
-      clip.tracks.filter((t) => UPPER.test(t.name)),
-    );
-    upperCache.set(clip, c);
-  }
-  return c;
-};

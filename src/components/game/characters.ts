@@ -13,6 +13,8 @@ export interface CharacterDef {
   portrait: string | null;
   /** 貼在 3D 頭部正面的臉（方形、柔邊橢圓遮罩） */
   face: string | null;
+  /** 3D 身體：hero = 原創動畫風身材；sporty = 運動球衣；hoodie = 帽 T 休閒 */
+  body: 'hero' | 'sporty' | 'hoodie';
   skin: string;
   hair: string;
   hairStyle: 'short' | 'ponytail' | 'buzz';
@@ -32,6 +34,7 @@ const img = (file: string) => `${base}/game/characters/${file}`;
 export const CHARACTERS: CharacterDef[] = [
   {
     id: 'default',
+    body: 'hero',
     name: '台灣隊',
     title: '原創選手',
     portrait: null,
@@ -50,6 +53,7 @@ export const CHARACTERS: CharacterDef[] = [
   },
   {
     id: 'p1',
+    body: 'hoodie',
     name: '阿灰',
     title: '夜行巴士',
     portrait: img('p1-portrait.webp'),
@@ -68,6 +72,7 @@ export const CHARACTERS: CharacterDef[] = [
   },
   {
     id: 'p2',
+    body: 'hoodie',
     name: '城主',
     title: '大阪城下',
     portrait: img('p2-portrait.webp'),
@@ -86,6 +91,7 @@ export const CHARACTERS: CharacterDef[] = [
   },
   {
     id: 'p3',
+    body: 'sporty',
     name: '銀框',
     title: '笑容殺手',
     portrait: img('p3-portrait.webp'),
@@ -104,6 +110,7 @@ export const CHARACTERS: CharacterDef[] = [
   },
   {
     id: 'p4',
+    body: 'sporty',
     name: '黑框',
     title: '近網壓迫',
     portrait: img('p4-portrait.webp'),
@@ -122,6 +129,7 @@ export const CHARACTERS: CharacterDef[] = [
   },
   {
     id: 'p5',
+    body: 'sporty',
     name: '帽哥',
     title: '夜場常客',
     portrait: img('p5-portrait.webp'),

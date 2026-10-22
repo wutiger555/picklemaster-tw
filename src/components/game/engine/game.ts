@@ -211,6 +211,10 @@ const POINT_PAUSE = 2.1;
 const ASSIST_QUALITY = 0.78;
 /** auto 操作：按下到擊球超過這麼久就是「蓄滿」 */
 export const AUTO_CHARGE = 0.75;
+/** auto 操作：擊球前多久開始揮拍（揮拍動作要有前揮的時間） */
+const AUTO_LEAD = 0.14;
+/** 發球：放開按鍵後前揮多久才擊球 */
+const SERVE_LEAD = 0.14;
 /** auto 操作：蓄力中移動稍慢（提早按的代價） */
 const AUTO_CHARGE_MOVE = 0.88;
 /** 完美破解必殺球需要的時機品質 */
@@ -299,6 +303,7 @@ export class GameEngine {
   private events: GameEvent[] = [];
   private acc = 0;
   private prevHeld: ShotButton | null = null;
+  private pendingServe: { power: number; aimX: number } | null = null;
   private prevSpecial = false;
   private input: InputState = { moveX: 0, moveY: 0, held: null };
   private humanPath: PathSample[] = [];
@@ -387,6 +392,7 @@ export class GameEngine {
     this.rally = this.freshRally();
     this.phase = 'serve';
     this.landingMarker = null;
+    this.pendingServe = null;
     for (const a of this.athletes) {
       a.vel = v3();
       a.swing = idleSwing();
@@ -470,7 +476,15 @@ export class GameEngine {
     this.rally.bouncesSinceHit = 0;
     this.rally.lastKindByTeam[a.team] = plan.kind;
     this.phase = 'rally';
-    a.swing = { ...idleSwing(), state: 'swinging', button: 'serve', swingStart: this.time - PLAYER.swingWindup, done: true, forehand: 1 };
+    a.swing = {
+      ...idleSwing(),
+      state: 'swinging',
+      button: 'serve',
+      swingStart: this.time - PLAYER.swingWindup,
+      contactAt: this.time,
+      done: true,
+      forehand: 1,
+    };
     this.emit({ type: 'swing', team: a.team, button: 'serve' });
     this.emit({
       type: 'hit',
@@ -692,7 +706,13 @@ export class GameEngine {
       if (pressed && sw.state === 'idle') {
         h.swing = { ...idleSwing(), state: 'charging', button: 'serve', t0: this.time };
       } else if (released && sw.state === 'charging' && sw.button === 'serve') {
-        this.serve(h, powerAt(this.time - sw.t0), this.input.moveX);
+        // 放開後先前揮，SERVE_LEAD 秒後才擊球（力道與方向在放開那一刻決定）
+        this.pendingServe = { power: powerAt(this.time - sw.t0), aimX: this.input.moveX };
+        const at = this.time + SERVE_LEAD;
+        h.swing = { ...idleSwing(), state: 'swinging', button: 'serve', swingStart: at - PLAYER.swingWindup, contactAt: at, forehand: 1 };
+      } else if (this.pendingServe && sw.state === 'swinging' && this.time >= sw.contactAt) {
+        this.serve(h, this.pendingServe.power, this.pendingServe.aimX);
+        this.pendingServe = null;
       }
       this.prevHeld = held;
       return;
@@ -706,7 +726,7 @@ export class GameEngine {
       if (c.state === 'charging') {
         c.charge = Math.min(1, (this.time - c.t0) / AUTO_CHARGE);
         const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 0.5);
-        if (best && best.t - this.time <= PLAYER.swingWindup) {
+        if (best && best.t - this.time <= AUTO_LEAD) {
           this.startSwing(h, best.t, 0.6 + 0.4 * Math.min(1, (best.t - c.t0) / AUTO_CHARGE));
           h.swing.auto = true;
         }

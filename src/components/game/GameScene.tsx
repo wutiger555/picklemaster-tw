@@ -1,4 +1,4 @@
-import { type MutableRefObject, Suspense, useMemo, useRef } from 'react';
+import { Component, type MutableRefObject, type ReactNode, Suspense, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Bloom, ChromaticAberration, EffectComposer, Vignette } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
@@ -16,6 +16,20 @@ import { BallModel } from './scene/BallModel';
 import { Effects } from './scene/Effects';
 import { Guide } from './scene/Guide';
 import { type FxBus, createFxBus } from './scene/fxBus';
+
+/** 選手模型載入失敗（網路、素材）時只是不顯示，不要讓整個遊戲畫面掛掉 */
+class SkipOnError extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: unknown) {
+    console.error('athlete failed to load', error);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 const L = COURT.halfLength;
 const K = COURT.kitchen;
@@ -199,11 +213,13 @@ export const GameScene = (props: SceneProps) => {
           <Stadium engine={engine} names={[characters[0].name, characters[1].name]} excite={excite} flash={flash} lowSpec={lowSpec} />
         </>
       )}
-      <Suspense fallback={null}>
-        {engine.athletes.map((a, i) => (
-          <AthleteModel key={`${a.id}-${a.paddle.id}-${looks[i].key}`} engine={engine} index={i} look={looks[i]} />
-        ))}
-      </Suspense>
+      {engine.athletes.map((a, i) => (
+        <SkipOnError key={`${a.id}-${a.paddle.id}-${looks[i].key}`}>
+          <Suspense fallback={null}>
+            <AthleteModel engine={engine} index={i} look={looks[i]} />
+          </Suspense>
+        </SkipOnError>
+      ))}
       <Guide engine={engine} />
       <BallModel engine={engine} />
       <Effects engine={engine} bus={bus} lowSpec={lowSpec} />

@@ -3,6 +3,8 @@ import type { CharacterDef } from '../characters';
 
 export interface Look {
   key: string;
+  /** 身體模型：hero（Quaternius）或真實比例的 Mixamo 身體 */
+  body: 'hero' | 'sporty' | 'hoodie';
   skin: string;
   hair: string;
   hairStyle: 'short' | 'ponytail' | 'buzz';
@@ -21,6 +23,7 @@ export interface Look {
 /** 把選角的角色轉成 3D 外型 */
 export const lookFromCharacter = (c: CharacterDef): Look => ({
   key: c.id,
+  body: c.body,
   skin: c.skin,
   hair: c.hair,
   hairStyle: c.hairStyle,

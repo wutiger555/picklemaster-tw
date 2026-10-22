@@ -1,6 +1,6 @@
 import { COURT, PHYSICS_DT, PLAYER, netHeightAt } from './constants';
 import { type PathSample, predictPath, isInCourt } from './ball';
-import type { ShotButton } from './shots';
+import { type ShotButton, SMASH_HEIGHT } from './shots';
 import { teamSide } from './rules';
 import { clamp, gauss, hypot2 } from './vec';
 import type { Athlete, GameEngine } from './game';
@@ -185,6 +185,10 @@ export const planContact = (
     const idealY = volley ? 1.0 : 0.85;
     let cost = Math.abs(s.pos.y - idealY) * 0.8 + travel * 0.25;
     if (volley) cost += atNet && s.pos.y > 0.45 ? -0.35 : 0.5;
+    // 搆得到的高球：在空中殺下去，不要等它掉下來
+    if (s.pos.y > SMASH_HEIGHT && s.pos.y < 2.15 && Math.abs(s.pos.z) < 6) cost -= 0.9;
+    // 網前彈起高過網的球：在高點出手突擊（打低了就只能 dink）
+    else if (atNet && s.pos.y > netHeightAt(s.pos.x) + 0.08) cost -= 0.3 + (s.pos.y - netHeightAt(s.pos.x)) * 0.6;
     if (preferT !== undefined && Number.isFinite(preferT)) cost += Math.abs(now + s.t - preferT) * 3;
     if (!feasible) cost += 5 + (needed - s.t) * 4;
     if (!best || cost < best.cost) best = { s, stand: { x: standX, z: standZ }, cost, feasible };
@@ -243,7 +247,8 @@ export const chooseShot = (eng: GameEngine, a: Athlete, rand: () => number): AIS
     // 接發球：打深、打穩，然後上網
     return { button: 'drive', charge: 0.15 + rand() * 0.25, aimX: awayFromOpp() * 0.6, aimDepth: 0.7 };
   }
-  if (h > 1.55 && depth < 5.5) {
+  if (h > SMASH_HEIGHT && depth < 6) {
+    // 可殺的高球：一律重扣
     return { button: 'drive', charge: 0.75 + rand() * 0.25, aimX: awayFromOpp(), aimDepth: rand() - 0.3 };
   }
   const deep = depth > COURT.kitchen + 1.7;

@@ -22,12 +22,22 @@ export interface BallSpecial {
   spent: boolean;
 }
 
+/** 絕招「左右逢源大曲球」：側向位移 D·sin(ωt)，先往一邊、再往另一邊，落地時回到原本的落點 */
+export interface BallCurve {
+  t: number;
+  /** 側向最大位移（公尺，正負決定先往哪邊） */
+  amp: number;
+  omega: number;
+  perp: { x: number; z: number };
+}
+
 export interface BallState {
   pos: V3;
   vel: V3;
   /** 角速度向量（rad/s）。上旋對應的軸 = 上方向 × 飛行方向 */
   spin: V3;
   special: BallSpecial | null;
+  curve?: BallCurve | null;
 }
 
 export type BallEvent =
@@ -48,6 +58,7 @@ export const cloneBall = (b: BallState): BallState => ({
   vel: clone(b.vel),
   spin: clone(b.spin),
   special: b.special ? { ...b.special, target: clone(b.special.target), perp: { ...b.special.perp } } : null,
+  curve: b.curve ? { ...b.curve, perp: { ...b.curve.perp } } : null,
 });
 
 /** 空氣中的加速度：重力＋二次阻力＋馬格努斯升力 */
@@ -212,6 +223,14 @@ const specialBounce = (b: BallState) => {
 export const stepBall = (b: BallState, dt: number, ignoreNet = false): BallEvent | null => {
   accelerate(b, dt);
   specialFlight(b, dt);
+  const cv = b.curve;
+  if (cv) {
+    // 側向加速度 = 位移 D·sin(ωt) 的二次微分
+    cv.t += dt;
+    const a = -cv.amp * cv.omega * cv.omega * Math.sin(cv.omega * cv.t);
+    b.vel.x += cv.perp.x * a * dt;
+    b.vel.z += cv.perp.z * a * dt;
+  }
   const prev = clone(b.pos);
   b.pos.x += b.vel.x * dt;
   b.pos.y += b.vel.y * dt;
@@ -236,6 +255,7 @@ export const stepBall = (b: BallState, dt: number, ignoreNet = false): BallEvent
     const at = v3(b.pos.x, 0, b.pos.z);
     bounce(b);
     specialBounce(b);
+    b.curve = null;
     return { type: 'bounce', pos: at, speed };
   }
   return null;

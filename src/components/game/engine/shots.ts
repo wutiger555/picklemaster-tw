@@ -2,8 +2,9 @@ import { BALL, COURT, PADDLE, PHYSICS_DT, netHeightAt } from './constants';
 import { type BallState, createBall, stepBall } from './ball';
 import { type V3, v3, clamp, gauss, lerp } from './vec';
 import type { SpecialId } from './paddles';
+import type { SkillId } from './skills';
 
-export type ShotKind = 'serve' | 'dink' | 'drop' | 'drive' | 'smash' | 'lob';
+export type ShotKind = 'serve' | 'dink' | 'drop' | 'drive' | 'smash' | 'lob' | 'punch' | 'block' | 'speedup';
 /** 玩家的三顆擊球鍵：軟（dink/放小球）、抽（抽球/殺球）、挑（高吊） */
 export type ShotButton = 'soft' | 'drive' | 'lob';
 
@@ -17,7 +18,17 @@ export const SHOT_LABEL: Record<ShotKind, string> = {
   drive: '抽球',
   smash: '殺球',
   lob: '高吊',
+  punch: '推擋截擊',
+  block: '卸力擋',
+  speedup: '突擊',
 };
+
+/** 擊球點高過這個高度、又不在底線深處，按抽球就是殺球 */
+export const SMASH_HEIGHT = 1.45;
+/** 網前區：廚房線外 1.5 m 內，截擊與突擊在這裡發生 */
+export const NET_ZONE = COURT.kitchen + 1.5;
+/** 來球快過這個速度時按軟球鍵，就是卸力擋（把重球擋回廚房） */
+export const BLOCK_SPEED = 12;
 
 interface FlightResult {
   /** 落地點（找不到則 null） */
@@ -152,6 +163,8 @@ export interface ShotRequest {
   serveSide?: number;
   /** 球拍特性：球速與旋轉倍率 */
   paddle?: { pace: number; spin: number };
+  /** 球還沒落地就打（截擊） */
+  volley?: boolean;
 }
 
 /**
@@ -179,13 +192,26 @@ export interface ShotPlan {
   flightTime: number;
 }
 
-/** 依按鍵與擊球位置判斷球路 */
+/**
+ * 依按鍵與情境判斷球路（同一顆鍵，看球的高度、位置、快慢自動變化）：
+ * - 軟球鍵：一般是 dink／放小球；來球很重時變成卸力擋
+ * - 抽球鍵：高球是殺球；網前沒落地的球是推擋截擊；網前彈起高過網的球是突擊；其餘是抽球
+ */
 export const classifyShot = (req: ShotRequest): ShotKind => {
   if (req.button === 'serve') return 'serve';
   if (req.button === 'lob') return 'lob';
   const depthFromNet = Math.abs(req.contact.z);
-  if (req.button === 'soft') return depthFromNet > COURT.kitchen + 1.7 ? 'drop' : 'dink';
-  return req.contact.y > 1.55 && depthFromNet < 5.5 ? 'smash' : 'drive';
+  if (req.button === 'soft') {
+    if (req.incomingSpeed > BLOCK_SPEED) return 'block';
+    return depthFromNet > COURT.kitchen + 1.7 ? 'drop' : 'dink';
+  }
+  if (req.contact.y > SMASH_HEIGHT && depthFromNet < 6) return 'smash';
+  if (depthFromNet < NET_ZONE) {
+    const netTop = netHeightAt(req.contact.x);
+    if (req.volley && req.contact.y > netTop - 0.05) return 'punch';
+    if (!req.volley && req.contact.y > netTop + 0.05) return 'speedup';
+  }
+  return 'drive';
 };
 
 const NO_ERROR: Perturb = { depth: 0, lateral: 0, arc: 0, speed: 0 };
@@ -251,10 +277,33 @@ const designShot = (req: ShotRequest): ShotDesign => {
       topspin = -20;
       break;
     case 'smash':
-      d = clamp(lerp(3.6, 5.6, 0.5 + req.aimDepth * 0.5), 2.6, COURT.halfLength - 0.4);
-      tx = aimWorldX(2.5);
-      speed = lerp(17, maxPace(req.incomingSpeed, 1.15), req.charge);
+      // 由上往下重扣：落點偏短、球速最快
+      d = clamp(lerp(2.8, 5.2, 0.5 + req.aimDepth * 0.5), 2.4, COURT.halfLength - 0.4);
+      tx = aimWorldX(2.6);
+      speed = lerp(19, maxPace(req.incomingSpeed, 1.25), req.charge);
       topspin = 60;
+      break;
+    case 'punch':
+      // 推擋截擊：短揮、又快又平，打對手腳下
+      d = clamp(oppDepth + 0.1 + req.aimDepth * 0.8, 1.6, COURT.halfLength - 0.5);
+      tx = aimWorldX(2.5);
+      speed = lerp(11, 15.5, req.charge);
+      topspin = 40;
+      break;
+    case 'speedup':
+      // 突擊：沒有方向就直接打對手身上（最難回）
+      d = clamp(oppDepth - 0.2 + req.aimDepth * 0.6, 1.4, COURT.halfLength - 0.8);
+      tx = Math.abs(req.aimX) < 0.2 ? clamp(req.opponent.x, -xMax, xMax) : aimWorldX(2.5);
+      speed = lerp(14, 18.5, req.charge);
+      topspin = 90;
+      break;
+    case 'block':
+      // 卸力擋：吃掉來球的速度，輕輕擋回廚房；離網越遠弧線要越高
+      d = lerp(1.2, 2.0, req.charge) + req.aimDepth * 0.4;
+      tx = aimWorldX(2.0);
+      apex = netTop + 0.22 + 0.35 * clamp((depthFromNet - 2) / 4.7, 0, 1);
+      margin = 0.16;
+      topspin = -30;
       break;
     default: {
       // 抽球：對手在網前就打他腳下，在底線就打深
@@ -322,6 +371,9 @@ const BASE_ERROR: Record<ShotKind, Perturb> = {
   drive: { depth: 0.45, lateral: 0.38, arc: 0, speed: 0.02 },
   smash: { depth: 0.5, lateral: 0.45, arc: 0, speed: 0.02 },
   lob: { depth: 0.6, lateral: 0.5, arc: 0.3, speed: 0 },
+  punch: { depth: 0.35, lateral: 0.33, arc: 0, speed: 0.02 },
+  block: { depth: 0.4, lateral: 0.35, arc: 0.13, speed: 0 },
+  speedup: { depth: 0.4, lateral: 0.35, arc: 0, speed: 0.02 },
 };
 
 export interface ErrorContext {
@@ -354,6 +406,8 @@ export const sampleShotError = (kind: ShotKind, ctx: ErrorContext, rand: () => n
   const soft = kind === 'dink' || kind === 'drop';
   // 接快球打軟球（reset）最難：來球越快越難卸力
   if (soft) m *= 1 + Math.max(0, ctx.incomingSpeed - 8) * 0.09;
+  // 卸力擋就是用來接重球的：比硬打 dink 好控制得多
+  else if (kind === 'block') m *= 1 + Math.max(0, ctx.incomingSpeed - BLOCK_SPEED) * 0.04;
   else m *= 1 + Math.max(0, ctx.incomingSpeed - 14) * 0.035;
   if (ctx.stretch > 0.75) m *= 1 + (ctx.stretch - 0.75) * 2.4;
   m *= 1 + Math.min(1, ctx.moveSpeed / 4.6) * 0.4;
@@ -362,7 +416,7 @@ export const sampleShotError = (kind: ShotKind, ctx: ErrorContext, rand: () => n
   // 從網下硬抽：控制深度變難，容易掛網或飛出底線
   let depthMul = 1;
   const netTop = COURT.netCenterHeight;
-  if ((kind === 'drive' || kind === 'smash') && ctx.contactHeight < netTop) {
+  if ((kind === 'drive' || kind === 'smash' || kind === 'punch' || kind === 'speedup') && ctx.contactHeight < netTop) {
     depthMul += (netTop - ctx.contactHeight) * 1.6;
   }
   // 早打：正手把球拉向左邊；晚打推向右邊；反手相反
@@ -370,7 +424,7 @@ export const sampleShotError = (kind: ShotKind, ctx: ErrorContext, rand: () => n
   // 軟球用力過頭會同時「太高又太深」，落到廚房線附近剛好給對手截擊；太輕則掛網
   const arc = gauss(rand) * base.arc * m;
   return {
-    depth: gauss(rand) * base.depth * m * depthMul + (soft ? arc * 2.5 : 0),
+    depth: gauss(rand) * base.depth * m * depthMul + (soft || kind === 'block' ? arc * 2.5 : 0),
     lateral: gauss(rand) * base.lateral * m + bias,
     arc,
     speed: gauss(rand) * base.speed * m,
@@ -415,6 +469,38 @@ export const planSpecial = (id: SpecialId, req: ShotRequest, err: Perturb): Shot
   }
   return {
     kind,
+    target,
+    vel: sol.vel,
+    spin: sol.spin,
+    speed: Math.hypot(sol.vel.x, sol.vel.y, sol.vel.z),
+    flightTime: sol.time,
+  };
+};
+
+/**
+ * 角色絕招的擊球。噴水與曲球用一般擊球（效果另外加），這裡只處理兩種重砲：
+ * 秒蹲＝深蹲後貼網平抽打到底線；幹他＝跳起來大上旋往中場重扣。
+ */
+export const planSkill = (id: SkillId, req: ShotRequest, err: Perturb): ShotPlan | null => {
+  if (id !== 'squatSmash' && id !== 'spinSmash') return null;
+  const s = Math.sign(req.contact.z) || 1;
+  const toward = -s;
+  const xMax = COURT.halfWidth - 0.45;
+  const pm = req.paddle ?? { pace: 1, spin: 1 };
+  const x = clamp(req.aimX * s * 2.4 + err.lateral * s, -xMax - 0.3, xMax + 0.3);
+  let target: V3;
+  let sol;
+  if (id === 'squatSmash') {
+    const d = clamp(COURT.halfLength - 1.2 + req.aimDepth * 0.6 + err.depth, 3, COURT.halfLength + 0.4);
+    target = v3(x, 0, toward * d);
+    sol = solveClearing(req.contact, target, maxPace(req.incomingSpeed) * 1.3 * pm.pace, 140, 0.04);
+  } else {
+    const d = clamp(3.4 + req.aimDepth * 1.1 + err.depth, 2.4, COURT.halfLength - 0.5);
+    target = v3(x, 0, toward * d);
+    sol = solveClearing(req.contact, target, maxPace(req.incomingSpeed) * 1.32 * pm.pace, 300, 0.12);
+  }
+  return {
+    kind: id === 'squatSmash' ? 'drive' : 'smash',
     target,
     vel: sol.vel,
     spin: sol.spin,

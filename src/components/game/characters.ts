@@ -1,3 +1,5 @@
+import type { SkillId } from './engine/skills';
+
 /**
  * 可選角色。照片角色的臉與去背半身像由 macOS Vision 從原始照片偵測、轉正、裁切
  * （只取主角，背景路人一律排除），已取得照片中每位當事人同意公開。
@@ -13,6 +15,10 @@ export interface CharacterDef {
   portrait: string | null;
   /** 貼在 3D 頭部正面的臉（方形、柔邊橢圓遮罩） */
   face: string | null;
+  /** 3D 身體：hero = 原創動畫風身材；sporty = 運動球衣；hoodie = 帽 T 休閒 */
+  body: 'hero' | 'sporty' | 'hoodie';
+  /** 角色絕招（和球拍的必殺技分開） */
+  skill: SkillId | null;
   skin: string;
   hair: string;
   hairStyle: 'short' | 'ponytail' | 'buzz';
@@ -32,6 +38,8 @@ const img = (file: string) => `${base}/game/characters/${file}`;
 export const CHARACTERS: CharacterDef[] = [
   {
     id: 'default',
+    skill: null,
+    body: 'hero',
     name: '台灣隊',
     title: '原創選手',
     portrait: null,
@@ -50,6 +58,8 @@ export const CHARACTERS: CharacterDef[] = [
   },
   {
     id: 'p1',
+    skill: 'squatSmash',
+    body: 'hoodie',
     name: '阿灰',
     title: '夜行巴士',
     portrait: img('p1-portrait.webp'),
@@ -68,6 +78,8 @@ export const CHARACTERS: CharacterDef[] = [
   },
   {
     id: 'p2',
+    skill: 'spinSmash',
+    body: 'hoodie',
     name: '城主',
     title: '大阪城下',
     portrait: img('p2-portrait.webp'),
@@ -85,25 +97,9 @@ export const CHARACTERS: CharacterDef[] = [
     jersey: 'CASTLE',
   },
   {
-    id: 'p3',
-    name: '銀框',
-    title: '笑容殺手',
-    portrait: img('p3-portrait.webp'),
-    face: img('p3-face.webp'),
-    skin: '#d8a28d',
-    hair: '#2b221d',
-    hairStyle: 'short',
-    shirt: '#ece6da',
-    accent: '#64748b',
-    shorts: '#1f2937',
-    shoes: '#f8fafc',
-    headwear: 'none',
-    headwearColor: '#ffffff',
-    number: '23',
-    jersey: 'SMILE',
-  },
-  {
     id: 'p4',
+    skill: 'splash',
+    body: 'sporty',
     name: '黑框',
     title: '近網壓迫',
     portrait: img('p4-portrait.webp'),
@@ -122,6 +118,8 @@ export const CHARACTERS: CharacterDef[] = [
   },
   {
     id: 'p5',
+    skill: 'dualCurve',
+    body: 'sporty',
     name: '帽哥',
     title: '夜場常客',
     portrait: img('p5-portrait.webp'),

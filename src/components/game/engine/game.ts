@@ -10,11 +10,14 @@ import {
   SHOT_LABEL,
   classifyShot,
   planShot,
+  planSkill,
   planSpecial,
   previewTarget,
   sampleShotError,
+  solveByApex,
 } from './shots';
 import { type PaddleSpec, type SpecialId, ENERGY, PADDLES, SPECIALS, paddleById } from './paddles';
+import { type SkillId, SKILLS, SKILL_RECHARGE_POINTS } from './skills';
 import {
   type FaultReason,
   type MatchScore,
@@ -49,6 +52,8 @@ export interface InputState {
   held: ShotButton | null;
   /** 必殺鍵（按下的那一幀觸發「蓄勢」） */
   special?: boolean;
+  /** 絕招鍵（同上） */
+  skill?: boolean;
 }
 
 export interface SwingState {
@@ -93,6 +98,18 @@ export interface Athlete {
   jumpUntil: number;
   /** 最近一次得分慶祝／懊惱（給動畫用） */
   mood: { won: boolean; at: number } | null;
+  /** 角色絕招（沒有就是 null） */
+  skill: SkillId | null;
+  /** 絕招可以用了 */
+  skillReady: boolean;
+  /** 絕招已就緒：下一拍放出 */
+  skillArmed: boolean;
+  /** 用掉絕招時是第幾分（充能用） */
+  skillUsedAt: number;
+  /** 最近一次放絕招的時間（給動畫與特效用） */
+  skillAt: number;
+  /** 被噴水：腳下打滑，跑不快 */
+  slipUntil: number;
   /** 上一個物理步的位置（畫面內插用） */
   prevPos: V3;
 }
@@ -127,6 +144,8 @@ export interface RallyState {
   lastKindByTeam: [ShotKind | null, ShotKind | null];
   /** 這一拍是從球柱外側繞過去的（ATP） */
   atp: boolean;
+  /** 連續互 dink 的拍數（越長越考驗耐心：AI 會越來越急、越容易把球吊高） */
+  dinkChain: number;
 }
 
 export interface TeamStats {
@@ -150,10 +169,13 @@ export type GameEvent =
       speed: number;
       pos: V3;
       special: SpecialId | null;
+      skill: SkillId | null;
       /** 連續完美擊球數（玩家） */
       streak: number;
     }
   | { type: 'special'; team: Team; id: SpecialId }
+  | { type: 'skill'; team: Team; id: SkillId }
+  | { type: 'skillReady'; team: Team }
   | { type: 'counter'; team: Team; id: SpecialId }
   | { type: 'blown'; team: Team; id: SpecialId }
   | { type: 'energyFull'; team: Team }
@@ -193,6 +215,10 @@ export interface HudState {
   armed: boolean;
   special: SpecialId;
   oppSpecial: SpecialId;
+  /** 玩家的角色絕招 */
+  skill: SkillId | null;
+  skillReady: boolean;
+  skillArmed: boolean;
   rallyHits: number;
   dinkStreak: number;
   inKitchen: boolean;
@@ -211,6 +237,12 @@ const POINT_PAUSE = 2.1;
 const ASSIST_QUALITY = 0.78;
 /** auto 操作：按下到擊球超過這麼久就是「蓄滿」 */
 export const AUTO_CHARGE = 0.75;
+/** 被噴水打滑時的移動速度倍率 */
+const SLIP_MOVE = 0.6;
+/** auto 操作：擊球前多久開始揮拍（揮拍動作要有前揮的時間） */
+const AUTO_LEAD = 0.14;
+/** 發球：放開按鍵後前揮多久才擊球 */
+const SERVE_LEAD = 0.14;
 /** auto 操作：蓄力中移動稍慢（提早按的代價） */
 const AUTO_CHARGE_MOVE = 0.88;
 /** 完美破解必殺球需要的時機品質 */
@@ -281,6 +313,8 @@ export class GameEngine {
   timeScale = 1;
   /** 正在播放的必殺切入演出 */
   cinematic: { team: Team; id: SpecialId; start: number } | null = null;
+  /** 目前在飛的是絕招球（球的軌跡特效用），下一拍或下一分清掉 */
+  skillShot: { team: Team; id: SkillId } | null = null;
   /** 玩家的擊球導引（球朝玩家飛來時才有） */
   guide: HumanGuide | null = null;
   /** 玩家連續完美擊球 */
@@ -299,7 +333,13 @@ export class GameEngine {
   private events: GameEvent[] = [];
   private acc = 0;
   private prevHeld: ShotButton | null = null;
+  private pendingServe: { power: number; aimX: number } | null = null;
   private prevSpecial = false;
+  private prevSkill = false;
+  /** AI 對哪一顆來球擲過絕招骰子（athlete id → 對手擊球時間） */
+  private skillRolled = new Map<number, number>();
+  /** 已經開打幾分（絕招充能用） */
+  private pointsPlayed = 0;
   private input: InputState = { moveX: 0, moveY: 0, held: null };
   private humanPath: PathSample[] = [];
   private humanPathT0 = 0;
@@ -340,6 +380,12 @@ export class GameEngine {
       knockedUntil: 0,
       jumpUntil: 0,
       mood: null,
+      skill: null,
+      skillReady: true,
+      skillArmed: false,
+      skillUsedAt: 0,
+      skillAt: -99,
+      slipUntil: 0,
       prevPos: v3(0, 0, z),
     });
     // 預留雙打：athletes 陣列可以放四人，規則與 AI 都以 team 為單位
@@ -370,6 +416,7 @@ export class GameEngine {
       serveTargetSign: 1,
       lastKindByTeam: [null, null],
       atp: false,
+      dinkChain: 0,
     };
   }
 
@@ -387,11 +434,19 @@ export class GameEngine {
     this.rally = this.freshRally();
     this.phase = 'serve';
     this.landingMarker = null;
+    this.pendingServe = null;
+    this.pointsPlayed += 1;
+    this.skillShot = null;
     for (const a of this.athletes) {
       a.vel = v3();
       a.swing = idleSwing();
       a.kitchenLockUntil = 0;
       a.knockedUntil = 0;
+      a.slipUntil = 0;
+      if (a.skill && !a.skillReady && this.pointsPlayed - a.skillUsedAt >= SKILL_RECHARGE_POINTS) {
+        a.skillReady = true;
+        this.emit({ type: 'skillReady', team: a.team });
+      }
       if (a.ai) {
         a.ai.plan = null;
         a.ai.serveAt = this.time + (this.mode === 'dink' ? 0.9 : 1.4);
@@ -429,6 +484,7 @@ export class GameEngine {
     this.ball.vel = v3();
     this.ball.spin = v3();
     this.ball.special = null;
+    this.ball.curve = null;
   }
 
   private serve(a: Athlete, power: number, aimX: number) {
@@ -470,7 +526,15 @@ export class GameEngine {
     this.rally.bouncesSinceHit = 0;
     this.rally.lastKindByTeam[a.team] = plan.kind;
     this.phase = 'rally';
-    a.swing = { ...idleSwing(), state: 'swinging', button: 'serve', swingStart: this.time - PLAYER.swingWindup, done: true, forehand: 1 };
+    a.swing = {
+      ...idleSwing(),
+      state: 'swinging',
+      button: 'serve',
+      swingStart: this.time - PLAYER.swingWindup,
+      contactAt: this.time,
+      done: true,
+      forehand: 1,
+    };
     this.emit({ type: 'swing', team: a.team, button: 'serve' });
     this.emit({
       type: 'hit',
@@ -481,6 +545,7 @@ export class GameEngine {
       speed: plan.speed,
       pos: clone(this.ball.pos),
       special: null,
+      skill: null,
       streak: 0,
     });
   }
@@ -498,6 +563,8 @@ export class GameEngine {
     this.input = input;
     if (input.special && !this.prevSpecial) this.tryArm(this.human);
     this.prevSpecial = !!input.special;
+    if (input.skill && !this.prevSkill) this.tryArmSkill(this.human);
+    this.prevSkill = !!input.skill;
     for (const a of this.athletes) {
       if (a.swing.state === 'swinging' && this.time - a.swing.swingStart >= SWING_TOTAL) {
         a.swing = { ...idleSwing(), forehand: a.swing.forehand };
@@ -577,7 +644,26 @@ export class GameEngine {
   tryArm(a: Athlete) {
     if (!this.specials || a.armed || a.energy < ENERGY.max) return false;
     a.armed = true;
+    // 必殺和絕招不能同一拍一起放：後按的取代先按的
+    a.skillArmed = false;
     return true;
+  }
+
+  /** 絕招就緒：下一拍放出（熱血模式才有） */
+  tryArmSkill(a: Athlete) {
+    if (!this.specials || !a.skill || !a.skillReady || a.skillArmed) return false;
+    a.skillArmed = true;
+    a.armed = false;
+    return true;
+  }
+
+  /** 設定雙方的角色絕招（選角之後由畫面層告訴引擎） */
+  setSkills(skills: [SkillId | null, SkillId | null]) {
+    this.athletes.forEach((a, i) => {
+      a.skill = skills[i] ?? null;
+      a.skillReady = !!a.skill;
+      a.skillArmed = false;
+    });
   }
 
   private gainEnergy(a: Athlete, amount: number) {
@@ -627,11 +713,11 @@ export class GameEngine {
       wz /= m;
     }
     const slow =
-      h.swing.state === 'swinging' && this.time - h.swing.swingStart < SWING_TOTAL
+      (h.swing.state === 'swinging' && this.time - h.swing.swingStart < SWING_TOTAL
         ? PLAYER.swingMoveFactor
         : this.controls === 'auto' && h.swing.state === 'charging'
           ? AUTO_CHARGE_MOVE
-          : 1;
+          : 1) * (this.time < h.slipUntil ? SLIP_MOVE : 1);
     const maxV = PLAYER.maxSpeed * slow;
     const tx = wx * maxV;
     const tz = wz * maxV;
@@ -692,7 +778,13 @@ export class GameEngine {
       if (pressed && sw.state === 'idle') {
         h.swing = { ...idleSwing(), state: 'charging', button: 'serve', t0: this.time };
       } else if (released && sw.state === 'charging' && sw.button === 'serve') {
-        this.serve(h, powerAt(this.time - sw.t0), this.input.moveX);
+        // 放開後先前揮，SERVE_LEAD 秒後才擊球（力道與方向在放開那一刻決定）
+        this.pendingServe = { power: powerAt(this.time - sw.t0), aimX: this.input.moveX };
+        const at = this.time + SERVE_LEAD;
+        h.swing = { ...idleSwing(), state: 'swinging', button: 'serve', swingStart: at - PLAYER.swingWindup, contactAt: at, forehand: 1 };
+      } else if (this.pendingServe && sw.state === 'swinging' && this.time >= sw.contactAt) {
+        this.serve(h, this.pendingServe.power, this.pendingServe.aimX);
+        this.pendingServe = null;
       }
       this.prevHeld = held;
       return;
@@ -706,7 +798,7 @@ export class GameEngine {
       if (c.state === 'charging') {
         c.charge = Math.min(1, (this.time - c.t0) / AUTO_CHARGE);
         const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 0.5);
-        if (best && best.t - this.time <= PLAYER.swingWindup) {
+        if (best && best.t - this.time <= AUTO_LEAD) {
           this.startSwing(h, best.t, 0.6 + 0.4 * Math.min(1, (best.t - c.t0) / AUTO_CHARGE));
           h.swing.auto = true;
         }
@@ -992,11 +1084,19 @@ export class GameEngine {
       incomingSpeed: incoming,
       opponent: this.opponentOf(a).pos,
       paddle: { pace: a.paddle.mods.pace, spin: a.paddle.mods.spin },
+      volley,
     };
+    const kind0 = classifyShot(req);
+    // 接殺球／突擊：球又快又往下壓，防守方很難回得穩
+    const incomingKind = this.rally.lastKindByTeam[other(a.team)];
+    const underAttack = incomingKind === 'smash' ? 1 : incomingKind === 'speedup' ? 0.6 : 0;
 
     // AI 決定要不要放必殺（能量滿、時機合適）
     if (a.ai && this.specials && !a.armed && a.energy >= ENERGY.max && this.aiWantsSpecial(a)) a.armed = true;
     const fire: SpecialId | null = a.armed && this.specials ? a.paddle.special : null;
+    // 角色絕招（和必殺不同時放；AI 在規劃擊球時已經決定）
+    const skill: SkillId | null = !fire && a.skillArmed && this.specials ? a.skill : null;
+    this.skillShot = null;
 
     // 接必殺球：時機完美就破解，否則被震退、只能撈出高球
     let countered = false;
@@ -1012,7 +1112,7 @@ export class GameEngine {
       }
     }
 
-    const errKind = fire ? (fire === 'phantom' ? 'dink' : 'drive') : classifyShot(req);
+    const errKind = fire ? (fire === 'phantom' ? 'dink' : 'drive') : skill === 'squatSmash' || skill === 'spinSmash' ? 'drive' : classifyShot(req);
     // 旋轉強的拍子打抽球、高吊、殺球時更容易把球壓進場內（上旋的作用）
     const spinControl = errKind === 'drive' || errKind === 'smash' || errKind === 'lob' ? 1 / (1 + (a.paddle.mods.spin - 1) * 0.6) : 1;
     const err: Perturb = sampleShotError(
@@ -1024,15 +1124,37 @@ export class GameEngine {
         contactHeight: b.pos.y,
         stretch: dist / this.reachOf(a),
         moveSpeed: Math.hypot(a.vel.x, a.vel.z),
-        skill: (a.ai ? a.ai.profile.skill : 1) * a.paddle.mods.error * spinControl * pressure,
-        zone: !!fire,
+        skill:
+          (a.ai ? a.ai.profile.skill : 1) *
+          a.paddle.mods.error *
+          spinControl *
+          pressure *
+          (1 + underAttack * 1.4) *
+          // 互 dink 太久，AI 開始沉不住氣：dink 越來越不穩、容易吊高給人突擊
+          (a.ai && kind0 === 'dink' ? 1 + Math.max(0, this.rally.dinkChain - 3) * 0.07 : 1),
+        zone: !!fire || !!skill,
         forehand: l >= 0 ? 1 : -1,
       },
       this.rand,
     );
     err.arc += popUp;
     err.depth += popUp * 1.2;
-    let plan: ShotPlan = fire ? planSpecial(fire, req, err) : planShot(req, err);
+    let plan: ShotPlan = fire ? planSpecial(fire, req, err) : ((skill && planSkill(skill, req, err)) ?? planShot(req, err));
+    // 被逼急的軟球／截擊會被打飛：時機差、伸長手勉強碰到、硬接重球時，球軟軟地飄高到中場 → 對方的殺球機會
+    let popped = false;
+    if (!fire && !incomingSpecial && (kind0 === 'dink' || kind0 === 'drop' || kind0 === 'block' || kind0 === 'punch' || underAttack > 0)) {
+      const stretch = dist / this.reachOf(a);
+      let p = Math.max(0, 0.6 - quality) * 0.9 + Math.max(0, stretch - 0.85) * 1.5 + underAttack * 0.25;
+      if (kind0 !== 'block') p += Math.max(0, incoming - 13) * 0.03;
+      if (a.ai && kind0 === 'dink') p += Math.max(0, this.rally.dinkChain - 4) * 0.015;
+      p *= a.ai ? a.ai.profile.skill / 1.4 : 0.8;
+      if (this.rand() < Math.min(0.45, p)) {
+        popped = true;
+        const target = v3(b.pos.x + (this.rand() - 0.5) * 2, 0, -s * (2.4 + this.rand() * 1.8));
+        const sol = solveByApex(b.pos, target, Math.max(2.3, b.pos.y + 0.9) + this.rand() * 0.7, 0);
+        plan = { kind: plan.kind, target, vel: sol.vel, spin: sol.spin, speed: len(sol.vel), flightTime: sol.time };
+      }
+    }
     if (blown) {
       // 拍子被震飛：球軟軟地彈起，多半過不了網
       const toward = -s;
@@ -1055,6 +1177,17 @@ export class GameEngine {
           spent: false,
         }
       : null;
+    b.curve = null;
+    if (skill === 'dualCurve') {
+      // 曲球：側向先往一邊飄、再往另一邊，落地時回到原本的落點
+      const hs = Math.hypot(plan.vel.x, plan.vel.z) || 1;
+      const perp = { x: -plan.vel.z / hs, z: plan.vel.x / hs };
+      const omega = (2 * Math.PI) / Math.max(0.5, plan.flightTime);
+      const amp = (this.rand() < 0.5 ? 1 : -1) * 1.1;
+      b.vel.x += perp.x * amp * omega;
+      b.vel.z += perp.z * amp * omega;
+      b.curve = { t: 0, amp, omega, perp };
+    }
 
     const r = this.rally;
     r.hits += 1;
@@ -1063,6 +1196,10 @@ export class GameEngine {
     r.bouncesSinceHit = 0;
     r.lastKindByTeam[a.team] = plan.kind;
     r.atp = false;
+    r.dinkChain = plan.kind === 'dink' && !popped ? r.dinkChain + 1 : 0;
+    if (this.mode === 'match' && (r.dinkChain === 6 || r.dinkChain === 10)) {
+      this.emit({ type: 'highlight', text: r.dinkChain === 6 ? `Dink 對決 ×${r.dinkChain}：比耐心！` : `Dink ×${r.dinkChain}！誰先沉不住氣？` });
+    }
     if (volley) a.kitchenLockUntil = this.time + 0.6;
     if (a.ai) a.ai.plan = null;
 
@@ -1079,6 +1216,21 @@ export class GameEngine {
       this.freezeUntil = this.real + 0.85;
       this.slowUntil = this.real + 1.45;
       this.emit({ type: 'special', team: a.team, id: fire });
+    } else if (skill) {
+      a.skillArmed = false;
+      a.skillReady = false;
+      a.skillUsedAt = this.pointsPlayed;
+      a.skillAt = this.time;
+      if (skill === 'splash') {
+        // 水花噴到對手腳下：嚇一跳愣住一下，接著打滑跑不快
+        const opp = this.opponentOf(a);
+        opp.knockedUntil = this.time + 0.3;
+        opp.slipUntil = this.time + 1.1;
+      }
+      this.freezeUntil = this.real + 0.45;
+      this.slowUntil = this.real + 0.9;
+      this.emit({ type: 'skill', team: a.team, id: skill });
+      this.skillShot = { team: a.team, id: skill };
     } else {
       this.gainEnergy(a, quality >= 0.9 ? ENERGY.perfect : quality >= 0.65 ? ENERGY.good : 0);
       if (r.hits > 8) this.gainEnergy(a, ENERGY.longRally);
@@ -1099,7 +1251,7 @@ export class GameEngine {
     // 頓幀：每一拍都停一下，球越快、擊球越完美停越久（打擊感的核心）
     if (!fire) {
       const power = clamp(plan.speed / 24, 0, 1);
-      const stop = 0.03 + power * 0.045 + (quality >= 0.9 ? 0.035 : 0);
+      const stop = 0.03 + power * 0.045 + (quality >= 0.9 ? 0.035 : 0) + (plan.kind === 'smash' ? 0.05 : plan.kind === 'speedup' ? 0.025 : 0);
       this.hitStopUntil = Math.max(this.hitStopUntil, this.real + stop);
     }
     if (!a.ai) {
@@ -1109,14 +1261,18 @@ export class GameEngine {
       } else this.perfectStreak = 0;
     }
 
-    let label: string = fire ? SPECIALS[fire].name : SHOT_LABEL[plan.kind];
+    let label: string = fire ? SPECIALS[fire].name : skill ? SKILLS[skill].name : SHOT_LABEL[plan.kind];
     if (sw.reflex) label = '反射擋球';
-    else if (!a.ai && !fire) {
+    else if (!a.ai && !fire && !skill) {
       if (sw.auto) label = quality >= 0.9 ? `蓄滿 ${label}` : quality >= 0.75 ? label : `倉促 ${label}`;
       else if (sw.assistQ === null) {
         label =
           quality >= 0.9 ? `完美 ${label}` : quality >= 0.65 ? `漂亮 ${label}` : offset < 0 ? `太早 ${label}` : `太晚 ${label}`;
       }
+    }
+    if (popped) {
+      label = '被打飛';
+      this.emit({ type: 'highlight', text: a.ai ? '機會球！跳起來殺' : '球被打飛了！小心對方殺球' });
     }
     if (volley && Math.abs(a.pos.x) > COURT.halfWidth + 0.05 && Math.abs(a.pos.z) < COURT.kitchen + 0.6) {
       this.emit({ type: 'highlight', text: 'ERNE！繞過廚房的截擊' });
@@ -1130,8 +1286,19 @@ export class GameEngine {
       speed: plan.speed,
       pos: clone(b.pos),
       special: fire,
+      skill,
       streak: a.ai ? 0 : this.perfectStreak,
     });
+  }
+
+  /** AI 判斷這一拍適不適合放絕招 */
+  private aiWantsSkill(a: Athlete, h: number) {
+    const chance = { rookie: 0.25, club: 0.35, pro: 0.45 }[this.difficulty];
+    if (this.rand() > chance) return false;
+    if (a.skill === 'squatSmash') return h < 1.2;
+    if (a.skill === 'spinSmash') return h > 0.7;
+    if (a.skill === 'dualCurve') return Math.abs(this.ball.pos.z) > COURT.kitchen + 0.5;
+    return true;
   }
 
   /** AI 判斷這一拍適不適合放必殺 */
@@ -1310,6 +1477,12 @@ export class GameEngine {
     if (reacted && (!plan || (!plan.swung && this.time >= ai.replanAt && plan.contactT - this.time > 0.25))) {
       ai.plan = planContact(this, a, this.rand);
       if (ai.plan && sp) ai.plan.timingError *= 1.8;
+      // 絕招：每一顆來球只考慮一次，提早決定（蹲下、起跳的動作才來得及）
+      const p0 = ai.plan;
+      if (p0 && !p0.leave && this.skillRolled.get(a.id) !== this.rally.lastHitTime) {
+        this.skillRolled.set(a.id, this.rally.lastHitTime);
+        if (this.specials && a.skill && a.skillReady && !a.skillArmed && !a.armed && this.aiWantsSkill(a, p0.contact.y)) a.skillArmed = true;
+      }
       ai.replanAt = this.time + 0.15;
     }
     const p = ai.plan;
@@ -1317,7 +1490,7 @@ export class GameEngine {
       if (!reacted) steer(a, a.pos.x, a.pos.z, 1, dt);
       return;
     }
-    steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed, dt);
+    steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed * (this.time < a.slipUntil ? SLIP_MOVE : 1), dt);
     if (!p.leave && !p.swung && this.time >= p.contactT + p.timingError - PLAYER.swingWindup) {
       p.swung = true;
       this.startSwing(a, this.time + PLAYER.swingWindup, null, p);
@@ -1343,6 +1516,9 @@ export class GameEngine {
       armed: h.armed,
       special: h.paddle.special,
       oppSpecial: this.athletes[1].paddle.special,
+      skill: h.skill,
+      skillReady: h.skillReady,
+      skillArmed: h.skillArmed,
       rallyHits: this.rally.hits,
       dinkStreak: this.dinkStreak,
       inKitchen: feetInKitchen(h.pos),

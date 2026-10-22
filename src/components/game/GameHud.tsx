@@ -2,8 +2,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { GameEngine, type HudState } from './engine/game';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
 import { SHOT_LABEL } from './engine/shots';
-import { SPECIALS, type PaddleSpec } from './engine/paddles';
-import { CutIn } from './CutIn';
+import { SPECIALS } from './engine/paddles';
+import { SKILLS } from './engine/skills';
+import { CutIn, type CutInInfo } from './CutIn';
 
 export interface Toast {
   id: number;
@@ -130,6 +131,28 @@ const EnergyBar = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
   );
 };
 
+/** 角色絕招：可用／就緒／充能中（打完 4 分再充好） */
+const SkillChip = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
+  if (!hud.skill) return null;
+  const sk = SKILLS[hud.skill];
+  const on = hud.skillReady;
+  return (
+    <div
+      className={`mt-2 w-56 rounded-2xl border px-3 py-1.5 text-[11px] font-bold backdrop-blur-md transition-shadow ${
+        hud.skillArmed ? 'border-white/60 bg-slate-950/80' : on ? 'border-white/25 bg-slate-950/65' : 'border-white/10 bg-slate-950/50'
+      }`}
+      style={on ? { boxShadow: `0 0 ${hud.skillArmed ? 30 : 12}px ${sk.color}` } : undefined}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="truncate" style={{ color: on ? sk.glow : 'rgba(255,255,255,0.45)' }}>
+          絕招・{sk.name}
+        </span>
+        <span className="shrink-0 text-white/60">{hud.skillArmed ? '就緒！' : on ? (touch ? '點「絕招」' : '按 U') : '充能中'}</span>
+      </div>
+    </div>
+  );
+};
+
 /** 發球力道條：綠色區間內才會進，越接近上緣越深 */
 const ServeMeter = ({ power }: { power: number }) => {
   const win = GameEngine.serveWindow();
@@ -163,7 +186,7 @@ interface HudProps {
   aiToast: Toast | null;
   banner: { id: number; text: string } | null;
   card: PointCard | null;
-  cutIn: { id: number; spec: PaddleSpec; mine: boolean; portrait: string | null; name: string } | null;
+  cutIn: CutInInfo | null;
   oppName: string;
   touch: boolean;
 }
@@ -179,6 +202,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       {hud.specials && (
         <div className={`absolute left-3 ${touch ? 'top-[7.5rem]' : 'bottom-4'}`}>
           <EnergyBar hud={hud} touch={touch} />
+          <SkillChip hud={hud} touch={touch} />
         </div>
       )}
 
@@ -311,7 +335,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       )}
 
       <AnimatePresence>
-        {cutIn && <CutIn key={cutIn.id} spec={cutIn.spec} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />}
+        {cutIn && <CutIn key={cutIn.id} spec={cutIn.spec} skill={cutIn.skill} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />}
       </AnimatePresence>
     </div>
   );

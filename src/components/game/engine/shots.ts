@@ -117,6 +117,20 @@ export const solveBySpeed = (from: V3, target: V3, speed: number, topspin: numbe
 };
 
 /**
+ * 依球速求解，但保證過得了網：低點出手的快球若會撞網，就逐步降速、拉高弧線。
+ * 沒有這一步，從網下硬抽就算時機完美也會「自動」掛網，玩家只會覺得遊戲壞了。
+ */
+export const solveClearing = (from: V3, target: V3, speed: number, topspin: number, minMargin: number) => {
+  let v = speed;
+  let sol = solveBySpeed(from, target, v, topspin);
+  for (let i = 0; i < 10 && sol.netMargin < minMargin && v > 6; i++) {
+    v *= 0.88;
+    sol = solveBySpeed(from, target, v, topspin);
+  }
+  return sol;
+};
+
+/**
  * 球拍能打出的最大球速：v_out ≈ e·v_in + (1+e)·v_拍頭，e 取 PBCoR 上限 0.43。
  * 換算下來業餘選手抽球約 20 m/s（45 mph），接快球回擊可再快一點。
  */
@@ -244,7 +258,7 @@ const designShot = (req: ShotRequest): ShotDesign => {
       break;
     default: {
       // 抽球：對手在網前就打他腳下，在底線就打深
-      const base = oppDepth < COURT.kitchen + 1.2 ? oppDepth + 0.3 : COURT.halfLength - 0.8;
+      const base = oppDepth < COURT.kitchen + 1.2 ? oppDepth + 0.3 : COURT.halfLength - 1.1;
       d = clamp(base + req.aimDepth * 0.8, 2.5, COURT.halfLength - 0.3);
       tx = aimWorldX(2.5);
       speed = lerp(11, maxPace(req.incomingSpeed), req.charge);
@@ -276,7 +290,7 @@ export const planShot = (req: ShotRequest, err: Perturb = NO_ERROR): ShotPlan =>
 
   let sol;
   if (speed > 0) {
-    sol = solveBySpeed(req.contact, target, speed * (1 + err.speed), topspin);
+    sol = solveClearing(req.contact, target, speed * (1 + err.speed), topspin, 0.06);
   } else if (margin !== null) {
     // 軟球的關鍵是過網高度：反覆調整最高點，讓過網餘裕 = 目標 + 誤差
     const want = margin + err.arc;
@@ -305,7 +319,7 @@ const BASE_ERROR: Record<ShotKind, Perturb> = {
   // 技術倍率 1（約 DUPR 3.5）時：dink 掛網約 5%、放小球約 8%、抽球出界約 5%
   dink: { depth: 0.3, lateral: 0.3, arc: 0.11, speed: 0 },
   drop: { depth: 0.5, lateral: 0.4, arc: 0.16, speed: 0 },
-  drive: { depth: 0.5, lateral: 0.4, arc: 0, speed: 0.02 },
+  drive: { depth: 0.45, lateral: 0.38, arc: 0, speed: 0.02 },
   smash: { depth: 0.5, lateral: 0.45, arc: 0, speed: 0.02 },
   lob: { depth: 0.6, lateral: 0.5, arc: 0.3, speed: 0 },
 };
@@ -381,7 +395,7 @@ export const planSpecial = (id: SpecialId, req: ShotRequest, err: Perturb): Shot
     kind = 'drive';
     const d = clamp(COURT.halfLength - 1 + req.aimDepth * 0.6 + err.depth, 2.4, COURT.halfLength + 0.6);
     target = v3(aimX(2.4), 0, toward * d);
-    sol = solveBySpeed(req.contact, target, maxPace(req.incomingSpeed) * 1.38 * pm.pace, 170);
+    sol = solveClearing(req.contact, target, maxPace(req.incomingSpeed) * 1.38 * pm.pace, 170, 0.1);
   } else if (id === 'thunder') {
     kind = 'smash';
     const d = clamp(3.8 + req.aimDepth * 1.3 + err.depth, 2.5, COURT.halfLength + 0.4);
@@ -397,7 +411,7 @@ export const planSpecial = (id: SpecialId, req: ShotRequest, err: Perturb): Shot
     kind = 'drive';
     const d = clamp(3.4 + req.aimDepth * 1.1 + err.depth, 2.4, COURT.halfLength);
     target = v3(aimX(2.4), 0, toward * d);
-    sol = solveBySpeed(req.contact, target, 15.5 * pm.pace, -260);
+    sol = solveClearing(req.contact, target, 15.5 * pm.pace, -260, 0.1);
   }
   return {
     kind,

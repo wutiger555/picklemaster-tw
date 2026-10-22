@@ -72,7 +72,8 @@ export const PLAYER = {
   minContactHeight: 0.06,
   maxContactHeight: 2.35,
   /** 揮拍從啟動到觸球的時間 */
-  swingWindup: 0.11,
+  /** 放開按鍵到觸球：越短越跟手（Mario Tennis 類遊戲約 3–5 幀） */
+  swingWindup: 0.08,
   swingFollow: 0.28,
   bodyRadius: 0.28,
 } as const;

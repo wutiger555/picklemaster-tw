@@ -16,6 +16,8 @@ export interface BallSpecial {
   period: number;
   /** 幻影：蛇行的方向（+1 / -1） */
   sway: number;
+  /** 幻影：出手當下的水平側向單位向量（固定，前進方向才不會被扭掉） */
+  perp: { x: number; z: number };
   /** 已經落地過（效果轉換完畢） */
   spent: boolean;
 }
@@ -45,7 +47,7 @@ export const cloneBall = (b: BallState): BallState => ({
   pos: clone(b.pos),
   vel: clone(b.vel),
   spin: clone(b.spin),
-  special: b.special ? { ...b.special, target: clone(b.special.target) } : null,
+  special: b.special ? { ...b.special, target: clone(b.special.target), perp: { ...b.special.perp } } : null,
 });
 
 /** 空氣中的加速度：重力＋二次阻力＋馬格努斯升力 */
@@ -174,13 +176,10 @@ const specialFlight = (b: BallState, dt: number) => {
     vel.x += ((sp.target.x - pos.x) / Math.max(0.05, tf) - vel.x) * k;
     vel.z += ((sp.target.z - pos.z) / Math.max(0.05, tf) - vel.z) * k;
   } else if (sp.id === 'phantom') {
-    // 側向蛇行：a = A·cos(2πt/T)，一個週期後位移歸零，所以仍落在目標附近
-    const hs = Math.hypot(vel.x, vel.z) || 1;
-    const nx = -vel.z / hs;
-    const nz = vel.x / hs;
-    const a = sp.sway * 26 * Math.cos((2 * Math.PI * sp.t) / sp.period);
-    vel.x += nx * a * dt;
-    vel.z += nz * a * dt;
+    // 側向蛇行：a = A·cos(2πt/T) → 位移 = A/ω²·(1−cos ωt)，一個週期後歸零，仍落在目標附近
+    const a = sp.sway * 16 * Math.cos((2 * Math.PI * sp.t) / sp.period);
+    vel.x += sp.perp.x * a * dt;
+    vel.z += sp.perp.z * a * dt;
   }
 };
 

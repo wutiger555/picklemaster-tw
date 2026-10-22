@@ -53,6 +53,8 @@ class ParticlePool {
   c1 = new Float32Array(MAX_P * 3);
   c2 = new Float32Array(MAX_P * 3);
   next = 0;
+  /** 還活著的粒子數：0 的時候整段更新與上傳都跳過 */
+  alive = 0;
   mat: THREE.ShaderMaterial;
 
   constructor() {
@@ -85,6 +87,7 @@ class ParticlePool {
   }
 
   emit(o: EmitOpts) {
+    this.alive += o.count;
     for (let n = 0; n < o.count; n++) {
       const i = this.next;
       this.next = (this.next + 1) % MAX_P;
@@ -129,11 +132,14 @@ class ParticlePool {
   }
 
   update(dt: number) {
+    if (this.alive <= 0) return;
+    let alive = 0;
     for (let i = 0; i < MAX_P; i++) {
       if (this.life[i] <= 0) {
         this.alpha[i] = 0;
         continue;
       }
+      alive++;
       this.life[i] -= dt;
       const k = 1 - Math.max(0, this.life[i]) / this.maxLife[i];
       const d = Math.exp(-this.drag[i] * dt);
@@ -148,6 +154,7 @@ class ParticlePool {
       this.size[i] = this.baseSize[i] * (1 + this.grow[i] * k);
       this.alpha[i] = k < 0.15 ? k / 0.15 : 1 - (k - 0.15) / 0.85;
     }
+    this.alive = alive;
     for (const n of ['position', 'color', 'size', 'alpha']) (this.geo.attributes[n] as THREE.BufferAttribute).needsUpdate = true;
   }
 }
@@ -304,6 +311,7 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
   const boltUntil = useRef(0);
   const boltTarget = useRef(new THREE.Vector3());
   const tmp = useMemo(() => new THREE.Vector3(), []);
+  const dirTmp = useMemo(() => new THREE.Vector3(), []);
 
   const ring = (p: THREE.Vector3, color: string, max: number, flat: boolean, life = 0.5) => {
     const m = rings.find((r) => clock.current - r.userData.born > r.userData.life) ?? rings[0];
@@ -344,7 +352,25 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
     if (e.type === 'hit') {
       const p = tmp.set(e.pos.x, e.pos.y, e.pos.z).clone();
       const power = Math.min(1, e.speed / 25);
+      const mine = e.team === 0;
       pool.emit({ pos: p, count: 10 + Math.round(power * 18), speed: 3 + power * 5, life: 0.3, size: 0.07, gravity: -6, color: SPARK, color2: COLOR('#ffb347') });
+      // 沿出球方向噴出一束高速火花：球被「轟出去」的感覺
+      const bv = engine.ball.vel;
+      const sp = Math.hypot(bv.x, bv.y, bv.z) || 1;
+      dirTmp.set(bv.x / sp, bv.y / sp, bv.z / sp);
+      pool.emit({
+        pos: p,
+        count: (mine ? 14 : 6) + Math.round(power * 16),
+        speed: 6 + power * 10,
+        dir: dirTmp,
+        spread: 0.35,
+        life: 0.22,
+        size: 0.05,
+        drag: 4,
+        color: COLOR('#ffffff'),
+        color2: COLOR('#ffd27a'),
+      });
+      if (mine && !e.special) flash(p, '#fff4cf', 1.2 + power * 2);
       if (e.special) {
         const [c1, c2] = SPECIAL_COLORS[e.special];
         pool.emit({ pos: p, count: 70, speed: 7, life: 0.6, size: 0.18, grow: 1.5, color: c1, color2: c2, drag: 3 });
@@ -352,8 +378,10 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
         flash(p, SPECIALS[e.special].glow, 6);
         ballTrail.clear();
       } else if (e.quality !== null && e.quality >= 0.9 && e.team === 0) {
-        ring(p, '#fde047', 1.3, false, 0.35);
-        flash(p, '#fff6c2', 2);
+        // 完美擊球：金色星爆＋光環
+        ring(p, '#fde047', 1.6, false, 0.4);
+        pool.emit({ pos: p, count: 36, speed: 5, life: 0.45, size: 0.1, color: COLOR('#fff7b0'), color2: COLOR('#f59e0b'), drag: 3.5 });
+        flash(p, '#fff6c2', 4);
       } else if (power > 0.75) {
         ring(p, '#ffffff', 1, false, 0.3);
       }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { PerformanceMonitor } from '@react-three/drei';
 import { AnimatePresence } from 'framer-motion';
 import { GameEngine, type GameEvent, type HudState } from './engine/game';
 import { createAI } from './engine/ai';
@@ -8,6 +9,8 @@ import { GameScene } from './GameScene';
 import { GameHud, type PointCard, type Toast } from './GameHud';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
 import { PaddleSelect } from './PaddleSelect';
+import { CharacterSelect } from './CharacterSelect';
+import { CHARACTERS, type CharacterDef, characterById, pickOpponent } from './characters';
 import { TouchControls } from './TouchControls';
 import { useGameInput } from './useGameInput';
 import { GameAudio } from './audio';
@@ -38,6 +41,12 @@ const save = (key: string, value: unknown) => {
   }
 };
 
+/** 示範賽：隨機兩位照片角色 */
+const demoCharacters = (): [CharacterDef, CharacterDef] => {
+  const a = pickOpponent('default');
+  return [a, pickOpponent(a.id)];
+};
+
 /** 主選單背後播放的 AI 對打示範（熱血模式，會看到必殺技） */
 const createDemo = () => {
   const ids = PADDLES.map((p) => p.id);
@@ -45,6 +54,15 @@ const createDemo = () => {
   const e = new GameEngine({ mode: 'match', difficulty: 'pro', assist: false, specials: true, paddles: [a] });
   e.athletes[0].ai = createAI('pro');
   return e;
+};
+
+/** 手機震動回饋（不支援的瀏覽器直接略過） */
+const buzz = (pattern: number | number[]) => {
+  try {
+    navigator.vibrate?.(pattern);
+  } catch {
+    /* 不支援就算了 */
+  }
 };
 
 /** 手機或核心數少的裝置：減少粒子、關掉色差與 MSAA */
@@ -56,26 +74,36 @@ const detectLowSpec = () => {
   }
 };
 
-type Screen = 'menu' | 'paddle' | 'play' | 'over';
+type Screen = 'menu' | 'character' | 'paddle' | 'play' | 'over';
 
 const PickleballGame = () => {
   const [screen, setScreen] = useState<Screen>('menu');
   const [settings, setSettings] = useState<Settings>(() =>
-    load<Settings>(SETTINGS_KEY, { mode: 'match', difficulty: 'rookie', assist: true, specials: true, paddle: PADDLES[0].id }),
+    load<Settings>(SETTINGS_KEY, {
+      mode: 'match',
+      difficulty: 'rookie',
+      assist: true,
+      specials: true,
+      paddle: PADDLES[0].id,
+      character: CHARACTERS[1]?.id ?? 'default',
+    }),
   );
   const [records, setRecords] = useState<Records>(() => load<Records>(RECORDS_KEY, emptyRecords()));
   const [engine, setEngine] = useState<GameEngine>(createDemo);
+  const [characters, setCharacters] = useState<[CharacterDef, CharacterDef]>(demoCharacters);
   const [paused, setPaused] = useState(false);
   const [hud, setHud] = useState<HudState>(() => engine.hud());
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [aiToast, setAiToast] = useState<Toast | null>(null);
   const [banner, setBanner] = useState<{ id: number; text: string } | null>(null);
   const [card, setCard] = useState<PointCard | null>(null);
-  const [cutIn, setCutIn] = useState<{ id: number; spec: PaddleSpec; mine: boolean } | null>(null);
+  const [cutIn, setCutIn] = useState<{ id: number; spec: PaddleSpec; mine: boolean; portrait: string | null; name: string } | null>(null);
   const [newRecord, setNewRecord] = useState(false);
   const [muted, setMuted] = useState(false);
   const [touch, setTouch] = useState(false);
-  const lowSpec = useMemo(detectLowSpec, []);
+  // 起始畫質依裝置判斷；PerformanceMonitor 發現掉幀會再往下調（解析度、MSAA、色差）
+  const [lowSpec, setLowSpec] = useState(detectLowSpec);
+  const [dpr, setDpr] = useState(() => (detectLowSpec() ? 1.25 : 1.75));
   const audio = useMemo(() => new GameAudio(), []);
   const stage = useRef<HTMLDivElement>(null);
   const ids = useRef(0);
@@ -146,6 +174,7 @@ const PickleballGame = () => {
       setRecords(next);
       save(RECORDS_KEY, next);
       setNewRecord(record);
+      audio.ambience(false);
       audio.win(eng.mode === 'dink' ? record : eng.match.winner === 0);
       setScreen('over');
     },
@@ -156,13 +185,22 @@ const PickleballGame = () => {
     (events: GameEvent[]) => {
       if (screen !== 'play') {
         // 示範對打不出聲、不顯示；打完一場就換一場新的
-        if (screen === 'menu' && events.some((e) => e.type === 'gameOver')) setEngine(createDemo());
+        if (screen === 'menu' && events.some((e) => e.type === 'gameOver')) {
+          setEngine(createDemo());
+          setCharacters(demoCharacters());
+        }
         return;
       }
       for (const e of events) {
         switch (e.type) {
+          case 'swing':
+            if (e.team === 0) audio.swing(e.button === 'drive');
+            break;
           case 'hit': {
-            audio.hit(e.speed, e.team === 0 && e.quality !== null && e.quality >= 0.9);
+            const perfect = e.team === 0 && e.quality !== null && e.quality >= 0.9;
+            audio.hit(e.speed, perfect);
+            if (e.team === 0) buzz(e.special ? [30, 40, 60] : perfect ? 25 : 12);
+            if (perfect && e.streak >= 2) audio.streak(e.streak);
             const kmh = `${Math.round(e.speed * 3.6)} km/h`;
             if (e.team === 0) {
               const tone: Toast['tone'] = e.special
@@ -174,7 +212,7 @@ const PickleballGame = () => {
                     : e.quality >= 0.65
                       ? 'good'
                       : 'off';
-              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone };
+              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone, streak: perfect ? e.streak : 0 };
               setToasts([t]);
               later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900);
             } else {
@@ -186,12 +224,14 @@ const PickleballGame = () => {
           }
           case 'special': {
             audio.special(e.id);
-            const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, mine: e.team === 0 };
+            const who = characters[e.team];
+            const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, mine: e.team === 0, portrait: who.portrait, name: who.name };
             setCutIn(c);
             later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 1150);
             break;
           }
           case 'counter':
+            if (e.team === 0) buzz(40);
             audio.counter();
             audio.cheer(true);
             break;
@@ -264,11 +304,12 @@ const PickleballGame = () => {
         }
       }
     },
-    [screen, audio, engine, finish],
+    [screen, audio, engine, finish, characters],
   );
 
   const start = (s: Settings = settings) => {
     audio.unlock();
+    audio.ambience(true);
     save(SETTINGS_KEY, s);
     const e = new GameEngine({
       mode: s.mode,
@@ -278,6 +319,8 @@ const PickleballGame = () => {
       paddles: [s.paddle],
     });
     setEngine(e);
+    const mine = characterById(s.character);
+    setCharacters([mine, pickOpponent(mine.id)]);
     setHud(e.hud());
     setToasts([]);
     setCard(null);
@@ -291,7 +334,9 @@ const PickleballGame = () => {
   };
 
   const toMenu = () => {
+    audio.ambience(false);
     setEngine(createDemo());
+    setCharacters(demoCharacters());
     setPaused(false);
     setCard(null);
     setCutIn(null);
@@ -317,12 +362,20 @@ const PickleballGame = () => {
     >
       <Canvas
         shadows
-        dpr={lowSpec ? [1, 1.25] : [1, 1.75]}
+        dpr={dpr}
         camera={{ fov: 46, position: [0, 5.2, 11], near: 0.1, far: 160 }}
         className="touch-none"
         gl={{ antialias: false, powerPreference: 'high-performance', stencil: false }}
       >
-        <GameScene engine={engine} readInput={read} paused={paused || screen === 'over'} onEvents={onEvents} lowSpec={lowSpec} />
+        <PerformanceMonitor
+          onDecline={() => {
+            setDpr((d) => Math.max(1, d - 0.25));
+            setLowSpec(true);
+          }}
+          onIncline={() => setDpr((d) => Math.min(lowSpec ? 1.25 : 1.75, d + 0.25))}
+          flipflops={3}
+        />
+        <GameScene engine={engine} characters={characters} readInput={read} paused={paused || screen === 'over'} onEvents={onEvents} lowSpec={lowSpec} />
       </Canvas>
 
       {playing && (
@@ -337,6 +390,7 @@ const PickleballGame = () => {
             card={card}
             cutIn={cutIn}
             touch={touch}
+            oppName={characters[1].name}
           />
           {touch && !paused && (
             <TouchControls
@@ -386,8 +440,17 @@ const PickleballGame = () => {
             onChange={setSettings}
             onNext={() => {
               audio.unlock();
-              setScreen('paddle');
+              setScreen('character');
             }}
+          />
+        )}
+        {screen === 'character' && (
+          <CharacterSelect
+            key="character"
+            value={settings.character}
+            onChange={(id) => setSettings({ ...settings, character: id })}
+            onBack={() => setScreen('menu')}
+            onNext={() => setScreen('paddle')}
           />
         )}
         {screen === 'paddle' && (
@@ -396,7 +459,7 @@ const PickleballGame = () => {
             value={settings.paddle}
             specials={settings.specials}
             onChange={(id) => setSettings({ ...settings, paddle: id })}
-            onBack={() => setScreen('menu')}
+            onBack={() => setScreen('character')}
             onStart={() => start()}
           />
         )}

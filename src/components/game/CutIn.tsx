@@ -18,7 +18,7 @@ const useFaceArt = (spec: PaddleSpec) =>
  * 動漫式必殺切入：斜切色帶＋速度線＋巨大招式名＋球拍特寫。
  * 遊戲時間在這段幾乎凍結，所以畫面動態全靠這層 CSS。
  */
-export const CutIn = ({ spec, mine }: { spec: PaddleSpec; mine: boolean }) => {
+export const CutIn = ({ spec, mine, portrait, name }: { spec: PaddleSpec; mine: boolean; portrait?: string | null; name?: string }) => {
   const sp = SPECIALS[spec.special];
   const art = useFaceArt(spec);
   const from = mine ? -1 : 1;
@@ -49,12 +49,28 @@ export const CutIn = ({ spec, mine }: { spec: PaddleSpec; mine: boolean }) => {
         />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.65)_100%)]" />
       </motion.div>
+      {/* 選手特寫：去背半身像從側邊衝進來 */}
+      {portrait && (
+        <motion.img
+          src={portrait}
+          alt=""
+          className={`absolute bottom-0 h-[92%] ${mine ? 'left-[-2%]' : 'right-[-2%]'}`}
+          style={{
+            filter: `drop-shadow(0 0 24px ${sp.color})`,
+            WebkitMaskImage: 'linear-gradient(180deg, #000 72%, transparent 100%)',
+            maskImage: 'linear-gradient(180deg, #000 72%, transparent 100%)',
+          }}
+          initial={{ x: from * -260, opacity: 0, scale: 1.15 }}
+          animate={{ x: 0, opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 22 }}
+        />
+      )}
       {/* 球拍特寫 */}
       {art && (
         <motion.img
           src={art}
           alt=""
-          className={`absolute top-[18%] h-[64%] drop-shadow-[0_0_30px_rgba(255,255,255,0.45)] ${mine ? 'left-[6%]' : 'right-[6%]'}`}
+          className={`absolute drop-shadow-[0_0_30px_rgba(255,255,255,0.45)] ${portrait ? `top-[30%] h-[46%] ${mine ? 'left-[30%]' : 'right-[30%]'}` : `top-[18%] h-[64%] ${mine ? 'left-[6%]' : 'right-[6%]'}`}`}
           style={{ aspectRatio: '1 / 2', borderRadius: '42% 42% 18% 18% / 22% 22% 10% 10%' }}
           initial={{ x: from * -300, rotate: mine ? -35 : 35, opacity: 0 }}
           animate={{ x: 0, rotate: mine ? -18 : 18, opacity: 1 }}
@@ -69,7 +85,7 @@ export const CutIn = ({ spec, mine }: { spec: PaddleSpec; mine: boolean }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
         >
-          {mine ? 'YOUR SPECIAL' : 'RIVAL SPECIAL'} · {spec.name}
+          {mine ? 'YOUR SPECIAL' : 'RIVAL SPECIAL'} · {name ? `${name}・` : ''}{spec.name}
         </motion.div>
         <motion.div
           className="font-display text-5xl font-black italic leading-none text-white md:text-8xl"

@@ -38,6 +38,7 @@ export class GameAudio {
 
   setMuted(m: boolean) {
     this.muted = m;
+    if (m) this.ambience(false);
     try {
       localStorage.setItem(MUTE_KEY, m ? '1' : '0');
     } catch {
@@ -46,6 +47,7 @@ export class GameAudio {
   }
 
   dispose() {
+    this.murmur = null;
     void this.ctx?.close();
     this.ctx = null;
   }
@@ -90,11 +92,62 @@ export class GameAudio {
   }
 
   /** 擊球：球速越快越響、越尖 */
+  /**
+   * 擊球聲（三層）：高頻接觸「喀」＋塑膠球中頻「啵」＋強力球的低頻重擊。
+   * 每次音高隨機微調 ±4%，避免聽起來像同一個音檔重播。
+   */
   hit(speed: number, perfect: boolean) {
     const k = Math.min(1, speed / 24);
-    this.burst(1500 + 900 * k, 2.2, 0.55 + 0.5 * k, 0.07);
-    this.tone(820 + 300 * k, 'triangle', 0.18 + 0.15 * k, 0.05);
-    if (perfect) this.tone(1760, 'sine', 0.08, 0.18, 0.02);
+    const pitch = 1 + (Math.random() - 0.5) * 0.08;
+    this.burst(4200 * pitch, 1.4, 0.35 + 0.35 * k, 0.016);
+    this.burst((1250 + 450 * k) * pitch, 7, 0.7 + 0.5 * k, 0.055);
+    this.tone((1150 + 300 * k) * pitch, 'sine', 0.25 + 0.2 * k, 0.07, 0, 650 * pitch);
+    if (k > 0.45) this.tone(95, 'sine', 0.22 + 0.35 * (k - 0.45), 0.13, 0, 45);
+    if (perfect) {
+      this.tone(2637, 'sine', 0.1, 0.25, 0.015);
+      this.tone(3951, 'sine', 0.06, 0.32, 0.03);
+    }
+  }
+
+  /** 揮拍風切聲：先聽到「咻」再聽到「啵」，打擊才有預期感 */
+  swing(strong: boolean) {
+    this.sweep(450, strong ? 2200 : 1500, strong ? 0.16 : 0.09, strong ? 0.16 : 0.12, 0, 0.8);
+  }
+
+  /** 連續完美：音階隨連擊數往上爬 */
+  streak(n: number) {
+    const base = 523.25 * Math.pow(2, Math.min(n, 8) / 12);
+    this.tone(base, 'triangle', 0.1, 0.18, 0.04);
+    this.tone(base * 1.5, 'sine', 0.07, 0.22, 0.08);
+  }
+
+  private murmur: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
+
+  /** 觀眾背景低語：持續的低通雜訊，讓球場有空間感 */
+  ambience(on: boolean) {
+    const ctx = this.ctx;
+    if (!on || this.muted) {
+      if (this.murmur && ctx) {
+        this.murmur.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+        const m = this.murmur;
+        window.setTimeout(() => m.src.stop(), 1500);
+        this.murmur = null;
+      }
+      return;
+    }
+    if (!ctx || !this.master || !this.noise || this.murmur) return;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noise;
+    src.loop = true;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 420;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.gain.setTargetAtTime(0.05, ctx.currentTime, 0.8);
+    src.connect(lp).connect(gain).connect(this.master);
+    src.start();
+    this.murmur = { src, gain };
   }
 
   bounce(speed: number) {

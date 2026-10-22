@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { Athlete, GameEngine } from '../engine/game';
 import { teamSide } from '../engine/rules';
+import { PLAYER } from '../engine/constants';
 import { PaddleModel } from './PaddleModel';
 import { sweetSpotY } from './paddleGeometry';
 import { jerseyTexture } from './textures';
@@ -120,7 +121,8 @@ const swingKeys = (kind: string, fh: number): [Key, Key, Key] => {
 /** 揮拍進度 p（0..1，觸球約在 0.28）→ 疊加在基本姿勢上 */
 const swingPose = (base: Pose, kind: string, fh: number, p: number): Pose => {
   const [back, hit, follow] = swingKeys(kind, fh);
-  const c = 0.28;
+  // 觸球點在揮拍進度的哪裡（揮拍啟動時間／整段揮拍時間）
+  const c = PLAYER.swingWindup / (PLAYER.swingWindup + PLAYER.swingFollow);
   if (p < c * 0.55) return blend(base, back, smooth(p / (c * 0.55)));
   if (p < c) return blend(blend(base, back, 1), hit, smooth((p - c * 0.55) / (c * 0.45)));
   if (p < 0.62) return blend(blend(base, hit, 1), follow, smooth((p - c) / (0.62 - c)));
@@ -154,6 +156,12 @@ const useGeos = () =>
       visorBand: new THREE.TorusGeometry(0.11, 0.012, 8, 32),
       brim: new THREE.CylinderGeometry(0.1, 0.1, 0.008, 24, 1, false, -Math.PI / 2, Math.PI),
       capDome: new THREE.SphereGeometry(0.116, 24, 12, 0, Math.PI * 2, 0, Math.PI * 0.5),
+      // 臉面：頭部正面（-Z）的一塊球面，貼照片臉。u 沿水平角、v 沿垂直角，左右與選手一致不會鏡像
+      faceCap: new THREE.SphereGeometry(0.1072, 36, 28, Math.PI * 1.5 - 1.05, 2.1, 0.42, 1.9),
+      // 有照片臉時的頭髮：頭頂整圈＋後腦一片（正面留給臉），後腦才不會露出光頭
+      hairTop: new THREE.SphereGeometry(0.112, 32, 8, 0, Math.PI * 2, 0, 0.62),
+      hairBack: new THREE.SphereGeometry(0.112, 32, 20, Math.PI * 1.5 + 0.92, Math.PI * 2 - 1.84, 0, 2.15),
+      hairBackShort: new THREE.SphereGeometry(0.11, 32, 16, Math.PI * 1.5 + 0.92, Math.PI * 2 - 1.84, 0, 1.75),
       upperArm: new THREE.CylinderGeometry(0.05, 0.043, 0.28, 12).translate(0, -0.14, 0),
       sleeve: new THREE.CylinderGeometry(0.068, 0.062, 0.13, 14).translate(0, -0.05, 0),
       shoulder: new THREE.SphereGeometry(0.068, 14, 10),
@@ -184,9 +192,19 @@ export const Character = ({ engine, index, look }: Props) => {
   const pose = useRef<Pose>(ready());
   const phase = useRef(0);
   const tip = useRef<THREE.Object3D>(null);
+  const paddleGrp = useRef<THREE.Group>(null);
+  const wobble = useRef({ amp: 0, last: -1, t: 0 });
   const tmp = useMemo(() => new THREE.Vector3(), []);
   const spec = engine.athletes[index].paddle;
   const jersey = jerseyTexture(look.key, look.shirt, look.accent, look.number, look.name);
+
+  const faceTex = useMemo(() => {
+    if (!look.face) return null;
+    const t = new THREE.TextureLoader().load(look.face);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 4;
+    return t;
+  }, [look.face]);
 
   const mat = useMemo(
     () => ({
@@ -201,8 +219,22 @@ export const Character = ({ engine, index, look }: Props) => {
       dark: new THREE.MeshStandardMaterial({ color: '#141414', roughness: 0.3 }),
       head: new THREE.MeshStandardMaterial({ color: look.headwearColor, roughness: 0.6 }),
       accent: new THREE.MeshStandardMaterial({ color: look.accent, roughness: 0.6 }),
+      // 照片臉：透明柔邊；加一點自發光，夜間球場也看得清楚
+      face: faceTex
+        ? new THREE.MeshStandardMaterial({
+            map: faceTex,
+            emissiveMap: faceTex,
+            emissive: new THREE.Color('#ffffff'),
+            emissiveIntensity: 0.12,
+            transparent: true,
+            alphaTest: 0.03,
+            roughness: 0.65,
+            polygonOffset: true,
+            polygonOffsetFactor: -2,
+          })
+        : null,
     }),
-    [look, jersey],
+    [look, jersey, faceTex],
   );
 
   useFrame((_, rdt) => {
@@ -212,7 +244,20 @@ export const Character = ({ engine, index, look }: Props) => {
     if (!root) return;
     const dt = Math.min(0.05, rdt) * engine.timeScale;
     const s = teamSide(a.team);
-    root.position.set(a.pos.x, 0, a.pos.z);
+    // 物理步之間內插，移動才平順
+    const al = engine.alpha;
+    root.position.set(a.prevPos.x + (a.pos.x - a.prevPos.x) * al, 0, a.prevPos.z + (a.pos.z - a.prevPos.z) * al);
+    // 擊中後球拍震動：球越快震越大，用真實時間衰減
+    const wb = wobble.current;
+    if (engine.rally.lastTeam === a.team && engine.rally.lastHitTime !== wb.last) {
+      wb.last = engine.rally.lastHitTime;
+      const sp = Math.hypot(engine.ball.vel.x, engine.ball.vel.y, engine.ball.vel.z);
+      wb.amp = 0.08 + Math.min(0.22, sp / 100);
+      wb.t = 0;
+    }
+    wb.t += Math.min(0.05, rdt);
+    wb.amp *= Math.exp(-Math.min(0.05, rdt) * 9);
+    if (paddleGrp.current) paddleGrp.current.rotation.z = Math.sin(wb.t * 70) * wb.amp;
     root.rotation.y = s > 0 ? 0 : Math.PI;
 
     // 本地速度：forward = 往網、lateral = 往右
@@ -338,8 +383,14 @@ export const Character = ({ engine, index, look }: Props) => {
     }
   });
 
-  const hairCap =
-    look.hairStyle === 'buzz' ? (
+  const photo = !!mat.face;
+  const hairCap = photo ? (
+    // 照片臉：瀏海由照片本身呈現，3D 頭髮只蓋頭頂與後腦
+    <group scale={[0.97, 1.1, 1.02]}>
+      <mesh geometry={g.hairTop} material={mat.hair} />
+      <mesh geometry={look.hairStyle === 'buzz' ? g.hairBackShort : g.hairBack} material={mat.hair} />
+    </group>
+  ) : look.hairStyle === 'buzz' ? (
       <mesh geometry={g.hair} material={mat.hair} scale={[0.97, 0.9, 0.97]} position={[0, 0.005, 0.004]} />
     ) : (
       <mesh geometry={g.hair} material={mat.hair} scale={[1.02, 1.05, 1.04]} position={[0, 0.01, 0.006]} />
@@ -379,12 +430,18 @@ export const Character = ({ engine, index, look }: Props) => {
             )}
             {[-1, 1].map((x) => (
               <group key={x}>
-                <mesh geometry={g.eye} material={mat.dark} position={[x * 0.036, 0.012, -0.095]} />
-                <mesh geometry={g.brow} material={mat.hair} position={[x * 0.036, 0.038, -0.098]} rotation={[0, 0, x * -0.12]} />
+                {!photo && <mesh geometry={g.eye} material={mat.dark} position={[x * 0.036, 0.012, -0.095]} />}
+                {!photo && (
+                  <mesh geometry={g.brow} material={mat.hair} position={[x * 0.036, 0.038, -0.098]} rotation={[0, 0, x * -0.12]} />
+                )}
                 <mesh geometry={g.ear} material={mat.skin} position={[x * 0.1, 0, 0.005]} scale={[0.5, 1, 0.8]} />
               </group>
             ))}
-            <mesh geometry={g.nose} material={mat.skin} position={[0, -0.012, -0.108]} />
+            {photo ? (
+              <mesh geometry={g.faceCap} material={mat.face!} scale={[0.95, 1.12, 1]} renderOrder={1} />
+            ) : (
+              <mesh geometry={g.nose} material={mat.skin} position={[0, -0.012, -0.108]} />
+            )}
             {look.headwear === 'visor' && (
               <group position={[0, 0.045, 0]}>
                 <mesh geometry={g.visorBand} material={mat.head} rotation={[Math.PI / 2, 0, 0]} />
@@ -420,7 +477,7 @@ export const Character = ({ engine, index, look }: Props) => {
                   <mesh geometry={g.hand} material={mat.skin} scale={[0.85, 1.1, 0.7]} />
                   {side > 0 && (
                     // 球拍延伸前臂方向；拍面法線朝前
-                    <group position={[0, -0.03, 0]} rotation={[Math.PI, 0, 0]}>
+                    <group ref={paddleGrp} position={[0, -0.03, 0]} rotation={[Math.PI, 0, 0]}>
                       <PaddleModel spec={spec} glow={0} />
                       <object3D ref={tip} position={[0, sweetSpotY(spec), 0]} />
                     </group>

@@ -35,7 +35,7 @@ export const AI_PROFILES: Record<Difficulty, AIProfile> = {
     rating: 'DUPR 2.5',
     reaction: 0.4,
     maxSpeed: 3.5,
-    skill: 1.5,
+    skill: 1.9,
     timingSigma: 0.055,
     aggression: 0.25,
     dropRate: 0.25,
@@ -49,7 +49,7 @@ export const AI_PROFILES: Record<Difficulty, AIProfile> = {
     rating: 'DUPR 3.5',
     reaction: 0.28,
     maxSpeed: 4.1,
-    skill: 1.15,
+    skill: 1.4,
     timingSigma: 0.035,
     aggression: 0.5,
     dropRate: 0.55,
@@ -63,7 +63,7 @@ export const AI_PROFILES: Record<Difficulty, AIProfile> = {
     rating: 'DUPR 4.5',
     reaction: 0.18,
     maxSpeed: 4.6,
-    skill: 0.8,
+    skill: 1.2,
     timingSigma: 0.022,
     aggression: 0.85,
     dropRate: 0.8,
@@ -85,6 +85,8 @@ export interface AIPlan {
   leave: boolean;
   /** 已經揮拍了 */
   swung: boolean;
+  /** 預計的擊球點（出界球則為落地點） */
+  contact: { x: number; y: number; z: number };
   timingError: number;
 }
 
@@ -116,9 +118,15 @@ const firstLanding = (path: PathSample[], side: number) => {
 };
 
 /** 為這一球規劃擊球點：何時、站在哪裡、截擊還是等落地 */
-export const planContact = (eng: GameEngine, a: Athlete, rand: () => number): AIPlan | null => {
-  const ai = a.ai!;
-  const prof = ai.profile;
+export const planContact = (
+  eng: GameEngine,
+  a: Athlete,
+  rand: () => number,
+  profile?: AIProfile,
+  /** 偏好的擊球時間（絕對時間）：讓導引不要在截擊／落地球之間跳來跳去 */
+  preferT?: number,
+): AIPlan | null => {
+  const prof = profile ?? a.ai!.profile;
   const side = teamSide(a.team);
   const now = eng.time;
   const path = predictPath(eng.ball, 2.4, PHYSICS_DT);
@@ -144,6 +152,7 @@ export const planContact = (eng: GameEngine, a: Athlete, rand: () => number): AI
       leave: true,
       swung: false,
       timingError: 0,
+      contact: { x: land.x, y: 0, z: land.z },
     };
   }
 
@@ -176,6 +185,7 @@ export const planContact = (eng: GameEngine, a: Athlete, rand: () => number): AI
     const idealY = volley ? 1.0 : 0.85;
     let cost = Math.abs(s.pos.y - idealY) * 0.8 + travel * 0.25;
     if (volley) cost += atNet && s.pos.y > 0.45 ? -0.35 : 0.5;
+    if (preferT !== undefined && Number.isFinite(preferT)) cost += Math.abs(now + s.t - preferT) * 3;
     if (!feasible) cost += 5 + (needed - s.t) * 4;
     if (!best || cost < best.cost) best = { s, stand: { x: standX, z: standZ }, cost, feasible };
   }
@@ -191,6 +201,7 @@ export const planContact = (eng: GameEngine, a: Athlete, rand: () => number): AI
     leave: false,
     swung: false,
     timingError,
+    contact: { x: best.s.pos.x, y: best.s.pos.y, z: best.s.pos.z },
   };
 };
 

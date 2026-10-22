@@ -87,6 +87,7 @@ const PickleballGame = () => {
       specials: true,
       paddle: PADDLES[0].id,
       character: CHARACTERS[1]?.id ?? 'default',
+      venue: 'arena',
     }),
   );
   const [records, setRecords] = useState<Records>(() => load<Records>(RECORDS_KEY, emptyRecords()));
@@ -377,7 +378,7 @@ const PickleballGame = () => {
           onIncline={() => setDpr((d) => Math.min(lowSpec ? 1.25 : 1.75, d + 0.25))}
           flipflops={3}
         />
-        <GameScene engine={engine} characters={characters} readInput={read} paused={paused || screen === 'over'} onEvents={onEvents} lowSpec={lowSpec} />
+        <GameScene engine={engine} characters={characters} readInput={read} paused={paused || screen === 'over'} onEvents={onEvents} lowSpec={lowSpec} venue={settings.venue ?? 'arena'} />
       </Canvas>
 
       {playing && (

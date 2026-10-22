@@ -8,6 +8,9 @@ export interface Records {
   dinkBest: Record<Difficulty, number>;
 }
 
+/** 比賽場地 */
+export type Venue = 'arena' | 'rosegarden';
+
 export interface Settings {
   mode: GameMode;
   difficulty: Difficulty;
@@ -19,9 +22,73 @@ export interface Settings {
   paddle: string;
   /** 選的角色 id（見 characters.ts） */
   character: string;
+  /** 比賽場地（舊存檔沒有這欄，當作夜間體育館） */
+  venue?: Venue;
 }
 
 const DIFFS: Difficulty[] = ['rookie', 'club', 'pro'];
+
+/** 場地縮圖：用 SVG 畫，不必另外下載圖 */
+const VenueThumb = ({ venue }: { venue: Venue }) =>
+  venue === 'arena' ? (
+    <svg viewBox="0 0 160 64" preserveAspectRatio="xMidYMid slice" className="h-full w-full" aria-hidden>
+      <defs>
+        <linearGradient id="vt-night" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#02040c" />
+          <stop offset="1" stopColor="#1d2f5c" />
+        </linearGradient>
+        <radialGradient id="vt-spot">
+          <stop offset="0" stopColor="#fff4d6" stopOpacity="0.95" />
+          <stop offset="1" stopColor="#fff4d6" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="160" height="64" fill="url(#vt-night)" />
+      <circle cx="22" cy="10" r="16" fill="url(#vt-spot)" />
+      <circle cx="138" cy="10" r="16" fill="url(#vt-spot)" />
+      <rect x="0" y="30" width="160" height="10" fill="#1a2333" />
+      {Array.from({ length: 26 }, (_, i) => (
+        <circle key={i} cx={4 + i * 6} cy={33 + (i % 3) * 2} r="1.6" fill={['#b91c1c', '#ca8a04', '#0e7490', '#e5e7eb'][i % 4]} />
+      ))}
+      <rect x="0" y="40" width="160" height="4" fill="#34d399" opacity="0.85" />
+      <polygon points="44,44 116,44 140,64 20,64" fill="#24604a" />
+      <polygon points="56,46 104,46 120,64 40,64" fill="#1f4f9a" stroke="#f7f9fc" strokeWidth="0.8" />
+      <line x1="47" y1="54" x2="113" y2="54" stroke="#f7f9fc" strokeWidth="0.8" />
+    </svg>
+  ) : (
+    <svg viewBox="0 0 160 64" preserveAspectRatio="xMidYMid slice" className="h-full w-full" aria-hidden>
+      <defs>
+        <linearGradient id="vt-day" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#2f6fc4" />
+          <stop offset="1" stopColor="#d9e9f5" />
+        </linearGradient>
+      </defs>
+      <rect width="160" height="64" fill="url(#vt-day)" />
+      <g fill="#ffffff" opacity="0.9">
+        <ellipse cx="40" cy="14" rx="16" ry="5" />
+        <ellipse cx="50" cy="11" rx="9" ry="5" />
+        <ellipse cx="118" cy="20" rx="18" ry="4.5" />
+        <ellipse cx="126" cy="17" rx="8" ry="4" />
+      </g>
+      <rect x="6" y="26" width="30" height="16" fill="#eef0ee" />
+      <rect x="10" y="22" width="9" height="20" rx="4" fill="#f5f6f3" />
+      {[44, 52, 60].map((x) => (
+        <g key={x}>
+          <line x1={x} y1="42" x2={x} y2="14" stroke="#b8b4aa" strokeWidth="1.2" />
+          <path d={`M${x - 7} 17 Q${x} 9 ${x + 7} 17 M${x - 6} 13 Q${x} 16 ${x + 6} 13`} stroke="#4f7d36" strokeWidth="2" fill="none" />
+        </g>
+      ))}
+      <circle cx="132" cy="34" r="12" fill="#4a7a34" />
+      <circle cx="146" cy="38" r="9" fill="#3f6a2e" />
+      <rect x="0" y="40" width="160" height="24" fill="#6f9a45" />
+      <rect x="76" y="20" width="3" height="22" fill="#f1f2ef" />
+      <ellipse cx="77.5" cy="20" rx="11" ry="2.4" fill="#f1f2ef" />
+      <rect x="0" y="42" width="160" height="3" fill="#4f7f35" />
+      <polygon points="30,45 130,45 154,64 6,64" fill="#4f7a62" />
+      <polygon points="56,46 104,46 120,64 40,64" fill="none" stroke="#f2c230" strokeWidth="0.9" />
+      <line x1="47" y1="54" x2="113" y2="54" stroke="#f2c230" strokeWidth="0.9" />
+      <line x1="12" y1="52" x2="148" y2="52" stroke="#f5f7f2" strokeWidth="0.5" opacity="0.8" />
+    </svg>
+  );
 
 const Key = ({ children }: { children: React.ReactNode }) => (
   <kbd className="inline-flex min-w-[1.6rem] items-center justify-center rounded-md border border-white/25 bg-white/10 px-1.5 py-0.5 font-mono text-[11px] font-bold text-white">
@@ -147,6 +214,39 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
                 <div className="font-bold text-white">{p.label}</div>
                 <div className="text-[11px] text-white/50">{p.rating}</div>
                 <div className="mt-1 text-[11px] tabular-nums text-white/70">{rec}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <div className="mb-2 text-xs font-semibold tracking-wider text-white/50">比賽場地</div>
+        <div className="grid grid-cols-2 gap-2">
+          {(
+            [
+              { id: 'arena', title: '夜間體育館', desc: '滿場觀眾、LED 看板與大螢幕' },
+              { id: 'rosegarden', title: '新生公園羽毛球場', desc: '台北玫瑰園旁的白天戶外硬地' },
+            ] as const
+          ).map((v) => {
+            const sel = (settings.venue ?? 'arena') === v.id;
+            return (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => onChange({ ...settings, venue: v.id })}
+                aria-pressed={sel}
+                className={`overflow-hidden rounded-xl border text-left transition-all ${
+                  sel ? 'border-amber-300/70 bg-amber-400/15 shadow-lg shadow-amber-500/10' : 'border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10'
+                }`}
+              >
+                <div className={`h-20 transition-opacity md:h-24 ${sel ? 'opacity-100' : 'opacity-70'}`}>
+                  <VenueThumb venue={v.id} />
+                </div>
+                <div className="px-3 py-2">
+                  <div className="text-sm font-bold text-white">{v.title}</div>
+                  <div className="text-[11px] text-white/55">{v.desc}</div>
+                </div>
               </button>
             );
           })}

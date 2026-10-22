@@ -66,7 +66,7 @@ const Court = () => {
   );
 };
 
-const Net = () => {
+export const Net = () => {
   const tex = netTexture();
   const { netGeo, tapeGeo } = useMemo(() => {
     const seg = 48;

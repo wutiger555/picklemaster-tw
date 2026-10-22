@@ -248,28 +248,6 @@ export const ballTexture = () =>
     }
   });
 
-/** 球衣：底色＋側邊條紋，背後印號碼與名字 */
-export const jerseyTexture = (key: string, base: string, accent: string, number: string, name: string) =>
-  make(`jersey-${key}`, 512, 512, (g, w, h) => {
-    noiseFill(g, w, h, base, 10, 11);
-    g.fillStyle = accent;
-    // 圓柱展開：u=0.5 為正面、u=0 / 1 為背面；側邊在 0.25 / 0.75
-    for (const u of [0.25, 0.75]) g.fillRect(u * w - 14, 0, 28, h);
-    g.fillStyle = 'rgba(255,255,255,0.12)';
-    g.fillRect(0, h * 0.06, w, 10);
-    // 背號（背面在 u=0 與 u=1 交界，兩邊各畫一半）
-    g.textAlign = 'center';
-    g.fillStyle = '#ffffff';
-    g.font = '900 150px "Inter", Arial, sans-serif';
-    for (const x of [0, w]) g.fillText(number, x, h * 0.62);
-    g.font = '800 46px "Inter", Arial, sans-serif';
-    for (const x of [0, w]) g.fillText(name, x, h * 0.3);
-    // 胸前小 logo
-    g.font = '800 34px "Inter", Arial, sans-serif';
-    g.fillStyle = accent;
-    g.fillText('PM', w * 0.5, h * 0.3);
-  });
-
 /** 跑馬燈廣告看板 */
 export const ledTexture = (text: string, color: string) => {
   const t = make(`led-${text}`, 2048, 128, (g, w, h) => {

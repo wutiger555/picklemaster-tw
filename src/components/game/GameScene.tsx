@@ -1,4 +1,4 @@
-import { type MutableRefObject, useMemo, useRef } from 'react';
+import { type MutableRefObject, Suspense, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Bloom, ChromaticAberration, EffectComposer, Vignette } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
@@ -7,7 +7,7 @@ import { COURT } from './engine/constants';
 import type { GameEngine, GameEvent, InputState } from './engine/game';
 import { teamSide } from './engine/rules';
 import { Stadium } from './scene/Stadium';
-import { Character } from './scene/Character';
+import { AthleteModel } from './scene/AthleteModel';
 import { lookFromCharacter } from './scene/characterData';
 import type { CharacterDef } from './characters';
 import { BallModel } from './scene/BallModel';
@@ -184,9 +184,11 @@ export const GameScene = (props: SceneProps) => {
       <color attach="background" args={['#050913']} />
       <fog attach="fog" args={['#0a1226', 30, 75]} />
       <Stadium engine={engine} names={[characters[0].name, characters[1].name]} excite={excite} flash={flash} lowSpec={lowSpec} />
-      {engine.athletes.map((a, i) => (
-        <Character key={`${a.id}-${a.paddle.id}-${looks[i].key}`} engine={engine} index={i} look={looks[i]} />
-      ))}
+      <Suspense fallback={null}>
+        {engine.athletes.map((a, i) => (
+          <AthleteModel key={`${a.id}-${a.paddle.id}-${looks[i].key}`} engine={engine} index={i} look={looks[i]} />
+        ))}
+      </Suspense>
       <Guide engine={engine} />
       <BallModel engine={engine} />
       <Effects engine={engine} bus={bus} lowSpec={lowSpec} />

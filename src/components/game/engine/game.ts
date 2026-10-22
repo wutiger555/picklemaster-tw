@@ -34,6 +34,12 @@ import { type AIProfile, type AIState, type Difficulty, AI_PROFILES, chooseShot,
 import { type V3, v3, clamp, clone, gauss, len } from './vec';
 
 export type GameMode = 'match' | 'dink';
+/**
+ * 擊球操作：
+ * - auto：瑪利歐網球式，提早按下擊球鍵就定案，球到最佳擊球點自動揮拍，越早按蓄力越飽（預設）
+ * - timing：按住蓄力、自己抓時機放開（進階）
+ */
+export type Controls = 'auto' | 'timing';
 export type Phase = 'serve' | 'rally' | 'dead' | 'over';
 
 /** 每一幀從鍵盤或觸控收集的輸入。moveY 正值 = 往網前 */
@@ -64,6 +70,8 @@ export interface SwingState {
   forehand: number;
   /** 反射擋球（球快打到身上時自動擋） */
   reflex?: boolean;
+  /** 自動揮拍（auto 操作）：品質由蓄力時間決定 */
+  auto?: boolean;
 }
 
 export interface Athlete {
@@ -201,6 +209,10 @@ const IDEAL_LAT = 0.55;
 const POINT_PAUSE = 2.1;
 /** 擊球輔助自動抓時機的品質：「漂亮」等級，關掉輔助自己抓到「完美」才打得更穩 */
 const ASSIST_QUALITY = 0.78;
+/** auto 操作：按下到擊球超過這麼久就是「蓄滿」 */
+export const AUTO_CHARGE = 0.75;
+/** auto 操作：蓄力中移動稍慢（提早按的代價） */
+const AUTO_CHARGE_MOVE = 0.88;
 /** 完美破解必殺球需要的時機品質 */
 const COUNTER_QUALITY = 0.86;
 /** AI 累積能量的速度（依程度） */
@@ -252,6 +264,7 @@ export class GameEngine {
   time = 0;
   readonly mode: GameMode;
   readonly difficulty: Difficulty;
+  readonly controls: Controls;
   assist: boolean;
   ball: BallState = createBall();
   athletes: Athlete[];
@@ -298,6 +311,7 @@ export class GameEngine {
     mode: GameMode;
     difficulty: Difficulty;
     assist: boolean;
+    controls?: Controls;
     specials?: boolean;
     /** [玩家, 對手] 的球拍 id；對手沒指定就隨機挑一支不同的 */
     paddles?: [string, string?];
@@ -306,6 +320,7 @@ export class GameEngine {
     this.mode = opts.mode;
     this.difficulty = opts.difficulty;
     this.assist = opts.assist;
+    this.controls = opts.controls ?? 'auto';
     this.specials = opts.specials ?? true;
     this.rand = opts.rand ?? Math.random;
     const mine = paddleById(opts.paddles?.[0] ?? PADDLES[0].id);
@@ -600,7 +615,7 @@ export class GameEngine {
           const k = user < 0.15 ? 1 : 0.35;
           wx = wx * (1 - k) + ax * k;
           wz = wz * (1 - k) + az * k;
-        } else if (this.input.held && this.guide) {
+        } else if ((this.input.held || h.swing.state === 'charging') && this.guide) {
           wx += ax * 0.45;
           wz += az * 0.45;
         }
@@ -611,7 +626,12 @@ export class GameEngine {
       wx /= m;
       wz /= m;
     }
-    const slow = h.swing.state === 'swinging' && this.time - h.swing.swingStart < SWING_TOTAL ? PLAYER.swingMoveFactor : 1;
+    const slow =
+      h.swing.state === 'swinging' && this.time - h.swing.swingStart < SWING_TOTAL
+        ? PLAYER.swingMoveFactor
+        : this.controls === 'auto' && h.swing.state === 'charging'
+          ? AUTO_CHARGE_MOVE
+          : 1;
     const maxV = PLAYER.maxSpeed * slow;
     const tx = wx * maxV;
     const tz = wz * maxV;
@@ -678,7 +698,20 @@ export class GameEngine {
       return;
     }
 
-    if (this.phase === 'rally') {
+    if (this.phase === 'rally' && this.controls === 'auto') {
+      // 提早按下就定案（再按別的鍵可以換球路），球到最佳擊球點時自動揮拍
+      if (pressed && h.swing.state === 'idle') h.swing = { ...idleSwing(), state: 'charging', button: held!, t0: this.time };
+      else if (pressed && h.swing.state === 'charging') h.swing.button = held!;
+      const c = h.swing;
+      if (c.state === 'charging') {
+        c.charge = Math.min(1, (this.time - c.t0) / AUTO_CHARGE);
+        const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 0.5);
+        if (best && best.t - this.time <= PLAYER.swingWindup) {
+          this.startSwing(h, best.t, 0.6 + 0.4 * Math.min(1, (best.t - c.t0) / AUTO_CHARGE));
+          h.swing.auto = true;
+        }
+      }
+    } else if (this.phase === 'rally') {
       const cur = h.swing;
       if (pressed && cur.state === 'idle') {
         h.swing = { ...idleSwing(), state: 'charging', button: held!, t0: this.time };
@@ -1070,7 +1103,7 @@ export class GameEngine {
       this.hitStopUntil = Math.max(this.hitStopUntil, this.real + stop);
     }
     if (!a.ai) {
-      if (quality >= 0.9 && sw.assistQ === null) {
+      if (quality >= 0.9 && (sw.assistQ === null || sw.auto)) {
         this.perfectStreak += 1;
         if (this.perfectStreak >= 2) this.gainEnergy(a, Math.min(12, this.perfectStreak * 3));
       } else this.perfectStreak = 0;
@@ -1079,7 +1112,8 @@ export class GameEngine {
     let label: string = fire ? SPECIALS[fire].name : SHOT_LABEL[plan.kind];
     if (sw.reflex) label = '反射擋球';
     else if (!a.ai && !fire) {
-      if (sw.assistQ === null) {
+      if (sw.auto) label = quality >= 0.9 ? `蓄滿 ${label}` : quality >= 0.75 ? label : `倉促 ${label}`;
+      else if (sw.assistQ === null) {
         label =
           quality >= 0.9 ? `完美 ${label}` : quality >= 0.65 ? `漂亮 ${label}` : offset < 0 ? `太早 ${label}` : `太晚 ${label}`;
       }

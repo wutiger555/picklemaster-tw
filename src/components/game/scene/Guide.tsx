@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { COURT, PLAYER } from '../engine/constants';
-import type { GameEngine } from '../engine/game';
+import { AUTO_CHARGE, type GameEngine } from '../engine/game';
 import type { ShotKind } from '../engine/shots';
 
 const K = COURT.kitchen;
@@ -75,8 +75,10 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
         stand.current.position.set(g!.stand.x, 0.012, g!.stand.z);
         const d = Math.hypot(h.pos.x - g!.stand.x, h.pos.z - g!.stand.z);
         const there = d < 0.25;
-        mats.stand.color.set(there ? '#a3ff6b' : '#34f5c5');
-        stand.current.scale.setScalar(there ? 1 : 1 + Math.sin(t * 8) * 0.08);
+        // 機會球（瑪利歐網球的 chance area）：球會在殺球高度被打到，站位圈變金色
+        const chance = g!.contact.y > 1.4;
+        mats.stand.color.set(chance ? '#fbbf24' : there ? '#a3ff6b' : '#34f5c5');
+        stand.current.scale.setScalar(chance ? 1.15 + Math.sin(t * 12) * 0.12 : there ? 1 : 1 + Math.sin(t * 8) * 0.08);
       }
     }
 
@@ -105,9 +107,20 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
         timingCore.current.lookAt(camera.position);
         const k = THREE.MathUtils.clamp(remain / Math.min(0.9, g!.span), 0, 1);
         timing.current.scale.setScalar(0.16 + k * 1.1);
-        const now = g!.reachable && Math.abs(remain - PLAYER.swingWindup) < 0.06;
+        let now: boolean;
+        let color: string;
+        if (engine.controls === 'auto') {
+          // 提早按：已經按下且來得及蓄滿 → 金色；按了但蓄不滿 → 綠；還沒按、再不按就蓄不滿 → 橘
+          const sw = h.swing;
+          const committed = sw.state !== 'idle';
+          now = g!.reachable && committed && g!.hitT - sw.t0 >= AUTO_CHARGE;
+          color = !g!.reachable ? '#fb7185' : now ? '#fde047' : committed ? '#a7f3d0' : remain < AUTO_CHARGE ? '#fdba74' : '#7dd3fc';
+        } else {
+          now = g!.reachable && Math.abs(remain - PLAYER.swingWindup) < 0.06;
+          color = !g!.reachable ? '#fb7185' : now ? '#fde047' : k < 0.35 ? '#a7f3d0' : '#7dd3fc';
+        }
         // 打不到（站錯位置）時計時圈變紅：先跑到地上的綠圈
-        mats.timing.color.set(!g!.reachable ? '#fb7185' : now ? '#fde047' : k < 0.35 ? '#a7f3d0' : '#7dd3fc');
+        mats.timing.color.set(color);
         mats.timing.opacity = 0.35 + (1 - k) * 0.6;
         mats.core.opacity = now ? 0.9 : 0;
         timingCore.current.scale.setScalar(now ? 1.2 + Math.sin(t * 40) * 0.15 : 1);

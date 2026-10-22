@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { SPECIALS, type PaddleSpec } from './engine/paddles';
+import { SKILLS, type SkillId } from './engine/skills';
 import { paddleFaceTexture } from './scene/textures';
 
 /** 把球拍拍面貼圖轉成圖片，放進切入畫面 */
-const useFaceArt = (spec: PaddleSpec) =>
+const useFaceArt = (spec: PaddleSpec | null) =>
   useMemo(() => {
+    if (!spec) return '';
     const img = paddleFaceTexture(spec).image as HTMLCanvasElement;
     try {
       return img.toDataURL('image/png');
@@ -18,9 +20,19 @@ const useFaceArt = (spec: PaddleSpec) =>
  * 動漫式必殺切入：斜切色帶＋速度線＋巨大招式名＋球拍特寫。
  * 遊戲時間在這段幾乎凍結，所以畫面動態全靠這層 CSS。
  */
-export const CutIn = ({ spec, mine, portrait, name }: { spec: PaddleSpec; mine: boolean; portrait?: string | null; name?: string }) => {
-  const sp = SPECIALS[spec.special];
-  const art = useFaceArt(spec);
+export interface CutInInfo {
+  id: number;
+  /** 球拍必殺：有球拍；角色絕招：有 skill、不顯示球拍 */
+  spec: PaddleSpec;
+  skill?: SkillId | null;
+  mine: boolean;
+  portrait: string | null;
+  name: string;
+}
+
+export const CutIn = ({ spec, skill, mine, portrait, name }: Omit<CutInInfo, 'id'>) => {
+  const sp = skill ? SKILLS[skill] : SPECIALS[spec.special];
+  const art = useFaceArt(skill ? null : spec);
   const from = mine ? -1 : 1;
   return (
     <motion.div
@@ -85,7 +97,8 @@ export const CutIn = ({ spec, mine, portrait, name }: { spec: PaddleSpec; mine: 
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
         >
-          {mine ? 'YOUR SPECIAL' : 'RIVAL SPECIAL'} · {name ? `${name}・` : ''}{spec.name}
+          {skill ? (mine ? 'SIGNATURE MOVE' : 'RIVAL SIGNATURE') : mine ? 'YOUR SPECIAL' : 'RIVAL SPECIAL'} · {name ? `${name}・` : ''}
+          {skill ? '絕招' : spec.name}
         </motion.div>
         <motion.div
           className="font-display text-5xl font-black italic leading-none text-white md:text-8xl"

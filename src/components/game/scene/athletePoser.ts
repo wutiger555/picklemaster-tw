@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { Athlete, GameEngine } from '../engine/game';
 import { teamSide } from '../engine/rules';
+import { NET_ZONE, SMASH_HEIGHT } from '../engine/shots';
 
 /**
  * 選手姿勢解算（和 React 無關，可以在 Node 裡跑測試）。
@@ -185,23 +186,6 @@ const smoothstep = (a: number, b: number, x: number) => {
 const approach = (cur: number, target: number, rate: number, dt: number) => cur + (target - cur) * (1 - Math.exp(-rate * dt));
 const lerpV = (a: V, b: V, t: number): V => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 
-/**
- * 球拍掛在手上的位置：握手式握拍，握把斜穿過拳頭、拍頭朝拇指方向前伸，拍面和掌心平行。
- * 以 Unreal 骨架的右手定義（手指 +Y、手背 +X、拇指 +Z；T-pose 時手指朝模型 -X、手背朝上）。
- */
-const UE_MOUNT = (() => {
-  const d = new THREE.Vector3(0, 0.55, 0.84).normalize();
-  const n = new THREE.Vector3(-1, 0, 0);
-  const x = new THREE.Vector3().crossVectors(d, n);
-  return {
-    q: new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, d, n)),
-    p: new THREE.Vector3(-0.035, 0.085, 0),
-  };
-})();
-const UE_HAND_R = new THREE.Quaternion().setFromRotationMatrix(
-  new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(0, 0, 1)),
-);
-
 export interface PaddleMount {
   /** 球拍相對手骨的旋轉 */
   q: THREE.Quaternion;
@@ -211,13 +195,22 @@ export interface PaddleMount {
   palm: THREE.Vector3;
 }
 
-/** 依右手骨在綁定姿勢（模型空間）的旋轉換算握拍位置，任何 T-pose 骨架都適用 */
-export const paddleMount = (handModelQ: THREE.Quaternion): PaddleMount => {
-  const toLocal = handModelQ.clone().invert().multiply(UE_HAND_R);
+/**
+ * 握拍位置：握手式握拍，握把斜穿過拳頭、拍頭朝拇指方向前伸，拍面和掌心平行。
+ * 用綁定姿勢（T-pose：手指朝外、掌心朝下、拇指朝前）的模型座標定義，再換到手骨座標，任何 T-pose 骨架都適用。
+ */
+export const paddleMount = (handModelQ: THREE.Quaternion, side: 'r' | 'l' = 'r'): PaddleMount => {
+  // 右手手指朝模型 -X、左手朝 +X
+  const out = side === 'r' ? -1 : 1;
+  const tip = new THREE.Vector3(0.55 * out, 0, 0.84).normalize();
+  const palm = new THREE.Vector3(0, -1, 0);
+  const x = new THREE.Vector3().crossVectors(tip, palm);
+  const model = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, tip, palm));
+  const inv = handModelQ.clone().invert();
   return {
-    q: toLocal.clone().multiply(UE_MOUNT.q),
-    p: UE_MOUNT.p.clone().applyQuaternion(toLocal),
-    palm: new THREE.Vector3(-1, 0, 0).applyQuaternion(toLocal),
+    q: inv.clone().multiply(model),
+    p: new THREE.Vector3(0.085 * out, -0.035, 0).applyQuaternion(inv),
+    palm: palm.applyQuaternion(inv),
   };
 };
 
@@ -323,6 +316,10 @@ export class AthletePoser {
   private over = Object.fromEntries(OVERLAYS.map((k) => [k, 0])) as Record<Overlay, number>;
   private celebrateAt = -1;
   private sidePhase = 0;
+  /** 「幹他！」起跳的開始時間 */
+  private spinFrom = -99;
+  /** 絕招動作額外的前傾 */
+  private extraLean = 0;
   private celebration: [Overlay, number, number] = CELEBRATIONS[0];
   private knockAt = -1;
   private knockUntil = 0;
@@ -468,14 +465,29 @@ export class AthletePoser {
       yawT *= 1 - side;
     }
     this.yaw = approach(this.yaw, yawT, 9, dt);
-    g.rotation.set(0, baseYaw + this.yaw, 0);
+    // 絕招動作：「幹他！」擊球前起跳、空中轉體一圈（轉完才擊球，面向球網扣殺）
+    let spinYaw = 0;
+    let skillLift = 0;
+    if (a.skill === 'spinSmash') {
+      if (a.skillArmed && st && st.swung) this.spinFrom = st.tC - 0.4;
+      const u = (t - this.spinFrom) / 0.8;
+      if (u > 0 && u < 1) {
+        skillLift = Math.sin(Math.PI * u) * 0.55;
+        spinYaw = Math.PI * 2 * smoothstep(0.06, 0.45, u);
+      }
+    }
+    // 「秒蹲大力一揮」：就緒後一路深蹲到擊球
+    const squat = a.skill === 'squatSmash' && ((a.skillArmed && st !== null) || t - a.skillAt < 0.3);
+    this.extraLean = approach(this.extraLean, squat ? 0.3 : 0, 10, dt);
+    g.rotation.set(0, baseYaw + this.yaw + spinYaw, 0);
 
     const incoming = engine.phase === 'rally' && engine.rally.lastTeam !== a.team;
     const strokeDef = st ? STROKES[st.kind] : null;
     const prep = st ? this.prepWeight(a, st, t) : 0;
     let crouchT = incoming ? 0.42 : 0.3;
     if (strokeDef && strokeOn) crouchT = crouchT + (strokeDef.crouch - crouchT) * Math.max(prep, tau > -FWD ? 1 : 0);
-    this.crouch = approach(this.crouch, crouchT, 6, dt);
+    if (squat) crouchT = 1;
+    this.crouch = approach(this.crouch, crouchT, squat ? 14 : 6, dt);
 
     const run = smoothstep(0, 0.6, speed);
     const spr = smoothstep(3.0, 4.2, speed);
@@ -523,7 +535,7 @@ export class AthletePoser {
     const opp = engine.opponentOf(a);
     const since = t - opp.swing.contactAt;
     if (engine.phase === 'rally' && since > 0 && since < 0.22) lift += Math.sin((since / 0.22) * Math.PI) * 0.05;
-    g.position.y = lift;
+    g.position.y = lift + skillLift;
     g.updateMatrixWorld(true);
 
     // ── 上半身：揮拍目標 → 腰 → 手臂 IK → 頭
@@ -532,7 +544,14 @@ export class AthletePoser {
     const tgt = this.evaluate(engine, baseYaw, st, tau, prep, run);
     if (!tgt) return;
     this.smooth(tgt, rdt, Math.abs(tau) < 0.12 ? 90 : 30);
-    const sm = this.sm!;
+    let sm = this.sm!;
+    if (spinYaw !== 0) {
+      // 空中轉體時，手臂目標跟著身體一起轉，才不會反手往背後硬搆
+      const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), spinYaw);
+      const c = g.position;
+      const turn = (v: THREE.Vector3) => v.clone().sub(c).applyQuaternion(q).add(c);
+      sm = { ...sm, sweet: turn(sm.sweet), off: turn(sm.off), pole: sm.pole.clone().applyQuaternion(q), paddle: q.clone().multiply(sm.paddle) };
+    }
     this.applyTorso(sm, baseYaw, w);
     // 跑步時非持拍手跟著擺動（動作檔），揮拍時才用 IK
     const offW = w * (strokeOn ? 1 : 1 - run * 0.75);
@@ -636,9 +655,10 @@ export class AthletePoser {
     const h = up.c.y;
     let kind: Kind;
     if (up.button === 'serve') kind = 'serve';
-    else if ((up.button === 'drive' && h > 1.65) || special === 'thunder') kind = 'smash';
+    else if ((up.button === 'drive' && h > SMASH_HEIGHT && Math.abs(up.c.z) < 6) || special === 'thunder') kind = 'smash';
     else if (up.button === 'lob') kind = side > 0 ? 'lobF' : 'lobB';
-    else if (h > 1.2) kind = side > 0 ? 'fhHigh' : 'bhHigh';
+    // 網前的推擋、突擊、卸力擋都是短揮：用截擊的小動作
+    else if (h > 1.2 || (Math.abs(up.c.z) < NET_ZONE && h > 0.8)) kind = side > 0 ? 'fhHigh' : 'bhHigh';
     else if (h < 0.6 || (up.button === 'soft' && h < 0.9)) kind = side > 0 ? 'fhLow' : 'bhLow';
     else kind = side > 0 ? 'fh' : 'bh';
 
@@ -785,7 +805,7 @@ export class AthletePoser {
     const share = [0.3, 0.35, 0.35];
     ['spine_01', 'spine_02', 'spine_03'].forEach((n, i) => {
       _q[0].setFromAxisAngle(_v[3].set(0, 1, 0), twist * share[i]);
-      _q[1].setFromAxisAngle(R, -m.lean * w * share[i]);
+      _q[1].setFromAxisAngle(R, -(m.lean + this.extraLean) * w * share[i]);
       rotateWorld(this.bone(n), _q[0].multiply(_q[1]));
     });
     this.stats.maxTwist = Math.max(this.stats.maxTwist, Math.abs(twist));

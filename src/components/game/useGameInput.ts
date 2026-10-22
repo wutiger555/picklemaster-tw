@@ -29,6 +29,8 @@ export interface TouchInput {
   held: ShotButton | null;
   /** 必殺鍵被點了一下（讀取後清除） */
   special: boolean;
+  /** 絕招鍵被點了一下（讀取後清除） */
+  skill: boolean;
 }
 
 /**
@@ -38,8 +40,9 @@ export interface TouchInput {
 export const useGameInput = (enabled: boolean, onPause: () => void) => {
   const keys = useRef(new Set<string>());
   const shotOrder = useRef<string[]>([]);
-  const touch = useRef<TouchInput>({ moveX: 0, moveY: 0, held: null, special: false });
+  const touch = useRef<TouchInput>({ moveX: 0, moveY: 0, held: null, special: false, skill: false });
   const specialTap = useRef(false);
+  const skillTap = useRef(false);
   const input = useRef<InputState>({ moveX: 0, moveY: 0, held: null });
   const pauseRef = useRef(onPause);
   pauseRef.current = onPause;
@@ -54,6 +57,7 @@ export const useGameInput = (enabled: boolean, onPause: () => void) => {
       if (MOVE_KEYS[e.code] || SHOT_KEYS[e.code] || e.code === 'Space') e.preventDefault();
       if (e.repeat) return;
       if (e.code === 'Space' || e.code === 'KeyI') specialTap.current = true;
+      if (e.code === 'KeyU' || e.code === 'KeyO') skillTap.current = true;
       keys.current.add(e.code);
       if (SHOT_KEYS[e.code]) shotOrder.current.push(e.code);
     };
@@ -98,6 +102,9 @@ export const useGameInput = (enabled: boolean, onPause: () => void) => {
     i.special = specialTap.current || touch.current.special;
     specialTap.current = false;
     touch.current.special = false;
+    i.skill = skillTap.current || touch.current.skill;
+    skillTap.current = false;
+    touch.current.skill = false;
     return i;
   };
 

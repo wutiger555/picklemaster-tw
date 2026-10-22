@@ -7,7 +7,7 @@ import { PaddleModel } from './PaddleModel';
 import { sweetSpotY } from './paddleGeometry';
 import { type Look, paddleTips } from './characterData';
 import { type AthleteAssets, type HairStyle, useAthleteAssets, useHair, useImage } from './athleteAssets';
-import { AthletePoser } from './athletePoser';
+import { AthletePoser, paddleMount } from './athletePoser';
 import { type MixamoBody, useMixamoBody } from './mixamoBody';
 
 /**
@@ -543,6 +543,9 @@ export const AthleteModel = ({ engine, index, look, trackTip = true }: Props) =>
   );
 
   const paddleGrp = useRef<THREE.Group>(null);
+  const leftPaddle = useRef<THREE.Group>(null);
+  // 帽哥的絕招：左手也拿一支拍
+  const mountL = useMemo(() => paddleMount(rig.bindQ.get(rig.bone('hand_l'))!, 'l'), [rig]);
   const tip = useRef<THREE.Object3D>(null);
   const wob = useRef({ amp: 0, last: -1, t: 0 });
 
@@ -556,6 +559,7 @@ export const AthleteModel = ({ engine, index, look, trackTip = true }: Props) =>
     poser.tip = tip.current ?? undefined;
     poser.update(engine, index, raw);
     const a = engine.athletes[index];
+    if (leftPaddle.current) leftPaddle.current.visible = a.skill === 'dualCurve' && (a.skillArmed || engine.time - a.skillAt < 1.2);
     const rdt = Math.min(0.05, raw);
 
     // 擊中後球拍震動：球越快震越大
@@ -589,6 +593,12 @@ export const AthleteModel = ({ engine, index, look, trackTip = true }: Props) =>
           </group>
         </group>,
         rig.bone('hand_r'),
+      )}
+      {createPortal(
+        <group ref={leftPaddle} visible={false} position={mountL.p.clone().divideScalar(rig.unit)} quaternion={mountL.q} scale={1 / rig.unit}>
+          <PaddleModel spec={spec} glow={0} />
+        </group>,
+        rig.bone('hand_l'),
       )}
       {look.headwear !== 'none' &&
         createPortal(

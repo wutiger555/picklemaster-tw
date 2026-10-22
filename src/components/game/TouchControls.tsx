@@ -17,8 +17,16 @@ interface SpecialButton {
   name: string;
 }
 
-/** 手機操作：左手虛擬搖桿移動（擊球瞬間的方向 = 瞄準），右手三顆擊球鍵＋必殺鍵 */
-export const TouchControls = ({ touch, special }: { touch: MutableRefObject<TouchInput>; special: SpecialButton | null }) => {
+/** 手機操作：左手虛擬搖桿移動（擊球瞬間的方向 = 瞄準），右手三顆擊球鍵＋必殺鍵＋絕招鍵 */
+export const TouchControls = ({
+  touch,
+  special,
+  skill,
+}: {
+  touch: MutableRefObject<TouchInput>;
+  special: SpecialButton | null;
+  skill: SpecialButton | null;
+}) => {
   const [knob, setKnob] = useState({ x: 0, y: 0 });
   const [active, setActive] = useState<ShotButton | null>(null);
   const origin = useRef<{ x: number; y: number; id: number } | null>(null);
@@ -85,6 +93,22 @@ export const TouchControls = ({ touch, special }: { touch: MutableRefObject<Touc
             }}
           >
             {special.armed ? '蓄勢中！' : `必殺・${special.name}`}
+          </button>
+        )}
+        {skill && (
+          <button
+            type="button"
+            disabled={!skill.ready || skill.armed}
+            onPointerDown={() => {
+              touch.current.skill = true;
+            }}
+            className={`touch-none rounded-full px-4 py-2 text-sm font-black text-white transition-all ${skill.ready ? '' : 'opacity-40'}`}
+            style={{
+              background: skill.ready ? `linear-gradient(90deg, ${skill.color}, #ffffff22)` : 'rgba(15,23,42,0.6)',
+              boxShadow: skill.ready ? `0 0 16px ${skill.color}` : undefined,
+            }}
+          >
+            {skill.armed ? '絕招就緒！' : `絕招・${skill.name}`}
           </button>
         )}
       <div className="grid grid-cols-2 gap-3">

@@ -91,7 +91,12 @@ const Rig = ({
               kick.current.set(0, -0.04 - power * 0.06, -(0.12 + power * 0.22));
               if (e.quality !== null && e.quality >= 0.9) fovKick.current = Math.min(fovKick.current, -2.5);
               shake.current = Math.max(shake.current, 0.03 + power * 0.06);
-            } else if (e.kind === 'smash' || e.speed > 20) shake.current = Math.max(shake.current, 0.1);
+              // 殺球、突擊：重扣的手感
+              if (e.kind === 'smash' || e.kind === 'speedup') {
+                shake.current = Math.max(shake.current, e.kind === 'smash' ? 0.16 : 0.1);
+                fovKick.current = Math.min(fovKick.current, -4);
+              }
+            } else if (e.kind === 'smash' || e.kind === 'speedup' || e.speed > 20) shake.current = Math.max(shake.current, 0.1);
           }
         } else if (e.type === 'bounce' && e.special) {
           shake.current = e.special === 'thunder' ? 0.5 : 0.25;

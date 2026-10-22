@@ -1,11 +1,12 @@
 import { Suspense, useMemo } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { GameEngine } from './engine/game';
 import { AthleteModel } from './scene/AthleteModel';
 import { lookFromCharacter } from './scene/characterData';
 import { CHARACTERS, type CharacterDef } from './characters';
+import { SKILLS } from './engine/skills';
 
 /** 去背半身像的四角與底部淡出：藏掉轉正後的斜邊與去背邊緣的小瑕疵 */
 const FADE = {
@@ -32,6 +33,16 @@ const Portrait = ({ c, big }: { c: CharacterDef; big?: boolean }) =>
     <Placeholder c={c} big={big} />
   );
 
+/** 選手的頭會看球：預覽時把「球」放在鏡頭位置，選手就一直看著你 */
+const LookAtCamera = ({ engine }: { engine: GameEngine }) => {
+  useFrame(({ camera }) => {
+    engine.ball.pos.x = camera.position.x;
+    engine.ball.pos.y = camera.position.y;
+    engine.ball.pos.z = camera.position.z;
+  });
+  return null;
+};
+
 /**
  * 3D 半身預覽：把選中角色的臉與配色套在真正的比賽模型上，可拖曳旋轉。
  * 用一個不推進的引擎當資料來源，選手就停在準備姿勢。
@@ -41,14 +52,17 @@ const Preview3D = ({ c }: { c: CharacterDef }) => {
   const look = useMemo(() => lookFromCharacter(c), [c]);
   const p = engine.human.pos;
   return (
-    <Canvas dpr={[1, 2]} camera={{ position: [p.x + 0.2, 1.62, p.z - 1.05], fov: 30 }} gl={{ alpha: true, antialias: true }}>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[p.x + 1, 3, p.z - 3]} intensity={2.4} />
-      <directionalLight position={[p.x - 2, 2, p.z + 1]} intensity={1} color="#9ad8ff" />
+    <Canvas dpr={[1, 2]} camera={{ position: [p.x + 0.15, 1.46, p.z - 1.15], fov: 30 }} gl={{ alpha: true, antialias: true }}>
+      {/* 正面柔光＋側面輪廓光，臉要看得清楚 */}
+      <hemisphereLight args={['#ffffff', '#4b5563', 1.9]} />
+      <directionalLight position={[p.x + 0.6, 2.2, p.z - 2.5]} intensity={4.2} />
+      <directionalLight position={[p.x - 1.5, 2, p.z - 1]} intensity={1.4} color="#ffe6cc" />
+      <directionalLight position={[p.x - 1, 2.2, p.z + 2]} intensity={1.6} color="#9ad8ff" />
+      <LookAtCamera engine={engine} />
       <Suspense fallback={null}>
         <AthleteModel key={c.id} engine={engine} index={0} look={look} trackTip={false} />
       </Suspense>
-      <OrbitControls target={[p.x, 1.45, p.z]} enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={1.2} minPolarAngle={1.1} maxPolarAngle={1.9} />
+      <OrbitControls target={[p.x, 1.36, p.z]} enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={1.2} minPolarAngle={1.1} maxPolarAngle={1.9} />
     </Canvas>
   );
 };
@@ -98,6 +112,14 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
                 <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-bold tabular-nums text-white/80">#{sel.number}</span>
               </div>
               <div className="text-sm font-semibold text-emerald-300">{sel.title}</div>
+              {sel.skill && (
+                <div className="mt-2 max-w-sm rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 backdrop-blur">
+                  <div className="text-xs font-black" style={{ color: SKILLS[sel.skill].color }}>
+                    絕招・{SKILLS[sel.skill].name}
+                  </div>
+                  <div className="mt-0.5 text-[11px] leading-relaxed text-white/70">{SKILLS[sel.skill].desc}</div>
+                </div>
+              )}
             </div>
           </motion.div>
 
@@ -125,7 +147,7 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
                   </div>
                   <div className="px-2.5 pb-2 pt-1">
                     <div className="text-sm font-bold text-white">{c.name}</div>
-                    <div className="truncate text-[11px] text-white/55">{c.title}</div>
+                    <div className="truncate text-[11px] text-white/55">{c.skill ? `絕招：${SKILLS[c.skill].name}` : c.title}</div>
                   </div>
                 </button>
               );

@@ -20,6 +20,15 @@
         ],
         "createdAt": "2026-09-22T06:48:13.590Z",
         "reason": "TYPE_STYLE 自 CityCourts.tsx:22-26 原封搬出，逐字相同（git show HEAD 已比對）；三色是球場類型的語意編碼（emerald=室內／violet=風雨／sky=戶外），非裝飾漸層。改色會連帶改動既有城市頁外觀，超出本次範圍"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          "src/pages/Game.tsx"
+        ],
+        "createdAt": "2026-10-22T10:17:12.336Z",
+        "reason": "Claude judgment: purple/cyan here are the in-game identity colors of the Phantom (purple) and Frost (ice blue) special moves, matching SPECIALS in engine/paddles.ts; not a decorative palette"
       }
     ]
   }

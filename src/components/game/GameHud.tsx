@@ -1,0 +1,286 @@
+import { AnimatePresence, motion } from 'framer-motion';
+import { GameEngine, type HudState } from './engine/game';
+import { type Difficulty, AI_PROFILES } from './engine/ai';
+import { SHOT_LABEL } from './engine/shots';
+import { SPECIALS, type PaddleSpec } from './engine/paddles';
+import { CutIn } from './CutIn';
+
+export interface Toast {
+  id: number;
+  text: string;
+  sub?: string;
+  tone: 'perfect' | 'good' | 'off' | 'plain' | 'special';
+}
+
+export interface PointCard {
+  id: number;
+  won: boolean;
+  title: string;
+  lesson: string | null;
+  headline: string;
+  call: string;
+}
+
+const TONE: Record<Toast['tone'], string> = {
+  perfect: 'from-amber-300 to-yellow-500 text-amber-950',
+  good: 'from-emerald-300 to-teal-500 text-emerald-950',
+  off: 'from-orange-300 to-orange-500 text-orange-950',
+  plain: 'from-white to-slate-200 text-slate-800',
+  special: 'from-fuchsia-400 via-rose-500 to-orange-400 text-white',
+};
+
+const ServeDot = ({ on }: { on: boolean }) => (
+  <span
+    className={`inline-block h-2.5 w-2.5 rounded-full transition-colors ${on ? 'bg-lime-300 shadow-[0_0_10px_rgba(190,242,100,0.9)]' : 'bg-white/15'}`}
+    aria-hidden
+  />
+);
+
+const Scoreboard = ({ hud, difficulty, best }: { hud: HudState; difficulty: Difficulty; best: number }) => {
+  if (hud.mode === 'dink') {
+    return (
+      <div className="rounded-2xl border border-white/15 bg-slate-950/70 px-5 py-2.5 text-center text-white shadow-xl backdrop-blur-md">
+        <div className="text-[11px] font-semibold tracking-[0.2em] text-emerald-300">DINK 挑戰</div>
+        <div className="flex items-baseline justify-center gap-3">
+          <motion.span key={hud.dinkStreak} initial={{ scale: 1.5 }} animate={{ scale: 1 }} className="text-3xl font-black tabular-nums">
+            {hud.dinkStreak}
+          </motion.span>
+          <span className="text-xs text-white/60">最佳 {best}</span>
+        </div>
+      </div>
+    );
+  }
+  const opp = hud.energy[1];
+  return (
+    <div className="rounded-2xl border border-white/15 bg-slate-950/70 px-4 py-2 text-white shadow-xl backdrop-blur-md">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ServeDot on={hud.serving === 0} />
+          <span className="text-xs font-semibold text-emerald-300">你</span>
+          <motion.span key={`p${hud.score[0]}`} initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-7 text-center text-3xl font-black tabular-nums">
+            {hud.score[0]}
+          </motion.span>
+        </div>
+        <span className="text-white/30">:</span>
+        <div className="flex items-center gap-2">
+          <motion.span key={`o${hud.score[1]}`} initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-7 text-center text-3xl font-black tabular-nums">
+            {hud.score[1]}
+          </motion.span>
+          <span className="text-xs font-semibold text-orange-300">{AI_PROFILES[difficulty].label}</span>
+          <ServeDot on={hud.serving === 1} />
+        </div>
+      </div>
+      <div className="mt-0.5 text-center text-[11px] text-white/60">
+        報分 <span className="font-bold text-white tabular-nums">{hud.call}</span> · {hud.fromRight ? '右區' : '左區'}發球
+        {hud.phase === 'rally' && hud.rallyHits > 2 && <span className="ml-1.5 text-lime-300">· 第 {hud.rallyHits} 拍</span>}
+      </div>
+      {hud.specials && (
+        <div className="mt-1.5 flex items-center gap-2" title="對手的必殺能量">
+          <span className="text-[10px] font-bold" style={{ color: SPECIALS[hud.oppSpecial].color }}>
+            對手必殺
+          </span>
+          <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
+            <div
+              className={`h-full rounded-full transition-[width] duration-300 ${opp >= 100 ? 'animate-pulse' : ''}`}
+              style={{ width: `${opp}%`, background: SPECIALS[hud.oppSpecial].color }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/** 必殺能量條：滿了發光提示，蓄勢後整條燃燒 */
+const EnergyBar = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
+  const sp = SPECIALS[hud.special];
+  const e = hud.energy[0];
+  const full = e >= 100;
+  return (
+    <div
+      className={`w-56 rounded-2xl border px-3 py-2 backdrop-blur-md transition-shadow ${
+        hud.armed ? 'border-white/60 bg-slate-950/80' : full ? 'border-white/30 bg-slate-950/70' : 'border-white/10 bg-slate-950/60'
+      }`}
+      style={full ? { boxShadow: `0 0 ${hud.armed ? 34 : 18}px ${sp.color}` } : undefined}
+    >
+      <div className="mb-1 flex items-center justify-between text-[11px] font-bold">
+        <span style={{ color: full ? sp.glow : 'rgba(255,255,255,0.7)' }}>{hud.armed ? `蓄勢！${sp.name}` : `必殺・${sp.name}`}</span>
+        <span className="tabular-nums text-white/60">{Math.floor(e)}%</span>
+      </div>
+      <div className="relative h-2.5 overflow-hidden rounded-full bg-white/10">
+        <div
+          className={`absolute inset-y-0 left-0 rounded-full transition-[width] duration-300 ${full ? 'animate-pulse' : ''}`}
+          style={{ width: `${e}%`, background: `linear-gradient(90deg, ${sp.glow}, ${sp.color})` }}
+        />
+        {[25, 50, 75].map((x) => (
+          <div key={x} className="absolute inset-y-0 w-px bg-slate-950/70" style={{ left: `${x}%` }} />
+        ))}
+      </div>
+      {full && (
+        <div className="mt-1 text-[11px] font-semibold text-white/85">
+          {hud.armed ? '下一拍放出必殺！' : touch ? '點「必殺」蓄勢' : '按 空白鍵 蓄勢'}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/** 發球力道條：綠色區間內才會進，越接近上緣越深 */
+const ServeMeter = ({ power }: { power: number }) => {
+  const win = GameEngine.serveWindow();
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <span className="text-[11px] font-bold tracking-wider text-white/80">力道</span>
+      <div className="relative h-44 w-5 overflow-hidden rounded-full border border-white/25 bg-slate-950/70">
+        <div className="absolute inset-x-0 bg-emerald-400/45" style={{ bottom: `${win.lo * 100}%`, top: `${(1 - win.hi) * 100}%` }} />
+        <div className="absolute inset-x-0 bg-lime-300/70" style={{ bottom: `${(win.hi - 0.14) * 100}%`, top: `${(1 - win.hi) * 100}%` }} />
+        <div className="absolute inset-x-0 h-1.5 -translate-y-1/2 bg-white shadow-[0_0_8px_white]" style={{ bottom: `${power * 100}%` }} />
+      </div>
+      <span className="text-[10px] text-white/60">深＝好</span>
+    </div>
+  );
+};
+
+const ChargeBar = ({ charge, kind }: { charge: number; kind: HudState['aimKind'] }) => (
+  <div className="flex items-center gap-2 rounded-full border border-white/15 bg-slate-950/70 px-3 py-1.5 backdrop-blur-md">
+    <span className="text-xs font-bold text-white">{kind ? SHOT_LABEL[kind] : '蓄力'}</span>
+    <div className="h-1.5 w-24 overflow-hidden rounded-full bg-white/15">
+      <div className="h-full rounded-full bg-gradient-to-r from-sky-300 via-amber-300 to-red-500" style={{ width: `${charge * 100}%` }} />
+    </div>
+  </div>
+);
+
+interface HudProps {
+  hud: HudState;
+  difficulty: Difficulty;
+  best: number;
+  toasts: Toast[];
+  aiToast: Toast | null;
+  banner: { id: number; text: string } | null;
+  card: PointCard | null;
+  cutIn: { id: number; spec: PaddleSpec; mine: boolean } | null;
+  touch: boolean;
+}
+
+export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch }: HudProps) => {
+  const humanServing = hud.phase === 'serve' && hud.serving === 0 && hud.mode === 'match';
+  return (
+    <div className="pointer-events-none absolute inset-0 z-10 select-none">
+      <div className="absolute inset-x-0 top-3 flex justify-center max-md:justify-start max-md:pl-3">
+        <Scoreboard hud={hud} difficulty={difficulty} best={best} />
+      </div>
+
+      {hud.specials && (
+        <div className={`absolute left-3 ${touch ? 'top-[7.5rem]' : 'bottom-4'}`}>
+          <EnergyBar hud={hud} touch={touch} />
+        </div>
+      )}
+
+      <AnimatePresence>
+        {aiToast && (
+          <motion.div
+            key={aiToast.id}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute right-3 top-20 rounded-lg bg-slate-950/60 px-2.5 py-1 text-xs text-orange-200 backdrop-blur-md max-md:top-44"
+          >
+            {aiToast.text}
+            {aiToast.sub && <span className="ml-1.5 text-white/50">{aiToast.sub}</span>}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 玩家擊球回饋 */}
+      <div className="absolute inset-x-0 top-[38%] flex justify-center">
+        <AnimatePresence>
+          {toasts.slice(-1).map((t) => (
+            <motion.div
+              key={t.id}
+              initial={{ opacity: 0, scale: 0.6, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+              className={`rounded-full bg-gradient-to-r px-4 py-1.5 text-sm font-black shadow-lg ${TONE[t.tone]}`}
+            >
+              {t.text}
+              {t.sub && <span className="ml-2 font-semibold opacity-70">{t.sub}</span>}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      <AnimatePresence>
+        {banner && (
+          <motion.div
+            key={banner.id}
+            initial={{ opacity: 0, scale: 1.6, rotate: -4 }}
+            animate={{ opacity: 1, scale: 1, rotate: -4 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+            className="absolute inset-x-0 top-[22%] text-center"
+          >
+            <span className="font-display text-4xl font-black italic tracking-tight text-amber-300 drop-shadow-[0_4px_0_rgba(0,0,0,0.9)] md:text-6xl">
+              {banner.text}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 每一分結束的說明卡：失誤時告訴你是哪一條規則 */}
+      <AnimatePresence>
+        {card && (
+          <motion.div
+            key={card.id}
+            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute inset-x-0 top-[30%] flex justify-center px-4"
+          >
+            <div
+              className={`w-full max-w-sm rounded-2xl border px-5 py-4 text-center shadow-2xl backdrop-blur-xl ${
+                card.won ? 'border-emerald-300/40 bg-emerald-950/75' : 'border-orange-300/40 bg-slate-950/80'
+              }`}
+            >
+              <div className={`text-xs font-bold tracking-[0.2em] ${card.won ? 'text-emerald-300' : 'text-orange-300'}`}>{card.headline}</div>
+              <div className="mt-1 text-2xl font-black text-white">{card.title}</div>
+              {card.lesson && <p className="mt-2 text-sm leading-relaxed text-white/80">{card.lesson}</p>}
+              {card.call && (
+                <div className="mt-3 text-xs text-white/50">
+                  報分 <span className="text-base font-bold text-white tabular-nums">{card.call}</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 下方：發球提示、蓄力、廚房警示 */}
+      <div className={`absolute inset-x-0 flex flex-col items-center gap-2 ${touch ? 'bottom-[15.5rem]' : 'bottom-5'}`}>
+        {hud.inKitchen && hud.phase === 'rally' && (
+          <div
+            className={`rounded-full px-3 py-1 text-xs font-bold shadow-lg ${
+              hud.kitchenLocked ? 'animate-pulse bg-red-500 text-white' : 'bg-amber-400/90 text-amber-950'
+            }`}
+          >
+            {hud.kitchenLocked ? '剛截擊完！別踩進廚房' : '你在廚房內：只能打落地球'}
+          </div>
+        )}
+        {hud.charge !== null && <ChargeBar charge={hud.charge} kind={hud.aimKind} />}
+        {humanServing && hud.servePower === null && (
+          <div className="rounded-full bg-slate-950/70 px-4 py-1.5 text-xs text-white/90 backdrop-blur-md">
+            {touch ? '按住任一擊球鍵蓄力，在綠色區放開發球' : '按住 J／K／L 蓄力，在綠色區放開發球 · ←→ 調方向'}
+          </div>
+        )}
+      </div>
+
+      {hud.servePower !== null && (
+        <div className="absolute right-5 top-1/2 -translate-y-1/2">
+          <ServeMeter power={hud.servePower} />
+        </div>
+      )}
+
+      <AnimatePresence>{cutIn && <CutIn key={cutIn.id} spec={cutIn.spec} mine={cutIn.mine} />}</AnimatePresence>
+    </div>
+  );
+};

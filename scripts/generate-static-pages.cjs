@@ -253,8 +253,8 @@ const pageSEO = {
         }
     },
     game: {
-        title: '免費玩！Pickle Master 匹克球 3D 互動遊戲 - 邊玩邊學規則',
-        description: '無聊嗎？來場線上匹克球對戰！真實物理引擎模擬，在遊戲中熟悉雙彈跳與截擊時機。免下載直接玩，挑戰最高分！',
+        title: '免費玩！Pickle Master 匹克球 3D 對戰遊戲 - 真實物理 × 熱血必殺技',
+        description: '免下載的 3D 匹克球網頁遊戲：四支真實規格球拍各帶一招必殺技，火焰抽擊、天雷貫地樣樣來。球的彈性與旋轉照真實數據模擬，雙彈跳、廚房規則照比賽判，也有寫實模式，手機也能玩。',
         keywords: '匹克球遊戲,pickleball game,匹克球練習,匹克球模擬,線上匹克球,匹克球訓練遊戲',
         structuredData: {
             "@context": "https://schema.org",

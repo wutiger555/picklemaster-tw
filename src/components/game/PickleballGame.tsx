@@ -9,6 +9,7 @@ import { SKILLS } from './engine/skills';
 import type { CutInInfo } from './CutIn';
 import { GameScene } from './GameScene';
 import { GameHud, type PointCard, type Toast } from './GameHud';
+import { TitleSplash } from './ComicTitle';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
 import { PaddleSelect } from './PaddleSelect';
 import { CharacterSelect } from './CharacterSelect';
@@ -90,6 +91,9 @@ type Screen = 'menu' | 'character' | 'paddle' | 'play' | 'over';
 
 const PickleballGame = () => {
   const [screen, setScreen] = useState<Screen>('menu');
+  // 開場標題：每次進遊戲頁播一次
+  const [splash, setSplash] = useState(true);
+  const endSplash = useCallback(() => setSplash(false), []);
   const [settings, setSettings] = useState<Settings>(() =>
     load<Settings>(SETTINGS_KEY, {
       mode: 'match',
@@ -488,6 +492,7 @@ const PickleballGame = () => {
         </>
       )}
 
+      <AnimatePresence>{splash && <TitleSplash key="splash" onDone={endSplash} />}</AnimatePresence>
       <AnimatePresence>
         {screen === 'menu' && (
           <MenuScreen

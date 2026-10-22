@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
+import { ComicTitle } from './ComicTitle';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
 import type { Controls, GameMode, TeamStats } from './engine/game';
+
 
 export interface Records {
   wins: Record<Difficulty, number>;
@@ -172,11 +174,8 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
   <Shell>
     <div className="w-full max-w-2xl py-4">
       <div className="text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold tracking-[0.25em] text-emerald-300">
-          PICKLEBALL GAME
-        </span>
-        <h2 className="mt-2 font-display text-3xl font-black tracking-tight text-white md:text-5xl">Pickle Master</h2>
-        <p className="mt-1.5 text-sm text-white/70">真實物理、真實規則的匹克球對戰</p>
+        <ComicTitle className="text-5xl md:text-7xl" />
+        <p className="mt-3 text-sm text-white/70">真實物理 × 熱血必殺技的匹克球對戰</p>
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">

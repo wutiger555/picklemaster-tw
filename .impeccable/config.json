@@ -29,6 +29,15 @@
         ],
         "createdAt": "2026-10-22T10:17:12.336Z",
         "reason": "Claude judgment: purple/cyan here are the in-game identity colors of the Phantom (purple) and Frost (ice blue) special moves, matching SPECIALS in engine/paddles.ts; not a decorative palette"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/components/game/ComicTitle.tsx"
+        ],
+        "createdAt": "2026-10-22T18:59:32.387Z",
+        "reason": "Claude: user asked for an exaggerated manga-style game logo; yellow-orange gradient fill with black stroke is the comic lettering itself, not a decorative heading"
       }
     ]
   }

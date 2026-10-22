@@ -6,11 +6,10 @@ import { ROUTES } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useInView } from '../hooks/useInView';
 import SEOHead from '../components/common/SEOHead';
-import CourtSkeleton from '../components/hero/CourtSkeleton';
+import GameTrailerHero from '../components/hero/GameTrailerHero';
 import { getUpcomingTournaments, TAIWAN_PICKLEBALL_STATS_2026 } from '../data/tournamentsData';
 
 // Lazy load heavy sections including 3D components
-const HeroCourtPreview = lazy(() => import('../components/hero/HeroCourtPreview'));
 const NewsSection = lazy(() => import('../components/news/NewsSection'));
 const NewCourtsTicker = lazy(() => import('../components/home/NewCourtsTicker'));
 
@@ -90,24 +89,17 @@ const Home = () => {
                 <br className="hidden md:block" />從 <span className="text-emerald-600 font-bold">零基礎入門</span> 到 <span className="text-blue-600 font-bold">職業級戰術</span>，都在這裡。
               </m.p>
 
-              {/* 3D Preview (Kept but styled better) */}
+              {/* 對戰遊戲預覽：實機畫面循環播放，點下去就進遊戲 */}
               <m.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, delay: 0.5 }}
                 className="relative mb-12 max-w-4xl mx-auto"
               >
-                {/* Glow behind 3D element */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-emerald-500/10 to-blue-500/10 blur-3xl rounded-full -z-10"></div>
-
-                <Suspense fallback={<CourtSkeleton />}>
-                  {/* Wrapping in a container that handles scale nicely */}
-                  <div className="transform scale-90 md:scale-100 transition-transform hover:scale-[1.02] duration-500">
-                    <HeroCourtPreview />
-                  </div>
-                </Suspense>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-emerald-500/15 to-blue-500/15 blur-3xl rounded-full -z-10"></div>
+                <GameTrailerHero />
                 <p className="text-center text-neutral-400 text-xs mt-4 tracking-widest uppercase font-bold">
-                  ●  Interactive 3D Preview  ●
+                  ●  Play Now · 免下載、手機也能玩  ●
                 </p>
               </m.div>
 

@@ -111,6 +111,7 @@ export const ControlsHelp = ({ touch, controls }: { touch: boolean; controls: Co
       </li>
       <li>能量滿了點「必殺」蓄勢，下一拍放出必殺技</li>
       <li>點「絕招」放出角色的招牌打法；用掉後打完 4 分再充好</li>
+      <li>比賽中球落在線邊、判決對你不利時，可以點「申請判決」看電視輔助重播；每局 2 次，判決被推翻不扣次數</li>
       <li>同一顆鍵會看情況變招：站位圈<b className="text-amber-300">金色</b>＝殺球機會（按抽）；<b className="text-rose-300">紅色</b>＝網前推擋／突擊（按抽）；被重抽時按軟＝卸力擋，擋回廚房</li>
     </ul>
   ) : (
@@ -138,6 +139,9 @@ export const ControlsHelp = ({ touch, controls }: { touch: boolean; controls: Co
       </li>
       <li className="flex flex-wrap items-center gap-1.5">
         <Key>U</Key> 角色絕招（每人一招招牌打法），用掉後打完 4 分再充好
+      </li>
+      <li className="flex flex-wrap items-center gap-1.5">
+        <Key>C</Key> 壓線球判決對你不利時申請電視輔助判決（<Key>Enter</Key> 接受原判）；每局 2 次，推翻不扣次數
       </li>
       <li className="flex items-center gap-1.5">
         <Key>Esc</Key> 暫停

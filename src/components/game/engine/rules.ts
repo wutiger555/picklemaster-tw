@@ -105,5 +105,25 @@ export const judgeServe = (land: V3, servingTeam: Team, targetSign: number): Fau
   return null;
 };
 
+export type CourtLine = 'side' | 'base' | 'kitchen' | 'center';
+
+/**
+ * 落點離判定邊界多遠（公尺，正 = 界內），以及最近的是哪條線。
+ * 和 isInCourt／judgeServe 用同一套邊界：壓線算界內，發球落在廚房線上算短。
+ */
+export const lineMargin = (p: V3, serveTargetSign: number | null): { margin: number; line: CourtLine } => {
+  const cands: [number, CourtLine][] = [
+    [COURT.halfWidth + 0.01 - Math.abs(p.x), 'side'],
+    [COURT.halfLength + 0.01 - Math.abs(p.z), 'base'],
+  ];
+  if (serveTargetSign !== null) {
+    cands.push([Math.abs(p.z) - (COURT.kitchen + COURT.lineWidth / 2), 'kitchen']);
+    cands.push([p.x * serveTargetSign + 0.01, 'center']);
+  }
+  let best = cands[0];
+  for (const c of cands) if (c[0] < best[0]) best = c;
+  return { margin: best[0], line: best[1] };
+};
+
 /** 腳是否在廚房內（含廚房線）。以身體中心往前 12 cm 當腳尖 */
 export const feetInKitchen = (pos: V3) => Math.abs(pos.z) - 0.12 <= COURT.kitchen;

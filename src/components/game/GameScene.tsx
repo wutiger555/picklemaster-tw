@@ -15,6 +15,7 @@ import type { CharacterDef } from './characters';
 import { BallModel } from './scene/BallModel';
 import { Effects } from './scene/Effects';
 import { Guide } from './scene/Guide';
+import { ReviewFx } from './scene/ReviewFx';
 import { type FxBus, createFxBus } from './scene/fxBus';
 
 /** 選手模型載入失敗（網路、素材）時只是不顯示，不要讓整個遊戲畫面掛掉 */
@@ -70,6 +71,8 @@ const Rig = ({
   const v = useMemo(() => ({ a: new THREE.Vector3(), b: new THREE.Vector3() }), []);
   /** 鏡頭的基準位置（不含踢動），渲染位置 = 基準 + 踢動 */
   const base = useRef(new THREE.Vector3(0, 5.2, 11));
+  const reviewAngle = useRef<string | null>(null);
+  const reviewSince = useRef(0);
 
   useFrame((_, delta) => {
     if (!paused) engine.update(delta, readInput());
@@ -120,7 +123,53 @@ const Rig = ({
     const cin = engine.cinematic;
     const cinAge = cin ? engine.real - cin.start : 99;
     let fov = portrait ? 58 : 46;
-    if (cin && cinAge < 0.85) {
+    const rv = engine.reviewView();
+    if (rv) {
+      // 電視輔助判決：像轉播一樣切鏡頭（換角度時直接切，不滑過去）
+      if (rv.angle !== reviewAngle.current) {
+        reviewAngle.current = rv.angle;
+        reviewSince.current = 0;
+      }
+      reviewSince.current += delta;
+      const p = rv.pos;
+      const sx = Math.sign(p.x) || 1;
+      const sz = Math.sign(p.z) || 1;
+      const lineZ = rv.line === 'kitchen' ? sz * COURT.kitchen : sz * COURT.halfLength;
+      const lineX = rv.line === 'center' ? 0 : sx * COURT.halfWidth;
+      const alongZ = rv.line === 'side' || rv.line === 'center';
+      const u = reviewSince.current;
+      if (rv.angle === 'broadcast') {
+        // 高角度轉播慢動作：從球場側邊斜看整段球路
+        v.a.set(-sx * 7.5, 3.8, p.z * 0.55 + sz * 1.5);
+        v.b.set(p.x * 0.6, 0.5, p.z * 0.7);
+        fov = 42;
+      } else if (rv.angle === 'hawk') {
+        // 鷹眼：落點正上方，慢慢推近
+        const h = THREE.MathUtils.lerp(2.6, 0.9, Math.min(1, u / 1.6));
+        v.a.set(p.x + (alongZ ? 0 : 0.01), h, p.z + (alongZ ? 0.01 : 0) + 0.12 * sz);
+        v.b.set(p.x, 0, p.z);
+        fov = 32;
+      } else {
+        // 線審視角：貼地沿著那條線看過去（mini 是比較遠、慢慢繞的版本）
+        const far = rv.angle === 'mini' ? 3.4 : 2.2;
+        const hgt = rv.angle === 'mini' ? 0.45 + Math.sin(u * 0.5) * 0.08 : 0.13;
+        // 從線的哪一頭看：挑離選手比較遠的那邊，免得鏡頭被腿擋住
+        const clear = (x: number, z: number) => Math.min(...engine.athletes.map((a) => Math.hypot(a.pos.x - x, a.pos.z - z)));
+        if (alongZ) {
+          const d = clear(lineX, p.z - sz * far) >= clear(lineX, p.z + sz * far) ? -sz : sz;
+          v.a.set(lineX, hgt, p.z + d * far);
+        } else {
+          const d = clear(p.x - sx * far, lineZ) >= clear(p.x + sx * far, lineZ) ? -sx : sx;
+          v.a.set(p.x + d * far, hgt, lineZ);
+        }
+        v.b.set(p.x, 0.03, p.z);
+        fov = rv.angle === 'mini' ? 36 : 30;
+      }
+      cam.position.copy(v.a);
+      base.current.copy(v.a);
+      look.current.copy(v.b);
+      cam.lookAt(v.b);
+    } else if (cin && cinAge < 0.85) {
       // 必殺特寫：從發招選手前方低角度仰拍，慢慢繞一點
       const a = engine.athletes.find((x) => x.team === cin.team)!;
       const s = teamSide(a.team);
@@ -226,6 +275,7 @@ export const GameScene = (props: SceneProps) => {
         </SkipOnError>
       ))}
       <Guide engine={engine} />
+      <ReviewFx engine={engine} />
       <BallModel engine={engine} />
       <Effects engine={engine} bus={bus} lowSpec={lowSpec} />
       <Rig {...props} bus={bus} excite={excite} flash={flash} aberration={aberration} />

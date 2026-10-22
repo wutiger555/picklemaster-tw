@@ -363,3 +363,290 @@ export const skyTexture = () =>
       g.fillRect(r() * w, y, r() < 0.1 ? 2 : 1, r() < 0.1 ? 2 : 1);
     }
   });
+
+// ───────────────────────────── 戶外場地（新生公園）─────────────────────────────
+
+/** 白天的天空：上深下淺的藍＋積雲（等距柱狀投影，畫面中線是地平線） */
+export const daySkyTexture = () =>
+  make('day-sky', 2048, 1024, (g, w, h) => {
+    const grd = g.createLinearGradient(0, 0, 0, h / 2);
+    grd.addColorStop(0, '#2f6fc4');
+    grd.addColorStop(0.55, '#5f9ae0');
+    grd.addColorStop(0.9, '#a9cdf0');
+    grd.addColorStop(1, '#d9e9f5');
+    g.fillStyle = grd;
+    g.fillRect(0, 0, w, h / 2);
+    g.fillStyle = '#c9dcc8';
+    g.fillRect(0, h / 2, w, h / 2);
+    const r = rng(17);
+    // 每朵雲是一群柔邊圓：底部平、頂部蓬，越靠地平線越扁越小
+    const puff = (x: number, y: number, rad: number, a: number) => {
+      const c = g.createRadialGradient(x, y, 0, x, y, rad);
+      c.addColorStop(0, `rgba(255,255,255,${a})`);
+      c.addColorStop(0.6, `rgba(250,252,255,${a * 0.8})`);
+      c.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = c;
+      g.beginPath();
+      g.arc(x, y, rad, 0, Math.PI * 2);
+      g.fill();
+    };
+    for (let i = 0; i < 46; i++) {
+      const cy = h * (0.12 + r() * 0.34);
+      const depth = cy / (h / 2); // 0 = 天頂，1 = 地平線
+      const cx = r() * w;
+      const span = (60 + r() * 160) * (1.2 - depth * 0.5);
+      const n = 6 + Math.floor(r() * 10);
+      for (let k = 0; k < n; k++) {
+        const t = k / n;
+        const x = cx + (t - 0.5) * span * 2 + (r() - 0.5) * 30;
+        const lift = Math.sin(t * Math.PI) * span * 0.35 * (1 - depth * 0.6);
+        const rad = (18 + r() * 34) * (1.15 - depth * 0.55) * (0.7 + Math.sin(t * Math.PI) * 0.6);
+        for (const off of [-w, 0, w]) puff(x + off, cy - lift * r(), rad, 0.55 + r() * 0.35);
+      }
+      // 雲底的淡灰陰影
+      g.fillStyle = 'rgba(160,178,200,0.12)';
+      g.beginPath();
+      g.ellipse(cx, cy + 6, span, 7 * (1.2 - depth * 0.5), 0, 0, Math.PI * 2);
+      g.fill();
+    }
+  });
+
+/** 遠方樹林剪影：一圈圓柱面上的樹冠輪廓（上方透明） */
+export const treelineTexture = () => {
+  const t = make('treeline', 2048, 256, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    const r = rng(23);
+    const layers = [
+      { base: h * 0.55, amp: 70, col: '#6f8f7a' },
+      { base: h * 0.68, amp: 60, col: '#4e7354' },
+      { base: h * 0.8, amp: 40, col: '#3b5f40' },
+    ];
+    for (const L of layers) {
+      g.fillStyle = L.col;
+      g.beginPath();
+      g.moveTo(0, h);
+      let x = 0;
+      while (x <= w) {
+        const rad = 14 + r() * 34;
+        const y = L.base - r() * L.amp;
+        g.arc(x, y, rad, Math.PI, 0);
+        x += rad * 1.3;
+      }
+      g.lineTo(w, h);
+      g.closePath();
+      g.fill();
+    }
+    // 偶爾冒出的大王椰子
+    g.strokeStyle = '#7d8a80';
+    g.fillStyle = '#4f7350';
+    for (let i = 0; i < 26; i++) {
+      const x = r() * w;
+      const top = h * (0.08 + r() * 0.2);
+      g.lineWidth = 2;
+      g.beginPath();
+      g.moveTo(x, h * 0.6);
+      g.lineTo(x, top);
+      g.stroke();
+      for (let k = 0; k < 7; k++) {
+        const a = Math.PI + (k / 6) * Math.PI;
+        g.beginPath();
+        g.ellipse(x + Math.cos(a) * 9, top + Math.sin(a) * 5 + 4, 11, 2.5, a, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+  });
+  t.wrapS = THREE.RepeatWrapping;
+  t.repeat.set(3, 1);
+  return t;
+};
+
+/** 草地：深淺斑駁的綠＋割草條紋 */
+export const grassTexture = () => {
+  const t = make('grass', 512, 512, (g, w, h) => {
+    noiseFill(g, w, h, '#6f9a45', 30, 11, 2);
+    const r = rng(5);
+    for (let i = 0; i < 90; i++) {
+      g.fillStyle = r() < 0.5 ? 'rgba(40,70,20,0.10)' : 'rgba(170,200,90,0.10)';
+      g.beginPath();
+      g.ellipse(r() * w, r() * h, 20 + r() * 60, 10 + r() * 40, r() * 3, 0, Math.PI * 2);
+      g.fill();
+    }
+    g.fillStyle = 'rgba(255,255,255,0.04)';
+    g.fillRect(0, 0, w / 2, h);
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+};
+
+/** 修剪過的樹籬：細碎葉面 */
+export const hedgeTexture = () => {
+  const t = make('hedge', 256, 256, (g, w, h) => {
+    noiseFill(g, w, h, '#4f7f35', 40, 13, 2);
+    const r = rng(9);
+    for (let i = 0; i < 900; i++) {
+      g.fillStyle = r() < 0.55 ? 'rgba(25,55,15,0.45)' : 'rgba(150,200,80,0.35)';
+      g.beginPath();
+      g.ellipse(r() * w, r() * h, 2 + r() * 3, 1 + r() * 2, r() * 3, 0, Math.PI * 2);
+      g.fill();
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+};
+
+/** 花崗岩矮牆：灰白小麻點 */
+export const graniteTexture = () => {
+  const t = make('granite', 256, 256, (g, w, h) => {
+    noiseFill(g, w, h, '#b9b6ae', 46, 21, 1);
+    const r = rng(31);
+    for (let i = 0; i < 700; i++) {
+      g.fillStyle = r() < 0.6 ? 'rgba(60,60,60,0.5)' : 'rgba(255,255,255,0.5)';
+      g.fillRect(r() * w, r() * h, 1 + r() * 2, 1 + r() * 2);
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+};
+
+/** 舊硬地球場：墨綠偏灰，有雨水漬與磨損 */
+export const wornCourtTexture = () => {
+  const t = make('worn-court', 1024, 1024, (g, w, h) => {
+    noiseFill(g, w, h, '#4f7a62', 16, 41, 1);
+    const r = rng(77);
+    for (let i = 0; i < 70; i++) {
+      const x = r() * w;
+      const y = r() * h;
+      const rad = 30 + r() * 140;
+      const c = g.createRadialGradient(x, y, 0, x, y, rad);
+      const dark = r() < 0.6;
+      c.addColorStop(0, dark ? 'rgba(30,50,40,0.16)' : 'rgba(200,220,200,0.10)');
+      c.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = c;
+      g.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+};
+
+/** 羽毛球雙打場的白線（透明底）：畫布上方是 −z 端 */
+export const badmintonLinesTexture = () =>
+  make('badminton-lines', 1024, 2048, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    const sx = w / 6.1;
+    const sz = h / 13.4;
+    const lw = 0.04;
+    g.fillStyle = 'rgba(245,247,242,0.95)';
+    const rect = (x: number, z: number, ww: number, hh: number) => g.fillRect(x * sx, z * sz, ww * sx, hh * sz);
+    // 外框（雙打邊線、底線）
+    rect(0, 0, 6.1, lw);
+    rect(0, 13.4 - lw, 6.1, lw);
+    rect(0, 0, lw, 13.4);
+    rect(6.1 - lw, 0, lw, 13.4);
+    // 單打邊線
+    rect(0.46, 0, lw, 13.4);
+    rect(6.1 - 0.46 - lw, 0, lw, 13.4);
+    for (const end of [0, 1]) {
+      const z = (zz: number) => (end ? 13.4 - zz - lw : zz);
+      // 雙打長發球線、前發球線
+      rect(0, z(0.76), 6.1, lw);
+      rect(0, z(6.7 - 1.98), 6.1, lw);
+      // 中線：前發球線到底線
+      const z0 = end ? 6.7 + 1.98 : 0;
+      rect(3.05 - lw / 2, z0, lw, 6.7 - 1.98);
+    }
+  });
+
+/** 白色建築外牆：橫向窗帶 */
+export const buildingTexture = () => {
+  const t = make('building', 512, 512, (g, w, h) => {
+    noiseFill(g, w, h, '#eef0ee', 8, 51, 2);
+    for (let row = 0; row < 2; row++) {
+      const y = 110 + row * 220;
+      for (let x = 40; x < w; x += 128) {
+        const grd = g.createLinearGradient(0, y, 0, y + 80);
+        grd.addColorStop(0, '#7f939e');
+        grd.addColorStop(1, '#b4c4cc');
+        g.fillStyle = grd;
+        g.fillRect(x, y, 44, 80);
+      }
+      g.fillStyle = 'rgba(0,0,0,0.05)';
+      g.fillRect(0, y + 110, w, 5);
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+};
+
+/** 大王椰子葉：中肋＋羽狀小葉（透明底） */
+export const palmFrondTexture = () =>
+  make('palm-frond', 128, 512, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    g.strokeStyle = '#3f6a2c';
+    g.lineCap = 'round';
+    for (let y = 8; y < h - 4; y += 7) {
+      const t = y / h;
+      const len = (w / 2) * Math.sin(Math.min(1, t * 1.15) * Math.PI) * 0.95;
+      g.lineWidth = 3.5;
+      g.strokeStyle = (y / 7) % 2 ? '#3f6a2c' : '#4f7d36';
+      for (const s of [-1, 1]) {
+        g.beginPath();
+        g.moveTo(w / 2, y);
+        g.lineTo(w / 2 + s * len, y + len * 0.55);
+        g.stroke();
+      }
+    }
+    g.strokeStyle = '#a3a77a';
+    g.lineWidth = 4;
+    g.beginPath();
+    g.moveTo(w / 2, 0);
+    g.lineTo(w / 2, h);
+    g.stroke();
+  });
+
+/** 臺北玫瑰園立牌：墨綠底、白字、一朵玫瑰 */
+export const gardenSignTexture = () =>
+  make('garden-sign', 1024, 400, (g, w, h) => {
+    const grd = g.createLinearGradient(0, 0, 0, h);
+    grd.addColorStop(0, '#24503a');
+    grd.addColorStop(1, '#173726');
+    g.fillStyle = grd;
+    g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(230,214,160,0.85)';
+    g.lineWidth = 6;
+    g.strokeRect(18, 18, w - 36, h - 36);
+    // 玫瑰：五片花瓣＋花心＋葉子
+    const cx = 150;
+    const cy = 170;
+    g.fillStyle = '#4f8a3a';
+    g.beginPath();
+    g.ellipse(cx - 44, cy + 62, 34, 14, -0.5, 0, Math.PI * 2);
+    g.ellipse(cx + 44, cy + 62, 34, 14, 0.5, 0, Math.PI * 2);
+    g.fill();
+    for (let i = 0; i < 5; i++) {
+      const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+      g.fillStyle = i % 2 ? '#d61f3c' : '#e8365a';
+      g.beginPath();
+      g.arc(cx + Math.cos(a) * 34, cy + Math.sin(a) * 34, 40, 0, Math.PI * 2);
+      g.fill();
+    }
+    g.fillStyle = '#b3122f';
+    g.beginPath();
+    g.arc(cx, cy, 30, 0, Math.PI * 2);
+    g.fill();
+    g.strokeStyle = '#f37a93';
+    g.lineWidth = 5;
+    g.beginPath();
+    g.arc(cx, cy, 16, 0.3, Math.PI * 1.7);
+    g.stroke();
+    g.fillStyle = '#ffffff';
+    g.textBaseline = 'middle';
+    g.font = '900 132px "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+    g.fillText('臺北玫瑰園', 270, 150);
+    g.fillStyle = 'rgba(230,214,160,0.95)';
+    g.font = '700 50px "Inter", "Helvetica Neue", Arial, sans-serif';
+    g.fillText('TAIPEI ROSE GARDEN', 276, 262);
+    g.fillStyle = 'rgba(255,255,255,0.75)';
+    g.font = '600 36px "PingFang TC", "Noto Sans TC", sans-serif';
+    g.fillText('新生公園 · 羽毛球場', 278, 330);
+  });

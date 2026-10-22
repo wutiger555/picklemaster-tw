@@ -7,6 +7,8 @@ import { COURT } from './engine/constants';
 import type { GameEngine, GameEvent, InputState } from './engine/game';
 import { teamSide } from './engine/rules';
 import { Stadium } from './scene/Stadium';
+import { RoseGardenVenue } from './scene/RoseGardenVenue';
+import type { Venue } from './GameScreens';
 import { AthleteModel } from './scene/AthleteModel';
 import { lookFromCharacter } from './scene/characterData';
 import type { CharacterDef } from './characters';
@@ -26,6 +28,8 @@ interface SceneProps {
   paused: boolean;
   onEvents: (events: GameEvent[]) => void;
   lowSpec: boolean;
+  /** 比賽場地：夜間體育館或新生公園戶外場 */
+  venue: Venue;
 }
 
 type Num = MutableRefObject<number>;
@@ -147,8 +151,8 @@ const Rig = ({
   return null;
 };
 
-/** 後處理：光暈讓火焰與燈光發亮；必殺演出時加一點色差 */
-const PostFx = ({ aberration, lowSpec }: { aberration: Num; lowSpec: boolean }) => {
+/** 後處理：光暈讓火焰與燈光發亮；必殺演出時加一點色差。白天場地門檻拉高，免得白牆、天空整片發光 */
+const PostFx = ({ aberration, lowSpec, day }: { aberration: Num; lowSpec: boolean; day: boolean }) => {
   const offset = useMemo(() => new THREE.Vector2(0, 0), []);
   useFrame(() => {
     const a = aberration.current * 0.003;
@@ -157,22 +161,23 @@ const PostFx = ({ aberration, lowSpec }: { aberration: Num; lowSpec: boolean }) 
   if (lowSpec) {
     return (
       <EffectComposer multisampling={0}>
-        <Bloom mipmapBlur luminanceThreshold={0.75} luminanceSmoothing={0.2} intensity={0.8} radius={0.7} />
-        <Vignette eskil={false} offset={0.25} darkness={0.55} />
+        <Bloom mipmapBlur luminanceThreshold={day ? 1.1 : 0.75} luminanceSmoothing={0.2} intensity={day ? 0.6 : 0.8} radius={0.7} />
+        <Vignette eskil={false} offset={0.25} darkness={day ? 0.35 : 0.55} />
       </EffectComposer>
     );
   }
   return (
     <EffectComposer multisampling={4}>
-      <Bloom mipmapBlur luminanceThreshold={0.72} luminanceSmoothing={0.2} intensity={1.15} radius={0.75} />
+      <Bloom mipmapBlur luminanceThreshold={day ? 1.1 : 0.72} luminanceSmoothing={0.2} intensity={day ? 0.7 : 1.15} radius={0.75} />
       <ChromaticAberration offset={offset} blendFunction={BlendFunction.NORMAL} radialModulation={false} modulationOffset={0} />
-      <Vignette eskil={false} offset={0.25} darkness={0.55} />
+      <Vignette eskil={false} offset={0.25} darkness={day ? 0.35 : 0.55} />
     </EffectComposer>
   );
 };
 
 export const GameScene = (props: SceneProps) => {
-  const { engine, lowSpec } = props;
+  const { engine, lowSpec, venue } = props;
+  const day = venue === 'rosegarden';
   const bus = useMemo(createFxBus, []);
   const excite = useRef(0);
   const flash = useRef(0);
@@ -181,9 +186,19 @@ export const GameScene = (props: SceneProps) => {
   const looks = useMemo(() => characters.map(lookFromCharacter), [characters]);
   return (
     <>
-      <color attach="background" args={['#050913']} />
-      <fog attach="fog" args={['#0a1226', 30, 75]} />
-      <Stadium engine={engine} names={[characters[0].name, characters[1].name]} excite={excite} flash={flash} lowSpec={lowSpec} />
+      {day ? (
+        <>
+          <color attach="background" args={['#a9cdf0']} />
+          <fog attach="fog" args={['#c9dcea', 45, 150]} />
+          <RoseGardenVenue excite={excite} lowSpec={lowSpec} />
+        </>
+      ) : (
+        <>
+          <color attach="background" args={['#050913']} />
+          <fog attach="fog" args={['#0a1226', 30, 75]} />
+          <Stadium engine={engine} names={[characters[0].name, characters[1].name]} excite={excite} flash={flash} lowSpec={lowSpec} />
+        </>
+      )}
       <Suspense fallback={null}>
         {engine.athletes.map((a, i) => (
           <AthleteModel key={`${a.id}-${a.paddle.id}-${looks[i].key}`} engine={engine} index={i} look={looks[i]} />
@@ -193,7 +208,7 @@ export const GameScene = (props: SceneProps) => {
       <BallModel engine={engine} />
       <Effects engine={engine} bus={bus} lowSpec={lowSpec} />
       <Rig {...props} bus={bus} excite={excite} flash={flash} aberration={aberration} />
-      <PostFx aberration={aberration} lowSpec={lowSpec} />
+      <PostFx aberration={aberration} lowSpec={lowSpec} day={day} />
     </>
   );
 };

@@ -83,6 +83,7 @@ const PickleballGame = () => {
       mode: 'match',
       difficulty: 'rookie',
       assist: true,
+      controls: 'auto',
       specials: true,
       paddle: PADDLES[0].id,
       character: CHARACTERS[1]?.id ?? 'default',
@@ -315,6 +316,7 @@ const PickleballGame = () => {
       mode: s.mode,
       difficulty: s.difficulty,
       assist: s.assist,
+      controls: s.controls ?? 'auto',
       specials: s.specials,
       paddles: [s.paddle],
     });
@@ -464,7 +466,7 @@ const PickleballGame = () => {
           />
         )}
         {playing && paused && (
-          <PauseScreen key="pause" touch={touch} onResume={() => setPaused(false)} onRestart={() => start()} onMenu={toMenu} />
+          <PauseScreen key="pause" touch={touch} controls={engine.controls} onResume={() => setPaused(false)} onRestart={() => start()} onMenu={toMenu} />
         )}
         {screen === 'over' && (
           <GameOverScreen

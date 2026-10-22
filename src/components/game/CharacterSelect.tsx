@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { GameEngine } from './engine/game';
-import { Character } from './scene/Character';
+import { AthleteModel } from './scene/AthleteModel';
 import { lookFromCharacter } from './scene/characterData';
 import { CHARACTERS, type CharacterDef } from './characters';
 
@@ -41,12 +41,14 @@ const Preview3D = ({ c }: { c: CharacterDef }) => {
   const look = useMemo(() => lookFromCharacter(c), [c]);
   const p = engine.human.pos;
   return (
-    <Canvas dpr={[1, 2]} camera={{ position: [p.x + 0.2, 1.7, p.z - 0.95], fov: 30 }} gl={{ alpha: true, antialias: true }}>
+    <Canvas dpr={[1, 2]} camera={{ position: [p.x + 0.2, 1.62, p.z - 1.05], fov: 30 }} gl={{ alpha: true, antialias: true }}>
       <ambientLight intensity={0.7} />
       <directionalLight position={[p.x + 1, 3, p.z - 3]} intensity={2.4} />
       <directionalLight position={[p.x - 2, 2, p.z + 1]} intensity={1} color="#9ad8ff" />
-      <Character key={c.id} engine={engine} index={0} look={look} />
-      <OrbitControls target={[p.x, 1.56, p.z]} enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={1.2} minPolarAngle={1.1} maxPolarAngle={1.9} />
+      <Suspense fallback={null}>
+        <AthleteModel key={c.id} engine={engine} index={0} look={look} trackTip={false} />
+      </Suspense>
+      <OrbitControls target={[p.x, 1.45, p.z]} enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={1.2} minPolarAngle={1.1} maxPolarAngle={1.9} />
     </Canvas>
   );
 };

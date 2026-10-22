@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
-import type { GameMode, TeamStats } from './engine/game';
+import type { Controls, GameMode, TeamStats } from './engine/game';
 
 export interface Records {
   wins: Record<Difficulty, number>;
@@ -12,6 +12,8 @@ export interface Settings {
   mode: GameMode;
   difficulty: Difficulty;
   assist: boolean;
+  /** 擊球操作（舊存檔沒有這欄，當作 auto） */
+  controls?: Controls;
   /** 熱血模式：必殺技、能量、特效全開；關閉即為寫實模式 */
   specials: boolean;
   paddle: string;
@@ -27,7 +29,7 @@ const Key = ({ children }: { children: React.ReactNode }) => (
   </kbd>
 );
 
-export const ControlsHelp = ({ touch }: { touch: boolean }) =>
+export const ControlsHelp = ({ touch, controls }: { touch: boolean; controls: Controls }) =>
   touch ? (
     <ul className="space-y-1.5 text-sm text-white/80">
       <li>左下搖桿移動，擊球瞬間推的方向就是瞄準方向</li>
@@ -35,7 +37,11 @@ export const ControlsHelp = ({ touch }: { touch: boolean }) =>
         右下 <b className="text-emerald-300">軟</b> 放小球／dink、<b className="text-orange-300">抽</b> 抽球／殺球、
         <b className="text-sky-300">挑</b> 高吊
       </li>
-      <li>按住蓄力，球到身邊時放開；放得準就是「完美」</li>
+      <li>
+        {controls === 'auto'
+          ? '對手一出手就先按擊球鍵，球到身邊會自動揮拍；越早按蓄力越飽，「蓄滿」最穩最強'
+          : '按住蓄力，球到身邊時放開；放得準就是「完美」'}
+      </li>
       <li>能量滿了點「必殺」蓄勢，下一拍放出必殺技</li>
     </ul>
   ) : (
@@ -52,7 +58,11 @@ export const ControlsHelp = ({ touch }: { touch: boolean }) =>
         <Key>K</Key> <span className="text-orange-300">抽</span> 抽球／殺球
         <Key>L</Key> <span className="text-sky-300">挑</span> 高吊
       </li>
-      <li>地上的綠圈是建議站位；球上的圈縮到最小、變金色時放開擊球鍵＝完美</li>
+      <li>
+        {controls === 'auto'
+          ? '地上的綠圈是建議站位；對手出手就先按好擊球鍵（可以再按別的鍵換球路），球上的圈變金色＝會是「蓄滿」'
+          : '地上的綠圈是建議站位；球上的圈縮到最小、變金色時放開擊球鍵＝完美'}
+      </li>
       <li className="flex flex-wrap items-center gap-1.5">
         <Key>空白鍵</Key> 能量滿時蓄勢，下一拍放出必殺；接必殺球時抓到「完美」就能破解
       </li>
@@ -164,10 +174,35 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
         ))}
       </div>
 
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {(
+          [
+            { id: 'auto', title: '🎾 提早按・自動揮拍', desc: '對手出手就先按，球到了自動揮；越早按越飽' },
+            { id: 'timing', title: '⏱️ 抓時機放開', desc: '進階：按住蓄力，自己抓擊球瞬間放開' },
+          ] as const
+        ).map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            onClick={() => onChange({ ...settings, controls: m.id })}
+            className={`rounded-xl border px-3 py-2.5 text-left transition-all ${
+              (settings.controls ?? 'auto') === m.id ? 'border-sky-300/70 bg-sky-400/15' : 'border-white/10 bg-white/5 hover:bg-white/10'
+            }`}
+          >
+            <div className="text-sm font-bold text-white">{m.title}</div>
+            <div className="text-[11px] text-white/55">{m.desc}</div>
+          </button>
+        ))}
+      </div>
+
       <label className="mt-3 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
         <span>
           <span className="block text-sm font-semibold text-white">擊球輔助</span>
-          <span className="block text-xs text-white/55">自動跑到站位、按住擊球鍵自動抓時機。關掉後自己跑位，跟著地上的站位圈和球上的計時圈，抓到「完美」更穩更強</span>
+          <span className="block text-xs text-white/55">
+            {(settings.controls ?? 'auto') === 'auto'
+              ? '自動跑到站位、擊球範圍更大。關掉後自己跑位，跟著地上的站位圈'
+              : '自動跑到站位、按住擊球鍵自動抓時機。關掉後自己跑位，跟著地上的站位圈和球上的計時圈，抓到「完美」更穩更強'}
+          </span>
         </span>
         <input
           type="checkbox"
@@ -191,7 +226,7 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
         {touch ? (
           <>
             <span>左搖桿移動</span>
-            <span>右側按住蓄力、放開擊球</span>
+            <span>{(settings.controls ?? 'auto') === 'auto' ? '右側提早按擊球鍵，球到自動揮拍' : '右側按住蓄力、放開擊球'}</span>
           </>
         ) : (
           <>
@@ -213,11 +248,13 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
 
 export const PauseScreen = ({
   touch,
+  controls,
   onResume,
   onRestart,
   onMenu,
 }: {
   touch: boolean;
+  controls: Controls;
   onResume: () => void;
   onRestart: () => void;
   onMenu: () => void;
@@ -237,7 +274,7 @@ export const PauseScreen = ({
         </button>
       </div>
       <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-left">
-        <ControlsHelp touch={touch} />
+        <ControlsHelp touch={touch} controls={controls} />
       </div>
     </div>
   </Shell>

@@ -218,7 +218,7 @@ class Ribbon {
         continue;
       }
       const q = pts[Math.min(i + 1, pts.length - 1)];
-      const r = pts[Math.max(i - 1, 0)];
+      const r = pts[Math.min(Math.max(i - 1, 0), pts.length - 1)];
       tmpDir.subVectors(r, q);
       if (tmpDir.lengthSq() < 1e-8) tmpDir.set(0, 0, 1);
       toCam.subVectors(cam, p);
@@ -234,6 +234,9 @@ class Ribbon {
     (this.geo.attributes.alpha as THREE.BufferAttribute).needsUpdate = true;
   }
 }
+
+const shotColor = (button: string, ballY: number) =>
+  button === 'soft' ? '#60a5fa' : button === 'lob' ? '#facc15' : button === 'drive' ? (ballY > 1.4 ? '#c084fc' : '#f87171') : '#ffffff';
 
 // ───────────────────────────── 蓄勢氣場 ─────────────────────────────
 
@@ -500,8 +503,9 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       if (tipPos && p > 0.05 && p < 0.7) tr.push(tipPos);
       else tr.clear();
       const firing = engine.cinematic?.team === a.team ? engine.cinematic.id : null;
-      tr.mat.uniforms.color.value.set(firing ? SPECIALS[firing].color : '#ffffff');
-      tr.mat.uniforms.strength.value = firing ? 1 : 0.35;
+      // 瑪利歐網球式的球路配色：軟球藍、抽球紅、挑高黃、殺球紫
+      tr.mat.uniforms.color.value.set(firing ? SPECIALS[firing].color : shotColor(a.swing.button, engine.ball.pos.y));
+      tr.mat.uniforms.strength.value = firing ? 1 : 0.5;
       tr.build(camera.position, firing ? 0.16 : 0.07);
 
       const special = a.paddle.special;

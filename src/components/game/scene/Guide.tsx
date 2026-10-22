@@ -1,9 +1,9 @@
 import { useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { COURT, PLAYER } from '../engine/constants';
+import { COURT, PLAYER, netHeightAt } from '../engine/constants';
 import { AUTO_CHARGE, type GameEngine } from '../engine/game';
-import type { ShotKind } from '../engine/shots';
+import { NET_ZONE, SMASH_HEIGHT, type ShotKind } from '../engine/shots';
 
 const K = COURT.kitchen;
 const W = COURT.halfWidth;
@@ -15,6 +15,9 @@ const AIM_COLOR: Record<ShotKind, string> = {
   drive: '#f97316',
   smash: '#ef4444',
   lob: '#60a5fa',
+  punch: '#fb923c',
+  block: '#5eead4',
+  speedup: '#f43f5e',
 };
 
 const additive = (color: string, opacity = 1) =>
@@ -75,9 +78,12 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
         stand.current.position.set(g!.stand.x, 0.012, g!.stand.z);
         const d = Math.hypot(h.pos.x - g!.stand.x, h.pos.z - g!.stand.z);
         const there = d < 0.25;
-        // 機會球（瑪利歐網球的 chance area）：球會在殺球高度被打到，站位圈變金色
-        const chance = g!.contact.y > 1.4;
-        mats.stand.color.set(chance ? '#fbbf24' : there ? '#a3ff6b' : '#34f5c5');
+        // 機會球（瑪利歐網球的 chance area）：殺球高度 → 金色；網前高過網的球（推擋／突擊）→ 紅色
+        const cz = Math.abs(g!.contact.z);
+        const smash = g!.contact.y > SMASH_HEIGHT && cz < 6;
+        const attack = !smash && cz < NET_ZONE && g!.contact.y > netHeightAt(g!.contact.x) + 0.08;
+        const chance = smash || attack;
+        mats.stand.color.set(smash ? '#fbbf24' : attack ? '#fb7185' : there ? '#a3ff6b' : '#34f5c5');
         stand.current.scale.setScalar(chance ? 1.15 + Math.sin(t * 12) * 0.12 : there ? 1 : 1 + Math.sin(t * 8) * 0.08);
       }
     }

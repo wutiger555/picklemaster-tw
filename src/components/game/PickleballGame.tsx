@@ -4,7 +4,9 @@ import { PerformanceMonitor } from '@react-three/drei';
 import { AnimatePresence } from 'framer-motion';
 import { GameEngine, type GameEvent, type HudState } from './engine/game';
 import { createAI } from './engine/ai';
-import { PADDLES, SPECIALS, type PaddleSpec } from './engine/paddles';
+import { PADDLES, SPECIALS } from './engine/paddles';
+import { SKILLS } from './engine/skills';
+import type { CutInInfo } from './CutIn';
 import { GameScene } from './GameScene';
 import { GameHud, type PointCard, type Toast } from './GameHud';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
@@ -47,14 +49,24 @@ const demoCharacters = (): [CharacterDef, CharacterDef] => {
   return [a, pickOpponent(a.id)];
 };
 
-/** 主選單背後播放的 AI 對打示範（熱血模式，會看到必殺技） */
-const createDemo = () => {
+/** 主選單背後播放的 AI 對打示範（熱血模式，會看到必殺技與角色絕招） */
+const createDemo = (chars: [CharacterDef, CharacterDef]) => {
   const ids = PADDLES.map((p) => p.id);
   const a = ids[Math.floor(Math.random() * ids.length)];
   const e = new GameEngine({ mode: 'match', difficulty: 'pro', assist: false, specials: true, paddles: [a] });
   e.athletes[0].ai = createAI('pro');
+  e.setSkills([chars[0].skill, chars[1].skill]);
   return e;
 };
+
+/** 示範賽的角色與引擎一起建立（引擎要知道雙方的絕招） */
+const newDemo = () => {
+  const chars = demoCharacters();
+  return { chars, engine: createDemo(chars) };
+};
+
+/** 絕招音效借用必殺技的音色 */
+const SKILL_SOUND = { squatSmash: 'inferno', spinSmash: 'thunder', splash: 'frost', dualCurve: 'phantom' } as const;
 
 /** 手機震動回饋（不支援的瀏覽器直接略過） */
 const buzz = (pattern: number | number[]) => {
@@ -91,15 +103,16 @@ const PickleballGame = () => {
     }),
   );
   const [records, setRecords] = useState<Records>(() => load<Records>(RECORDS_KEY, emptyRecords()));
-  const [engine, setEngine] = useState<GameEngine>(createDemo);
-  const [characters, setCharacters] = useState<[CharacterDef, CharacterDef]>(demoCharacters);
+  const [initialDemo] = useState(newDemo);
+  const [engine, setEngine] = useState<GameEngine>(initialDemo.engine);
+  const [characters, setCharacters] = useState<[CharacterDef, CharacterDef]>(initialDemo.chars);
   const [paused, setPaused] = useState(false);
   const [hud, setHud] = useState<HudState>(() => engine.hud());
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [aiToast, setAiToast] = useState<Toast | null>(null);
   const [banner, setBanner] = useState<{ id: number; text: string } | null>(null);
   const [card, setCard] = useState<PointCard | null>(null);
-  const [cutIn, setCutIn] = useState<{ id: number; spec: PaddleSpec; mine: boolean; portrait: string | null; name: string } | null>(null);
+  const [cutIn, setCutIn] = useState<CutInInfo | null>(null);
   const [newRecord, setNewRecord] = useState(false);
   const [muted, setMuted] = useState(false);
   const [touch, setTouch] = useState(false);
@@ -188,8 +201,9 @@ const PickleballGame = () => {
       if (screen !== 'play') {
         // 示範對打不出聲、不顯示；打完一場就換一場新的
         if (screen === 'menu' && events.some((e) => e.type === 'gameOver')) {
-          setEngine(createDemo());
-          setCharacters(demoCharacters());
+          const d = newDemo();
+          setEngine(d.engine);
+          setCharacters(d.chars);
         }
         return;
       }
@@ -205,7 +219,7 @@ const PickleballGame = () => {
             if (perfect && e.streak >= 2) audio.streak(e.streak);
             const kmh = `${Math.round(e.speed * 3.6)} km/h`;
             if (e.team === 0) {
-              const tone: Toast['tone'] = e.special
+              const tone: Toast['tone'] = e.special || e.skill
                 ? 'special'
                 : e.quality === null
                   ? 'plain'
@@ -230,6 +244,15 @@ const PickleballGame = () => {
             const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, mine: e.team === 0, portrait: who.portrait, name: who.name };
             setCutIn(c);
             later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 1150);
+            break;
+          }
+          case 'skill': {
+            audio.special(SKILL_SOUND[e.id]);
+            if (e.team === 0) buzz([20, 30, 50]);
+            const who = characters[e.team];
+            const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, skill: e.id, mine: e.team === 0, portrait: who.portrait, name: who.name };
+            setCutIn(c);
+            later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 900);
             break;
           }
           case 'counter':
@@ -321,9 +344,11 @@ const PickleballGame = () => {
       specials: s.specials,
       paddles: [s.paddle],
     });
-    setEngine(e);
     const mine = characterById(s.character);
-    setCharacters([mine, pickOpponent(mine.id)]);
+    const opp = pickOpponent(mine.id);
+    e.setSkills([mine.skill, opp.skill]);
+    setEngine(e);
+    setCharacters([mine, opp]);
     setHud(e.hud());
     setToasts([]);
     setCard(null);
@@ -338,8 +363,9 @@ const PickleballGame = () => {
 
   const toMenu = () => {
     audio.ambience(false);
-    setEngine(createDemo());
-    setCharacters(demoCharacters());
+    const d = newDemo();
+    setEngine(d.engine);
+    setCharacters(d.chars);
     setPaused(false);
     setCard(null);
     setCutIn(null);
@@ -399,6 +425,11 @@ const PickleballGame = () => {
             <TouchControls
               touch={touchRef}
               special={hud.specials ? { ready: hud.energy[0] >= 100, armed: hud.armed, color: mySpecial.color, name: mySpecial.name } : null}
+              skill={
+                hud.specials && hud.skill
+                  ? { ready: hud.skillReady, armed: hud.skillArmed, color: SKILLS[hud.skill].color, name: SKILLS[hud.skill].name }
+                  : null
+              }
             />
           )}
           <div className="absolute right-3 top-3 z-20 flex gap-2 max-md:flex-col">

@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { GameEngine, GameEvent } from '../engine/game';
 import { SPECIALS, type SpecialId } from '../engine/paddles';
+import { SKILLS } from '../engine/skills';
 import { teamSide } from '../engine/rules';
 import { paddleTips } from './characterData';
 import type { FxBus } from './fxBus';
@@ -412,6 +413,42 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       } else if (e.speed > 4) {
         pool.emit({ pos: p, count: 6, speed: 1.2, up: 0.6, life: 0.35, size: 0.06, color: COLOR('#cbd5e1'), gravity: -4 });
       }
+    } else if (e.type === 'skill') {
+      const sk = SKILLS[e.id];
+      const a = engine.athletes[e.team];
+      const b = engine.ball.pos;
+      const p = new THREE.Vector3(b.x, b.y, b.z);
+      const feet = new THREE.Vector3(a.pos.x, 0.03, a.pos.z);
+      ring(p, sk.color, 3, false, 0.5);
+      flash(p, sk.glow, 6);
+      pool.emit({ pos: p, count: 60, speed: 6, life: 0.5, size: 0.14, color: COLOR(sk.glow), color2: COLOR(sk.color), drag: 3 });
+      if (e.id === 'squatSmash') {
+        // 秒蹲：腳下炸開一圈塵土
+        ring(feet, sk.color, 3.2, true, 0.5);
+        pool.emit({ pos: feet, count: 70, speed: 4, up: 1.2, life: 0.6, size: 0.18, grow: 1.6, color: COLOR('#d6c3a5'), color2: COLOR('#7c6a55'), gravity: 2, drag: 3 });
+      } else if (e.id === 'spinSmash') {
+        // 幹他：空中轉一圈的紅色旋風
+        const top = new THREE.Vector3(a.pos.x, 1.4, a.pos.z);
+        ring(top, sk.color, 2.4, true, 0.45);
+        ring(top, '#ffffff', 1.6, true, 0.3);
+        pool.emit({ pos: top, count: 80, speed: 5, up: 0.4, life: 0.5, size: 0.12, color: COLOR('#fecaca'), color2: COLOR('#dc2626'), drag: 2.5 });
+      } else if (e.id === 'splash') {
+        // 爆噴：一道水柱噴向對手，落地成一灘水
+        const o = engine.opponentOf(a);
+        const to = new THREE.Vector3(o.pos.x - p.x, 0, o.pos.z - p.z);
+        const d = to.length() || 1;
+        dirTmp.set(to.x / d, 0.35, to.z / d).normalize();
+        pool.emit({ pos: p, count: 160, speed: 16, dir: dirTmp, spread: 0.25, life: 1.1, size: 0.12, color: COLOR('#e0f2fe'), color2: COLOR('#0ea5e9'), gravity: -9 });
+        const puddle = new THREE.Vector3(o.pos.x, 0.03, o.pos.z);
+        decal(puddle, 'frost', 2.4);
+        ring(puddle, '#7dd3fc', 2.6, true, 0.8);
+        pool.emit({ pos: puddle, count: 70, speed: 3, up: 2.6, life: 0.9, size: 0.1, color: COLOR('#f0f9ff'), color2: COLOR('#38bdf8'), gravity: -7 });
+      } else if (e.id === 'dualCurve') {
+        // 左右逢源：兩側各一圈綠色光環
+        ring(new THREE.Vector3(p.x + 0.6, p.y, p.z), sk.color, 1.6, false, 0.45);
+        ring(new THREE.Vector3(p.x - 0.6, p.y, p.z), sk.color, 1.6, false, 0.45);
+      }
+      ballTrail.clear();
     } else if (e.type === 'counter') {
       const b = engine.ball.pos;
       const p = new THREE.Vector3(b.x, b.y, b.z);
@@ -469,9 +506,10 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
     // 球的拖尾：一般快球淡淡白光，必殺球依招式上色
     if (live && engine.timeScale > 0.04) ballTrail.push(bp);
     if (!live) ballTrail.clear();
-    const trailColor = b.special ? SPECIALS[b.special.id].color : '#e8f5ff';
+    const skillShot = engine.skillShot;
+    const trailColor = b.special ? SPECIALS[b.special.id].color : skillShot ? SKILLS[skillShot.id].color : '#e8f5ff';
     ballTrail.mat.uniforms.color.value.set(trailColor);
-    ballTrail.mat.uniforms.strength.value = b.special ? 1 : Math.min(0.7, Math.max(0, (speed - 9) / 14));
+    ballTrail.mat.uniforms.strength.value = b.special || skillShot ? 1 : Math.min(0.7, Math.max(0, (speed - 9) / 14));
     ballTrail.build(camera.position, b.special ? (b.special.id === 'inferno' ? 0.22 : 0.14) : 0.05);
 
     // 飛行中的必殺特效

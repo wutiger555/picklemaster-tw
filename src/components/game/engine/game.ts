@@ -30,7 +30,7 @@ import {
   serveFromRight,
   teamSide,
 } from './rules';
-import { type AIState, type Difficulty, AI_PROFILES, chooseShot, createAI, homePosition, planContact, steer } from './ai';
+import { type AIProfile, type AIState, type Difficulty, AI_PROFILES, chooseShot, createAI, homePosition, planContact, steer } from './ai';
 import { type V3, v3, clamp, clone, gauss, len } from './vec';
 
 export type GameMode = 'match' | 'dink';
@@ -62,6 +62,8 @@ export interface SwingState {
   aimX: number;
   aimDepth: number;
   forehand: number;
+  /** 反射擋球（球快打到身上時自動擋） */
+  reflex?: boolean;
 }
 
 export interface Athlete {
@@ -83,6 +85,29 @@ export interface Athlete {
   jumpUntil: number;
   /** 最近一次得分慶祝／懊惱（給動畫用） */
   mood: { won: boolean; at: number } | null;
+  /** 上一個物理步的位置（畫面內插用） */
+  prevPos: V3;
+}
+
+/**
+ * 給玩家看的擊球導引：該站哪裡、球會在哪裡、什麼時候打。
+ * 用和 AI 同一套規劃算出來（Virtua Tennis／Mario Tennis 的站位提示）。
+ */
+export interface HumanGuide {
+  stand: { x: number; z: number };
+  contact: V3;
+  contactT: number;
+  /** 這球會出界：讓它過、別被打到 */
+  leave: boolean;
+  /** 球從擊出到最佳擊球點的總時間（計時圈用） */
+  span: number;
+  /**
+   * 依玩家「目前位置」算出的最佳擊球時間：和時機判定用的是同一個值，
+   * 計時圈照它縮，變金色時放開才一定是完美。
+   */
+  hitT: number;
+  /** 目前位置打得到這球（打不到時計時圈變紅：先跑過去） */
+  reachable: boolean;
 }
 
 export interface RallyState {
@@ -117,12 +142,15 @@ export type GameEvent =
       speed: number;
       pos: V3;
       special: SpecialId | null;
+      /** 連續完美擊球數（玩家） */
+      streak: number;
     }
   | { type: 'special'; team: Team; id: SpecialId }
   | { type: 'counter'; team: Team; id: SpecialId }
   | { type: 'blown'; team: Team; id: SpecialId }
   | { type: 'energyFull'; team: Team }
   | { type: 'whiff'; team: Team }
+  | { type: 'swing'; team: Team; button: ShotButton | 'serve' }
   | { type: 'bounce'; pos: V3; speed: number; special: SpecialId | null }
   | { type: 'net'; pos: V3 }
   | { type: 'cord'; pos: V3 }
@@ -177,6 +205,25 @@ const ASSIST_QUALITY = 0.78;
 const COUNTER_QUALITY = 0.86;
 /** AI 累積能量的速度（依程度） */
 const AI_ENERGY_RATE: Record<Difficulty, number> = { rookie: 0.4, club: 0.55, pro: 0.75 };
+/** 擊球判定的寬容度（遊戲常見的「放大打擊區」）：手動 +10 cm、輔助 +22 cm */
+const REACH_BONUS = { manual: 0.1, assist: 0.22 };
+const ACTIVE_EARLY = 0.05;
+const ACTIVE_LATE = 0.07;
+/** 用來算玩家導引的規劃參數：零反應、完全判斷得出出界球 */
+const GUIDE_PROFILE: AIProfile = {
+  label: 'guide',
+  rating: '',
+  reaction: 0,
+  maxSpeed: PLAYER.maxSpeed,
+  skill: 1,
+  timingSigma: 0,
+  aggression: 0,
+  dropRate: 0,
+  lobRate: 0,
+  outJudgement: 1,
+  netRush: 1,
+  serveSigma: 0,
+};
 
 const idleSwing = (): SwingState => ({
   state: 'idle',
@@ -221,6 +268,13 @@ export class GameEngine {
   timeScale = 1;
   /** 正在播放的必殺切入演出 */
   cinematic: { team: Team; id: SpecialId; start: number } | null = null;
+  /** 玩家的擊球導引（球朝玩家飛來時才有） */
+  guide: HumanGuide | null = null;
+  /** 玩家連續完美擊球 */
+  perfectStreak = 0;
+  /** 畫面內插：上一個物理步的球位置與內插比例 */
+  prevBall: V3 = v3();
+  alpha = 1;
   private freezeUntil = 0;
   private slowUntil = 0;
   private hitStopUntil = 0;
@@ -271,6 +325,7 @@ export class GameEngine {
       knockedUntil: 0,
       jumpUntil: 0,
       mood: null,
+      prevPos: v3(0, 0, z),
     });
     // 預留雙打：athletes 陣列可以放四人，規則與 AI 都以 team 為單位
     this.athletes = [athlete(0, 0, 6, mine, null), athlete(1, 1, -6, theirs, createAI(opts.difficulty))];
@@ -346,6 +401,9 @@ export class GameEngine {
       });
     }
     this.holdBall();
+    for (const a of this.athletes) a.prevPos = clone(a.pos);
+    this.prevBall = clone(this.ball.pos);
+    this.guide = null;
   }
 
   /** 發球前球拿在發球者手上（腰部以下） */
@@ -398,6 +456,7 @@ export class GameEngine {
     this.rally.lastKindByTeam[a.team] = plan.kind;
     this.phase = 'rally';
     a.swing = { ...idleSwing(), state: 'swinging', button: 'serve', swingStart: this.time - PLAYER.swingWindup, done: true, forehand: 1 };
+    this.emit({ type: 'swing', team: a.team, button: 'serve' });
     this.emit({
       type: 'hit',
       team: a.team,
@@ -407,6 +466,7 @@ export class GameEngine {
       speed: plan.speed,
       pos: clone(this.ball.pos),
       special: null,
+      streak: 0,
     });
   }
 
@@ -437,10 +497,18 @@ export class GameEngine {
       this.acc -= PHYSICS_DT;
       this.fixedStep(PHYSICS_DT);
     }
+    this.alpha = this.acc / PHYSICS_DT;
   }
 
   private fixedStep(dt: number) {
     this.time += dt;
+    this.prevBall.x = this.ball.pos.x;
+    this.prevBall.y = this.ball.pos.y;
+    this.prevBall.z = this.ball.pos.z;
+    for (const a of this.athletes) {
+      a.prevPos.x = a.pos.x;
+      a.prevPos.z = a.pos.z;
+    }
     this.moveAthletes(dt);
 
     if (this.phase === 'serve') {
@@ -454,6 +522,7 @@ export class GameEngine {
         }
         if (ev) this.onBallEvent(ev.type, ev.pos, ev.type === 'bounce' ? ev.speed : 0);
         this.checkContacts();
+        if (this.phase === 'rally') this.reflexBlock();
         this.checkBodyAndKitchen();
         this.checkRunaway();
       } else if (ev?.type === 'bounce' && ev.speed > 1.2) {
@@ -516,6 +585,27 @@ export class GameEngine {
     }
     let wx = this.input.moveX;
     let wz = -this.input.moveY * teamSide(h.team);
+    // 磁吸跑位：輔助模式自動跑到導引站位（推搖桿可以蓋過）；手動模式按住擊球鍵時輕推一把
+    const user = Math.hypot(wx, wz);
+    const target = this.autoTarget(h);
+    if (target) {
+      const dx = target.x - h.pos.x;
+      const dz = target.z - h.pos.z;
+      const d = Math.hypot(dx, dz);
+      if (d > 0.05) {
+        const want = Math.min(1, d / 0.55);
+        const ax = (dx / d) * want;
+        const az = (dz / d) * want;
+        if (this.assist) {
+          const k = user < 0.15 ? 1 : 0.35;
+          wx = wx * (1 - k) + ax * k;
+          wz = wz * (1 - k) + az * k;
+        } else if (this.input.held && this.guide) {
+          wx += ax * 0.45;
+          wz += az * 0.45;
+        }
+      }
+    }
     const m = Math.hypot(wx, wz);
     if (m > 1) {
       wx /= m;
@@ -633,11 +723,13 @@ export class GameEngine {
       aimDepth: a.ai ? 0 : this.input.moveY,
       forehand: (this.ball.pos.x - a.pos.x) * teamSide(a.team) >= 0 ? 1 : -1,
     };
+    this.emit({ type: 'swing', team: a.team, button: sw.button });
   }
 
   private refreshHumanPath() {
     if (this.phase !== 'rally') {
       this.landingMarker = null;
+      this.guide = null;
       return;
     }
     if (this.time - this.humanPathAt < 0.05) return;
@@ -645,6 +737,7 @@ export class GameEngine {
     this.humanPathT0 = this.time;
     this.humanPathBounces0 = this.rally.bouncesSinceHit;
     this.humanPath = predictPath(this.ball, 2.0, PHYSICS_DT);
+    this.refreshGuide();
     this.landingMarker = null;
     if (this.rally.lastTeam !== this.human.team && this.rally.bouncesSinceHit === 0) {
       for (const s of this.humanPath) {
@@ -656,6 +749,47 @@ export class GameEngine {
     }
   }
 
+  /** 磁吸跑位的目標：有導引就去導引站位；輔助模式下球飛走時自動回到好位置 */
+  private autoTarget(h: Athlete): { x: number; z: number } | null {
+    if (this.phase !== 'rally') return null;
+    if (this.guide) return this.guide.stand;
+    if (!this.assist || this.rally.lastTeam !== h.team) return null;
+    const s = teamSide(h.team);
+    const servingBack = this.match.serving === h.team && this.rally.hits <= 2 && this.mode === 'match';
+    return {
+      x: clamp(this.ball.pos.x * 0.4, -2, 2),
+      z: s * (servingBack ? COURT.halfLength - 0.1 : COURT.kitchen + 0.4),
+    };
+  }
+
+  /** 更新玩家導引：用 AI 的規劃算站位與擊球點 */
+  private refreshGuide() {
+    const h = this.human;
+    if (h.ai || this.phase !== 'rally' || this.rally.lastTeam === h.team) {
+      this.guide = null;
+      return;
+    }
+    const prev = this.guide && this.guide.contactT > this.time ? this.guide.contactT : undefined;
+    const plan = planContact(this, h, () => 0, GUIDE_PROFILE, prev);
+    if (!plan) {
+      this.guide = null;
+      return;
+    }
+    const span = this.guide && this.guide.contactT > this.time ? this.guide.span : Math.max(0.3, plan.contactT - this.rally.lastHitTime);
+    const near = plan.leave
+      ? null
+      : this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, plan.contactT - 0.35, plan.contactT + 0.35);
+    this.guide = {
+      stand: plan.stand,
+      contact: v3(plan.contact.x, plan.contact.y, plan.contact.z),
+      contactT: plan.contactT,
+      leave: plan.leave,
+      span,
+      hitT: near ? near.t : plan.contactT,
+      reachable: !!near,
+    };
+  }
+
   /** 球相對選手的位置：forward = 往網方向、lateral = 選手右手邊為正 */
   private relative(a: Athlete, p: V3) {
     const s = teamSide(a.team);
@@ -663,7 +797,8 @@ export class GameEngine {
   }
 
   private reachOf(a: Athlete) {
-    return PLAYER.reach + a.paddle.mods.reach;
+    const bonus = a.ai ? 0 : this.assist ? REACH_BONUS.assist : REACH_BONUS.manual;
+    return PLAYER.reach + a.paddle.mods.reach + bonus;
   }
 
   private contactCost(a: Athlete, p: V3) {
@@ -704,14 +839,72 @@ export class GameEngine {
 
   // ───────────────────────────── 擊球 ─────────────────────────────
 
+  /**
+   * 揮拍的「有效判定幀」：觸球點前 0.05 秒到後 0.07 秒內，球一進入打擊範圍就算打到
+   * （格鬥與運動遊戲的 active frames）。時機好壞仍照偏差計算品質，只是不會差一點就整個揮空。
+   */
   private checkContacts() {
     for (const a of this.athletes) {
       const sw = a.swing;
-      if (sw.state !== 'swinging' || sw.done || this.time < sw.contactAt) continue;
+      if (sw.state !== 'swinging' || sw.done || this.time < sw.contactAt - ACTIVE_EARLY) continue;
+      const now = this.hittable(a);
+      if (this.time < sw.contactAt) {
+        // 還沒到預定觸球時間：只有「現在打得到、等一下就跑出範圍」才提早救球
+        if (!now || this.hittableAt(a, sw.contactAt - this.time)) continue;
+      } else if (!now && this.time < sw.contactAt + ACTIVE_LATE) continue;
       sw.done = true;
       this.resolveContact(a);
       if (this.phase !== 'rally') return;
     }
+  }
+
+  /** 用目前速度線性外插 dt 秒後的球，看那時還打不打得到（判定幀只有幾十毫秒，外插夠準） */
+  private hittableAt(a: Athlete, dt: number) {
+    const b = this.ball;
+    const p = v3(b.pos.x + b.vel.x * dt, b.pos.y + b.vel.y * dt, b.pos.z + b.vel.z * dt);
+    if (Math.sign(p.z) !== teamSide(a.team)) return false;
+    const { f, l } = this.relative(a, p);
+    return Math.hypot(f, l) <= this.reachOf(a) && p.y >= PLAYER.minContactHeight && p.y <= PLAYER.maxContactHeight;
+  }
+
+  private hittable(a: Athlete) {
+    const b = this.ball.pos;
+    if (this.rally.lastTeam === a.team || Math.sign(b.z) !== teamSide(a.team)) return false;
+    const { f, l } = this.relative(a, b);
+    return Math.hypot(f, l) <= this.reachOf(a) && b.y >= PLAYER.minContactHeight && b.y <= PLAYER.maxContactHeight;
+  }
+
+  /**
+   * 反射擋球：快球已經到身邊、玩家卻沒有揮拍時，自動把拍子擋上去。
+   * 擋回去的是軟弱的高球（容易被攻擊），只是避免「莫名其妙被打到」的挫折。
+   * 出界球、雙彈跳規則要求等落地的球、站在廚房裡截擊都不會觸發。
+   */
+  private reflexBlock() {
+    const h = this.human;
+    if (h.ai || this.rally.lastTeam === h.team) return;
+    if (h.swing.state === 'swinging' && !h.swing.done) return;
+    const b = this.ball;
+    const s = teamSide(h.team);
+    if (Math.sign(b.pos.z) !== s || b.vel.z * s <= 0) return;
+    if (this.guide?.leave) return;
+    const volley = this.rally.bouncesSinceHit === 0;
+    if (volley && ((this.rally.hits <= 2 && this.mode === 'match') || feetInKitchen(h.pos))) return;
+    const { f, l } = this.relative(h, b.pos);
+    if (f > 0.12 || Math.hypot(f, l) > this.reachOf(h)) return;
+    if (b.pos.y < PLAYER.minContactHeight || b.pos.y > 1.9) return;
+    h.swing = {
+      ...idleSwing(),
+      state: 'swinging',
+      button: 'soft',
+      charge: 0.2,
+      swingStart: this.time - PLAYER.swingWindup,
+      contactAt: this.time,
+      done: true,
+      assistQ: 0.45,
+      forehand: l >= 0 ? 1 : -1,
+      reflex: true,
+    };
+    this.resolveContact(h);
   }
 
   private resolveContact(a: Athlete) {
@@ -786,8 +979,11 @@ export class GameEngine {
       }
     }
 
+    const errKind = fire ? (fire === 'phantom' ? 'dink' : 'drive') : classifyShot(req);
+    // 旋轉強的拍子打抽球、高吊、殺球時更容易把球壓進場內（上旋的作用）
+    const spinControl = errKind === 'drive' || errKind === 'smash' || errKind === 'lob' ? 1 / (1 + (a.paddle.mods.spin - 1) * 0.6) : 1;
     const err: Perturb = sampleShotError(
-      fire ? (fire === 'phantom' ? 'dink' : 'drive') : classifyShot(req),
+      errKind,
       {
         quality,
         timingOffset: offset,
@@ -795,7 +991,7 @@ export class GameEngine {
         contactHeight: b.pos.y,
         stretch: dist / this.reachOf(a),
         moveSpeed: Math.hypot(a.vel.x, a.vel.z),
-        skill: (a.ai ? a.ai.profile.skill : 1) * a.paddle.mods.error * pressure,
+        skill: (a.ai ? a.ai.profile.skill : 1) * a.paddle.mods.error * spinControl * pressure,
         zone: !!fire,
         forehand: l >= 0 ? 1 : -1,
       },
@@ -819,6 +1015,10 @@ export class GameEngine {
           t: 0,
           period: Math.max(0.4, plan.flightTime),
           sway: this.rand() < 0.5 ? 1 : -1,
+          perp: (() => {
+            const hs = Math.hypot(plan.vel.x, plan.vel.z) || 1;
+            return { x: -plan.vel.z / hs, z: plan.vel.x / hs };
+          })(),
           spent: false,
         }
       : null;
@@ -862,12 +1062,23 @@ export class GameEngine {
         a.knockedUntil = this.time + (blown ? 0.8 : 0.45);
         if (blown) this.emit({ type: 'blown', team: a.team, id: incomingSpecial });
       }
-    } else if (!fire && plan.speed > 19) {
-      this.hitStopUntil = this.real + 0.06;
+    }
+    // 頓幀：每一拍都停一下，球越快、擊球越完美停越久（打擊感的核心）
+    if (!fire) {
+      const power = clamp(plan.speed / 24, 0, 1);
+      const stop = 0.03 + power * 0.045 + (quality >= 0.9 ? 0.035 : 0);
+      this.hitStopUntil = Math.max(this.hitStopUntil, this.real + stop);
+    }
+    if (!a.ai) {
+      if (quality >= 0.9 && sw.assistQ === null) {
+        this.perfectStreak += 1;
+        if (this.perfectStreak >= 2) this.gainEnergy(a, Math.min(12, this.perfectStreak * 3));
+      } else this.perfectStreak = 0;
     }
 
     let label: string = fire ? SPECIALS[fire].name : SHOT_LABEL[plan.kind];
-    if (!a.ai && !fire) {
+    if (sw.reflex) label = '反射擋球';
+    else if (!a.ai && !fire) {
       if (sw.assistQ === null) {
         label =
           quality >= 0.9 ? `完美 ${label}` : quality >= 0.65 ? `漂亮 ${label}` : offset < 0 ? `太早 ${label}` : `太晚 ${label}`;
@@ -885,6 +1096,7 @@ export class GameEngine {
       speed: plan.speed,
       pos: clone(b.pos),
       special: fire,
+      streak: a.ai ? 0 : this.perfectStreak,
     });
   }
 
@@ -1058,7 +1270,7 @@ export class GameEngine {
     }
     // 幻影球看不出哪顆是真的：反應變慢；任何必殺球都比較難抓時機
     const sp = this.ball.special;
-    const reaction = ai.profile.reaction + (sp?.id === 'phantom' ? 0.3 : 0);
+    const reaction = ai.profile.reaction + (sp?.id === 'phantom' ? 0.42 : 0);
     const reacted = this.time >= this.rally.lastHitTime + reaction;
     const plan = ai.plan;
     if (reacted && (!plan || (!plan.swung && this.time >= ai.replanAt && plan.contactT - this.time > 0.25))) {

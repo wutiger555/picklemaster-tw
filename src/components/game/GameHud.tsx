@@ -10,6 +10,8 @@ export interface Toast {
   text: string;
   sub?: string;
   tone: 'perfect' | 'good' | 'off' | 'plain' | 'special';
+  /** 連續完美擊球數 */
+  streak?: number;
 }
 
 export interface PointCard {
@@ -36,7 +38,7 @@ const ServeDot = ({ on }: { on: boolean }) => (
   />
 );
 
-const Scoreboard = ({ hud, difficulty, best }: { hud: HudState; difficulty: Difficulty; best: number }) => {
+const Scoreboard = ({ hud, difficulty, best, oppName }: { hud: HudState; difficulty: Difficulty; best: number; oppName: string }) => {
   if (hud.mode === 'dink') {
     return (
       <div className="rounded-2xl border border-white/15 bg-slate-950/70 px-5 py-2.5 text-center text-white shadow-xl backdrop-blur-md">
@@ -66,7 +68,10 @@ const Scoreboard = ({ hud, difficulty, best }: { hud: HudState; difficulty: Diff
           <motion.span key={`o${hud.score[1]}`} initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-7 text-center text-3xl font-black tabular-nums">
             {hud.score[1]}
           </motion.span>
-          <span className="text-xs font-semibold text-orange-300">{AI_PROFILES[difficulty].label}</span>
+          <span className="text-xs font-semibold text-orange-300">
+            {oppName}
+            <span className="ml-1 text-[10px] font-normal text-white/50">{AI_PROFILES[difficulty].label}</span>
+          </span>
           <ServeDot on={hud.serving === 1} />
         </div>
       </div>
@@ -158,16 +163,17 @@ interface HudProps {
   aiToast: Toast | null;
   banner: { id: number; text: string } | null;
   card: PointCard | null;
-  cutIn: { id: number; spec: PaddleSpec; mine: boolean } | null;
+  cutIn: { id: number; spec: PaddleSpec; mine: boolean; portrait: string | null; name: string } | null;
+  oppName: string;
   touch: boolean;
 }
 
-export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch }: HudProps) => {
+export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName }: HudProps) => {
   const humanServing = hud.phase === 'serve' && hud.serving === 0 && hud.mode === 'match';
   return (
     <div className="pointer-events-none absolute inset-0 z-10 select-none">
       <div className="absolute inset-x-0 top-3 flex justify-center max-md:justify-start max-md:pl-3">
-        <Scoreboard hud={hud} difficulty={difficulty} best={best} />
+        <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
       </div>
 
       {hud.specials && (
@@ -194,19 +200,43 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       {/* 玩家擊球回饋 */}
       <div className="absolute inset-x-0 top-[38%] flex justify-center">
         <AnimatePresence>
-          {toasts.slice(-1).map((t) => (
-            <motion.div
-              key={t.id}
-              initial={{ opacity: 0, scale: 0.6, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ type: 'spring', stiffness: 420, damping: 24 }}
-              className={`rounded-full bg-gradient-to-r px-4 py-1.5 text-sm font-black shadow-lg ${TONE[t.tone]}`}
-            >
-              {t.text}
-              {t.sub && <span className="ml-2 font-semibold opacity-70">{t.sub}</span>}
-            </motion.div>
-          ))}
+          {toasts.slice(-1).map((t) =>
+            t.tone === 'perfect' ? (
+              // 完美擊球：金色大字戳章，帶連擊數
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, scale: 2.2, rotate: -8 }}
+                animate={{ opacity: 1, scale: 1, rotate: -4 }}
+                exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                transition={{ type: 'spring', stiffness: 520, damping: 18 }}
+                className="flex flex-col items-center"
+              >
+                <span
+                  className="font-display text-3xl font-black italic tracking-tight text-amber-300 md:text-4xl"
+                  style={{ textShadow: '0 0 18px rgba(251,191,36,0.85), 3px 3px 0 #000' }}
+                >
+                  PERFECT!
+                </span>
+                <span className="mt-0.5 rounded-full bg-black/55 px-3 py-0.5 text-xs font-bold text-amber-100">
+                  {t.text.replace('完美 ', '')}
+                  {t.sub && <span className="ml-2 opacity-70">{t.sub}</span>}
+                  {t.streak && t.streak >= 2 ? <span className="ml-2 text-amber-300">連續完美 ×{t.streak}</span> : null}
+                </span>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, scale: 0.6, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+                className={`rounded-full bg-gradient-to-r px-4 py-1.5 text-sm font-black shadow-lg ${TONE[t.tone]}`}
+              >
+                {t.text}
+                {t.sub && <span className="ml-2 font-semibold opacity-70">{t.sub}</span>}
+              </motion.div>
+            ),
+          )}
         </AnimatePresence>
       </div>
 
@@ -280,7 +310,9 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
         </div>
       )}
 
-      <AnimatePresence>{cutIn && <CutIn key={cutIn.id} spec={cutIn.spec} mine={cutIn.mine} />}</AnimatePresence>
+      <AnimatePresence>
+        {cutIn && <CutIn key={cutIn.id} spec={cutIn.spec} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />}
+      </AnimatePresence>
     </div>
   );
 };

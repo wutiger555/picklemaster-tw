@@ -15,6 +15,8 @@ export interface Settings {
   /** 熱血模式：必殺技、能量、特效全開；關閉即為寫實模式 */
   specials: boolean;
   paddle: string;
+  /** 選的角色 id（見 characters.ts） */
+  character: string;
 }
 
 const DIFFS: Difficulty[] = ['rookie', 'club', 'pro'];
@@ -50,7 +52,7 @@ export const ControlsHelp = ({ touch }: { touch: boolean }) =>
         <Key>K</Key> <span className="text-orange-300">抽</span> 抽球／殺球
         <Key>L</Key> <span className="text-sky-300">挑</span> 高吊
       </li>
-      <li>按住蓄力、球到身邊時放開；時機越準誤差越小</li>
+      <li>地上的綠圈是建議站位；球上的圈縮到最小、變金色時放開擊球鍵＝完美</li>
       <li className="flex flex-wrap items-center gap-1.5">
         <Key>空白鍵</Key> 能量滿時蓄勢，下一拍放出必殺；接必殺球時抓到「完美」就能破解
       </li>
@@ -165,7 +167,7 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
       <label className="mt-3 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
         <span>
           <span className="block text-sm font-semibold text-white">擊球輔助</span>
-          <span className="block text-xs text-white/55">按住擊球鍵會自動抓時機，並標出來球落點。熟悉後關掉可打出「完美」擊球</span>
+          <span className="block text-xs text-white/55">自動跑到站位、按住擊球鍵自動抓時機。關掉後自己跑位，跟著地上的站位圈和球上的計時圈，抓到「完美」更穩更強</span>
         </span>
         <input
           type="checkbox"
@@ -182,7 +184,7 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
         onClick={onNext}
         className="mt-4 w-full rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-3.5 text-lg font-black text-emerald-950 shadow-xl shadow-emerald-500/25"
       >
-        下一步：挑選球拍 →
+        下一步：選擇選手 →
       </motion.button>
 
       <p className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-white/60">

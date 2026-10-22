@@ -8,9 +8,11 @@ import type { GameEngine, GameEvent, InputState } from './engine/game';
 import { teamSide } from './engine/rules';
 import { Stadium } from './scene/Stadium';
 import { Character } from './scene/Character';
-import { lookFor } from './scene/characterData';
+import { lookFromCharacter } from './scene/characterData';
+import type { CharacterDef } from './characters';
 import { BallModel } from './scene/BallModel';
 import { Effects } from './scene/Effects';
+import { Guide } from './scene/Guide';
 import { type FxBus, createFxBus } from './scene/fxBus';
 
 const L = COURT.halfLength;
@@ -18,6 +20,8 @@ const K = COURT.kitchen;
 
 interface SceneProps {
   engine: GameEngine;
+  /** [玩家, 對手] 的角色：臉與配色會套到 3D 選手上 */
+  characters: [CharacterDef, CharacterDef];
   readInput: () => InputState;
   paused: boolean;
   onEvents: (events: GameEvent[]) => void;
@@ -42,6 +46,12 @@ const Rig = ({
   const look = useRef(new THREE.Vector3(0, 0.5, -2));
   const first = useRef(true);
   const fovKick = useRef(0);
+  // 擊球時鏡頭往擊球方向「踢」一下，再彈簧回位
+  const kick = useRef(new THREE.Vector3());
+  const clock = useRef(0);
+  const v = useMemo(() => ({ a: new THREE.Vector3(), b: new THREE.Vector3() }), []);
+  /** 鏡頭的基準位置（不含踢動），渲染位置 = 基準 + 踢動 */
+  const base = useRef(new THREE.Vector3(0, 5.2, 11));
 
   useFrame((_, delta) => {
     if (!paused) engine.update(delta, readInput());
@@ -56,7 +66,15 @@ const Rig = ({
             flash.current = 1;
             excite.current = Math.max(excite.current, 0.7);
             aberration.current = 1;
-          } else if (e.kind === 'smash' || e.speed > 20) shake.current = Math.max(shake.current, 0.12);
+          } else {
+            const power = Math.min(1, e.speed / 24);
+            if (e.team === 0) {
+              // 自己擊球：鏡頭沿擊球方向往前踢，完美擊球再推近一點
+              kick.current.set(0, -0.04 - power * 0.06, -(0.12 + power * 0.22));
+              if (e.quality !== null && e.quality >= 0.9) fovKick.current = Math.min(fovKick.current, -2.5);
+              shake.current = Math.max(shake.current, 0.03 + power * 0.06);
+            } else if (e.kind === 'smash' || e.speed > 20) shake.current = Math.max(shake.current, 0.1);
+          }
         } else if (e.type === 'bounce' && e.special) {
           shake.current = e.special === 'thunder' ? 0.5 : 0.25;
           aberration.current = Math.max(aberration.current, 0.6);
@@ -87,8 +105,9 @@ const Rig = ({
       const px = a.pos.x + Math.sin(orbit) * 3.1 * s;
       const pz = a.pos.z - Math.cos(orbit) * 3.1 * s;
       const kk = 1 - Math.exp(-delta * 14);
-      cam.position.lerp(new THREE.Vector3(px, 1.15, pz), kk);
-      look.current.lerp(new THREE.Vector3(a.pos.x, 1.25, a.pos.z), kk);
+      base.current.lerp(v.a.set(px, 1.15, pz), kk);
+      cam.position.copy(base.current);
+      look.current.lerp(v.b.set(a.pos.x, 1.25, a.pos.z), kk);
       cam.lookAt(look.current);
       cam.rotateZ(-0.12 * s);
       fov = 40;
@@ -100,15 +119,24 @@ const Rig = ({
       const ty = (portrait ? 8.6 : 5.2) - forward * 0.6;
       const tz = Math.max(h.z + (portrait ? 6.4 : 5.6), (portrait ? 11.4 : 10.4) - forward * 1.6);
       const kk = cinAge < 2 ? 1 - Math.exp(-delta * 6) : k;
-      cam.position.x += (tx - cam.position.x) * kk;
-      cam.position.y += (ty - cam.position.y) * kk;
-      cam.position.z += (tz - cam.position.z) * kk;
-      look.current.lerp(new THREE.Vector3(h.x * 0.3, 0.3, (portrait ? -1.2 : -2.4) + forward * 0.8), kk);
+      // 踢動用彈簧回位（真實時間），頓幀時也看得到
+      kick.current.multiplyScalar(Math.exp(-delta * 10));
+      const bp = base.current;
+      bp.x += (tx - bp.x) * kk;
+      bp.y += (ty - bp.y) * kk;
+      bp.z += (tz - bp.z) * kk;
+      look.current.lerp(v.b.set(h.x * 0.3, 0.3, (portrait ? -1.2 : -2.4) + forward * 0.8), kk);
       shake.current = Math.max(0, shake.current - delta * 0.9);
+      // 平滑的震動（正弦噪聲），不是每幀亂跳
+      clock.current += delta;
       const sh = shake.current;
-      cam.lookAt(look.current.x + (Math.random() - 0.5) * sh, look.current.y + (Math.random() - 0.5) * sh, look.current.z);
+      const t = clock.current;
+      const sx = (Math.sin(t * 53) + Math.sin(t * 31.7) * 0.6) * 0.5 * sh;
+      const sy = (Math.sin(t * 47.3) + Math.sin(t * 23.1) * 0.6) * 0.5 * sh;
+      cam.position.copy(bp).add(kick.current);
+      cam.lookAt(look.current.x + sx, look.current.y + sy, look.current.z);
     }
-    fovKick.current = Math.max(0, fovKick.current - delta * 18);
+    fovKick.current += (0 - fovKick.current) * Math.min(1, delta * 9);
     const targetFov = fov + fovKick.current;
     if (Math.abs(cam.fov - targetFov) > 0.05) {
       cam.fov += (targetFov - cam.fov) * Math.min(1, delta * 10);
@@ -149,15 +177,17 @@ export const GameScene = (props: SceneProps) => {
   const excite = useRef(0);
   const flash = useRef(0);
   const aberration = useRef(0);
-  const looks = useMemo(() => engine.athletes.map((a) => lookFor(a.team, a.paddle.id)), [engine]);
+  const { characters } = props;
+  const looks = useMemo(() => characters.map(lookFromCharacter), [characters]);
   return (
     <>
       <color attach="background" args={['#050913']} />
       <fog attach="fog" args={['#0a1226', 30, 75]} />
-      <Stadium engine={engine} excite={excite} flash={flash} lowSpec={lowSpec} />
+      <Stadium engine={engine} names={[characters[0].name, characters[1].name]} excite={excite} flash={flash} lowSpec={lowSpec} />
       {engine.athletes.map((a, i) => (
-        <Character key={`${a.id}-${a.paddle.id}`} engine={engine} index={i} look={looks[i]} />
+        <Character key={`${a.id}-${a.paddle.id}-${looks[i].key}`} engine={engine} index={i} look={looks[i]} />
       ))}
+      <Guide engine={engine} />
       <BallModel engine={engine} />
       <Effects engine={engine} bus={bus} lowSpec={lowSpec} />
       <Rig {...props} bus={bus} excite={excite} flash={flash} aberration={aberration} />

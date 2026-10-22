@@ -163,7 +163,7 @@ const LedBoards = () => {
 };
 
 /** 遠端大螢幕：顯示比分，分數變了才重畫 */
-const Jumbotron = ({ engine }: { engine: GameEngine }) => {
+const Jumbotron = ({ engine, names }: { engine: GameEngine; names: [string, string] }) => {
   const { canvas, tex } = useMemo(() => {
     const c = document.createElement('canvas');
     c.width = 1024;
@@ -197,9 +197,10 @@ const Jumbotron = ({ engine }: { engine: GameEngine }) => {
     } else {
       g.font = '800 54px "Inter", Arial, sans-serif';
       g.fillStyle = '#a7f3d0';
-      g.fillText('YOU', 270, 190);
+      g.font = '800 54px "Inter", "PingFang TC", "Noto Sans TC", sans-serif';
+      g.fillText(names[0], 270, 190);
       g.fillStyle = '#fed7aa';
-      g.fillText('RIVAL', 754, 190);
+      g.fillText(names[1], 754, 190);
       g.fillStyle = '#ffffff';
       g.font = '900 220px "Inter", Arial, sans-serif';
       g.fillText(String(engine.match.score[0]), 270, 410);
@@ -292,6 +293,8 @@ const Crowd = ({ excite }: { excite: MutableRefObject<number> }) => {
   const heads = useRef<THREE.InstancedMesh>(null);
   const tmp = useMemo(() => new THREE.Object3D(), []);
   const clock = useRef(0);
+  /** 觀眾靜止時不更新矩陣（約 700 人 × 2 個矩陣，每幀更新很浪費） */
+  const settled = useRef(false);
 
   useEffect(() => {
     const b = bodies.current;
@@ -314,10 +317,14 @@ const Crowd = ({ excite }: { excite: MutableRefObject<number> }) => {
     const b = bodies.current;
     const h = heads.current;
     if (!b || !h) return;
+    if (e <= 0.01) {
+      if (settled.current) return;
+      settled.current = true;
+    } else settled.current = false;
     for (let i = 0; i < seats.length; i++) {
       const s = seats[i];
       const jump = e > 0.05 ? Math.max(0, Math.sin(t * 9 + s.phase * 3)) * 0.28 * e : 0;
-      const sway = Math.sin(t * 1.3 + s.phase) * 0.02;
+      const sway = e > 0.01 ? Math.sin(t * 1.3 + s.phase) * 0.02 : 0;
       const stand = e > 0.3 ? 0.12 : 0;
       tmp.position.set(s.x, s.y + 0.38 + jump + stand, s.z);
       tmp.rotation.set(0, s.ry, sway);
@@ -442,12 +449,14 @@ const Sky = () => {
 
 export interface StadiumProps {
   engine: GameEngine;
+  /** 大螢幕上顯示的雙方名字 */
+  names: [string, string];
   excite: MutableRefObject<number>;
   flash: MutableRefObject<number>;
   lowSpec: boolean;
 }
 
-export const Stadium = ({ engine, excite, flash, lowSpec }: StadiumProps) => (
+export const Stadium = ({ engine, names, excite, flash, lowSpec }: StadiumProps) => (
   <group>
     <Sky />
     <hemisphereLight args={['#9db7ff', '#0d1a14', 0.55]} />
@@ -470,7 +479,7 @@ export const Stadium = ({ engine, excite, flash, lowSpec }: StadiumProps) => (
     <Court />
     <Net />
     <LedBoards />
-    <Jumbotron engine={engine} />
+    <Jumbotron engine={engine} names={names} />
     <Crowd excite={excite} />
     {!lowSpec && <Flashes flash={flash} />}
     <LightTowers />

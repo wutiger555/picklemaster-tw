@@ -260,7 +260,9 @@ const PickleballGame = () => {
       save(RECORDS_KEY, next);
       setNewRecord(record);
       audio.ambience(false);
-      audio.win(eng.mode === 'dink' ? record : eng.match.winner === 0);
+      const won = eng.mode === 'dink' ? record : eng.match.winner === 0;
+      audio.win(won);
+      audio.say(won ? 'win' : 'lose', { priority: true, cooldown: 0, delay: 0.5 });
       setScreen('over');
     },
     [records, settings.difficulty, audio],
@@ -287,9 +289,15 @@ const PickleballGame = () => {
             const perfect = e.team === 0 && e.quality !== null && e.quality >= 0.9;
             const attack = e.team === 0 && !e.special && !e.skill && (e.kind === 'smash' || e.kind === 'punch' || e.kind === 'speedup');
             audio.hit(e.speed, perfect);
-            if (attack) audio.attack(e.kind === 'smash');
+            if (attack) {
+              audio.attack(e.kind === 'smash');
+              audio.say(e.kind === 'smash' ? 'smash' : 'block', { cooldown: 3 });
+            }
             if (e.team === 0) buzz(e.special ? [30, 40, 60] : attack ? [20, 30, 45] : perfect ? 25 : 12);
-            if (perfect && e.streak >= 2) audio.streak(e.streak);
+            if (perfect && e.streak >= 2) {
+              audio.streak(e.streak);
+              audio.say(e.streak >= 4 ? 'great' : 'nice', { cooldown: 6 });
+            }
             const kmh = `${Math.round(e.speed * 3.6)} km/h`;
             if (e.team === 0) {
               const tone: Toast['tone'] = e.special || e.skill
@@ -313,6 +321,7 @@ const PickleballGame = () => {
           }
           case 'special': {
             audio.special(e.id);
+            audio.say(e.id, { priority: true, cooldown: 0 });
             const who = characters[e.team];
             const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, mine: e.team === 0, portrait: who.portrait, name: who.name };
             setCutIn(c);
@@ -321,6 +330,7 @@ const PickleballGame = () => {
           }
           case 'skill': {
             audio.special(SKILL_SOUND[e.id]);
+            audio.say('wow', { priority: true, cooldown: 2 });
             if (e.team === 0) buzz([20, 30, 50]);
             const who = characters[e.team];
             const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, skill: e.id, mine: e.team === 0, portrait: who.portrait, name: who.name };
@@ -332,6 +342,7 @@ const PickleballGame = () => {
             if (e.team === 0) buzz(40);
             audio.counter();
             audio.cheer(true);
+            audio.say('wow', { priority: true, cooldown: 2 });
             break;
           case 'blown': {
             const t: Toast = { id: ++ids.current, text: e.team === 0 ? '拍子被震飛！' : '對手被震飛！', tone: 'off' };
@@ -354,6 +365,7 @@ const PickleballGame = () => {
           case 'awaken': {
             audio.awaken();
             audio.cheer(true);
+            audio.say('awaken', { priority: true, cooldown: 0 });
             if (e.team === 0) buzz([40, 30, 40, 30, 80]);
             const who = characters[e.team];
             const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, awaken: true, mine: e.team === 0, portrait: who.portrait, name: who.name };
@@ -363,7 +375,8 @@ const PickleballGame = () => {
           }
           case 'comboMilestone':
             audio.cheer(true);
-            audio.streak(Math.min(8, e.n / 5));
+            audio.milestone(e.n);
+            audio.say('unstoppable', { cooldown: 8 });
             buzz(20);
             break;
           case 'dive':
@@ -377,6 +390,7 @@ const PickleballGame = () => {
           case 'whiff':
             audio.whoosh();
             if (e.team === 0) {
+              audio.say('oops', { cooldown: 5 });
               const t: Toast = { id: ++ids.current, text: '揮空了', tone: 'off' };
               setToasts([t]);
               later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 700);
@@ -391,6 +405,7 @@ const PickleballGame = () => {
             break;
           case 'cord':
             audio.cord();
+            audio.say('lucky');
             break;
           case 'chance':
             audio.chance();
@@ -407,6 +422,12 @@ const PickleballGame = () => {
             const won = e.winner === 0;
             audio.point(won);
             if (e.faultTeam === null) audio.cheer(e.rallyHits > 8);
+            // 球評：出界、掛網直接講；長來回贏球大讚；自己失誤就打氣
+            if (e.reason === 'out') audio.say('out', { delay: 0.15 });
+            else if (e.reason === 'net') audio.say('net', { delay: 0.15 });
+            else if (won && e.rallyHits > 8) audio.say('great', { delay: 0.15 });
+            else if (won) audio.say('nice', { delay: 0.15, cooldown: 6 });
+            else if (e.faultTeam === 0) audio.say('again', { delay: 0.3, cooldown: 10 });
             const dink = engine.mode === 'dink';
             const headline = dink
               ? won
@@ -435,9 +456,13 @@ const PickleballGame = () => {
             break;
           case 'reviewStart':
             audio.highlight();
+            audio.say('review', { priority: true, cooldown: 0 });
             break;
           case 'reviewVerdict':
-            if (e.overturned) audio.counter();
+            if (e.overturned) {
+              audio.counter();
+              audio.say('overturned', { priority: true, cooldown: 0 });
+            }
             audio.cheer(e.overturned);
             break;
           case 'gameOver':
@@ -453,6 +478,7 @@ const PickleballGame = () => {
   const start = (s: Settings = settings) => {
     audio.unlock();
     audio.ambience(true);
+    audio.say('start', { priority: true, cooldown: 0, delay: 0.8 });
     save(SETTINGS_KEY, s);
     const e = new GameEngine({
       mode: s.mode,

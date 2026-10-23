@@ -125,11 +125,19 @@ export const PaddleSelect = ({ value, specials, onChange, onBack, onStart }: Pro
                 {sp.name}
               </div>
               <p className="mt-1 text-xs leading-relaxed text-white/75">{specials ? sp.desc : '寫實模式不會發動必殺技，球拍數值仍然有效。'}</p>
+              {specials && (
+                <p className="mt-1.5 text-xs leading-relaxed text-white/60">
+                  <span className="mr-1.5 font-bold" style={{ color: sp.glow }}>
+                    破解法
+                  </span>
+                  {sp.counter}
+                </p>
+              )}
             </div>
           </motion.div>
         </div>
 
-        <div className="mt-4 grid grid-cols-4 gap-2">
+        <div className="mt-4 grid grid-cols-3 gap-2 md:grid-cols-6">
           {PADDLES.map((p) => (
             <button
               key={p.id}

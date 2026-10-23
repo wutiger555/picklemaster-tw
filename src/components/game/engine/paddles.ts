@@ -4,7 +4,7 @@
  * 數值差異反映在球速、穩定度、旋轉與觸及範圍；每支拍再附一招動漫式必殺技。
  */
 
-export type SpecialId = 'inferno' | 'thunder' | 'phantom' | 'frost';
+export type SpecialId = 'inferno' | 'thunder' | 'phantom' | 'frost' | 'cyclone' | 'quake';
 
 export interface SpecialDef {
   id: SpecialId;
@@ -12,8 +12,10 @@ export interface SpecialDef {
   name: string;
   /** 英文副標 */
   title: string;
-  /** 一句話說明效果與破解方式 */
+  /** 一句話說明效果 */
   desc: string;
+  /** 怎麼破解：每招的破解法都不一樣，選拍時就看得到 */
+  counter: string;
   color: string;
   glow: string;
 }
@@ -24,6 +26,7 @@ export const SPECIALS: Record<SpecialId, SpecialDef> = {
     name: '烈焰爆裂抽擊',
     title: 'INFERNO DRIVE',
     desc: '時速破百的火球直線轟出。接不準會被震退、只能撈出高球。',
+    counter: '抓準完美時機回擊就能破解，時機差會被震退。',
     color: '#ff5a1f',
     glow: '#ffb347',
   },
@@ -32,6 +35,7 @@ export const SPECIALS: Record<SpecialId, SpecialDef> = {
     name: '天雷貫地',
     title: 'THUNDER STRIKE',
     desc: '把球擊上高空，落雷般垂直砸下，落地後暴衝彈跳。',
+    counter: '地上會先出現落雷標記：提早跑到彈跳後的位置。',
     color: '#5b8cff',
     glow: '#d6e4ff',
   },
@@ -40,6 +44,7 @@ export const SPECIALS: Record<SpecialId, SpecialDef> = {
     name: '幻影分身',
     title: 'PHANTOM DINK',
     desc: '球分裂成三顆幻影並大幅蛇行，只有一顆是真的。',
+    counter: '盯住不透明的那顆，幻影快落地時會消失。',
     color: '#b05bff',
     glow: '#f0d6ff',
   },
@@ -48,8 +53,27 @@ export const SPECIALS: Record<SpecialId, SpecialDef> = {
     name: '絕對零度',
     title: 'ABSOLUTE ZERO',
     desc: '極強下旋，落地瞬間凍結在地面，幾乎彈不起來。',
+    counter: '落地前截擊就不會被凍住；落點會結冰，踩到會打滑。',
     color: '#4fd8ff',
     glow: '#e6fbff',
+  },
+  cyclone: {
+    id: 'cyclone',
+    name: '龍捲旋風',
+    title: 'CYCLONE SLICE',
+    desc: '螺旋鑽進場內，落地瞬間被旋風捲著往側邊竄開。',
+    counter: '看旋風往哪邊吹，先站到那一側；截擊它就不會竄開。',
+    color: '#2dd4bf',
+    glow: '#ccfbf1',
+  },
+  quake: {
+    id: 'quake',
+    name: '震地重砲',
+    title: 'TECTONIC CANNON',
+    desc: '沉重的平抽砸進場內，落地掀起震波，附近的人站不穩、腳下打滑。',
+    counter: '在它落地前截擊，或離落點遠一點再接。',
+    color: '#f59e0b',
+    glow: '#fde68a',
   },
 };
 
@@ -57,7 +81,7 @@ export type PaddleShape = 'elongated' | 'standard' | 'widebody' | 'hybrid';
 
 export interface PaddleLook {
   /** 拍面花紋 */
-  pattern: 'flame' | 'bolt' | 'holo' | 'rawcarbon';
+  pattern: 'flame' | 'bolt' | 'holo' | 'rawcarbon' | 'wind' | 'stone';
   base: string;
   primary: string;
   accent: string;
@@ -156,6 +180,40 @@ export const PADDLES: PaddleSpec[] = [
     mods: { pace: 1.0, error: 1.0, spin: 1.3, reach: 0.04 },
     special: 'frost',
     look: { pattern: 'rawcarbon', base: '#1a1d22', primary: '#4fd8ff', accent: '#ffffff', edge: '#cfd8e3', grip: '#e9f4ff' },
+  },
+  {
+    id: 'gale',
+    name: '疾風',
+    model: 'GALE 13 Featherlite',
+    tagline: '輕量薄拍，手快、截擊反應最快',
+    shape: 'standard',
+    length: 15.75 * IN,
+    width: 8 * IN,
+    thickness: 13,
+    weightOz: 7.4,
+    face: '3K 碳纖維',
+    core: '13 mm 聚合物蜂巢',
+    rating: { power: 7, control: 8.5, spin: 8.5, reach: 7 },
+    mods: { pace: 0.99, error: 0.97, spin: 1.12, reach: 0 },
+    special: 'cyclone',
+    look: { pattern: 'wind', base: '#062a26', primary: '#2dd4bf', accent: '#f0fdfa', edge: '#99f6e4', grip: '#134e4a' },
+  },
+  {
+    id: 'titan',
+    name: '鎮岳',
+    model: 'TITAN 16 Heavyweight',
+    tagline: '加重拍頭、手感紮實，重球最穩的力量拍',
+    shape: 'widebody',
+    length: 16 * IN,
+    width: 8.1 * IN,
+    thickness: 16,
+    weightOz: 8.8,
+    face: '玄武岩纖維',
+    core: '16 mm 高密度蜂巢',
+    rating: { power: 9, control: 7.5, spin: 6.5, reach: 7 },
+    mods: { pace: 1.08, error: 0.99, spin: 1, reach: 0 },
+    special: 'quake',
+    look: { pattern: 'stone', base: '#1c1917', primary: '#f59e0b', accent: '#fde68a', edge: '#44403c', grip: '#292524' },
   },
 ];
 

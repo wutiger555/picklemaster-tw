@@ -1,5 +1,5 @@
 import { BALL, COURT, NET_TOTAL_HALF_WIDTH, PHYSICS_DT, PLAYER, netHeightAt } from './constants';
-import { type BallState, type PathSample, createBall, isInCourt, predictPath, stepBall } from './ball';
+import { type BallState, type PathSample, CYCLONE_R, CYCLONE_TURNS, createBall, isInCourt, predictPath, stepBall } from './ball';
 import {
   type Perturb,
   type ShotButton,
@@ -192,6 +192,19 @@ export interface HumanGuide {
   dive: boolean;
 }
 
+/**
+ * 場上的地形效果（只維持幾秒）：絕對零度的落點結冰、爆噴一波的水灘。
+ * 站在裡面跑不快，雙方都一樣（打自己的冰也會滑）。
+ */
+export interface Hazard {
+  kind: 'ice' | 'water';
+  x: number;
+  z: number;
+  r: number;
+  born: number;
+  until: number;
+}
+
 export interface RallyState {
   hits: number;
   lastTeam: Team | null;
@@ -312,6 +325,8 @@ export interface HudState {
   dinkStreak: number;
   inKitchen: boolean;
   kitchenLocked: boolean;
+  /** 玩家腳下打滑（被噴水、踩到冰或水灘、被震波掀翻）：顯示原因 */
+  slipping: 'ice' | 'water' | 'shaken' | null;
   winner: Team | null;
   /** 蓄力中這一拍會打出的球路 */
   aimKind: ShotKind | null;
@@ -438,12 +453,19 @@ export type ReplayAngle = 'side' | 'low';
 const ASSIST_QUALITY = 0.78;
 /** auto 操作：按下到擊球超過這麼久就是「蓄滿」 */
 export const AUTO_CHARGE = 0.75;
-/** 被噴水打滑時的移動速度倍率 */
+/** 打滑時的移動速度倍率 */
 const SLIP_MOVE = 0.6;
 /** 有風時出手會修正幾成的吹偏（剩下的就是被風吹偏） */
 const WIND_READ = 0.75;
 /** 踩在積水上：加速、煞車都只剩這麼多（會滑） */
 const PUDDLE_GRIP = 0.3;
+/** 地形效果：結冰與水灘的大小與持續時間 */
+const ICE = { r: 0.95, life: 3.2 };
+const PUDDLE = { r: 1.15, life: 4.5 };
+/** 震地重砲：落地震波範圍與站不穩的時間 */
+export const QUAKE = { r: 2.6, stagger: 0.6 };
+/** 天雷貫地：落雷正下方被劈到的範圍 */
+export const THUNDER_R = 0.8;
 /** auto 操作：擊球前多久開始揮拍（揮拍動作要有前揮的時間） */
 const AUTO_LEAD = 0.14;
 /** 發球：放開按鍵後前揮多久才擊球 */
@@ -568,6 +590,12 @@ export class GameEngine {
   private lastCall: LineCall | null = null;
   /** 最近 3.5 秒的球路（重播用） */
   private ballHistory: { t: number; pos: V3 }[] = [];
+  /** 場上的結冰、水灘 */
+  hazards: Hazard[] = [];
+  /** 最近一顆旋風球落地竄開的時間（AI 重新判斷用） */
+  private cycloneAt = -1;
+  /** 被震地重砲掀翻、站不穩到什麼時候（athlete id → 時間；打滑提示用） */
+  private shakenUntil = new Map<number, number>();
   /** 目前在飛的是絕招球（球的軌跡特效用），下一拍或下一分清掉 */
   skillShot: { team: Team; id: SkillId } | null = null;
   /** 玩家的擊球導引（球朝玩家飛來時才有） */
@@ -730,6 +758,7 @@ export class GameEngine {
     this.pendingServe = null;
     this.pointsPlayed += 1;
     this.lastCall = null;
+    this.hazards = [];
     this.ballHistory = [];
     this.skillShot = null;
     this.tape.clear();
@@ -1116,6 +1145,27 @@ export class GameEngine {
 
   // ───────────────────────────── 移動 ─────────────────────────────
 
+  /** 打滑（踩到冰或水灘、被震波掀翻）時的跑速倍率 */
+  private slipFactor(a: Athlete) {
+    return this.slipCause(a) ? SLIP_MOVE : 1;
+  }
+
+  private slipCause(a: Athlete): HudState['slipping'] {
+    if (this.phase !== 'rally') return null;
+    for (const hz of this.hazards) {
+      if (this.time < hz.until && Math.hypot(a.pos.x - hz.x, a.pos.z - hz.z) < hz.r) return hz.kind;
+    }
+    if (this.puddles.length && this.inPuddle(a)) return 'water';
+    if (this.time < (this.shakenUntil.get(a.id) ?? 0)) return 'shaken';
+    return this.time < a.slipUntil ? 'water' : null;
+  }
+
+  private addHazard(kind: Hazard['kind'], x: number, z: number) {
+    const spec = kind === 'ice' ? ICE : PUDDLE;
+    this.hazards = this.hazards.filter((hz) => this.time < hz.until).slice(-3);
+    this.hazards.push({ kind, x, z, r: spec.r, born: this.time, until: this.time + spec.life });
+  }
+
   /** 玩家：加速度模型，不是瞬間移動 */
   private steerHuman(h: Athlete, dt: number) {
     // 撲接中：身體照著飛撲的慣性走（updateDive），搖桿沒有作用
@@ -1159,7 +1209,7 @@ export class GameEngine {
         ? PLAYER.swingMoveFactor
         : this.controls === 'auto' && h.swing.state === 'charging'
           ? AUTO_CHARGE_MOVE
-          : 1) * (this.time < h.slipUntil ? SLIP_MOVE : 1);
+          : 1) * this.slipFactor(h);
     const maxV = PLAYER.maxSpeed * slow;
     const tx = wx * maxV;
     const tz = wz * maxV;
@@ -1679,6 +1729,16 @@ export class GameEngine {
           spent: false,
         }
       : null;
+    if (b.special?.id === 'cyclone') {
+      // 旋風往「離對手遠的那一側」吹；螺旋的側向初速在這裡補上，落地才會回到原本的落點
+      const sp = b.special;
+      const opp = this.opponentOf(a).pos;
+      const away = (plan.target.x - opp.x) * sp.perp.x + (plan.target.z - opp.z) * sp.perp.z;
+      sp.sway = Math.abs(away) > 0.15 ? Math.sign(away) : sp.sway;
+      const w = (2 * Math.PI * CYCLONE_TURNS) / sp.period;
+      b.vel.x += sp.perp.x * CYCLONE_R * w;
+      b.vel.z += sp.perp.z * CYCLONE_R * w;
+    }
     b.curve = null;
     if (skill === 'dualCurve') {
       // 曲球：側向先往一邊飄、再往另一邊，落地時回到原本的落點
@@ -1736,10 +1796,10 @@ export class GameEngine {
       a.skillUsedAt = this.pointsPlayed;
       a.skillAt = this.time;
       if (skill === 'splash') {
-        // 水花噴到對手腳下：嚇一跳愣住一下，接著打滑跑不快
+        // 水花噴到對手腳下：嚇一跳愣住一下，腳下留一灘水，踩在裡面就跑不快
         const opp = this.opponentOf(a);
         opp.knockedUntil = this.time + 0.3;
-        opp.slipUntil = this.time + 1.1;
+        this.addHazard('water', opp.pos.x, opp.pos.z);
       }
       this.freezeUntil = this.real + 0.45;
       this.slowUntil = this.real + 0.9;
@@ -1969,6 +2029,37 @@ export class GameEngine {
     return true;
   }
 
+  /** 必殺球在界內落地：結冰、震波 */
+  private specialLanding(pos: V3) {
+    const id = this.ball.special?.id;
+    if (id === 'frost') this.addHazard('ice', pos.x, pos.z);
+    if (id === 'cyclone') this.cycloneAt = this.time;
+    if (id === 'thunder') {
+      // 落雷正下方的人被劈到發麻：要躲開落雷圈、到彈跳後的位置等
+      for (const a of this.athletes) {
+        if (a.team === this.rally.lastTeam || Math.hypot(a.pos.x - pos.x, a.pos.z - pos.z) > THUNDER_R) continue;
+        a.knockedUntil = Math.max(a.knockedUntil, this.time + 0.18);
+        this.emit({ type: 'highlight', text: a.ai ? '對手被雷劈中！' : '被雷劈中！麻掉了' });
+      }
+    }
+    if (id !== 'quake') return;
+    for (const a of this.athletes) {
+      if (a.team === this.rally.lastTeam) continue;
+      const d = Math.hypot(a.pos.x - pos.x, a.pos.z - pos.z);
+      if (d > QUAKE.r) continue;
+      // 越近震得越久，還會被往外推
+      const k = 1 - d / QUAKE.r;
+      a.knockedUntil = Math.max(a.knockedUntil, this.time + QUAKE.stagger * (0.5 + k));
+      a.slipUntil = Math.max(a.slipUntil, this.time + 1);
+      this.shakenUntil.set(a.id, a.slipUntil);
+      const ux = d > 0.01 ? (a.pos.x - pos.x) / d : 0;
+      const uz = d > 0.01 ? (a.pos.z - pos.z) / d : teamSide(a.team);
+      a.vel.x += ux * 2.5 * k;
+      a.vel.z += uz * 2.5 * k;
+      this.emit({ type: 'highlight', text: a.ai ? '震波掀翻對手！' : '被震波掀翻！站不穩' });
+    }
+  }
+
   /** AI 判斷這一拍適不適合放必殺 */
   private aiWantsSpecial(a: Athlete) {
     const id = a.paddle.special;
@@ -1978,6 +2069,8 @@ export class GameEngine {
     if (this.rand() > chance) return false;
     if (id === 'inferno') return h > 0.55;
     if (id === 'phantom') return depth < COURT.kitchen + 2;
+    // 震地重砲要砸得到人：對手站在場內才放
+    if (id === 'quake') return Math.abs(this.opponentOf(a).pos.z) < COURT.halfLength;
     return true;
   }
 
@@ -2015,6 +2108,7 @@ export class GameEngine {
         }
       }
       r.bouncesSinceHit = 1;
+      this.specialLanding(pos);
       if (r.atp) this.emit({ type: 'highlight', text: 'ATP！繞柱球' });
       if (this.mode === 'dink' && !this.practice && hitter === this.human.team) {
         if (Math.abs(pos.z) <= COURT.kitchen) {
@@ -2415,7 +2509,9 @@ export class GameEngine {
     const reaction = ai.profile.reaction + (sp?.id === 'phantom' ? 0.42 : 0);
     const reacted = this.time >= this.rally.lastHitTime + reaction;
     const plan = ai.plan;
-    if (reacted && (!plan || (!plan.swung && this.time >= ai.replanAt && plan.contactT - this.time > 0.25))) {
+    // 旋風球落地竄開：AI 愣一下才重新判斷（落地前的規劃是被騙的）
+    const fooled = !!plan && !plan.swung && plan.pathT0 < this.cycloneAt && this.time >= this.cycloneAt + ai.profile.reaction * 0.35;
+    if (reacted && (!plan || fooled || (!plan.swung && this.time >= ai.replanAt && plan.contactT - this.time > 0.25))) {
       ai.plan = planContact(this, a, this.rand);
       if (ai.plan && sp) ai.plan.timingError *= 1.8;
       // 絕招：每一顆來球只考慮一次，提早決定（蹲下、起跳的動作才來得及）
@@ -2439,7 +2535,7 @@ export class GameEngine {
         return;
       }
     }
-    steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed * (this.time < a.slipUntil ? SLIP_MOVE : 1), dt, this.grip(a));
+    steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed * this.slipFactor(a), dt, this.grip(a));
     if (!p.leave && !p.swung && this.time >= p.contactT + p.timingError - PLAYER.swingWindup) {
       p.swung = true;
       this.startSwing(a, this.time + PLAYER.swingWindup, null, p);
@@ -2477,6 +2573,7 @@ export class GameEngine {
       dinkStreak: this.dinkStreak,
       inKitchen: feetInKitchen(h.pos),
       kitchenLocked: this.time < h.kitchenLockUntil,
+      slipping: this.slipCause(h),
       winner: this.match.winner,
       aimKind: this.aimPreview()?.kind ?? null,
       chance: this.chance,

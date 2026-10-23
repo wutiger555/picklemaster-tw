@@ -555,7 +555,7 @@ const PickleballGame = () => {
           }
           case 'special': {
             audio.special(e.id);
-            audio.say(e.id, { priority: true, cooldown: 0 });
+            if (!audio.say(e.id, { priority: true, cooldown: 0 })) audio.say('wow', { priority: true, cooldown: 0 });
             const who = characters[e.team];
             const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, mine: e.team === 0, portrait: who.portrait, name: who.name };
             setCutIn(c);

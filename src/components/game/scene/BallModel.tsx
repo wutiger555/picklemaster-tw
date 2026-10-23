@@ -4,6 +4,10 @@ import * as THREE from 'three';
 import { PLAYER } from '../engine/constants';
 import type { GameEngine } from '../engine/game';
 import { SPECIALS } from '../engine/paddles';
+import { SKILLS } from '../engine/skills';
+
+/** 大曲球的殘影：落後幾幀的位置 */
+const GHOSTS = [5, 10, 15];
 import { ballTexture } from './textures';
 
 /** 畫面上的球放大 1.4 倍，遠端也看得清楚 */
@@ -58,6 +62,8 @@ export const BallModel = ({ engine }: { engine: GameEngine }) => {
   const mat = useRef<THREE.MeshStandardMaterial>(null);
   const shadow = useRef<THREE.Mesh>(null);
   const decoys = useRef<(THREE.Group | null)[]>([]);
+  const ghosts = useRef<(THREE.Group | null)[]>([]);
+  const history = useRef<THREE.Vector3[]>([]);
   const v = useMemo(
     () => ({ axis: new THREE.Vector3(), dir: new THREE.Vector3(), pos: new THREE.Vector3(), q: new THREE.Quaternion() }),
     [],
@@ -115,6 +121,20 @@ export const BallModel = ({ engine }: { engine: GameEngine }) => {
     shadow.current.scale.setScalar(1 + ht * 0.35);
     (shadow.current.material as THREE.MeshBasicMaterial).opacity = Math.max(0.15, 0.6 - ht * 0.12);
 
+    // 大曲球：拖著一串殘影，看得出球在左右飄
+    const curving = !!b.curve && engine.phase === 'rally';
+    const hist = history.current;
+    if (curving) {
+      hist.unshift(v.pos.clone());
+      if (hist.length > GHOSTS[GHOSTS.length - 1] + 1) hist.pop();
+    } else hist.length = 0;
+    ghosts.current.forEach((g, i) => {
+      if (!g) return;
+      const at = hist[GHOSTS[i]];
+      g.visible = curving && !!at;
+      if (at) g.position.copy(at);
+    });
+
     // 幻影分身：兩顆假球往兩側散開，快落地時消失
     const sp = b.special;
     const phantom = sp && sp.id === 'phantom' && !sp.spent;
@@ -141,6 +161,9 @@ export const BallModel = ({ engine }: { engine: GameEngine }) => {
       </group>
       {[0, 1].map((i) => (
         <Pickleball key={i} meshRef={(g) => void (decoys.current[i] = g)} opacity={0.75} tint={SPECIALS.phantom.color} />
+      ))}
+      {GHOSTS.map((_, i) => (
+        <Pickleball key={`g${i}`} meshRef={(g) => void (ghosts.current[i] = g)} opacity={0.5 - i * 0.14} tint={SKILLS.dualCurve.color} />
       ))}
       <mesh ref={shadow} rotation={[-Math.PI / 2, 0, 0]} renderOrder={2}>
         <circleGeometry args={[0.07, 24]} />

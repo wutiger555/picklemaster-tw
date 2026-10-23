@@ -247,8 +247,9 @@ const Prewarm = () => {
         for (const v of Object.values(m)) if (v instanceof THREE.Texture) textures.add(v);
       }
     });
+    // 只數「已經載好」的貼圖：畫布貼圖（LED 看板等）每幀都會加 version，直接加總會讓這裡每半秒重做一次
     let ver = 0;
-    for (const t of textures) ver += t.version;
+    for (const t of textures) if (t.version > 0) ver++;
     const sig = `${count}/${textures.size}/${ver}`;
     if (sig === seen.current) return;
     seen.current = sig;

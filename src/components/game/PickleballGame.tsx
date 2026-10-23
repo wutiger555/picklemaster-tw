@@ -289,10 +289,11 @@ const PickleballGame = () => {
             const perfect = e.team === 0 && e.quality !== null && e.quality >= 0.9;
             const attack = e.team === 0 && !e.special && !e.skill && (e.kind === 'smash' || e.kind === 'punch' || e.kind === 'speedup');
             audio.hit(e.speed, perfect);
-            if (attack) {
-              audio.attack(e.kind === 'smash');
-              audio.say(e.kind === 'smash' ? 'smash' : 'block', { cooldown: 3 });
-            }
+            if (attack) audio.attack(e.kind === 'smash');
+            // 自己打出大力球（殺球、截擊、突擊、重抽）時喊「硬啦！」或「幹！」，輕打的 dink 不喊
+            // 喊聲還在冷卻時，殺球／截擊改由球評講
+            const shouted = e.team === 0 && !e.special && (attack || e.speed > 17) && audio.say('hard', { priority: true, cooldown: 2.5 });
+            if (attack && !shouted) audio.say(e.kind === 'smash' ? 'smash' : 'block', { cooldown: 3 });
             if (e.team === 0) buzz(e.special ? [30, 40, 60] : attack ? [20, 30, 45] : perfect ? 25 : 12);
             if (perfect && e.streak >= 2) {
               audio.streak(e.streak);

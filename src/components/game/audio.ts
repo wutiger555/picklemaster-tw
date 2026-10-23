@@ -66,9 +66,9 @@ export const VOICE_VARIANTS: Record<VoiceKey, number> = {
   thunder: 1,
   phantom: 1,
   frost: 1,
-  // 龍捲旋風、震地重砲的台詞已寫進 scripts/voice/lines.json，還沒產生音檔：0 = 不載入、不講
-  cyclone: 0,
-  quake: 0,
+  // 龍捲旋風「颳颱風啦！」、震地重砲「地震啦！」
+  cyclone: 1,
+  quake: 1,
 };
 
 const voiceBase = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/game/voice`;

@@ -297,7 +297,7 @@ const PickleballGame = () => {
                     : e.quality >= 0.65
                       ? 'good'
                       : 'off';
-              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone, streak: perfect ? e.streak : 0, kind: attack ? e.kind : undefined };
+              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone, streak: perfect ? e.streak : 0, kind: attack ? e.kind : undefined, dive: e.dive };
               setToasts([t]);
               later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900);
             } else {
@@ -338,6 +338,14 @@ const PickleballGame = () => {
           }
           case 'energyFull':
             if (e.team === 0) audio.energyFull();
+            break;
+          case 'dive':
+            audio.whoosh();
+            if (e.team === 0) buzz(15);
+            break;
+          case 'diveLand':
+            audio.bounce(6);
+            if (e.team === 0) buzz([10, 20, 30]);
             break;
           case 'whiff':
             audio.whoosh();
@@ -513,6 +521,7 @@ const PickleballGame = () => {
             <TouchControls
               touch={touchRef}
               chance={hud.phase === 'rally' ? hud.chance : null}
+              dive={{ hint: hud.dive, busy: hud.diving }}
               special={hud.specials ? { ready: hud.energy[0] >= 100, armed: hud.armed, color: mySpecial.color, name: mySpecial.name, energy: hud.energy[0] } : null}
               skill={
                 hud.specials && hud.skill

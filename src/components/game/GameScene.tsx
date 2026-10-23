@@ -81,7 +81,12 @@ const Rig = ({
       for (const e of events) {
         bus.queue.push(e);
         if (e.type === 'hit') {
-          if (e.special) {
+          if (e.dive) {
+            // 撲到了：推近、震一下，觀眾跟著興奮
+            shake.current = Math.max(shake.current, 0.14);
+            fovKick.current = Math.min(fovKick.current, -5);
+            excite.current = Math.max(excite.current, 0.6);
+          } else if (e.special) {
             shake.current = 0.35;
             fovKick.current = 8;
             flash.current = 1;
@@ -110,6 +115,10 @@ const Rig = ({
           aberration.current = 0.8;
         } else if (e.type === 'point') {
           excite.current = Math.max(excite.current, e.faultTeam === null ? 1 : 0.35);
+        } else if (e.type === 'diveLand') {
+          // 撲倒落地：重重一震
+          shake.current = Math.max(shake.current, e.team === 0 ? 0.28 : 0.16);
+          if (e.team === 0) kick.current.set(0, -0.12, 0);
         } else if (e.type === 'net') shake.current = Math.max(shake.current, 0.04);
       }
       onEvents(events);

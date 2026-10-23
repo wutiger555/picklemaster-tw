@@ -59,6 +59,8 @@ export interface InputState {
   special?: boolean;
   /** 絕招鍵（同上） */
   skill?: boolean;
+  /** 撲接鍵（同上） */
+  dive?: boolean;
 }
 
 export interface SwingState {
@@ -82,6 +84,21 @@ export interface SwingState {
   reflex?: boolean;
   /** 自動揮拍（auto 操作）：品質由蓄力時間決定 */
   auto?: boolean;
+  /** 飛身撲接的那一拍 */
+  dive?: boolean;
+}
+
+/** 飛身撲接：起跳、空中（可以觸球）、落地滑行、倒地爬起來 */
+export interface DiveState {
+  t0: number;
+  /** 撲出去的水平方向（單位向量） */
+  dir: { x: number; z: number };
+  /** 預定觸球時間（撲空就是 null） */
+  hitAt: number | null;
+  landAt: number;
+  /** 爬起來、可以再動的時間 */
+  upAt: number;
+  landed: boolean;
 }
 
 export interface Athlete {
@@ -117,6 +134,8 @@ export interface Athlete {
   slipUntil: number;
   /** 上一個物理步的位置（畫面內插用） */
   prevPos: V3;
+  /** 正在飛身撲接（倒地爬起來之前都不是 null） */
+  dive: DiveState | null;
 }
 
 /**
@@ -138,6 +157,8 @@ export interface HumanGuide {
   hitT: number;
   /** 目前位置打得到這球（打不到時計時圈變紅：先跑過去） */
   reachable: boolean;
+  /** 跑不到、但飛撲搆得到：提示按撲接鍵 */
+  dive: boolean;
 }
 
 export interface RallyState {
@@ -151,6 +172,8 @@ export interface RallyState {
   atp: boolean;
   /** 連續互 dink 的拍數（越長越考驗耐心：AI 會越來越急、越容易把球吊高） */
   dinkChain: number;
+  /** 這一分哪一隊飛撲救回過球（拿下這分就是精彩好球） */
+  diveSaved: [boolean, boolean];
 }
 
 export interface TeamStats {
@@ -177,6 +200,8 @@ export type GameEvent =
       skill: SkillId | null;
       /** 連續完美擊球數（玩家） */
       streak: number;
+      /** 飛身撲接救回來的 */
+      dive: boolean;
     }
   | { type: 'special'; team: Team; id: SpecialId }
   | { type: 'skill'; team: Team; id: SkillId }
@@ -188,6 +213,9 @@ export type GameEvent =
   | { type: 'blown'; team: Team; id: SpecialId }
   | { type: 'energyFull'; team: Team }
   | { type: 'whiff'; team: Team }
+  /** 飛撲出去（起跳）與落地（揚塵、鏡頭震動） */
+  | { type: 'dive'; team: Team; pos: V3 }
+  | { type: 'diveLand'; team: Team; pos: V3 }
   | { type: 'swing'; team: Team; button: ShotButton | 'serve' }
   | { type: 'bounce'; pos: V3; speed: number; special: SpecialId | null }
   | { type: 'net'; pos: V3 }
@@ -238,6 +266,10 @@ export interface HudState {
   aimKind: ShotKind | null;
   /** 機會球：這一球按抽球鍵會打出的進攻球路 */
   chance: AttackKind | null;
+  /** 跑不到但撲得到：提示按撲接鍵 */
+  dive: boolean;
+  /** 玩家正在撲接或倒地中（撲接鍵暫時不能用） */
+  diving: boolean;
   /** 雙方剩下的電視輔助判決次數 */
   challenges: [number, number];
   /** 電視輔助判決進行中 */
@@ -339,6 +371,33 @@ const ACTIVE_EARLY = 0.05;
 const ACTIVE_LATE = 0.07;
 /** 按抽球鍵時，擊球點每高 1 m 的偏好（換算成「站位偏差」公尺） */
 const ATTACK_HIGH = 0.4;
+/**
+ * 飛身撲接（瑪利歐網球 Aces 的撲救）：觸及比一般擊球遠得多，但回球又軟又高、偶爾救不好，
+ * 撲完倒地要爬起來，期間不能移動也不能揮拍。
+ */
+export const DIVE = {
+  /** 飛撲的水平速度（m/s） */
+  speed: 6.2,
+  /** 起跳到落地（這段時間內可以觸球） */
+  air: 0.36,
+  /** 身體中心最遠撲出去多遠 */
+  maxTravel: 1.9,
+  /** 身體撲平伸直時，從身體中心到拍面的觸及 */
+  reach: 1.5,
+  minHeight: 0.03,
+  maxHeight: 1.5,
+  /** 太近的球來不及撲 */
+  minLead: 0.08,
+  /** 落地到爬起來 */
+  recover: 0.85,
+  /** 回球的時機品質（「倉促」等級） */
+  quality: 0.4,
+  /** 救不好（掛網或出界）的基本機率，伸越長越高 */
+  miss: 0.14,
+} as const;
+/** AI 遇到跑不到的球願意撲的機率 */
+const AI_DIVE_RATE: Record<Difficulty, number> = { rookie: 0.2, club: 0.3, pro: 0.4 };
+
 /** 用來算玩家導引的規劃參數：零反應、完全判斷得出出界球 */
 const GUIDE_PROFILE: AIProfile = {
   label: 'guide',
@@ -432,6 +491,11 @@ export class GameEngine {
   private pendingServe: { power: number; aimX: number } | null = null;
   private prevSpecial = false;
   private prevSkill = false;
+  private prevDive = false;
+  /** AI 對哪一顆來球擲過撲接骰子（athlete id → [對手擊球時間, 要不要撲]） */
+  private diveRolled = new Map<number, [number, boolean]>();
+  /** 玩家導引：跑不到但撲得到 */
+  diveHint = false;
   /** AI 對哪一顆來球擲過絕招骰子（athlete id → 對手擊球時間） */
   private skillRolled = new Map<number, number>();
   /** 已經開打幾分（絕招充能用） */
@@ -483,6 +547,7 @@ export class GameEngine {
       skillAt: -99,
       slipUntil: 0,
       prevPos: v3(0, 0, z),
+      dive: null,
     });
     // 預留雙打：athletes 陣列可以放四人，規則與 AI 都以 team 為單位
     this.athletes = [athlete(0, 0, 6, mine, null), athlete(1, 1, -6, theirs, createAI(opts.difficulty))];
@@ -513,6 +578,7 @@ export class GameEngine {
       lastKindByTeam: [null, null],
       atp: false,
       dinkChain: 0,
+      diveSaved: [false, false],
     };
   }
 
@@ -541,6 +607,7 @@ export class GameEngine {
       a.kitchenLockUntil = 0;
       a.knockedUntil = 0;
       a.slipUntil = 0;
+      a.dive = null;
       if (a.skill && !a.skillReady && this.pointsPlayed - a.skillUsedAt >= SKILL_RECHARGE_POINTS) {
         a.skillReady = true;
         this.emit({ type: 'skillReady', team: a.team });
@@ -573,6 +640,7 @@ export class GameEngine {
     this.prevBall = clone(this.ball.pos);
     this.guide = null;
     this.chance = null;
+    this.diveHint = false;
   }
 
   /** 發球前球拿在發球者手上（腰部以下） */
@@ -646,6 +714,7 @@ export class GameEngine {
       special: null,
       skill: null,
       streak: 0,
+      dive: false,
     });
   }
 
@@ -669,6 +738,8 @@ export class GameEngine {
     this.prevSpecial = !!input.special;
     if (input.skill && !this.prevSkill) this.tryArmSkill(this.human);
     this.prevSkill = !!input.skill;
+    if (input.dive && !this.prevDive && !this.human.ai) this.tryDive(this.human);
+    this.prevDive = !!input.dive;
     for (const a of this.athletes) {
       if (a.swing.state === 'swinging' && this.time - a.swing.swingStart >= SWING_TOTAL) {
         a.swing = { ...idleSwing(), forehand: a.swing.forehand };
@@ -785,6 +856,8 @@ export class GameEngine {
 
   /** 玩家：加速度模型，不是瞬間移動 */
   private steerHuman(h: Athlete, dt: number) {
+    // 撲接中：身體照著飛撲的慣性走（updateDive），搖桿沒有作用
+    if (h.dive) return;
     if (this.time < h.knockedUntil) {
       // 被震退：只會被慣性帶著滑
       h.vel.x *= Math.exp(-3 * dt);
@@ -845,6 +918,7 @@ export class GameEngine {
   private moveAthletes(dt: number) {
     if (!this.human.ai) this.steerHuman(this.human, dt);
     for (const a of this.athletes) {
+      if (a.dive) this.updateDive(a, dt);
       a.pos.x += a.vel.x * dt;
       a.pos.z += a.vel.z * dt;
       const s = teamSide(a.team);
@@ -893,6 +967,13 @@ export class GameEngine {
         this.serve(h, this.pendingServe.power, this.pendingServe.aimX);
         this.pendingServe = null;
       }
+      this.prevHeld = held;
+      return;
+    }
+
+    if (h.dive) {
+      // 撲接中、倒地爬起來之前不能揮拍（撲接那一拍已經排好了）
+      if (h.swing.state === 'charging') h.swing = idleSwing();
       this.prevHeld = held;
       return;
     }
@@ -963,6 +1044,7 @@ export class GameEngine {
       this.landingMarker = null;
       this.guide = null;
       this.chance = null;
+      this.diveHint = false;
       return;
     }
     if (this.time - this.humanPathAt < 0.05) return;
@@ -1001,6 +1083,7 @@ export class GameEngine {
     if (h.ai || this.phase !== 'rally' || this.rally.lastTeam === h.team) {
       this.guide = null;
       this.chance = null;
+      this.diveHint = false;
       return;
     }
     const prev = this.guide && this.guide.contactT > this.time ? this.guide.contactT : undefined;
@@ -1008,6 +1091,7 @@ export class GameEngine {
     if (!plan) {
       this.guide = null;
       this.chance = null;
+      this.diveHint = false;
       return;
     }
     // 截擊得站在廚房外，雙彈跳規則期間也不能截擊
@@ -1021,6 +1105,10 @@ export class GameEngine {
     const near = plan.leave
       ? null
       : this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, plan.contactT - 0.35, plan.contactT + 0.35, undefined, this.attacking(h));
+    // 撲接提示：球快到了、站的地方搆不到也跑不到，但撲得到
+    const dive =
+      !plan.leave && !near && !h.dive && plan.contactT - this.time < 0.7 && !!this.diveSolution(h, this.humanPath, this.humanPathT0, this.humanPathBounces0);
+    this.diveHint = dive;
     this.guide = {
       stand: plan.stand,
       contact: v3(plan.contact.x, plan.contact.y, plan.contact.z),
@@ -1029,6 +1117,7 @@ export class GameEngine {
       span,
       hitT: near ? near.t : plan.contactT,
       reachable: !!near,
+      dive,
     };
   }
 
@@ -1046,7 +1135,19 @@ export class GameEngine {
 
   private reachOf(a: Athlete) {
     const bonus = a.ai ? 0 : this.assist ? REACH_BONUS.assist : REACH_BONUS.manual;
+    // 飛撲在空中：整個人撲平伸直，觸及遠得多
+    if (this.airborne(a)) return DIVE.reach + a.paddle.mods.reach + bonus * 0.5;
     return PLAYER.reach + a.paddle.mods.reach + bonus;
+  }
+
+  /** 撲接起跳到落地之間（只有這段時間能觸球） */
+  private airborne(a: Athlete) {
+    return !!a.dive && this.time <= a.dive.landAt + 0.03;
+  }
+
+  /** 擊球高度範圍：撲接可以貼地撈球 */
+  private heightOk(a: Athlete, y: number) {
+    return this.airborne(a) ? y >= DIVE.minHeight && y <= DIVE.maxHeight : y >= PLAYER.minContactHeight && y <= PLAYER.maxContactHeight;
   }
 
   private contactCost(a: Athlete, p: V3, attack = false) {
@@ -1101,7 +1202,8 @@ export class GameEngine {
       const now = this.hittable(a);
       if (this.time < sw.contactAt) {
         // 還沒到預定觸球時間：只有「現在打得到、等一下就跑出範圍」才提早救球
-        if (!now || this.hittableAt(a, sw.contactAt - this.time)) continue;
+        // 撲接觸及很長，提早碰可能變成落地前截擊（雙彈跳、廚房違例）：照預定時間觸球
+        if (sw.dive || !now || this.hittableAt(a, sw.contactAt - this.time)) continue;
       } else if (!now && this.time < sw.contactAt + ACTIVE_LATE) continue;
       sw.done = true;
       this.resolveContact(a);
@@ -1115,14 +1217,14 @@ export class GameEngine {
     const p = v3(b.pos.x + b.vel.x * dt, b.pos.y + b.vel.y * dt, b.pos.z + b.vel.z * dt);
     if (Math.sign(p.z) !== teamSide(a.team)) return false;
     const { f, l } = this.relative(a, p);
-    return Math.hypot(f, l) <= this.reachOf(a) && p.y >= PLAYER.minContactHeight && p.y <= PLAYER.maxContactHeight;
+    return Math.hypot(f, l) <= this.reachOf(a) && this.heightOk(a, p.y);
   }
 
   private hittable(a: Athlete) {
     const b = this.ball.pos;
     if (this.rally.lastTeam === a.team || Math.sign(b.z) !== teamSide(a.team)) return false;
     const { f, l } = this.relative(a, b);
-    return Math.hypot(f, l) <= this.reachOf(a) && b.y >= PLAYER.minContactHeight && b.y <= PLAYER.maxContactHeight;
+    return Math.hypot(f, l) <= this.reachOf(a) && this.heightOk(a, b.y);
   }
 
   /**
@@ -1132,7 +1234,7 @@ export class GameEngine {
    */
   private reflexBlock() {
     const h = this.human;
-    if (h.ai || this.rally.lastTeam === h.team) return;
+    if (h.ai || h.dive || this.rally.lastTeam === h.team) return;
     if (h.swing.state === 'swinging' && !h.swing.done) return;
     const b = this.ball;
     const s = teamSide(h.team);
@@ -1168,7 +1270,7 @@ export class GameEngine {
     }
     const { f, l } = this.relative(a, b.pos);
     const dist = Math.hypot(f, l);
-    if (dist > this.reachOf(a) || b.pos.y < PLAYER.minContactHeight || b.pos.y > PLAYER.maxContactHeight) {
+    if (dist > this.reachOf(a) || !this.heightOk(a, b.pos.y)) {
       this.emit({ type: 'whiff', team: a.team });
       return;
     }
@@ -1186,6 +1288,8 @@ export class GameEngine {
       quality = clamp(1 - (Math.abs(offset) - 0.02) / 0.13, 0, 1);
     }
 
+    // 飛身撲接的那一拍：必殺、絕招留到下一拍，回球另外算
+    const diving = !!sw.dive && this.airborne(a);
     const volley = this.rally.bouncesSinceHit === 0;
     if (volley && this.rally.hits <= 2 && this.mode === 'match') {
       this.endRally(other(a.team), 'twoBounce', a.team);
@@ -1219,10 +1323,10 @@ export class GameEngine {
     const underAttack = incomingKind === 'smash' ? 1 : incomingKind === 'speedup' ? 0.6 : 0;
 
     // AI 決定要不要放必殺（能量滿、時機合適）
-    if (a.ai && this.specials && !a.armed && a.energy >= ENERGY.max && this.aiWantsSpecial(a)) a.armed = true;
-    const fire: SpecialId | null = a.armed && this.specials ? a.paddle.special : null;
+    if (a.ai && this.specials && !diving && !a.armed && a.energy >= ENERGY.max && this.aiWantsSpecial(a)) a.armed = true;
+    const fire: SpecialId | null = a.armed && this.specials && !diving ? a.paddle.special : null;
     // 角色絕招（和必殺不同時放；AI 在規劃擊球時已經決定）
-    const skill: SkillId | null = !fire && a.skillArmed && this.specials ? a.skill : null;
+    const skill: SkillId | null = !fire && !diving && a.skillArmed && this.specials ? a.skill : null;
     this.skillShot = null;
 
     // 接必殺球：時機完美就破解，否則被震退、只能撈出高球
@@ -1235,7 +1339,7 @@ export class GameEngine {
       else {
         pressure = 2.2;
         popUp = 0.35 + (1 - quality) * 0.5;
-        blown = (incomingSpecial === 'inferno' || incomingSpecial === 'thunder') && quality < 0.45;
+        blown = !diving && (incomingSpecial === 'inferno' || incomingSpecial === 'thunder') && quality < 0.45;
       }
     }
 
@@ -1269,7 +1373,8 @@ export class GameEngine {
     let plan: ShotPlan = fire ? planSpecial(fire, req, err) : ((skill && planSkill(skill, req, err)) ?? planShot(req, err));
     // 被逼急的軟球／截擊會被打飛：時機差、伸長手勉強碰到、硬接重球時，球軟軟地飄高到中場 → 對方的殺球機會
     let popped = false;
-    if (!fire && !incomingSpecial && (kind0 === 'dink' || kind0 === 'drop' || kind0 === 'block' || kind0 === 'punch' || underAttack > 0)) {
+    if (diving) plan = this.diveReturn(a, dist);
+    else if (!fire && !incomingSpecial && (kind0 === 'dink' || kind0 === 'drop' || kind0 === 'block' || kind0 === 'punch' || underAttack > 0)) {
       const stretch = dist / this.reachOf(a);
       let p = Math.max(0, 0.6 - quality) * 0.9 + Math.max(0, stretch - 0.85) * 1.5 + underAttack * 0.25;
       if (kind0 !== 'block') p += Math.max(0, incoming - 13) * 0.03;
@@ -1324,6 +1429,7 @@ export class GameEngine {
     r.lastKindByTeam[a.team] = plan.kind;
     r.atp = false;
     r.dinkChain = plan.kind === 'dink' && !popped ? r.dinkChain + 1 : 0;
+    if (diving) r.diveSaved[a.team] = true;
     if (this.mode === 'match' && (r.dinkChain === 6 || r.dinkChain === 10)) {
       this.emit({ type: 'highlight', text: r.dinkChain === 6 ? `Dink 對決 ×${r.dinkChain}：比耐心！` : `Dink ×${r.dinkChain}！誰先沉不住氣？` });
     }
@@ -1358,6 +1464,9 @@ export class GameEngine {
       this.slowUntil = this.real + 0.9;
       this.emit({ type: 'skill', team: a.team, id: skill });
       this.skillShot = { team: a.team, id: skill };
+    } else if (diving) {
+      // 拚命救球也算漂亮：給一點能量
+      this.gainEnergy(a, ENERGY.good);
     } else {
       this.gainEnergy(a, quality >= 0.9 ? ENERGY.perfect : quality >= 0.65 ? ENERGY.good : 0);
       if (r.hits > 8) this.gainEnergy(a, ENERGY.longRally);
@@ -1368,7 +1477,7 @@ export class GameEngine {
         this.hitStopUntil = this.real + 0.18;
         this.emit({ type: 'counter', team: a.team, id: incomingSpecial });
         this.emit({ type: 'highlight', text: '完美破解！' });
-      } else {
+      } else if (!diving) {
         // 被震退：往後滑一段
         a.vel.z += s * (blown ? 5 : 3.2);
         a.knockedUntil = this.time + (blown ? 0.8 : 0.45);
@@ -1376,7 +1485,11 @@ export class GameEngine {
       }
     }
     // 頓幀：每一拍都停一下，球越快、擊球越完美停越久（打擊感的核心）
-    if (!fire) {
+    if (diving) {
+      // 撲到了：頓一下再慢動作看球飛回去
+      this.hitStopUntil = Math.max(this.hitStopUntil, this.real + 0.14);
+      this.slowUntil = Math.max(this.slowUntil, this.real + 0.75);
+    } else if (!fire) {
       const power = clamp(plan.speed / 24, 0, 1);
       const stop = 0.03 + power * 0.045 + (quality >= 0.9 ? 0.035 : 0) + (plan.kind === 'smash' ? 0.05 : plan.kind === 'speedup' ? 0.025 : 0);
       this.hitStopUntil = Math.max(this.hitStopUntil, this.real + stop);
@@ -1390,6 +1503,7 @@ export class GameEngine {
 
     let label: string = fire ? SPECIALS[fire].name : skill ? SKILLS[skill].name : SHOT_LABEL[plan.kind];
     if (sw.reflex) label = '反射擋球';
+    else if (diving) label = '飛身救球';
     else if (!a.ai && !fire && !skill) {
       if (sw.auto) label = quality >= 0.9 ? `蓄滿 ${label}` : quality >= 0.75 ? label : `倉促 ${label}`;
       else if (sw.assistQ === null) {
@@ -1415,7 +1529,150 @@ export class GameEngine {
       special: fire,
       skill,
       streak: a.ai ? 0 : this.perfectStreak,
+      dive: diving,
     });
+  }
+
+  /**
+   * 撲接的回球：只求把球撈過網，又軟又高（落在對方場中段，正好給人殺），
+   * 伸越長越容易救不好（掛網或出界）。
+   */
+  private diveReturn(a: Athlete, dist: number): ShotPlan {
+    const b = this.ball.pos;
+    const s = teamSide(a.team);
+    const aim = a.ai ? 0 : clamp(this.input.moveX, -1, 1) * s;
+    const stretch = clamp(dist / this.reachOf(a), 0, 1.2);
+    const miss = this.rand() < DIVE.miss + Math.max(0, stretch - 0.8) * 0.5;
+    let target: V3;
+    let apex: number;
+    if (miss && this.rand() < 0.45) {
+      // 撈不起來：低低地撞網
+      target = v3(b.x * 0.6 + (this.rand() - 0.5) * 2, 0, -s * (0.6 + this.rand() * 0.8));
+      apex = Math.max(b.y + 0.15, 0.55 + this.rand() * 0.25);
+    } else if (miss) {
+      // 撈太大力：飛出底線或邊線
+      const wide = this.rand() < 0.5;
+      target = v3(
+        wide ? Math.sign(b.x || this.rand() - 0.5) * (COURT.halfWidth + 0.3 + this.rand() * 0.8) : (this.rand() - 0.5) * 3,
+        0,
+        -s * (wide ? 3 + this.rand() * 3 : COURT.halfLength + 0.3 + this.rand() * 1.2),
+      );
+      apex = Math.max(b.y + 1.4, 2.8 + this.rand() * 1.2);
+    } else {
+      target = v3(clamp(b.x * 0.4 + aim * 1.1 + (this.rand() - 0.5) * 2.2, -COURT.halfWidth + 0.35, COURT.halfWidth - 0.35), 0, -s * (2.6 + this.rand() * 3.4));
+      apex = Math.max(b.y + 1.3, 2.5 + this.rand() * 1.3);
+    }
+    const sol = solveByApex(b, target, apex, 0);
+    return { kind: 'lob', target, vel: sol.vel, spin: sol.spin, speed: len(sol.vel), flightTime: sol.time };
+  }
+
+  /** 找出撲得到的擊球點：起跳後、落地前，飛撲距離＋撲平的觸及之內 */
+  private diveSolution(a: Athlete, path: PathSample[], t0: number, b0: number) {
+    if (this.phase !== 'rally' || this.rally.lastTeam === a.team) return null;
+    const s = teamSide(a.team);
+    const twoBounce = this.rally.hits <= 2 && this.mode === 'match';
+    const reach = DIVE.reach + a.paddle.mods.reach;
+    let best: { t: number; pos: V3; d: number; cost: number } | null = null;
+    for (const smp of path) {
+      const t = t0 + smp.t;
+      const lead = t - this.time;
+      if (lead < DIVE.minLead) continue;
+      if (lead > DIVE.air) break;
+      if (b0 + smp.bounces > 1) break;
+      if (twoBounce && b0 + smp.bounces === 0) continue;
+      if (Math.sign(smp.pos.z) !== s || smp.pos.y < DIVE.minHeight || smp.pos.y > DIVE.maxHeight) continue;
+      const d = Math.hypot(smp.pos.x - a.pos.x, smp.pos.z - a.pos.z);
+      const travel = Math.min(DIVE.maxTravel, DIVE.speed * lead);
+      if (d > travel + reach * 0.92) continue;
+      if (b0 + smp.bounces === 0) {
+        // 截擊不能撲進廚房：觸球時、或之後順勢滑進去都是違例（落地前滑行約 v·剩餘空中時間 + v·0.55/7）
+        const go = clamp(d - reach * 0.8, 0, travel);
+        const v = go / Math.max(0.05, lead);
+        const k = (go + v * (DIVE.air - lead) + (v * 0.55) / 7) / (d || 1);
+        if (feetInKitchen(v3(a.pos.x + (smp.pos.x - a.pos.x) * k, 0, a.pos.z + (smp.pos.z - a.pos.z) * k))) continue;
+      }
+      const cost = lead * 0.5 + Math.abs(smp.pos.y - 0.5) * 0.4 + Math.max(0, d - travel - reach * 0.75) * 0.8;
+      if (!best || cost < best.cost) best = { t, pos: smp.pos, d, cost };
+    }
+    return best;
+  }
+
+  /** 飛身撲接：往球的方向撲出去（沒有撲得到的球就往導引／搖桿方向撲空） */
+  tryDive(a: Athlete, path?: PathSample[], pathT0?: number, pathBounces0?: number) {
+    if (this.phase !== 'rally' || a.dive || this.rally.lastTeam === a.team || this.time < a.knockedUntil) return false;
+    if (a.swing.state === 'swinging' && !a.swing.done) return false;
+    const p = path ?? this.humanPath;
+    const pT0 = pathT0 ?? this.humanPathT0;
+    const pB0 = pathBounces0 ?? this.humanPathBounces0;
+    const sol = this.diveSolution(a, p, pT0, pB0);
+    const s = teamSide(a.team);
+    let dx: number;
+    let dz: number;
+    if (sol) {
+      dx = sol.pos.x - a.pos.x;
+      dz = sol.pos.z - a.pos.z;
+    } else if (this.guide && !this.guide.leave && !a.ai) {
+      dx = this.guide.contact.x - a.pos.x;
+      dz = this.guide.contact.z - a.pos.z;
+    } else if (!a.ai && Math.hypot(this.input.moveX, this.input.moveY) > 0.2) {
+      dx = this.input.moveX;
+      dz = -this.input.moveY * s;
+    } else {
+      dx = this.ball.pos.x - a.pos.x;
+      dz = 0;
+    }
+    const dl = Math.hypot(dx, dz) || 1;
+    const dir = { x: dx / dl, z: dz / dl };
+    const lead = sol ? sol.t - this.time : DIVE.air * 0.7;
+    // 身體撲到讓球落在伸直的拍面上（約觸及的八成）
+    const travel = sol ? clamp(sol.d - (DIVE.reach + a.paddle.mods.reach) * 0.8, 0, Math.min(DIVE.maxTravel, DIVE.speed * lead)) : DIVE.maxTravel * 0.7;
+    // 截擊時不能多撲（會衝進廚房），其他時候至少要像在撲
+    const volley = !!sol && pB0 + (p.find((x) => pT0 + x.t >= sol.t)?.bounces ?? 1) === 0;
+    const v = Math.max(volley ? 0 : 2.8, travel / Math.max(0.05, lead));
+    a.vel.x = dir.x * v;
+    a.vel.z = dir.z * v;
+    const landAt = this.time + DIVE.air;
+    a.dive = { t0: this.time, dir, hitAt: sol ? sol.t : null, landAt, upAt: landAt + DIVE.recover, landed: false };
+    if (sol) {
+      a.swing = { ...a.swing, button: 'lob' };
+      this.startSwing(a, sol.t, DIVE.quality, { path: p, pathT0: pT0, pathBounces0: pB0 });
+      a.swing.dive = true;
+    } else {
+      a.swing = idleSwing();
+    }
+    if (a.ai) a.ai.plan = null;
+    this.emit({ type: 'dive', team: a.team, pos: clone(a.pos) });
+    return true;
+  }
+
+  /** 撲接中的身體：空中照慣性飛、落地滑一段停下來，爬起來之後才能再動 */
+  private updateDive(a: Athlete, dt: number) {
+    const d = a.dive!;
+    if (!d.landed && this.time >= d.landAt) {
+      d.landed = true;
+      a.vel.x *= 0.55;
+      a.vel.z *= 0.55;
+      this.emit({ type: 'diveLand', team: a.team, pos: v3(a.pos.x + d.dir.x * 0.5, 0, a.pos.z + d.dir.z * 0.5) });
+    }
+    if (d.landed) {
+      const k = Math.exp(-7 * dt);
+      a.vel.x *= k;
+      a.vel.z *= k;
+    }
+    if (this.time >= d.upAt) {
+      a.dive = null;
+      a.vel.x = 0;
+      a.vel.z = 0;
+    }
+  }
+
+  /** AI 這一顆來球願不願意撲（每顆球只擲一次） */
+  private aiDives(a: Athlete) {
+    const r = this.diveRolled.get(a.id);
+    if (r && r[0] === this.rally.lastHitTime) return r[1];
+    const yes = this.rand() < AI_DIVE_RATE[this.difficulty];
+    this.diveRolled.set(a.id, [this.rally.lastHitTime, yes]);
+    return yes;
   }
 
   /** AI 判斷這一拍適不適合放絕招 */
@@ -1492,7 +1749,8 @@ export class GameEngine {
     const b = this.ball.pos;
     for (const a of this.athletes) {
       const own = a.team === this.rally.lastTeam && this.time - this.rally.lastHitTime < 0.3;
-      if (!own && b.y < 1.75 && Math.hypot(b.x - a.pos.x, b.z - a.pos.z) < PLAYER.bodyRadius - 0.06) {
+      // 撲在空中由那一拍處理；倒在地上的身體很矮
+      if (!own && !(a.dive && !a.dive.landed) && b.y < (a.dive ? 0.35 : 1.75) && Math.hypot(b.x - a.pos.x, b.z - a.pos.z) < PLAYER.bodyRadius - 0.06) {
         this.endRally(other(a.team), 'bodyHit', a.team);
         return;
       }
@@ -1709,7 +1967,9 @@ export class GameEngine {
     } else if (faultTeam === this.human.team || winner !== this.human.team) {
       this.match.winner = 1;
     }
-    if (r.hits >= 12) this.emit({ type: 'highlight', text: `${r.hits} 拍來回！` });
+    if (r.diveSaved[winner] && faultTeam !== winner) {
+      this.emit({ type: 'highlight', text: winner === this.human.team ? '神救球！撲回來還拿下這一分' : '對手撲救成功，還拿下這一分！' });
+    } else if (r.hits >= 12) this.emit({ type: 'highlight', text: `${r.hits} 拍來回！` });
     this.emit({
       type: 'point',
       winner,
@@ -1736,6 +1996,8 @@ export class GameEngine {
 
   private thinkAI(a: Athlete, dt: number) {
     const ai = a.ai!;
+    // 撲接中、倒地爬起來之前什麼都不能做
+    if (a.dive) return;
     if (this.phase === 'serve') {
       if (this.match.serving === a.team && this.time >= ai.serveAt) {
         const prof = ai.profile;
@@ -1784,6 +2046,14 @@ export class GameEngine {
       if (!reacted) steer(a, a.pos.x, a.pos.z, 1, dt);
       return;
     }
+    // 跑不到的球：撲得到就飛撲（每一顆來球擲一次骰子決定拚不拚；接發球不撲）
+    if (!p.leave && !p.swung && !p.feasible && this.rally.hits > 1 && this.aiDives(a)) {
+      const sol = this.diveSolution(a, p.path, p.pathT0, p.pathBounces0);
+      if (sol && sol.t - this.time <= DIVE.air * 0.8 && !this.hittableAt(a, sol.t - this.time)) {
+        this.tryDive(a, p.path, p.pathT0, p.pathBounces0);
+        return;
+      }
+    }
     steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed * (this.time < a.slipUntil ? SLIP_MOVE : 1), dt);
     if (!p.leave && !p.swung && this.time >= p.contactT + p.timingError - PLAYER.swingWindup) {
       p.swung = true;
@@ -1820,6 +2090,8 @@ export class GameEngine {
       winner: this.match.winner,
       aimKind: this.aimPreview()?.kind ?? null,
       chance: this.chance,
+      dive: this.diveHint,
+      diving: !!h.dive,
       challenges: [this.challenges[0], this.challenges[1]],
       review: this.reviewHud(),
     };

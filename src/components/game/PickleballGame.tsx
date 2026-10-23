@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { PerformanceMonitor } from '@react-three/drei';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { GameEngine, type GameEvent, type HudState } from './engine/game';
 import { createAI } from './engine/ai';
 import { PADDLES, SPECIALS } from './engine/paddles';
@@ -116,9 +116,14 @@ const PickleballGame = () => {
   const [newRecord, setNewRecord] = useState(false);
   const [muted, setMuted] = useState(false);
   const [touch, setTouch] = useState(false);
-  // 起始畫質依裝置判斷；PerformanceMonitor 發現掉幀會再往下調（解析度、MSAA、色差）
-  const [lowSpec, setLowSpec] = useState(detectLowSpec);
-  const [dpr, setDpr] = useState(() => (detectLowSpec() ? 1.25 : 1.75));
+  // 畫質等級開場就定好，不在比賽中切換（切換會重建後處理、重編著色器，反而當場卡一下）；
+  // 掉幀時 PerformanceMonitor 只往下調解析度
+  const [lowSpec] = useState(detectLowSpec);
+  const maxDpr = lowSpec ? 1.25 : 1.5;
+  const [dpr, setDpr] = useState(maxDpr);
+  // 沉浸模式：開打後舞台蓋滿整個視窗（能全螢幕就全螢幕；iPhone 不支援元素全螢幕，就靠鋪滿視窗）
+  const [immersive, setImmersive] = useState(false);
+  const [rotateHint, setRotateHint] = useState(false);
   const audio = useMemo(() => new GameAudio(), []);
   const stage = useRef<HTMLDivElement>(null);
   const ids = useRef(0);
@@ -180,6 +185,36 @@ const PickleballGame = () => {
     return () => document.removeEventListener('visibilitychange', vis);
   }, [screen]);
 
+  // 沉浸模式時鎖住頁面捲動，免得手機上滑動搖桿時整頁跟著跑
+  useEffect(() => {
+    if (!immersive) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, [immersive]);
+
+  // 開打時才鎖橫向（選單、選角在直向比較好點）；鎖方向只在全螢幕中有效，iPhone 不支援就算了
+  const lockLandscape = () =>
+    void (window.screen.orientation as unknown as { lock?: (o: string) => Promise<void> } | undefined)?.lock?.('landscape')?.catch(() => {});
+
+  const enterImmersive = (landscape = false) => {
+    setImmersive(true);
+    const el = stage.current;
+    if (el && !document.fullscreenElement && el.requestFullscreen) {
+      el.requestFullscreen({ navigationUI: 'hide' })
+        .then(() => landscape && lockLandscape())
+        .catch(() => {});
+    } else if (landscape && document.fullscreenElement) lockLandscape();
+  };
+
+  const exitImmersive = () => {
+    setImmersive(false);
+    setRotateHint(false);
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+  };
+
   const later = (fn: () => void, ms: number) => {
     timers.current.push(window.setTimeout(fn, ms));
   };
@@ -226,8 +261,10 @@ const PickleballGame = () => {
             break;
           case 'hit': {
             const perfect = e.team === 0 && e.quality !== null && e.quality >= 0.9;
+            const attack = e.team === 0 && !e.special && !e.skill && (e.kind === 'smash' || e.kind === 'punch' || e.kind === 'speedup');
             audio.hit(e.speed, perfect);
-            if (e.team === 0) buzz(e.special ? [30, 40, 60] : perfect ? 25 : 12);
+            if (attack) audio.attack(e.kind === 'smash');
+            if (e.team === 0) buzz(e.special ? [30, 40, 60] : attack ? [20, 30, 45] : perfect ? 25 : 12);
             if (perfect && e.streak >= 2) audio.streak(e.streak);
             const kmh = `${Math.round(e.speed * 3.6)} km/h`;
             if (e.team === 0) {
@@ -240,7 +277,7 @@ const PickleballGame = () => {
                     : e.quality >= 0.65
                       ? 'good'
                       : 'off';
-              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone, streak: perfect ? e.streak : 0 };
+              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone, streak: perfect ? e.streak : 0, kind: attack ? e.kind : undefined };
               setToasts([t]);
               later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900);
             } else {
@@ -299,6 +336,10 @@ const PickleballGame = () => {
             break;
           case 'cord':
             audio.cord();
+            break;
+          case 'chance':
+            audio.chance();
+            buzz(10);
             break;
           case 'highlight': {
             audio.highlight();
@@ -379,8 +420,12 @@ const PickleballGame = () => {
     setPaused(false);
     setScreen('play');
     stage.current?.focus({ preventScroll: true });
-    // 手機上舞台在標題下方，開打時捲到整個舞台都看得到
-    stage.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    enterImmersive(true);
+    // 手機直拿時提示可以轉橫向（直向也能玩，只是畫面比較窄）
+    if (window.matchMedia('(pointer: coarse) and (orientation: portrait)').matches) {
+      setRotateHint(true);
+      later(() => setRotateHint(false), 3500);
+    }
   };
 
   const toMenu = () => {
@@ -392,15 +437,11 @@ const PickleballGame = () => {
     setCard(null);
     setCutIn(null);
     setScreen('menu');
+    exitImmersive();
   };
 
-  const toggleFullscreen = () => {
-    const el = stage.current;
-    if (!el) return;
-    if (document.fullscreenElement) void document.exitFullscreen();
-    else void el.requestFullscreen?.().catch(() => {});
-  };
-
+  // 手機在頁面裡只放封面＋大按鈕，點了才全螢幕進選單：小框框裡捲選單、按小按鈕太難用
+  const cover = touch && !immersive && screen !== 'play' && screen !== 'over';
   const best = records.dinkBest[settings.difficulty];
   const mySpecial = SPECIALS[engine.human.paddle.special];
 
@@ -408,7 +449,11 @@ const PickleballGame = () => {
     <div
       ref={stage}
       tabIndex={-1}
-      className="relative w-full overflow-hidden rounded-3xl bg-slate-950 shadow-2xl shadow-emerald-900/20 outline-none ring-1 ring-black/5 aspect-[16/10] max-md:aspect-auto max-md:h-[calc(100svh-6rem)] max-md:min-h-[560px] [&:fullscreen]:rounded-none"
+      className={`overflow-hidden bg-slate-950 outline-none ${
+        immersive
+          ? 'fixed inset-0 z-[200] h-[100dvh] w-screen'
+          : 'relative w-full rounded-3xl shadow-2xl shadow-emerald-900/20 ring-1 ring-black/5 aspect-[16/10] max-md:aspect-[4/5]'
+      }`}
       onPointerDown={() => audio.unlock()}
     >
       <Canvas
@@ -419,11 +464,8 @@ const PickleballGame = () => {
         gl={{ antialias: false, powerPreference: 'high-performance', stencil: false }}
       >
         <PerformanceMonitor
-          onDecline={() => {
-            setDpr((d) => Math.max(1, d - 0.25));
-            setLowSpec(true);
-          }}
-          onIncline={() => setDpr((d) => Math.min(lowSpec ? 1.25 : 1.75, d + 0.25))}
+          onDecline={() => setDpr((d) => Math.max(lowSpec ? 0.75 : 1, d - 0.25))}
+          onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
           flipflops={3}
         />
         <GameScene engine={engine} characters={characters} readInput={read} paused={paused || screen === 'over'} onEvents={onEvents} lowSpec={lowSpec} venue={settings.venue ?? 'arena'} />
@@ -448,7 +490,8 @@ const PickleballGame = () => {
           {touch && !paused && (
             <TouchControls
               touch={touchRef}
-              special={hud.specials ? { ready: hud.energy[0] >= 100, armed: hud.armed, color: mySpecial.color, name: mySpecial.name } : null}
+              chance={hud.phase === 'rally' ? hud.chance : null}
+              special={hud.specials ? { ready: hud.energy[0] >= 100, armed: hud.armed, color: mySpecial.color, name: mySpecial.name, energy: hud.energy[0] } : null}
               skill={
                 hud.specials && hud.skill
                   ? { ready: hud.skillReady, armed: hud.skillArmed, color: SKILLS[hud.skill].color, name: SKILLS[hud.skill].name }
@@ -456,7 +499,15 @@ const PickleballGame = () => {
               }
             />
           )}
-          <div className="absolute right-3 top-3 z-20 flex gap-2 max-md:flex-col">
+          {rotateHint && (
+            <div className="pointer-events-none absolute inset-x-0 top-1/3 z-20 flex justify-center">
+              <div className="rounded-2xl bg-slate-950/70 px-4 py-3 text-center text-sm font-semibold text-white backdrop-blur-md">
+                <div className="mb-1 text-2xl">📱↻</div>
+                轉成橫向，畫面更大更好打
+              </div>
+            </div>
+          )}
+          <div className="absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex gap-2 max-md:portrait:flex-col">
             <button
               type="button"
               onClick={() => {
@@ -470,11 +521,11 @@ const PickleballGame = () => {
             </button>
             <button
               type="button"
-              onClick={toggleFullscreen}
+              onClick={() => (immersive ? exitImmersive() : enterImmersive(true))}
               className="rounded-xl bg-slate-950/60 px-2.5 py-2 text-sm text-white backdrop-blur-md hover:bg-slate-950/80"
-              aria-label="全螢幕"
+              aria-label={immersive ? '離開全螢幕' : '全螢幕'}
             >
-              ⛶
+              {immersive ? '✕' : '⛶'}
             </button>
             <button
               type="button"
@@ -488,8 +539,41 @@ const PickleballGame = () => {
         </>
       )}
 
+      {immersive && !playing && (
+        <button
+          type="button"
+          onClick={exitImmersive}
+          className="absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-40 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
+          aria-label="離開全螢幕"
+        >
+          ✕
+        </button>
+      )}
+
+      {cover && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-end bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent p-6 pb-8 text-center">
+          <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold tracking-[0.25em] text-emerald-300">
+            PICKLEBALL GAME
+          </span>
+          <h2 className="mt-2 font-display text-4xl font-black tracking-tight text-white drop-shadow-lg">Pickle Master</h2>
+          <p className="mt-1.5 text-sm text-white/75">左手搖桿跑位、右手按鍵擊球，集滿能量放必殺</p>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.96 }}
+            onClick={() => {
+              audio.unlock();
+              enterImmersive();
+            }}
+            className="mt-5 w-full max-w-xs rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-4 text-xl font-black text-emerald-950 shadow-xl shadow-emerald-500/30"
+          >
+            ▶ 全螢幕開打
+          </motion.button>
+          <p className="mt-2.5 text-xs text-white/50">開打後橫拿手機，畫面更大更好打</p>
+        </div>
+      )}
+
       <AnimatePresence>
-        {screen === 'menu' && (
+        {screen === 'menu' && !cover && (
           <MenuScreen
             key="menu"
             settings={settings}
@@ -502,7 +586,7 @@ const PickleballGame = () => {
             }}
           />
         )}
-        {screen === 'character' && (
+        {screen === 'character' && !cover && (
           <CharacterSelect
             key="character"
             value={settings.character}
@@ -511,7 +595,7 @@ const PickleballGame = () => {
             onNext={() => setScreen('paddle')}
           />
         )}
-        {screen === 'paddle' && (
+        {screen === 'paddle' && !cover && (
           <PaddleSelect
             key="paddle"
             value={settings.paddle}

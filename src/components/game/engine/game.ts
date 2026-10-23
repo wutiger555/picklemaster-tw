@@ -6,8 +6,11 @@ import {
   type ShotKind,
   type ShotPlan,
   type ShotRequest,
+  type AttackKind,
+  ATTACK_SLACK,
   SERVE_DEPTH,
   SHOT_LABEL,
+  attackKind,
   classifyShot,
   planShot,
   planSkill,
@@ -201,6 +204,8 @@ export type GameEvent =
       rallyHits: number;
     }
   | { type: 'highlight'; text: string }
+  /** 機會球出現（每顆來球只發一次，給音效與震動） */
+  | { type: 'chance'; kind: AttackKind }
   | { type: 'serveReady'; serving: Team; call: string; fromRight: boolean }
   | { type: 'dinkCount'; n: number }
   | { type: 'gameOver'; winner: Team | null };
@@ -231,6 +236,8 @@ export interface HudState {
   winner: Team | null;
   /** 蓄力中這一拍會打出的球路 */
   aimKind: ShotKind | null;
+  /** 機會球：這一球按抽球鍵會打出的進攻球路 */
+  chance: AttackKind | null;
   /** 雙方剩下的電視輔助判決次數 */
   challenges: [number, number];
   /** 電視輔助判決進行中 */
@@ -330,6 +337,8 @@ const AI_ENERGY_RATE: Record<Difficulty, number> = { rookie: 0.4, club: 0.55, pr
 const REACH_BONUS = { manual: 0.1, assist: 0.22 };
 const ACTIVE_EARLY = 0.05;
 const ACTIVE_LATE = 0.07;
+/** 按抽球鍵時，擊球點每高 1 m 的偏好（換算成「站位偏差」公尺） */
+const ATTACK_HIGH = 0.4;
 /** 用來算玩家導引的規劃參數：零反應、完全判斷得出出界球 */
 const GUIDE_PROFILE: AIProfile = {
   label: 'guide',
@@ -400,6 +409,10 @@ export class GameEngine {
   skillShot: { team: Team; id: SkillId } | null = null;
   /** 玩家的擊球導引（球朝玩家飛來時才有） */
   guide: HumanGuide | null = null;
+  /** 機會球提示：這一球按抽球鍵會打出殺球／推擋截擊／突擊 */
+  chance: AttackKind | null = null;
+  /** 已經為哪一顆來球（對手擊球時間）發過機會球事件 */
+  private chanceCalled = -1;
   /** 玩家連續完美擊球 */
   perfectStreak = 0;
   /** 畫面內插：上一個物理步的球位置與內插比例 */
@@ -559,6 +572,7 @@ export class GameEngine {
     for (const a of this.athletes) a.prevPos = clone(a.pos);
     this.prevBall = clone(this.ball.pos);
     this.guide = null;
+    this.chance = null;
   }
 
   /** 發球前球拿在發球者手上（腰部以下） */
@@ -890,7 +904,7 @@ export class GameEngine {
       const c = h.swing;
       if (c.state === 'charging') {
         c.charge = Math.min(1, (this.time - c.t0) / AUTO_CHARGE);
-        const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 0.5);
+        const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 0.5, undefined, this.attacking(h));
         if (best && best.t - this.time <= AUTO_LEAD) {
           this.startSwing(h, best.t, 0.6 + 0.4 * Math.min(1, (best.t - c.t0) / AUTO_CHARGE));
           h.swing.auto = true;
@@ -904,12 +918,12 @@ export class GameEngine {
         cur.charge = Math.min(1, (this.time - cur.t0) / 0.6);
         if (released) {
           const best = this.assist
-            ? this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time + PLAYER.swingWindup, this.time + 0.7)
+            ? this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time + PLAYER.swingWindup, this.time + 0.7, undefined, this.attacking(h))
             : null;
           this.startSwing(h, best ? best.t : this.time + PLAYER.swingWindup, best ? ASSIST_QUALITY : null);
         } else if (this.assist) {
           // 新手輔助：按住不放，球到最佳擊球點時自動揮拍
-          const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 0.5);
+          const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 0.5, undefined, this.attacking(h));
           if (best && best.t - this.time <= PLAYER.swingWindup) this.startSwing(h, best.t, ASSIST_QUALITY);
         }
       }
@@ -948,6 +962,7 @@ export class GameEngine {
     if (this.phase !== 'rally') {
       this.landingMarker = null;
       this.guide = null;
+      this.chance = null;
       return;
     }
     if (this.time - this.humanPathAt < 0.05) return;
@@ -985,18 +1000,27 @@ export class GameEngine {
     const h = this.human;
     if (h.ai || this.phase !== 'rally' || this.rally.lastTeam === h.team) {
       this.guide = null;
+      this.chance = null;
       return;
     }
     const prev = this.guide && this.guide.contactT > this.time ? this.guide.contactT : undefined;
     const plan = planContact(this, h, () => 0, GUIDE_PROFILE, prev);
     if (!plan) {
       this.guide = null;
+      this.chance = null;
       return;
+    }
+    // 截擊得站在廚房外，雙彈跳規則期間也不能截擊
+    const canVolley = !(this.rally.hits <= 2 && this.mode === 'match');
+    this.chance = !plan.leave && plan.feasible && (!plan.volley || canVolley) ? attackKind(v3(plan.contact.x, plan.contact.y, plan.contact.z), plan.volley) : null;
+    if (this.chance && this.chanceCalled !== this.rally.lastHitTime) {
+      this.chanceCalled = this.rally.lastHitTime;
+      this.emit({ type: 'chance', kind: this.chance });
     }
     const span = this.guide && this.guide.contactT > this.time ? this.guide.span : Math.max(0.3, plan.contactT - this.rally.lastHitTime);
     const near = plan.leave
       ? null
-      : this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, plan.contactT - 0.35, plan.contactT + 0.35);
+      : this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, plan.contactT - 0.35, plan.contactT + 0.35, undefined, this.attacking(h));
     this.guide = {
       stand: plan.stand,
       contact: v3(plan.contact.x, plan.contact.y, plan.contact.z),
@@ -1006,6 +1030,12 @@ export class GameEngine {
       hitT: near ? near.t : plan.contactT,
       reachable: !!near,
     };
+  }
+
+  /** 玩家按的是抽球鍵（想進攻）：自動揮拍選高的擊球點 */
+  private attacking(a: Athlete) {
+    if (a.ai) return false;
+    return (a.swing.state === 'idle' ? this.input.held : a.swing.button) === 'drive';
   }
 
   /** 球相對選手的位置：forward = 往網方向、lateral = 選手右手邊為正 */
@@ -1019,12 +1049,14 @@ export class GameEngine {
     return PLAYER.reach + a.paddle.mods.reach + bonus;
   }
 
-  private contactCost(a: Athlete, p: V3) {
+  private contactCost(a: Athlete, p: V3, attack = false) {
     const { f, l } = this.relative(a, p);
     const reach = Math.hypot(f, l);
     if (reach > this.reachOf(a) || p.y < PLAYER.minContactHeight || p.y > PLAYER.maxContactHeight) return Infinity;
     const hPen = p.y < 0.25 ? (0.25 - p.y) * 1.5 : p.y > 1.7 ? (p.y - 1.7) * 0.6 : 0;
-    return Math.hypot(f - IDEAL_FWD, Math.abs(l) - IDEAL_LAT) + hPen;
+    // 按抽球鍵＝想進攻：寧可在高點出手（殺高球、截擊、彈到最高點時突擊），不要等球掉下來
+    const high = attack ? clamp(p.y - 0.5, 0, 1.4) * ATTACK_HIGH : 0;
+    return Math.hypot(f - IDEAL_FWD, Math.abs(l) - IDEAL_LAT) + hPen - high;
   }
 
   /**
@@ -1039,18 +1071,19 @@ export class GameEngine {
     tMin: number,
     tMax: number,
     bounceSeg?: number,
+    attack = false,
   ) {
     if (this.rally.lastTeam === a.team) return null;
     const s = teamSide(a.team);
-    let best: { t: number; cost: number; pos: V3 } | null = null;
+    let best: { t: number; cost: number; pos: V3; volley: boolean } | null = null;
     for (const smp of path) {
       const t = t0 + smp.t;
       if (t < tMin || t > tMax) continue;
       if (b0 + smp.bounces > 1) break;
       if (bounceSeg !== undefined && smp.bounces !== bounceSeg) continue;
       if (Math.sign(smp.pos.z) !== s) continue;
-      const c = this.contactCost(a, smp.pos);
-      if (c < (best?.cost ?? Infinity)) best = { t, cost: c, pos: smp.pos };
+      const c = this.contactCost(a, smp.pos, attack);
+      if (c < (best?.cost ?? Infinity)) best = { t, cost: c, pos: smp.pos, volley: b0 + smp.bounces === 0 };
     }
     return best;
   }
@@ -1147,7 +1180,7 @@ export class GameEngine {
     else {
       const seg = this.rally.bouncesSinceHit - sw.pathBounces0;
       const best = sw.path
-        ? this.bestContact(a, sw.path, sw.pathT0, sw.pathBounces0, sw.pathT0, sw.pathT0 + 2.4, seg)
+        ? this.bestContact(a, sw.path, sw.pathT0, sw.pathBounces0, sw.pathT0, sw.pathT0 + 2.4, seg, this.attacking(a))
         : null;
       offset = best ? this.time - best.t : PLAYER.swingWindup;
       quality = clamp(1 - (Math.abs(offset) - 0.02) / 0.13, 0, 1);
@@ -1178,6 +1211,7 @@ export class GameEngine {
       opponent: this.opponentOf(a).pos,
       paddle: { pace: a.paddle.mods.pace, spin: a.paddle.mods.spin },
       volley,
+      slack: a.ai ? 0 : ATTACK_SLACK,
     };
     const kind0 = classifyShot(req);
     // 接殺球／突擊：球又快又往下壓，防守方很難回得穩
@@ -1785,6 +1819,7 @@ export class GameEngine {
       kitchenLocked: this.time < h.kitchenLockUntil,
       winner: this.match.winner,
       aimKind: this.aimPreview()?.kind ?? null,
+      chance: this.chance,
       challenges: [this.challenges[0], this.challenges[1]],
       review: this.reviewHud(),
     };
@@ -1826,7 +1861,7 @@ export class GameEngine {
     }
     if (this.phase !== 'rally') return null;
     const s = teamSide(h.team);
-    const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 1.5);
+    const best = this.bestContact(h, this.humanPath, this.humanPathT0, this.humanPathBounces0, this.time, this.time + 1.5, undefined, this.attacking(h));
     const contact = best ? best.pos : v3(h.pos.x + 0.5 * s, 0.8, h.pos.z - 0.3 * s);
     return previewTarget({
       button: sw.button,
@@ -1836,6 +1871,8 @@ export class GameEngine {
       contact,
       incomingSpeed: len(this.ball.vel),
       opponent,
+      volley: !!best?.volley,
+      slack: ATTACK_SLACK,
     });
   }
 

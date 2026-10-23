@@ -122,7 +122,7 @@ const Rig = ({
 
     const cin = engine.cinematic;
     const cinAge = cin ? engine.real - cin.start : 99;
-    let fov = portrait ? 58 : 46;
+    let fov = portrait ? 63 : 46;
     const rv = engine.reviewView();
     if (rv) {
       // 電視輔助判決：像轉播一樣切鏡頭（換角度時直接切，不滑過去）
@@ -208,6 +208,14 @@ const Rig = ({
       cam.position.copy(bp).add(kick.current);
       cam.lookAt(look.current.x + sx, look.current.y + sy, look.current.z);
     }
+    // 直向時畫面往上推一點：下面三分之一被搖桿和擊球鍵蓋住，自己的選手要站在按鈕上方；
+    // 橫拿手機（畫面矮）時選手會貼著下緣，也稍微往上推
+    const oy = Math.round(size.height * (portrait ? 0.18 : size.height < 500 ? 0.1 : 0));
+    const view = cam.view;
+    if (oy ? !view?.enabled || view.offsetY !== oy || view.fullWidth !== size.width || view.fullHeight !== size.height : view?.enabled) {
+      if (oy) cam.setViewOffset(size.width, size.height, 0, oy, size.width, size.height);
+      else cam.clearViewOffset();
+    }
     fovKick.current += (0 - fovKick.current) * Math.min(1, delta * 9);
     const targetFov = fov + fovKick.current;
     if (Math.abs(cam.fov - targetFov) > 0.05) {
@@ -215,6 +223,47 @@ const Rig = ({
       cam.updateProjectionMatrix();
     }
     aberration.current = Math.max(0, aberration.current - delta * 1.6);
+  });
+  return null;
+};
+
+/**
+ * 預先編譯著色器、上傳貼圖：平常藏起來的東西（招式特效、分身球、地面痕跡）第一次出現時才編譯會當場卡住。
+ * gl.compile 只走看得見的物件，所以先全部打開、編完再還原。模型與貼圖是非同步載入的，
+ * 物件數或貼圖變了（貼圖晚到也會換著色器）就再做一次。
+ */
+const Prewarm = () => {
+  const { gl, scene, camera } = useThree();
+  const seen = useRef('');
+  const tick = useRef(0);
+  useFrame(() => {
+    if (tick.current++ % 30 !== 1) return;
+    let count = 0;
+    const textures = new Set<THREE.Texture>();
+    scene.traverse((o) => {
+      count++;
+      const mat = (o as THREE.Mesh).material;
+      for (const m of Array.isArray(mat) ? mat : mat ? [mat] : []) {
+        for (const v of Object.values(m)) if (v instanceof THREE.Texture) textures.add(v);
+      }
+    });
+    // 只數「已經載好」的貼圖：畫布貼圖（LED 看板等）每幀都會加 version，直接加總會讓這裡每半秒重做一次
+    let ver = 0;
+    for (const t of textures) if (t.version > 0) ver++;
+    const sig = `${count}/${textures.size}/${ver}`;
+    if (sig === seen.current) return;
+    seen.current = sig;
+    const hidden: THREE.Object3D[] = [];
+    scene.traverse((o) => {
+      // 燈光不能打開：燈的數量會寫進著色器，數量不同就等於編了一份用不到的
+      if (!o.visible && !(o as THREE.Light).isLight) {
+        hidden.push(o);
+        o.visible = true;
+      }
+    });
+    gl.compile(scene, camera);
+    for (const t of textures) gl.initTexture(t);
+    for (const o of hidden) o.visible = false;
   });
   return null;
 };
@@ -235,7 +284,7 @@ const PostFx = ({ aberration, lowSpec, day }: { aberration: Num; lowSpec: boolea
     );
   }
   return (
-    <EffectComposer multisampling={4}>
+    <EffectComposer multisampling={2}>
       <Bloom mipmapBlur luminanceThreshold={day ? 1.1 : 0.72} luminanceSmoothing={0.2} intensity={day ? 0.7 : 1.15} radius={0.75} />
       <ChromaticAberration offset={offset} blendFunction={BlendFunction.NORMAL} radialModulation={false} modulationOffset={0} />
       <Vignette eskil={false} offset={0.25} darkness={day ? 0.35 : 0.55} />
@@ -278,6 +327,7 @@ export const GameScene = (props: SceneProps) => {
       <ReviewFx engine={engine} />
       <BallModel engine={engine} />
       <Effects engine={engine} bus={bus} lowSpec={lowSpec} />
+      <Prewarm />
       <Rig {...props} bus={bus} excite={excite} flash={flash} aberration={aberration} />
       <PostFx aberration={aberration} lowSpec={lowSpec} day={day} />
     </>

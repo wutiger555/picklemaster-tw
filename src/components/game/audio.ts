@@ -66,6 +66,9 @@ export const VOICE_VARIANTS: Record<VoiceKey, number> = {
   thunder: 1,
   phantom: 1,
   frost: 1,
+  // 龍捲旋風、震地重砲的台詞已寫進 scripts/voice/lines.json，還沒產生音檔：0 = 不載入、不講
+  cyclone: 0,
+  quake: 0,
 };
 
 const voiceBase = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/game/voice`;
@@ -519,6 +522,16 @@ export class GameAudio {
     } else if (id === 'phantom') {
       [880, 1108, 1320, 1760].forEach((f, i) => this.tone(f, 'sine', 0.12, 0.9, { delay: hitAt + i * 0.06, wet: 0.9 }));
       this.metal(330, [1, 1.41, 2.13], 0.2, 1.6, { delay: hitAt, wet: 0.9 }, 1.12);
+    } else if (id === 'cyclone') {
+      // 旋風：一上一下來回掃的風聲，最後一道往上捲
+      this.sweep(400, 3200, 0.45, 0.5, { delay: hitAt, wet: 0.5 }, 2);
+      this.sweep(3200, 500, 0.4, 0.6, { delay: hitAt + 0.3, wet: 0.5 }, 2);
+      this.sweep(500, 2800, 0.35, 0.55, { delay: hitAt + 0.7, wet: 0.6 }, 2);
+    } else if (id === 'quake') {
+      // 震地：超低頻重擊加碎石聲
+      this.thump(70, 22, 1, 1.4, { delay: hitAt, wet: 0.5 }, true);
+      this.burst(160, 0.6, 1, 0.8, { delay: hitAt, wet: 0.5 }, 'lowpass');
+      for (let i = 0; i < 8; i++) this.burst(700 + Math.random() * 900, 3, 0.25, 0.05, { delay: hitAt + 0.1 + Math.random() * 0.5, wet: 0.3 });
     } else {
       [2093, 2637, 3136, 4186, 5274].forEach((f, i) => this.tone(f, 'triangle', 0.1, 0.7, { delay: hitAt + i * 0.04, wet: 0.7 }));
       for (let i = 0; i < 10; i++) this.burst(6000 + Math.random() * 5000, 4, 0.12, 0.03, { delay: hitAt + 0.05 + Math.random() * 0.4, wet: 0.5 });
@@ -537,6 +550,12 @@ export class GameAudio {
     } else if (id === 'frost') {
       [3136, 2637, 2093].forEach((f, i) => this.tone(f, 'triangle', 0.12, 0.5, { delay: i * 0.05, wet: 0.6 }));
       for (let i = 0; i < 12; i++) this.burst(7000 + Math.random() * 4000, 5, 0.14, 0.025, { delay: Math.random() * 0.3, wet: 0.4 });
+    } else if (id === 'cyclone') {
+      this.sweep(600, 3600, 0.5, 0.45, { wet: 0.5 }, 1.5);
+    } else if (id === 'quake') {
+      this.thump(60, 20, 1, 1.4, { wet: 0.5 }, true);
+      this.burst(120, 0.4, 1, 0.9, { wet: 0.5 }, 'lowpass');
+      for (let i = 0; i < 6; i++) this.burst(800 + Math.random() * 1200, 3, 0.2, 0.04, { delay: 0.05 + Math.random() * 0.35, wet: 0.3 });
     } else {
       this.tone(1320, 'sine', 0.14, 0.6, { wet: 0.8 });
     }

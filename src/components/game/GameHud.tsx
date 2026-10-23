@@ -606,6 +606,11 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
             {hud.kitchenLocked ? '剛截擊完！別踩進廚房' : '你在廚房內：只能打落地球'}
           </div>
         )}
+        {hud.slipping && !hud.replay && (
+          <div className="rounded-full bg-sky-400/90 px-3 py-1 text-xs font-bold text-sky-950 shadow-lg">
+            {hud.slipping === 'ice' ? '踩到冰面：腳下打滑' : hud.slipping === 'water' ? '踩進水灘：跑不快' : '被震得站不穩'}
+          </div>
+        )}
         {hud.charge !== null && !hud.replay && <ChargeBar charge={hud.charge} kind={hud.aimKind} />}
         {humanServing && hud.servePower === null && (
           <div className="rounded-full bg-slate-950/70 px-4 py-1.5 text-xs text-white/90 backdrop-blur-md">

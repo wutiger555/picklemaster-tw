@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import type { GameEngine, GameEvent } from '../engine/game';
+import { type GameEngine, type GameEvent, QUAKE, THUNDER_R } from '../engine/game';
 import { SPECIALS, type SpecialId } from '../engine/paddles';
 import { SKILLS } from '../engine/skills';
 import { teamSide } from '../engine/rules';
@@ -289,7 +289,12 @@ const SPECIAL_COLORS: Record<SpecialId, [THREE.Color, THREE.Color]> = {
   thunder: [COLOR('#ffffff'), COLOR('#3d6bff')],
   phantom: [COLOR('#f5d9ff'), COLOR('#8a2be2')],
   frost: [COLOR('#ffffff'), COLOR('#39c6ff')],
+  cyclone: [COLOR('#f0fdfa'), COLOR('#0d9488')],
+  quake: [COLOR('#fff7d6'), COLOR('#c2410c')],
 };
+
+/** 每種地形效果最多同時幾塊（網格事先建好，放招時不編譯著色器） */
+const HAZARD_SLOTS = 4;
 
 export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxBus; lowSpec: boolean }) => {
   const { camera } = useThree();
@@ -333,6 +338,44 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
         return m;
       }),
     );
+  }, []);
+  // 結冰、水灘：跟著引擎的 hazards 畫，壽命由引擎決定
+  const hazardPool = useMemo(() => {
+    const geo = new THREE.CircleGeometry(1, 40);
+    return (['ice', 'water'] as const).flatMap((kind) =>
+      Array.from({ length: HAZARD_SLOTS }, () => {
+        const m = new THREE.Mesh(
+          geo,
+          new THREE.MeshBasicMaterial({ map: decalTexture(kind === 'ice' ? 'frost' : 'water'), transparent: true, depthWrite: false, toneMapped: false }),
+        );
+        m.rotation.set(-Math.PI / 2, 0, 0);
+        m.visible = false;
+        m.userData.kind = kind;
+        return m;
+      }),
+    );
+  }, []);
+  // 必殺球的落點預警：天雷的落雷圈、震地的震波範圍、旋風的竄出方向
+  const warn = useMemo(() => {
+    const mat = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.9, 1, 64), mat);
+    const fill = new THREE.Mesh(new THREE.CircleGeometry(0.9, 48), mat.clone());
+    const tri = new THREE.Shape();
+    tri.moveTo(0, 0.55);
+    tri.lineTo(-0.32, 0);
+    tri.lineTo(-0.12, 0);
+    tri.lineTo(-0.12, -0.45);
+    tri.lineTo(0.12, -0.45);
+    tri.lineTo(0.12, 0);
+    tri.lineTo(0.32, 0);
+    tri.closePath();
+    const arrow = new THREE.Mesh(new THREE.ShapeGeometry(tri), mat.clone());
+    const g = new THREE.Group();
+    ring.rotation.x = fill.rotation.x = -Math.PI / 2;
+    g.add(ring, fill);
+    g.visible = false;
+    arrow.visible = false;
+    return { g, ring, fill, arrow };
   }, []);
   const flashLight = useRef<THREE.PointLight>(null);
   const flashSprite = useRef<THREE.Sprite>(null);
@@ -438,6 +481,26 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
         pool.emit({ pos: p, count: 90, speed: 7, up: 2, life: 0.6, size: 0.12, color: COLOR('#ffffff'), color2: COLOR('#5b8cff'), gravity: -8, jitter: 0.02 });
         ring(p, '#9db8ff', 4.5, true, 0.6);
         flash(p, '#c9d8ff', 12);
+      } else if (e.special === 'cyclone') {
+        // 旋風把球捲走：沿竄出方向噴一道風，地上一圈旋渦
+        const bv = engine.ball.vel;
+        const hs = Math.hypot(bv.x, bv.z) || 1;
+        dirTmp.set(bv.x / hs, 0.25, bv.z / hs);
+        pool.emit({ pos: p, count: 70, speed: 9, dir: dirTmp, spread: 0.6, life: 0.55, size: 0.12, drag: 3, color: COLOR('#f0fdfa'), color2: COLOR('#14b8a6') });
+        for (let i = 0; i < 16; i++) {
+          const ang = (i / 16) * Math.PI * 2;
+          dirTmp.set(-Math.sin(ang), 0.6, Math.cos(ang));
+          pool.emit({ pos: new THREE.Vector3(p.x + Math.cos(ang) * 0.5, 0.1, p.z + Math.sin(ang) * 0.5), count: 3, speed: 3, dir: dirTmp, spread: 0.2, life: 0.6, size: 0.09, drag: 2, color: COLOR('#ccfbf1'), color2: COLOR('#0f766e') });
+        }
+        ring(p, '#5eead4', 1.8, true, 0.5);
+      } else if (e.special === 'quake') {
+        // 震地：兩圈震波（外圈＝站不穩的範圍）、裂痕、飛石與塵土
+        decal(p, 'crack', 2.2);
+        ring(p, '#fbbf24', QUAKE.r, true, 0.55);
+        ring(p, '#fff7d6', 1.4, true, 0.35);
+        pool.emit({ pos: p, count: 80, speed: 4.5, up: 1.4, life: 0.9, size: 0.22, grow: 1.8, color: COLOR('#e7d3b0'), color2: COLOR('#78350f'), gravity: 2, drag: 2.5 });
+        pool.emit({ pos: p, count: 40, speed: 6, up: 4, life: 0.8, size: 0.07, color: COLOR('#fde68a'), color2: COLOR('#57534e'), gravity: -12 });
+        flash(p, '#fcd34d', 9);
       } else if (e.special === 'phantom') {
         ring(p, '#c084fc', 1.6, true, 0.5);
         pool.emit({ pos: p, count: 30, speed: 1.8, up: 1.2, life: 0.8, size: 0.1, color: COLOR('#f5d9ff'), color2: COLOR('#8a2be2') });
@@ -463,6 +526,25 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
         ring(top, sk.color, 2.4, true, 0.45);
         ring(top, '#ffffff', 1.6, true, 0.3);
         pool.emit({ pos: top, count: 80, speed: 5, up: 0.4, life: 0.5, size: 0.12, color: COLOR('#fecaca'), color2: COLOR('#dc2626'), drag: 2.5 });
+        // 從腳下捲上去的龍捲風：沿螺旋線放切線方向的粒子
+        for (let i = 0; i < 30; i++) {
+          const t = i / 30;
+          const ang = t * Math.PI * 6;
+          const rad = 0.25 + t * 0.55;
+          dirTmp.set(-Math.sin(ang), 0.5, Math.cos(ang));
+          pool.emit({
+            pos: new THREE.Vector3(a.pos.x + Math.cos(ang) * rad, 0.05 + t * 2.2, a.pos.z + Math.sin(ang) * rad),
+            count: 2,
+            speed: 3,
+            dir: dirTmp,
+            spread: 0.15,
+            life: 0.55,
+            size: 0.1,
+            drag: 2,
+            color: COLOR('#fff1f2'),
+            color2: COLOR('#b91c1c'),
+          });
+        }
       } else if (e.id === 'splash') {
         // 爆噴：一道水柱噴向對手，落地成一灘水
         const o = engine.opponentOf(a);
@@ -607,6 +689,26 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       pool.emit({ pos: bp, count: emitN(4), speed: 0.4, life: 0.6, size: 0.12, color: COLOR('#f5d9ff'), color2: COLOR('#7c3aed') });
     } else if (sp === 'frost') {
       pool.emit({ pos: bp, count: emitN(5), speed: 0.6, life: 0.9, size: 0.1, color: COLOR('#ffffff'), color2: COLOR('#39c6ff'), gravity: -1.5 });
+    } else if (sp === 'cyclone') {
+      // 螺旋氣流：粒子繞著球轉
+      const ang = clock.current * 26;
+      const hs = Math.hypot(b.vel.x, b.vel.z) || 1;
+      const px = -b.vel.z / hs;
+      const pz = b.vel.x / hs;
+      for (let i = 0; i < 2; i++) {
+        const a2 = ang + i * Math.PI;
+        tmp.set(bp.x + px * Math.cos(a2) * 0.22, bp.y + Math.sin(a2) * 0.22, bp.z + pz * Math.cos(a2) * 0.22);
+        pool.emit({ pos: tmp.clone(), count: emitN(2), speed: 0.3, life: 0.5, size: 0.09, color: COLOR('#f0fdfa'), color2: COLOR('#14b8a6') });
+      }
+    } else if (sp === 'quake') {
+      // 隕鐵般的重球：橘紅餘燼加往下掉的碎石
+      pool.emit({ pos: bp, count: emitN(5), speed: 0.6, up: 0.4, life: 0.4, size: 0.24, grow: 1, color: COLOR('#fde68a'), color2: COLOR('#b45309'), drag: 3 });
+      pool.emit({ pos: bp, count: emitN(1), speed: 1.2, life: 0.6, size: 0.06, color: COLOR('#a8a29e'), gravity: -9 });
+    } else if (skillShot?.id === 'squatSmash' && live && b.pos.y < 0.9 && engine.rally.bouncesSinceHit === 0) {
+      // 秒蹲重砲貼地飛：地上被風壓掀起一道塵土
+      pool.emit({ pos: new THREE.Vector3(bp.x, 0.05, bp.z), count: emitN(3), speed: 1.2, up: 0.8, life: 0.5, size: 0.16, grow: 1.2, color: COLOR('#e7d8bf'), color2: COLOR('#78716c'), drag: 2 });
+    } else if (skillShot?.id === 'splash' && live) {
+      pool.emit({ pos: bp, count: emitN(2), speed: 0.8, life: 0.5, size: 0.07, color: COLOR('#e0f2fe'), color2: COLOR('#0284c7'), gravity: -8 });
     } else if (b.special?.id === 'frost' && live) {
       pool.emit({ pos: bp, count: 1, speed: 0.3, life: 0.6, size: 0.08, color: COLOR('#dff8ff'), gravity: -1 });
     }
@@ -653,6 +755,65 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       }
     });
 
+    // 落點預警：讓每招都有看得見的破解線索
+    const wsp = b.special && !b.special.spent && engine.phase === 'rally' ? b.special : null;
+    const warnKind = wsp && (wsp.id === 'thunder' || wsp.id === 'quake' || wsp.id === 'cyclone') ? wsp.id : null;
+    warn.g.visible = !!warnKind;
+    warn.arrow.visible = warnKind === 'cyclone';
+    if (wsp && warnKind) {
+      const pulse = 0.75 + Math.sin(clock.current * 14) * 0.25;
+      const color = SPECIALS[warnKind].color;
+      const radius = warnKind === 'quake' ? QUAKE.r : warnKind === 'thunder' ? THUNDER_R : 0.7;
+      warn.g.position.set(wsp.target.x, 0.02, wsp.target.z);
+      warn.g.scale.setScalar(radius);
+      (warn.ring.material as THREE.MeshBasicMaterial).color.set(color);
+      (warn.ring.material as THREE.MeshBasicMaterial).opacity = 0.85 * pulse;
+      (warn.fill.material as THREE.MeshBasicMaterial).color.set(color);
+      (warn.fill.material as THREE.MeshBasicMaterial).opacity = 0.12 * pulse;
+      if (warnKind === 'cyclone') {
+        // 箭頭指向落地後竄出的方向
+        const ax = wsp.perp.x * wsp.sway;
+        const az = wsp.perp.z * wsp.sway;
+        const slide = (clock.current * 1.6) % 1;
+        warn.arrow.position.set(wsp.target.x + ax * (0.6 + slide * 0.8), 0.025, wsp.target.z + az * (0.6 + slide * 0.8));
+        warn.arrow.scale.setScalar(1.7);
+        warn.arrow.rotation.set(-Math.PI / 2, 0, Math.atan2(-ax, -az));
+        (warn.arrow.material as THREE.MeshBasicMaterial).color.set(color);
+        (warn.arrow.material as THREE.MeshBasicMaterial).opacity = 0.95 * (1 - slide * 0.6);
+      }
+    }
+
+    // 結冰與水灘：照引擎的地形效果畫，快消失時淡出
+    const used = { ice: 0, water: 0 };
+    for (const m of hazardPool) m.visible = false;
+    for (const hz of engine.hazards) {
+      const left = hz.until - engine.time;
+      // 重播時引擎時間倒回去：還沒出現的結冰、水灘先不畫
+      if (left <= 0 || engine.time < hz.born) continue;
+      const slots = hazardPool.filter((m) => m.userData.kind === hz.kind);
+      const m = slots[used[hz.kind]++];
+      if (!m) continue;
+      const grow = Math.min(1, (engine.time - hz.born) / 0.25);
+      m.visible = true;
+      m.position.set(hz.x, 0.01, hz.z);
+      m.scale.setScalar(hz.r * (0.4 + 0.6 * grow));
+      (m.material as THREE.MeshBasicMaterial).opacity = Math.min(1, left / 0.8) * (hz.kind === 'water' ? 0.8 + Math.sin(clock.current * 5) * 0.08 : 0.9);
+      if (Math.random() < (lowSpec ? 0.1 : 0.25)) {
+        const a3 = Math.random() * Math.PI * 2;
+        const rr = Math.random() * hz.r * 0.8;
+        pool.emit({
+          pos: new THREE.Vector3(hz.x + Math.cos(a3) * rr, 0.04, hz.z + Math.sin(a3) * rr),
+          count: 1,
+          speed: 0.3,
+          up: 0.4,
+          life: 0.6,
+          size: 0.06,
+          color: COLOR('#ffffff'),
+          color2: COLOR(hz.kind === 'ice' ? '#7dd3fc' : '#0ea5e9'),
+        });
+      }
+    }
+
     pool.update(dt);
 
     for (const r of rings) {
@@ -697,6 +858,11 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       {decalPool.map((d, i) => (
         <primitive key={`d${i}`} object={d} />
       ))}
+      {hazardPool.map((d, i) => (
+        <primitive key={`h${i}`} object={d} />
+      ))}
+      <primitive object={warn.g} />
+      <primitive object={warn.arrow} />
       {engine.athletes.map((a, i) => (
         <mesh key={a.id} ref={(m) => void (auras.current[i] = m)} material={auraMats[i]} visible={false}>
           <cylinderGeometry args={[0.5, 0.65, 2.3, 32, 1, true]} />

@@ -1,5 +1,5 @@
-import { COURT, PLAYER, netHeightAt } from './constants';
-import { type PathSample, isInCourt } from './ball';
+import { COURT, PHYSICS_DT, PLAYER, netHeightAt } from './constants';
+import { type PathSample, isInCourt, predictPath } from './ball';
 import { type ShotButton, SMASH_HEIGHT } from './shots';
 import { teamSide } from './rules';
 import { clamp, gauss, hypot2 } from './vec';
@@ -133,7 +133,10 @@ export const planContact = (
   const prof = profile ?? a.ai!.profile;
   const side = teamSide(a.team);
   const now = eng.time;
-  const path = eng.predict(2.4);
+  // 旋風球落地前看不出會往哪竄：AI 先當成普通彈跳預測，落地被捲走後才重新判斷（玩家導引不受影響）
+  const sp = eng.ball.special;
+  const fooled = !profile && sp?.id === 'cyclone' && !sp.spent;
+  const path = fooled ? predictPath({ ...eng.ball, special: null }, 2.4, PHYSICS_DT, eng.ballSlow()) : eng.predict(2.4);
   // Dink 挑戰只打落地球；教學練習可以截擊、空中殺球
   const requireBounce = eng.rally.hits <= 2 || (eng.mode === 'dink' && !eng.practice);
   // 預測開始前球可能已經在這邊落地過一次

@@ -485,6 +485,20 @@ export const planSpecial = (id: SpecialId, req: ShotRequest, err: Perturb): Shot
     const d = clamp(1.4 + req.aimDepth * 0.4 + err.depth * 0.6, 0.5, 2.6);
     target = v3(aimX(2.2), 0, toward * d);
     sol = solveByApex(req.contact, target, netHeightAt(req.contact.x) + (deep ? 0.75 : 0.3), -30);
+  } else if (id === 'cyclone') {
+    // 中速切球打到中場：真正的威脅是落地後的側竄
+    kind = 'drive';
+    const d = clamp(3.5 + req.aimDepth * 0.9 + err.depth, 2.4, COURT.halfLength - 0.3);
+    target = v3(aimX(1.6), 0, toward * d);
+    sol = solveClearing(req.contact, target, 14 * pm.pace, -140, 0.12);
+  } else if (id === 'quake') {
+    // 重砲砸在對手腳邊：落地的震波才打得到人
+    kind = 'drive';
+    const opp = Math.abs(req.opponent.z);
+    const d = clamp(opp - 0.9 + req.aimDepth * 0.8 + err.depth, 2.6, COURT.halfLength - 0.3);
+    const x = clamp(req.opponent.x * 0.7 + req.aimX * s * 1.2 + err.lateral * s, -xMax, xMax);
+    target = v3(x, 0, toward * d);
+    sol = solveClearing(req.contact, target, maxPace(req.incomingSpeed) * 1.22 * pm.pace, 60, 0.1);
   } else {
     kind = 'drive';
     const d = clamp(3.4 + req.aimDepth * 1.1 + err.depth, 2.4, COURT.halfLength);

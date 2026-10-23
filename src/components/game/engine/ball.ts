@@ -199,8 +199,21 @@ const specialFlight = (b: BallState, dt: number) => {
     const a = sp.sway * 16 * Math.cos((2 * Math.PI * sp.t) / sp.period);
     vel.x += sp.perp.x * a * dt;
     vel.z += sp.perp.z * a * dt;
+  } else if (sp.id === 'cyclone') {
+    // 螺旋鑽：側向與上下各一個正弦，畫出兩圈螺旋，落地時回到原本軌跡（發球端已補上初速）
+    const w = (2 * Math.PI * CYCLONE_TURNS) / sp.period;
+    const k = CYCLONE_R * w * w;
+    vel.x += sp.perp.x * -k * Math.sin(w * sp.t) * dt;
+    vel.z += sp.perp.z * -k * Math.sin(w * sp.t) * dt;
+    vel.y += k * Math.cos(w * sp.t) * dt;
   }
 };
+
+/** 龍捲旋風的螺旋半徑（公尺）與圈數 */
+export const CYCLONE_R = 0.16;
+export const CYCLONE_TURNS = 2;
+/** 龍捲旋風落地後的側向竄出速度（m/s） */
+const CYCLONE_KICK = 3.5;
 
 /** 必殺球落地瞬間的變化 */
 const specialBounce = (b: BallState) => {
@@ -224,6 +237,16 @@ const specialBounce = (b: BallState) => {
     vel.y = Math.max(vel.y * 1.15, 6.5);
     vel.x *= 1.25;
     vel.z *= 1.25;
+  } else if (sp.id === 'cyclone') {
+    // 被旋風捲走：往前的速度被吃掉一半，改往側邊竄
+    vel.x = vel.x * 0.5 + sp.perp.x * sp.sway * CYCLONE_KICK;
+    vel.z = vel.z * 0.5 + sp.perp.z * sp.sway * CYCLONE_KICK;
+    vel.y *= 0.85;
+  } else if (sp.id === 'quake') {
+    // 重砲：貼地滑出，震波由引擎處理
+    vel.y *= 0.45;
+    vel.x *= 1.1;
+    vel.z *= 1.1;
   }
 };
 

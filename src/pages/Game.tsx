@@ -24,7 +24,9 @@ const SPECIAL_LIST = [
   { name: '烈焰爆裂抽擊', paddle: '赤焰・長拍', color: 'from-orange-500 to-red-600', text: '時速破百的火球直線轟出，接不準會被震退。' },
   { name: '天雷貫地', paddle: '蒼雷・標準拍', color: 'from-blue-500 to-indigo-600', text: '把球擊上高空，落雷般垂直砸下再暴衝彈跳。' },
   { name: '幻影分身', paddle: '幻月・寬拍', color: 'from-purple-500 to-fuchsia-600', text: '球分裂成三顆幻影蛇行，只有一顆是真的。' },
-  { name: '絕對零度', paddle: '霜鋒・混合拍', color: 'from-cyan-400 to-sky-600', text: '極強下旋，落地瞬間凍結，幾乎彈不起來。' },
+  { name: '絕對零度', paddle: '霜鋒・混合拍', color: 'from-cyan-400 to-sky-600', text: '極強下旋，落地瞬間凍結，落點還會結冰讓人打滑。' },
+  { name: '龍捲旋風', paddle: '疾風・輕量拍', color: 'from-teal-400 to-emerald-600', text: '螺旋鑽進場內，落地被旋風捲著往側邊竄開。' },
+  { name: '震地重砲', paddle: '鎮岳・加重拍', color: 'from-amber-500 to-orange-700', text: '重砲砸在腳邊掀起震波，附近的人站不穩。' },
 ];
 
 const TIPS = [
@@ -56,7 +58,7 @@ const Game = () => {
             底子是真的：球的彈性、球拍反彈係數、空氣阻力與旋轉照真實數據模擬，規則照比賽判。上面再疊一層熱血：挑一支球拍當武器，集滿能量放出必殺技。想專心學規則，也可以切到寫實模式。
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
-            {['四支球拍 × 四招必殺', '真實物理引擎', '三種程度 AI', '寫實模式', 'Dink 挑戰', '手機觸控可玩'].map((t) => (
+            {['六支球拍 × 六招必殺', '真實物理引擎', '三種程度 AI', '寫實模式', 'Dink 挑戰', '手機觸控可玩'].map((t) => (
               <span
                 key={t}
                 className="inline-flex items-center gap-1.5 rounded-full border border-teal-100 bg-white/80 px-3 py-1.5 text-sm text-neutral-700 shadow-sm backdrop-blur-sm"
@@ -105,11 +107,11 @@ const Game = () => {
           viewport={{ once: true, margin: '-80px' }}
         >
           <span className="text-xs font-bold uppercase tracking-wider text-fuchsia-300">Special Moves</span>
-          <h2 className="mt-1 text-2xl font-bold">球拍就是武器：四招必殺技</h2>
+          <h2 className="mt-1 text-2xl font-bold">球拍就是武器：六招必殺技</h2>
           <p className="mt-2 max-w-2xl text-sm text-white/70">
-            完美擊球、致勝球和長來回都會累積能量，滿了按空白鍵（手機點「必殺」）蓄勢，下一拍放出。接到對手的必殺球時打出「完美」或「蓄滿」就能破解，還會反過來大量回能量。每位選手另外還有自己的絕招（按 U 或點「絕招」），像秒蹲重砲、跳起轉體扣殺、噴水讓對手腳滑、雙拍曲球，用掉後打完 4 分再充好。比賽中遇到壓線球，判決對你不利時還能申請電視輔助判決：多角度慢動作重播加上鷹眼落點分析，每局 2 次，判決被推翻就不扣次數。
+            完美擊球、致勝球和長來回都會累積能量，滿了按空白鍵（手機點「必殺」）蓄勢，下一拍放出。接到對手的必殺球時打出「完美」或「蓄滿」就能破解，還會反過來大量回能量；每招也各有自己的破解法，像截擊旋風球就不會被捲走、離震地重砲的落點遠一點就不會被震倒。每位選手另外還有自己的絕招（按 U 或點「絕招」），像秒蹲重砲、跳起轉體扣殺、噴水讓對手腳滑、雙拍曲球，用掉後打完 4 分再充好。比賽中遇到壓線球，判決對你不利時還能申請電視輔助判決：多角度慢動作重播加上鷹眼落點分析，每局 2 次，判決被推翻就不扣次數。
           </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {SPECIAL_LIST.map((sp) => (
               <div key={sp.name} className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                 <div className={`bg-gradient-to-r ${sp.color} px-4 py-3`}>

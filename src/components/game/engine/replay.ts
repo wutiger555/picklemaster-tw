@@ -163,7 +163,8 @@ export class ReplayTape {
     set(f.ball, eng.ball.pos);
     set(f.ballVel, eng.ball.vel);
     set(f.spin, eng.ball.spin);
-    f.special = eng.ball.special;
+    // 必殺球的狀態（飛行時間、是否已落地）會一路變：記當下的副本，重播時特效和落點預警才對得上
+    f.special = eng.ball.special ? { ...eng.ball.special } : null;
     f.lastTeam = eng.rally.lastTeam;
     f.lastHitTime = eng.rally.lastHitTime;
     f.hits = eng.rally.hits;

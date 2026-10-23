@@ -113,7 +113,7 @@ const Rig = ({
             } else if (e.kind === 'smash' || e.kind === 'speedup' || e.speed > 20) shake.current = Math.max(shake.current, 0.1);
           }
         } else if (e.type === 'bounce' && e.special) {
-          shake.current = e.special === 'thunder' ? 0.5 : 0.25;
+          shake.current = e.special === 'thunder' || e.special === 'quake' ? 0.5 : 0.25;
           aberration.current = Math.max(aberration.current, 0.6);
         } else if (e.type === 'counter') {
           shake.current = 0.3;

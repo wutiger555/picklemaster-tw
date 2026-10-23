@@ -168,6 +168,56 @@ export const paddleFaceTexture = (spec: PaddleSpec) =>
         g.arc(w / 2, h * 0.45, 60 + i * 26, 0, Math.PI * 2);
         g.stroke();
       }
+    } else if (L.pattern === 'wind') {
+      // 疾風：一道道彎曲的風切線，越往拍頭越密
+      g.lineCap = 'round';
+      for (let i = 0; i < 14; i++) {
+        const y0 = h * (0.08 + i * 0.065);
+        g.globalAlpha = 0.35 + r() * 0.55;
+        g.strokeStyle = i % 3 === 0 ? L.accent : L.primary;
+        g.lineWidth = 4 + r() * 10;
+        g.beginPath();
+        g.moveTo(-20, y0 + 40);
+        g.bezierCurveTo(w * 0.3, y0 - 60 * r(), w * 0.6, y0 + 70 * r(), w + 20, y0 - 30);
+        g.stroke();
+      }
+      // 拍面中央的旋渦
+      g.globalAlpha = 0.8;
+      g.strokeStyle = L.accent;
+      g.lineWidth = 6;
+      g.beginPath();
+      for (let k = 0; k < 120; k++) {
+        const a = k * 0.16;
+        const rad = 8 + k * 1.3;
+        const x = w / 2 + Math.cos(a) * rad;
+        const y = h * 0.32 + Math.sin(a) * rad;
+        if (k === 0) g.moveTo(x, y);
+        else g.lineTo(x, y);
+      }
+      g.stroke();
+    } else if (L.pattern === 'stone') {
+      // 鎮岳：岩層裂紋，縫裡透出熔岩光
+      for (let i = 0; i < 7; i++) {
+        let x = r() * w;
+        let y = r() * h;
+        g.globalAlpha = 0.9;
+        g.strokeStyle = L.primary;
+        g.shadowColor = L.primary;
+        g.shadowBlur = 18;
+        g.lineWidth = 3 + r() * 5;
+        g.beginPath();
+        g.moveTo(x, y);
+        for (let k = 0; k < 9; k++) {
+          x += (r() - 0.5) * 120;
+          y += (r() - 0.3) * 110;
+          g.lineTo(x, y);
+        }
+        g.stroke();
+      }
+      g.shadowBlur = 0;
+      g.globalAlpha = 0.18;
+      g.fillStyle = L.accent;
+      for (let i = 0; i < 40; i++) g.fillRect(r() * w, r() * h, 6 + r() * 18, 3 + r() * 8);
     } else {
       // 生碳纖維：保留碳紋，加冰藍色細線
       g.globalAlpha = 0.85;
@@ -285,7 +335,7 @@ export const glowTexture = () => {
 };
 
 /** 地面痕跡：焦痕、冰霜、雷擊裂痕 */
-export const decalTexture = (kind: 'scorch' | 'frost' | 'crack') =>
+export const decalTexture = (kind: 'scorch' | 'frost' | 'crack' | 'water') =>
   make(`decal-${kind}`, 256, 256, (g, w) => {
     const c = w / 2;
     const r = rng(kind.length * 31);
@@ -297,6 +347,28 @@ export const decalTexture = (kind: 'scorch' | 'frost' | 'crack') =>
       grd.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = grd;
       g.fillRect(0, 0, w, w);
+    } else if (kind === 'water') {
+      // 水灘：邊緣不規則的淺藍色，中間有幾道反光
+      const grd = g.createRadialGradient(c, c, 0, c, c, c);
+      grd.addColorStop(0, 'rgba(56,189,248,0.75)');
+      grd.addColorStop(0.7, 'rgba(14,165,233,0.55)');
+      grd.addColorStop(1, 'rgba(14,165,233,0)');
+      g.fillStyle = grd;
+      g.beginPath();
+      for (let i = 0; i <= 24; i++) {
+        const a = (i / 24) * Math.PI * 2;
+        const rad = c * (0.78 + r() * 0.2);
+        if (i === 0) g.moveTo(c + Math.cos(a) * rad, c + Math.sin(a) * rad);
+        else g.lineTo(c + Math.cos(a) * rad, c + Math.sin(a) * rad);
+      }
+      g.fill();
+      g.strokeStyle = 'rgba(255,255,255,0.7)';
+      for (let i = 0; i < 5; i++) {
+        g.lineWidth = 2 + r() * 3;
+        g.beginPath();
+        g.ellipse(c + (r() - 0.5) * c * 0.8, c + (r() - 0.5) * c * 0.8, 10 + r() * 30, 4 + r() * 8, r() * Math.PI, 0, Math.PI * 2);
+        g.stroke();
+      }
     } else if (kind === 'frost') {
       const grd = g.createRadialGradient(c, c, 0, c, c, c);
       grd.addColorStop(0, 'rgba(230,250,255,0.95)');

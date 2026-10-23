@@ -509,7 +509,7 @@ const PickleballGame = () => {
       className={`overflow-hidden bg-slate-950 outline-none ${
         immersive
           ? 'fixed inset-0 z-[200] h-[100dvh] w-screen'
-          : 'relative w-full rounded-3xl shadow-2xl shadow-emerald-900/20 ring-1 ring-black/5 aspect-[16/10] max-md:aspect-[4/5]'
+          : 'relative w-full rounded-3xl shadow-2xl shadow-emerald-900/20 ring-1 ring-black/5 aspect-[16/10] md:max-h-[calc(100svh-6.5rem)] max-md:aspect-[4/5]'
       }`}
       onPointerDown={() => audio.unlock()}
     >

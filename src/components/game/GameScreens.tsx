@@ -329,8 +329,8 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
         />
       </label>
 
-      {/* 手機上設定很長，下一步按鈕黏在底部，不用捲到最下面找 */}
-      <div className="sticky -bottom-4 z-10 -mx-1 mt-4 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent px-1 pb-4 pt-4 md:static md:bg-none md:p-0">
+      {/* 設定很長（桌機標題加大後也超過舞台），下一步按鈕黏在底部，不用捲到最下面找 */}
+      <div className="sticky -bottom-4 z-10 -mx-1 mt-4 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent px-1 pb-4 pt-4">
       <motion.button
         type="button"
         whileHover={{ scale: 1.02 }}

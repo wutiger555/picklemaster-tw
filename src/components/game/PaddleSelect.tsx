@@ -152,7 +152,7 @@ export const PaddleSelect = ({ value, specials, onChange, onBack, onStart }: Pro
           ))}
         </div>
 
-        <div className="sticky -bottom-4 z-10 -mx-4 mt-4 grid grid-cols-[auto_1fr] gap-2 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent px-4 pb-4 pt-6 md:static md:mx-0 md:bg-none md:px-0 md:pb-2 md:pt-0">
+        <div className="sticky -bottom-4 z-10 -mx-4 mt-4 grid grid-cols-[auto_1fr] gap-2 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent px-4 pb-4 pt-6">
           <button type="button" onClick={onBack} className="rounded-2xl bg-white/10 px-5 py-3.5 font-bold text-white hover:bg-white/15">
             ← 返回
           </button>

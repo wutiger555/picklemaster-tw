@@ -59,27 +59,27 @@ export const ChallengeIntro = ({ challenge, onAccept, onSkip }: { challenge: Cha
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-30 flex items-center justify-center overflow-y-auto bg-gradient-to-b from-slate-950/85 via-slate-950/75 to-emerald-950/85 p-4 backdrop-blur-[2px]"
+      className="absolute inset-0 z-30 flex justify-center overflow-y-auto bg-gradient-to-b from-slate-950/85 via-slate-950/75 to-emerald-950/85 p-3 backdrop-blur-[2px] md:p-4"
     >
       <motion.div
         initial={{ scale: 0.94, y: 14 }}
         animate={{ scale: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-950 to-emerald-950 shadow-2xl shadow-emerald-900/40"
+        className="relative my-auto w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-950 to-emerald-950 shadow-2xl shadow-emerald-900/40"
       >
         <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-emerald-400/20 blur-3xl" />
-        <div className="relative flex items-end gap-3 px-5 pt-5">
-          <div className="min-w-0 flex-1 pb-4">
+        <div className="relative flex items-end gap-3 px-5 pt-4 md:pt-5">
+          <div className="min-w-0 flex-1 pb-3 md:pb-4">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/40 bg-amber-400/15 px-2.5 py-1 text-[11px] font-black tracking-[0.2em] text-amber-200">
               ⚔️ 挑戰書
             </span>
-            <h2 className="mt-3 text-2xl font-black leading-tight text-white md:text-3xl">
+            <h2 className="mt-2.5 text-xl font-black leading-tight text-white md:text-3xl">
               <span className="block">{line1}</span>
               <span className="block">{line2}</span>
             </h2>
-            <p className="mt-2 text-lg font-bold text-amber-300">你敢挑戰嗎？</p>
+            <p className="mt-1.5 font-bold text-amber-300 md:text-lg">你敢挑戰嗎？</p>
           </div>
-          <div className="relative h-36 w-28 shrink-0 md:h-44 md:w-32">
+          <div className="relative h-28 w-24 shrink-0 md:h-44 md:w-32">
             {c.portrait ? (
               <img
                 src={c.portrait}
@@ -113,7 +113,7 @@ export const ChallengeIntro = ({ challenge, onAccept, onSkip }: { challenge: Cha
           </div>
         </div>
 
-        <div className="relative mx-5 mt-3 grid grid-cols-3 gap-2 text-center">
+        <div className="relative mx-5 mt-3 hidden grid-cols-3 gap-2 text-center sm:grid">
           {[
             ['對手', `${ai.label} AI`],
             ['選手', c.name],
@@ -126,7 +126,7 @@ export const ChallengeIntro = ({ challenge, onAccept, onSkip }: { challenge: Cha
           ))}
         </div>
 
-        <div className="relative p-5">
+        <div className="relative p-4 md:p-5">
           <motion.button
             type="button"
             whileHover={{ scale: 1.02 }}

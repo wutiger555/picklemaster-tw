@@ -1,9 +1,9 @@
 import { useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { COURT, PLAYER, netHeightAt } from '../engine/constants';
+import { COURT, PLAYER } from '../engine/constants';
 import { AUTO_CHARGE, type GameEngine } from '../engine/game';
-import { NET_ZONE, SMASH_HEIGHT, type ShotKind } from '../engine/shots';
+import type { ShotKind } from '../engine/shots';
 
 const K = COURT.kitchen;
 const W = COURT.halfWidth;
@@ -78,10 +78,9 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
         stand.current.position.set(g!.stand.x, 0.012, g!.stand.z);
         const d = Math.hypot(h.pos.x - g!.stand.x, h.pos.z - g!.stand.z);
         const there = d < 0.25;
-        // 機會球（瑪利歐網球的 chance area）：殺球高度 → 金色；網前高過網的球（推擋／突擊）→ 紅色
-        const cz = Math.abs(g!.contact.z);
-        const smash = g!.contact.y > SMASH_HEIGHT && cz < 6;
-        const attack = !smash && cz < NET_ZONE && g!.contact.y > netHeightAt(g!.contact.x) + 0.08;
+        // 機會球（瑪利歐網球的 chance area）：殺球 → 金色；網前推擋／突擊 → 紅色
+        const smash = engine.chance === 'smash';
+        const attack = !!engine.chance && !smash;
         const chance = smash || attack;
         mats.stand.color.set(smash ? '#fbbf24' : attack ? '#fb7185' : there ? '#a3ff6b' : '#34f5c5');
         stand.current.scale.setScalar(chance ? 1.15 + Math.sin(t * 12) * 0.12 : there ? 1 : 1 + Math.sin(t * 8) * 0.08);
@@ -96,6 +95,10 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
       if (showTiming) {
         contact.current.position.set(g!.contact.x, g!.contact.y, g!.contact.z);
         contact.current.lookAt(camera.position);
+        // 機會球：空中擊球點變成會閃的大準星，一眼看出「在這裡打下去」
+        const c = engine.chance;
+        mats.contact.color.set(c === 'smash' ? '#fbbf24' : c ? '#fb7185' : '#ffffff');
+        contact.current.scale.setScalar(c ? 2.1 + Math.sin(t * 14) * 0.35 : 1);
       }
     }
     if (timing.current && timingCore.current) {

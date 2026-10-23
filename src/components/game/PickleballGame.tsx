@@ -16,6 +16,8 @@ import { CHARACTERS, type CharacterDef, characterById, pickOpponent } from './ch
 import { TouchControls } from './TouchControls';
 import { useGameInput } from './useGameInput';
 import { GameAudio } from './audio';
+import { ChallengeIntro } from './ShareCard';
+import { type Challenge, decodeChallenge, emptyHighlights, trackHit } from './share';
 
 const RECORDS_KEY = 'pm-game-records';
 const SETTINGS_KEY = 'pm-game-settings';
@@ -123,6 +125,10 @@ const PickleballGame = () => {
   const stage = useRef<HTMLDivElement>(null);
   const ids = useRef(0);
   const timers = useRef<number[]>([]);
+  // 挑戰連結（?vs=）與本場亮點數據，給分享卡用
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [intro, setIntro] = useState(false);
+  const highlights = useRef(emptyHighlights());
 
   const playing = screen === 'play';
   const togglePause = useCallback(() => setPaused((p) => (screen === 'play' ? !p : p)), [screen]);
@@ -141,6 +147,15 @@ const PickleballGame = () => {
       pending.forEach(clearTimeout);
     };
   }, [audio]);
+
+  // 從挑戰連結進來：先秀挑戰卡，並把遊戲舞台捲進畫面
+  useEffect(() => {
+    const c = decodeChallenge(new URLSearchParams(window.location.search).get('vs'));
+    if (!c) return;
+    setChallenge(c);
+    setIntro(true);
+    stage.current?.scrollIntoView({ block: 'center' });
+  }, []);
 
   // DEV 模式下暴露引擎給瀏覽器測試用（同 __courtMap 的做法）
   useEffect(() => {
@@ -225,6 +240,7 @@ const PickleballGame = () => {
             if (e.team === 0) audio.swing(e.button === 'drive');
             break;
           case 'hit': {
+            trackHit(highlights.current, e);
             const perfect = e.team === 0 && e.quality !== null && e.quality >= 0.9;
             audio.hit(e.speed, perfect);
             if (e.team === 0) buzz(e.special ? [30, 40, 60] : perfect ? 25 : 12);
@@ -369,6 +385,7 @@ const PickleballGame = () => {
     const mine = characterById(s.character);
     const opp = pickOpponent(mine.id);
     e.setSkills([mine.skill, opp.skill]);
+    highlights.current = emptyHighlights();
     setEngine(e);
     setCharacters([mine, opp]);
     setHud(e.hud());
@@ -489,7 +506,20 @@ const PickleballGame = () => {
       )}
 
       <AnimatePresence>
-        {screen === 'menu' && (
+        {screen === 'menu' && intro && challenge && (
+          <ChallengeIntro
+            key="challenge"
+            challenge={challenge}
+            onAccept={() => {
+              const s: Settings = { ...settings, mode: 'match', specials: true, difficulty: challenge.difficulty, character: challenge.character, paddle: challenge.paddle };
+              setSettings(s);
+              setIntro(false);
+              start(s);
+            }}
+            onSkip={() => setIntro(false)}
+          />
+        )}
+        {screen === 'menu' && !intro && (
           <MenuScreen
             key="menu"
             settings={settings}
@@ -535,6 +565,21 @@ const PickleballGame = () => {
             stats={engine.stats}
             longestRally={engine.longestRally}
             difficulty={settings.difficulty}
+            result={
+              engine.mode === 'match'
+                ? {
+                    won: engine.match.winner === 0,
+                    score: [engine.match.score[0], engine.match.score[1]],
+                    difficulty: settings.difficulty,
+                    stats: engine.stats[0],
+                    longestRally: engine.longestRally,
+                    highlights: highlights.current,
+                    character: characters[0],
+                    paddle: settings.paddle,
+                  }
+                : null
+            }
+            challenge={engine.mode === 'match' && challenge?.difficulty === settings.difficulty ? challenge : null}
             onAgain={() => start()}
             onMenu={toMenu}
           />

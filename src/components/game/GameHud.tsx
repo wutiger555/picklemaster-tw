@@ -6,6 +6,7 @@ import { SPECIALS } from './engine/paddles';
 import { SKILLS } from './engine/skills';
 import { CutIn, type CutInInfo } from './CutIn';
 import { ReviewOverlay } from './ReviewOverlay';
+import { ReplayOverlay } from './HighlightClip';
 import { LevelBoard, type LevelPop } from './LevelHud';
 
 export interface Toast {
@@ -282,7 +283,7 @@ const ComboCounter = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
   const n = hud.rallyHits;
   const live = hud.phase === 'rally';
   const settle = hud.phase === 'dead' && !hud.review;
-  const show = hud.mode === 'match' && n >= 3 && (live || settle);
+  const show = hud.mode === 'match' && n >= 3 && (live || settle) && !hud.replay;
   const tone = comboTone(n);
   const milestone = live && n >= 10 && n % 10 === 0;
   const best = settle && n >= 5 && n >= hud.bestCombo;
@@ -391,14 +392,15 @@ interface HudProps {
   touch: boolean;
   onChallenge: () => void;
   onAccept: () => void;
+  onSkipReplay: () => void;
   /** 踢館之旅的關卡：名稱、Boss、得分彈出字 */
   level?: { name: string; boss?: { name: string; portrait: string | null }; pops: LevelPop[] };
 }
 
-export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, onChallenge, onAccept, level }: HudProps) => {
+export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, onChallenge, onAccept, onSkipReplay, level }: HudProps) => {
   const humanServing = hud.phase === 'serve' && hud.serving === 0 && hud.mode === 'match';
   // 判決重播時收起比分和能量條，畫面留給轉播
-  const replay = hud.review?.state === 'reviewing' ? 'opacity-0' : '';
+  const replay = hud.review?.state === 'reviewing' || hud.replay ? 'opacity-0' : '';
   return (
     <div className="pointer-events-none absolute inset-0 z-10 select-none">
       <AwakenTint hud={hud} />
@@ -582,16 +584,16 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       {/* 機會球提示：獨立一塊，手機版靠左放在搖桿上方，避開右側的必殺／絕招鍵 */}
       <div className={`absolute flex ${touch ? 'bottom-[17.5rem] left-3 landscape:bottom-[10.5rem]' : 'inset-x-0 bottom-[6.5rem] justify-center'}`}>
         <AnimatePresence>
-          {hud.chance && hud.phase === 'rally' && (
+          {hud.chance && hud.phase === 'rally' && !hud.replay && (
             <ChanceCue key={hud.chance} kind={hud.chance} ready={hud.aimKind === hud.chance} touch={touch} />
           )}
-          {!hud.chance && hud.dive && hud.phase === 'rally' && <DiveCue key="dive" touch={touch} />}
+          {!hud.chance && hud.dive && hud.phase === 'rally' && !hud.replay && <DiveCue key="dive" touch={touch} />}
         </AnimatePresence>
       </div>
 
       {/* 下方：發球提示、蓄力、廚房警示 */}
       <div className={`absolute inset-x-0 flex flex-col items-center gap-2 px-3 ${touch ? 'top-[7.5rem]' : 'bottom-5'}`}>
-        {hud.inKitchen && hud.phase === 'rally' && (
+        {hud.inKitchen && hud.phase === 'rally' && !hud.replay && (
           <div
             className={`rounded-full px-3 py-1 text-xs font-bold shadow-lg ${
               hud.kitchenLocked ? 'animate-pulse bg-red-500 text-white' : 'bg-amber-400/90 text-amber-950'
@@ -600,7 +602,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
             {hud.kitchenLocked ? '剛截擊完！別踩進廚房' : '你在廚房內：只能打落地球'}
           </div>
         )}
-        {hud.charge !== null && <ChargeBar charge={hud.charge} kind={hud.aimKind} />}
+        {hud.charge !== null && !hud.replay && <ChargeBar charge={hud.charge} kind={hud.aimKind} />}
         {humanServing && hud.servePower === null && (
           <div className="rounded-full bg-slate-950/70 px-4 py-1.5 text-xs text-white/90 backdrop-blur-md">
             {touch ? '按住任一擊球鍵蓄力，在綠色區放開發球' : '按住 J／K／L 蓄力，在綠色區放開發球 · ←→ 調方向'}
@@ -619,6 +621,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
           <CutIn key={cutIn.id} spec={cutIn.spec} skill={cutIn.skill} awaken={cutIn.awaken} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />
         )}
         <ReviewOverlay review={hud.review} onChallenge={onChallenge} onAccept={onAccept} />
+        {hud.replay && <ReplayOverlay key="replay" label={hud.replay} touch={touch} onSkip={onSkipReplay} />}
       </AnimatePresence>
     </div>
   );

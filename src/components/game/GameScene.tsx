@@ -19,6 +19,7 @@ import { Effects } from './scene/Effects';
 import { Guide } from './scene/Guide';
 import { ReviewFx } from './scene/ReviewFx';
 import { type FxBus, createFxBus } from './scene/fxBus';
+import type { ClipRecorder } from './clip';
 
 /** 選手模型載入失敗（網路、素材）時只是不顯示，不要讓整個遊戲畫面掛掉 */
 class SkipOnError extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -47,6 +48,8 @@ interface SceneProps {
   lowSpec: boolean;
   /** 比賽場地：夜間體育館、新生公園戶外場，或踢館之旅的海邊 */
   venue: Venue;
+  /** 精彩球錄影（不支援錄影的瀏覽器是 null） */
+  clip: ClipRecorder | null;
 }
 
 type Num = MutableRefObject<number>;
@@ -75,6 +78,7 @@ const Rig = ({
   const base = useRef(new THREE.Vector3(0, 5.2, 11));
   const reviewAngle = useRef<string | null>(null);
   const reviewSince = useRef(0);
+  const replayCut = useRef(0);
 
   useFrame((_, delta) => {
     if (!paused) engine.update(delta, readInput());
@@ -146,7 +150,36 @@ const Rig = ({
     const celAge = cel && engine.phase === 'dead' ? engine.real - cel.start : 99;
     let fov = portrait ? 63 : 46;
     const rv = engine.reviewView();
-    if (rv) {
+    const rp = engine.replay;
+    if (rp) {
+      // 精彩重播：換一個轉播角度，換鏡頭時直接切
+      const cut = replayCut.current !== engine.replayCuts;
+      replayCut.current = engine.replayCuts;
+      const b = engine.ball.pos;
+      const a = engine.athletes.find((x) => x.team === rp.team)!;
+      const s = teamSide(rp.team);
+      const sx = Math.sign(a.pos.x) || 1;
+      if (rp.angle === 'side') {
+        // 邊線外的軌道攝影機：低角度跟著球沿邊線走
+        v.a.set(sx * (portrait ? 9.6 : 8.2), 1.45, THREE.MathUtils.clamp(b.z * 0.75, -L + 1, L - 1));
+        v.b.set(b.x * 0.35, 0.75, b.z * 0.9);
+        fov = portrait ? 58 : 44;
+      } else {
+        // 得分者這半場、對面邊線外貼地的低角度：隔著半個場地仰看出手（和得分者同一側的網前，網不會擋住）
+        v.a.set(-sx * (COURT.halfWidth + 1.6), 0.4, s * 1.6);
+        v.b.set(a.pos.x * 0.8 + b.x * 0.2, 1.0, a.pos.z * 0.8 + b.z * 0.2);
+        fov = portrait ? 66 : 52;
+      }
+      const kk = cut ? 1 : 1 - Math.exp(-delta * 5);
+      base.current.lerp(v.a, kk);
+      look.current.lerp(v.b, kk);
+      cam.position.copy(base.current);
+      cam.lookAt(look.current);
+      if (cut) {
+        cam.fov = fov;
+        cam.updateProjectionMatrix();
+      }
+    } else if (rv) {
       // 電視輔助判決：像轉播一樣切鏡頭（換角度時直接切，不滑過去）
       if (rv.angle !== reviewAngle.current) {
         reviewAngle.current = rv.angle;
@@ -309,10 +342,20 @@ const Prewarm = () => {
         o.visible = true;
       }
     });
+    // 精彩重播會切到平常看不到的角度：畫面外的物件也先畫一次（上傳頂點資料），第一次重播時才不會當場上傳
+    const culled: THREE.Object3D[] = [];
+    scene.traverse((o) => {
+      if (o.frustumCulled) {
+        culled.push(o);
+        o.frustumCulled = false;
+      }
+    });
     const prev = gl.getRenderTarget();
     gl.setRenderTarget(target);
     gl.compile(scene, camera);
+    gl.render(scene, camera);
     gl.setRenderTarget(prev);
+    for (const o of culled) o.frustumCulled = true;
     for (const t of textures) gl.initTexture(t);
     for (const o of hidden) o.visible = false;
   });
@@ -347,6 +390,14 @@ const PostFx = memo(({ aberration, lowSpec, day }: { aberration: Num; lowSpec: b
     </EffectComposer>
   );
 });
+
+/** 精彩球錄影：後處理畫完這一幀之後（優先序 2），把畫面連同比分、連擊疊字合成到錄影用的畫布 */
+const ClipCapture = ({ clip, engine, characters }: { clip: ClipRecorder; engine: GameEngine; characters: [CharacterDef, CharacterDef] }) => {
+  const gl = useThree((s) => s.gl);
+  const names = useMemo((): [string, string] => [characters[0].name, characters[1].name], [characters]);
+  useFrame(() => clip.frame(gl.domElement, engine, names), 2);
+  return null;
+};
 
 export const GameScene = (props: SceneProps) => {
   const { engine, lowSpec, venue } = props;
@@ -394,6 +445,7 @@ export const GameScene = (props: SceneProps) => {
       <Prewarm />
       <Rig {...props} bus={bus} excite={excite} flash={flash} aberration={aberration} />
       <PostFx aberration={aberration} lowSpec={lowSpec} day={day} />
+      {props.clip && <ClipCapture clip={props.clip} engine={engine} characters={characters} />}
     </>
   );
 };

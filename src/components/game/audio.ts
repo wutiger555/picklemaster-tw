@@ -82,6 +82,9 @@ interface Opt {
 export class GameAudio {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
+  /** 最後一級（壓縮器）：錄影時從這裡分一路出去 */
+  private outNode: AudioNode | null = null;
+  private tap: MediaStreamAudioDestinationNode | null = null;
   private sfx: GainNode | null = null;
   private verb: GainNode | null = null;
   private voiceBus: GainNode | null = null;
@@ -108,6 +111,7 @@ export class GameAudio {
       comp.attack.value = 0.003;
       comp.release.value = 0.18;
       comp.connect(ctx.destination);
+      this.outNode = comp;
       this.master = ctx.createGain();
       this.master.gain.value = 0.85;
       this.master.connect(comp);
@@ -151,8 +155,23 @@ export class GameAudio {
     }
   }
 
+  /** 精彩球錄影用的音軌（音效、球評、觀眾聲）；還沒解鎖或不支援時是 null */
+  captureTrack(): MediaStreamTrack | null {
+    if (!this.ctx || !this.outNode) return null;
+    try {
+      if (!this.tap) {
+        this.tap = this.ctx.createMediaStreamDestination();
+        this.outNode.connect(this.tap);
+      }
+      return this.tap.stream.getAudioTracks()[0] ?? null;
+    } catch {
+      return null;
+    }
+  }
+
   dispose() {
     this.murmur = null;
+    this.tap = null;
     this.rainNode = null;
     void this.ctx?.close();
     this.ctx = null;

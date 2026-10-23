@@ -296,6 +296,7 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
   const pool = useMemo(() => new ParticlePool(), []);
   const ballTrail = useMemo(() => new Ribbon(28, '#ffffff'), []);
   const swingTrails = useMemo(() => engine.athletes.map(() => new Ribbon(14, '#ffffff')), [engine]);
+  const cuts = useRef(engine.replayCuts);
   const auraMats = useMemo(() => engine.athletes.map(() => auraMaterial()), [engine]);
   const auras = useRef<(THREE.Mesh | null)[]>([]);
   const bolts = useMemo(() => {
@@ -573,6 +574,12 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
     for (const e of bus.queue) handle(e);
     bus.queue.length = 0;
 
+    // 精彩重播開始／結束時球和選手會瞬移：拖尾清掉，免得畫出一條橫越全場的光
+    if (cuts.current !== engine.replayCuts) {
+      cuts.current = engine.replayCuts;
+      ballTrail.clear();
+      for (const t of swingTrails) t.clear();
+    }
     const b = engine.ball;
     const bp = new THREE.Vector3(b.pos.x, b.pos.y, b.pos.z);
     const speed = Math.hypot(b.vel.x, b.vel.y, b.vel.z);

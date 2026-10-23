@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { ComicTitle } from './ComicTitle';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
 import type { Controls, GameMode, TeamStats } from './engine/game';
+import type { Challenge, MatchResult } from './share';
+import { ChallengeVerdict, ShareActions } from './ShareCard';
 
 
 export interface Records {
@@ -402,6 +404,10 @@ interface OverProps {
   stats: [TeamStats, TeamStats];
   longestRally: number;
   difficulty: Difficulty;
+  /** 比賽模式才有：分享卡用的完整戰績 */
+  result: MatchResult | null;
+  /** 從挑戰連結進來、且打的是同一個難度時，顯示和挑戰者的比較 */
+  challenge: Challenge | null;
   onAgain: () => void;
   onMenu: () => void;
 }
@@ -416,7 +422,8 @@ export const GameOverScreen = (p: OverProps) => {
   const accuracy = p.stats[0].shots ? Math.round((p.stats[0].perfect / p.stats[0].shots) * 100) : 0;
   return (
     <Shell>
-      <motion.div initial={{ scale: 0.92, y: 12 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-md text-center">
+      {/* my-auto：內容比舞台高時（加了分享區塊）從頂端開始捲，不會被置中裁掉 */}
+      <motion.div initial={{ scale: 0.92, y: 12 }} animate={{ scale: 1, y: 0 }} className="my-auto w-full max-w-md text-center">
         {p.mode === 'dink' ? (
           <>
             <div className="text-xs font-bold tracking-[0.25em] text-emerald-300">DINK 挑戰結束</div>
@@ -451,9 +458,11 @@ export const GameOverScreen = (p: OverProps) => {
                 最長來回 <b className="text-white">{p.longestRally}</b> 拍 · 完美擊球率 <b className="text-white">{accuracy}%</b>
               </div>
             </div>
+            {p.challenge && <ChallengeVerdict challenge={p.challenge} score={p.score} />}
+            {p.result && <ShareActions result={p.result} />}
           </>
         )}
-        <div className="mt-5 grid grid-cols-2 gap-2">
+        <div className={`${p.result ? 'mt-2' : 'mt-5'} grid grid-cols-2 gap-2`}>
           <button type="button" onClick={p.onAgain} className="rounded-xl bg-emerald-400 py-3 font-bold text-emerald-950">
             再來一場
           </button>

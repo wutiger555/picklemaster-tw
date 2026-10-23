@@ -1,6 +1,6 @@
 /**
  * 遊戲音效：Web Audio 即時合成（擊球、招式、廟口鑼鼓、嗩吶、鞭炮），
- * 只有台語球評的人聲是預先合成好的小音檔（public/game/voice/）。
+ * 只有球評的人聲是預先合成好的小音檔（public/game/voice/）。
  *
  * 訊號流：各種聲音 → sfx 匯流排（講話時會被壓低）→ 主音量 → 壓縮器 → 喇叭；
  * 另外有一條殘響送出（體育館的空間感），重擊、鑼聲送得多，擊球聲只送一點。
@@ -18,8 +18,10 @@ const readMuted = () => {
   }
 };
 
-/** 台語球評的台詞，每個 key 對應 public/game/voice/<key>-<n>.mp3（可以有好幾個版本隨機挑） */
+/** 球評與喊聲的台詞，每個 key 對應 public/game/voice/<key>-<n>.mp3（可以有好幾個版本隨機挑） */
 export type VoiceKey =
+  | 'title'
+  | 'hard'
   | 'nice'
   | 'great'
   | 'wow'
@@ -41,6 +43,8 @@ export type VoiceKey =
 
 /** 每句有幾個版本（檔名 -1、-2…），由 scripts/voice/ 的產生腳本決定 */
 export const VOICE_VARIANTS: Record<VoiceKey, number> = {
+  title: 1,
+  hard: 2,
   nice: 2,
   great: 2,
   wow: 1,
@@ -84,7 +88,6 @@ export class GameAudio {
   private noise: AudioBuffer | null = null;
   private drive: WaveShaperNode | null = null;
   private voices = new Map<string, AudioBuffer>();
-  private voiceLoading = false;
   /** 正在講的那句什麼時候講完（ctx 時間），講話中不疊另一句 */
   private talkingUntil = 0;
   private lastLine = new Map<VoiceKey, number>();
@@ -132,7 +135,8 @@ export class GameAudio {
       this.drive.curve = curve;
       this.drive.connect(this.sfx);
       this.drive.connect(this.verb);
-      void this.loadVoices();
+      // 第一次點進遊戲：台詞載完就大喊遊戲名稱
+      void this.loadVoices().then(() => void this.say('title', { priority: true, cooldown: 0 }));
     }
     if (this.ctx.state === 'suspended') void this.ctx.resume();
   }
@@ -621,13 +625,12 @@ export class GameAudio {
     }
   }
 
-  // ───────── 台語球評 ─────────
+  // ───────── 球評與喊聲 ─────────
 
   /** 解鎖音效時順便把台詞音檔載進來（全部加起來幾百 KB）；缺檔就安靜略過 */
   private async loadVoices() {
     const ctx = this.ctx;
-    if (!ctx || this.voiceLoading) return;
-    this.voiceLoading = true;
+    if (!ctx) return;
     const jobs: Promise<void>[] = [];
     for (const [key, n] of Object.entries(VOICE_VARIANTS)) {
       for (let i = 1; i <= n; i++) {
@@ -646,17 +649,17 @@ export class GameAudio {
 
   /**
    * 球評講一句。正在講話時不疊（priority 高的可以插話），同一句至少隔 cooldown 秒才重講；
-   * 講話期間把其他音效壓低，台詞才聽得清楚。
+   * 講話期間把其他音效壓低，台詞才聽得清楚。回傳有沒有真的講出來。
    */
   say(key: VoiceKey, { priority = false, cooldown = 4, delay = 0 }: { priority?: boolean; cooldown?: number; delay?: number } = {}) {
     const ctx = this.ready();
-    if (!ctx || !this.voiceBus) return;
+    if (!ctx || !this.voiceBus) return false;
     const now = ctx.currentTime;
-    if (!priority && now < this.talkingUntil) return;
-    if (now - (this.lastLine.get(key) ?? -99) < cooldown) return;
+    if (!priority && now < this.talkingUntil) return false;
+    if (now - (this.lastLine.get(key) ?? -99) < cooldown) return false;
     const n = VOICE_VARIANTS[key];
     const buf = this.voices.get(`${key}-${1 + Math.floor(Math.random() * n)}`) ?? this.voices.get(`${key}-1`);
-    if (!buf) return;
+    if (!buf) return false;
     this.lastLine.set(key, now);
     const t = now + delay;
     const src = ctx.createBufferSource();
@@ -672,5 +675,6 @@ export class GameAudio {
     duck.cancelScheduledValues(t);
     duck.setTargetAtTime(0.55, t, 0.03);
     duck.setTargetAtTime(1, t + buf.duration, 0.12);
+    return true;
   }
 }

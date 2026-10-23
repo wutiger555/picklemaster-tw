@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-產生台語球評台詞音檔（public/game/voice/<key>-<n>.mp3）。
+產生球評台詞音檔（public/game/voice/<key>-<n>.mp3）。
 
 語音模型：KaedeTai/gpt-sovits-tw（MIT 授權），在本機跑一次即可，遊戲執行時不需要模型。
 用法（在 GPT-SoVITS 的 venv 裡、該 repo 根目錄執行）：
@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -32,8 +33,8 @@ def lines():
     for key, variants in data.items():
         if key.startswith("_"):
             continue
-        for i, (_han, poj) in enumerate(variants, 1):
-            yield f"{key}-{i}", poj
+        for i, (_label, text) in enumerate(variants, 1):
+            yield f"{key}-{i}", text
 
 
 def repack(repo: Path) -> Path:
@@ -90,39 +91,51 @@ def candidates(out: Path, seeds: int, only: str | None = None):
     orig = W.get_phones_and_bert
 
     def phones_and_bert(text, language, version, final=False):
-        if language != "tw":
+        # 台詞都是單一語言，不用跑語種偵測（它還會另外下載模型）：台語、純中文直接轉音素
+        lang = {"tw": "tw", "all_zh": "zh"}.get(language)
+        if not lang:
             return orig(text, language, version, final)
-        phones, word2ph, norm = W.clean_text_inf(text, "tw", version)
-        bert = W.get_bert_inf(phones, word2ph, norm, "tw")
+        phones, word2ph, norm = W.clean_text_inf(text, lang, version)
+        bert = W.get_bert_inf(phones, word2ph, norm, lang)
         return phones, bert.to(W.dtype), norm
 
     W.get_phones_and_bert = phones_and_bert
     ref_text = REF_TEXT[4:-1]
 
-    for name, poj in lines():
+    for name, line in lines():
         if only and not name.startswith(only):
             continue
-        text = _apply_sandhi_v1(poj)
+        # 寫漢字的台詞用華語（模型保留了原本的華語能力），寫白話字的用台語
+        zh = bool(re.search(r"[\u4e00-\u9fff]", line))
+        text = line if zh else _apply_sandhi_v1(line)
+        lang = W.i18n("中文") if zh else "tw"
         for s in range(1, seeds + 1):
             dst = out / f"{name}.s{s}.wav"
             if dst.exists():
                 continue
             W.set_seed(40 + s)
             sr, audio = None, None
-            for sr, audio in W.get_tts_wav(str(ref_wav), ref_text, "tw", text, "tw", how_to_cut=W.i18n("不切"), top_k=15, top_p=1, temperature=1):
+            for sr, audio in W.get_tts_wav(str(ref_wav), ref_text, "tw", text, lang, how_to_cut=W.i18n("不切"), top_k=15, top_p=1, temperature=1):
                 pass
             sf.write(dst, np.asarray(audio), sr)
             print(f"[ok] {dst.name}  {text}", flush=True)
 
 
+# 模型念起來偏平穩，要「喊」的台詞另外加處理：標題加場館迴音；擊球喊聲拉高音、加快、壓得更衝
+SHOUT_FX = {
+    "title": "atempo=0.85,acompressor=threshold=-18dB:ratio=4:attack=5:release=120,aecho=0.85:0.55:110|230:0.32|0.18,",
+    "hard": "asetrate=32000*1.1,aresample=32000,atempo=1.12,acompressor=threshold=-20dB:ratio=6:attack=2:release=80,",
+}
+
+
 def export(out: Path, picks_path: Path):
     picks = json.loads(picks_path.read_text(encoding="utf-8"))
     VOICE_DIR.mkdir(parents=True, exist_ok=True)
-    for name, _poj in lines():
+    for name, _text in lines():
         src = out / f"{name}.s{picks.get(name, 1)}.wav"
         dst = VOICE_DIR / f"{name}.mp3"
         # 去頭尾靜音、響度標準化、單聲道 64 kbps（每句十幾 KB）
-        af = (
+        af = SHOUT_FX.get(name.rsplit("-", 1)[0], "") + (
             "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
             "areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.05,areverse,"
             "loudnorm=I=-14:TP=-1.5:LRA=7"

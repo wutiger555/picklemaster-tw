@@ -25,14 +25,19 @@ export interface CutInInfo {
   /** 球拍必殺：有球拍；角色絕招：有 skill、不顯示球拍 */
   spec: PaddleSpec;
   skill?: SkillId | null;
+  /** 無雙覺醒的專屬演出 */
+  awaken?: boolean;
   mine: boolean;
   portrait: string | null;
   name: string;
 }
 
-export const CutIn = ({ spec, skill, mine, portrait, name }: Omit<CutInInfo, 'id'>) => {
-  const sp = skill ? SKILLS[skill] : SPECIALS[spec.special];
-  const art = useFaceArt(skill ? null : spec);
+/** 覺醒的配色：金色火焰 */
+const AWAKEN_LOOK = { name: '無雙覺醒', title: 'MUSOU AWAKENING', color: '#f59e0b', glow: '#fde68a' };
+
+export const CutIn = ({ spec, skill, awaken, mine, portrait, name }: Omit<CutInInfo, 'id'>) => {
+  const sp = awaken ? AWAKEN_LOOK : skill ? SKILLS[skill] : SPECIALS[spec.special];
+  const art = useFaceArt(skill || awaken ? null : spec);
   const from = mine ? -1 : 1;
   return (
     <motion.div
@@ -40,7 +45,26 @@ export const CutIn = ({ spec, skill, mine, portrait, name }: Omit<CutInInfo, 'id
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.25 } }}
     >
-      <style>{'@keyframes pm-speedlines{from{background-position:0 0}to{background-position:-88px 0}}'}</style>
+      <style>{'@keyframes pm-speedlines{from{background-position:0 0}to{background-position:-88px 0}}@keyframes pm-rays{to{transform:rotate(360deg)}}'}</style>
+      {/* 覺醒：整個畫面染成金紅，放射光芒從選手身後轉出來 */}
+      {awaken && (
+        <>
+          <motion.div
+            className="absolute inset-0"
+            style={{ background: 'radial-gradient(circle at 50% 50%, rgba(253,230,138,0.35), rgba(220,38,38,0.55) 70%, rgba(69,10,10,0.85))' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+          />
+          <div
+            className="absolute left-1/2 top-1/2 h-[220vmax] w-[220vmax] -translate-x-1/2 -translate-y-1/2 opacity-40"
+            style={{
+              backgroundImage: 'repeating-conic-gradient(from 0deg, rgba(254,243,199,0.9) 0deg 4deg, transparent 4deg 18deg)',
+              animation: 'pm-rays 6s linear infinite',
+            }}
+          />
+        </>
+      )}
       {/* 畫面閃白 */}
       <motion.div className="absolute inset-0 bg-white" initial={{ opacity: 0.85 }} animate={{ opacity: 0 }} transition={{ duration: 0.35 }} />
       {/* 斜切色帶 */}
@@ -97,8 +121,9 @@ export const CutIn = ({ spec, skill, mine, portrait, name }: Omit<CutInInfo, 'id
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
         >
-          {skill ? (mine ? 'SIGNATURE MOVE' : 'RIVAL SIGNATURE') : mine ? 'YOUR SPECIAL' : 'RIVAL SPECIAL'} · {name ? `${name}・` : ''}
-          {skill ? '絕招' : spec.name}
+          {awaken
+            ? `${mine ? 'YOUR' : 'RIVAL'} AWAKENING · ${name ? `${name}・` : ''}逆轉開始`
+            : `${skill ? (mine ? 'SIGNATURE MOVE' : 'RIVAL SIGNATURE') : mine ? 'YOUR SPECIAL' : 'RIVAL SPECIAL'} · ${name ? `${name}・` : ''}${skill ? '絕招' : spec.name}`}
         </motion.div>
         <motion.div
           className="font-display text-5xl font-black italic leading-none text-white md:text-8xl"

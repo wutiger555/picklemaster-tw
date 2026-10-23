@@ -10,6 +10,8 @@ export interface Records {
   wins: Record<Difficulty, number>;
   plays: Record<Difficulty, number>;
   dinkBest: Record<Difficulty, number>;
+  /** 最長連擊（熱血與寫實都算） */
+  comboBest: Record<Difficulty, number>;
 }
 
 /** 比賽場地 */
@@ -406,6 +408,8 @@ interface OverProps {
   newRecord: boolean;
   stats: [TeamStats, TeamStats];
   longestRally: number;
+  /** 這個難度的最長連擊紀錄（已含這一場） */
+  comboBest: number;
   difficulty: Difficulty;
   /** 比賽模式才有：分享卡用的完整戰績 */
   result: MatchResult | null;
@@ -458,7 +462,9 @@ export const GameOverScreen = (p: OverProps) => {
                 </div>
               ))}
               <div className="border-t border-white/10 py-2 text-xs text-white/60">
-                最長來回 <b className="text-white">{p.longestRally}</b> 拍 · 完美擊球率 <b className="text-white">{accuracy}%</b>
+                最長連擊 <b className="text-white">{p.longestRally} HIT</b>
+                {p.newRecord ? <b className="ml-1 text-amber-300">新紀錄！</b> : <span className="ml-1">（紀錄 {p.comboBest}）</span>} · 完美擊球率{' '}
+                <b className="text-white">{accuracy}%</b>
               </div>
             </div>
             {p.challenge && <ChallengeVerdict challenge={p.challenge} score={p.score} />}

@@ -27,6 +27,7 @@ const emptyRecords = (): Records => ({
   wins: { rookie: 0, club: 0, pro: 0 },
   plays: { rookie: 0, club: 0, pro: 0 },
   dinkBest: { rookie: 0, club: 0, pro: 0 },
+  comboBest: { rookie: 0, club: 0, pro: 0 },
 });
 
 /** 讀寫 localStorage 都包 try/catch：無痕模式或封鎖儲存時遊戲照樣能玩 */
@@ -251,6 +252,9 @@ const PickleballGame = () => {
       } else {
         next.plays[d] += 1;
         if (eng.match.winner === 0) next.wins[d] += 1;
+        const prev = next.comboBest?.[d] ?? 0;
+        record = eng.longestRally > prev && eng.longestRally >= 5;
+        next.comboBest = { ...emptyRecords().comboBest, ...next.comboBest, [d]: Math.max(prev, eng.longestRally) };
       }
       setRecords(next);
       save(RECORDS_KEY, next);
@@ -339,6 +343,29 @@ const PickleballGame = () => {
           case 'energyFull':
             if (e.team === 0) audio.energyFull();
             break;
+          case 'awakenReady':
+            if (e.team === 0) {
+              audio.energyFull();
+              const b = { id: ++ids.current, text: touch ? '覺醒量表集滿！點「覺醒」逆轉' : '覺醒量表集滿！按 Q 逆轉' };
+              setBanner(b);
+              later(() => setBanner((x) => (x?.id === b.id ? null : x)), 1800);
+            }
+            break;
+          case 'awaken': {
+            audio.awaken();
+            audio.cheer(true);
+            if (e.team === 0) buzz([40, 30, 40, 30, 80]);
+            const who = characters[e.team];
+            const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, awaken: true, mine: e.team === 0, portrait: who.portrait, name: who.name };
+            setCutIn(c);
+            later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 1100);
+            break;
+          }
+          case 'comboMilestone':
+            audio.cheer(true);
+            audio.streak(Math.min(8, e.n / 5));
+            buzz(20);
+            break;
           case 'dive':
             audio.whoosh();
             if (e.team === 0) buzz(15);
@@ -420,7 +447,7 @@ const PickleballGame = () => {
         }
       }
     },
-    [screen, audio, engine, finish, characters],
+    [screen, audio, engine, finish, characters, touch],
   );
 
   const start = (s: Settings = settings) => {
@@ -526,6 +553,11 @@ const PickleballGame = () => {
               skill={
                 hud.specials && hud.skill
                   ? { ready: hud.skillReady, armed: hud.skillArmed, color: SKILLS[hud.skill].color, name: SKILLS[hud.skill].name }
+                  : null
+              }
+              awaken={
+                hud.awaken && !hud.awaken.used && hud.awaken.gauge > 0
+                  ? { ready: hud.awaken.gauge >= 100, armed: false, color: '#f59e0b', name: '無雙覺醒', energy: hud.awaken.gauge }
                   : null
               }
             />
@@ -660,6 +692,7 @@ const PickleballGame = () => {
             newRecord={newRecord}
             stats={engine.stats}
             longestRally={engine.longestRally}
+            comboBest={records.comboBest?.[settings.difficulty] ?? 0}
             difficulty={settings.difficulty}
             result={
               engine.mode === 'match'

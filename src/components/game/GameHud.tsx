@@ -122,6 +122,13 @@ const Scoreboard = ({ hud, difficulty, best, oppName }: { hud: HudState; difficu
           <ServeDot on={hud.serving === 1} />
         </div>
       </div>
+      {hud.awaken && hud.awaken.opp > 0 && (
+        <div className="mt-1 flex justify-center">
+          <span className="animate-pulse rounded-full bg-gradient-to-r from-red-500 to-amber-500 px-2.5 py-0.5 text-[11px] font-black text-white shadow-[0_0_14px_rgba(239,68,68,0.8)]">
+            對手無雙覺醒中 · 剩 {hud.awaken.opp} 拍
+          </span>
+        </div>
+      )}
       <div className="mt-0.5 text-center text-[11px] text-white/60">
         報分 <span className="font-bold text-white tabular-nums">{hud.call}</span> · {hud.fromRight ? '右區' : '左區'}發球
         {hud.phase === 'rally' && hud.rallyHits > 2 && <span className="ml-1.5 text-lime-300">· 第 {hud.rallyHits} 拍</span>}
@@ -199,6 +206,152 @@ const SkillChip = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
   );
 };
 
+/** 無雙覺醒量表（桌機）：累積中、集滿可發動、覺醒中剩幾拍；用過就收起來 */
+const AwakenChip = ({ hud }: { hud: HudState }) => {
+  const aw = hud.awaken;
+  if (!aw || (aw.used && aw.hits === 0)) return null;
+  const ready = aw.gauge >= 100;
+  const on = aw.hits > 0;
+  return (
+    <div
+      className={`mt-2 w-56 rounded-2xl border px-3 py-1.5 text-[11px] font-bold backdrop-blur-md transition-shadow ${
+        on || ready ? 'border-amber-200/70 bg-slate-950/80' : 'border-white/10 bg-slate-950/55'
+      } ${ready && !on ? 'animate-pulse' : ''}`}
+      style={on || ready ? { boxShadow: `0 0 ${on ? 34 : 20}px rgba(245,158,11,0.85)` } : undefined}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className={on || ready ? 'text-amber-200' : 'text-white/55'}>{on ? '無雙覺醒中！' : '無雙覺醒'}</span>
+        <span className="shrink-0 tabular-nums text-white/70">{on ? `剩 ${aw.hits} 拍` : ready ? '按 Q 發動' : `${Math.floor(aw.gauge)}%`}</span>
+      </div>
+      {!on && (
+        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/10">
+          <div className="h-full rounded-full bg-gradient-to-r from-amber-200 via-amber-400 to-red-500 transition-[width] duration-500" style={{ width: `${aw.gauge}%` }} />
+        </div>
+      )}
+      {!on && !ready && <div className="mt-0.5 text-[10px] font-semibold text-white/40">落後或連丟分時累積，每局一次</div>}
+    </div>
+  );
+};
+
+/** 覺醒中的畫面色調：自己覺醒是金色，對手覺醒是血紅（CSS 疊在畫布上，不動 WebGL） */
+const AwakenTint = ({ hud }: { hud: HudState }) => {
+  const aw = hud.awaken;
+  const mine = !!aw && aw.hits > 0;
+  const theirs = !!aw && aw.opp > 0;
+  return (
+    <AnimatePresence>
+      {(mine || theirs) && (
+        <motion.div
+          key={mine ? 'mine' : 'theirs'}
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div
+            className="absolute inset-0 mix-blend-soft-light"
+            style={{ background: mine ? 'linear-gradient(180deg, rgba(251,191,36,0.4), rgba(234,88,12,0.35))' : 'linear-gradient(180deg, rgba(220,38,38,0.4), rgba(76,5,25,0.45))' }}
+          />
+          <div
+            className="absolute inset-0 animate-pulse"
+            style={{ boxShadow: mine ? 'inset 0 0 120px 10px rgba(245,158,11,0.5)' : 'inset 0 0 120px 10px rgba(185,28,28,0.5)' }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+/** 連擊數字的顏色：越長越熱 */
+const comboTone = (n: number) =>
+  n >= 30
+    ? { text: 'text-fuchsia-300', glow: 'rgba(217,70,239,0.9)' }
+    : n >= 20
+      ? { text: 'text-orange-400', glow: 'rgba(249,115,22,0.9)' }
+      : n >= 10
+        ? { text: 'text-amber-300', glow: 'rgba(251,191,36,0.9)' }
+        : { text: 'text-white', glow: 'rgba(255,255,255,0.45)' };
+
+/**
+ * 連擊數（無雙的「1000 K.O.」）：來回中在畫面左側跳大字，每 10 拍爆一次；
+ * 這一分結束後停在畫面上結算，破本局紀錄就標出來。
+ */
+const ComboCounter = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
+  const n = hud.rallyHits;
+  const live = hud.phase === 'rally';
+  const settle = hud.phase === 'dead' && !hud.review;
+  const show = hud.mode === 'match' && n >= 3 && (live || settle);
+  const tone = comboTone(n);
+  const milestone = live && n >= 10 && n % 10 === 0;
+  const best = settle && n >= 5 && n >= hud.bestCombo;
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          key="combo"
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -30, transition: { duration: 0.25 } }}
+          className="relative flex flex-col items-start"
+        >
+          {settle && (
+            <span className="mb-0.5 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-black tracking-[0.2em] text-white/80">
+              {best ? '本局最長連擊！' : '連擊結算'}
+            </span>
+          )}
+          <div className="flex items-baseline gap-1.5">
+            <motion.span
+              key={n}
+              initial={milestone ? { scale: 3.2, rotate: -14, opacity: 0 } : { scale: 1.45 }}
+              animate={{ scale: 1, rotate: -6, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: milestone ? 380 : 700, damping: milestone ? 12 : 22 }}
+              className={`font-display font-black italic leading-none tabular-nums ${tone.text} ${touch ? 'text-4xl' : 'text-7xl'}`}
+              style={{ textShadow: `0 0 18px ${tone.glow}, 3px 3px 0 #000` }}
+            >
+              {n}
+            </motion.span>
+            <span className={`font-display font-black italic text-white ${touch ? 'text-base' : 'text-3xl'}`} style={{ textShadow: '2px 2px 0 #000' }}>
+              HIT
+            </span>
+          </div>
+          {/* 每 10 拍：字體爆開＋放射光＋能量加成 */}
+          <AnimatePresence>
+            {milestone && (
+              <motion.div
+                key={`m${n}`}
+                className="pointer-events-none absolute -left-6 -top-8 h-36 w-36"
+                initial={{ opacity: 1, scale: 0.3 }}
+                animate={{ opacity: 0, scale: 1.8 }}
+                transition={{ duration: 0.9, ease: 'easeOut' }}
+                style={{ background: `repeating-conic-gradient(${tone.glow} 0deg 6deg, transparent 6deg 24deg)`, borderRadius: '50%', WebkitMaskImage: 'radial-gradient(circle, #000 20%, transparent 70%)', maskImage: 'radial-gradient(circle, #000 20%, transparent 70%)' }}
+              />
+            )}
+          </AnimatePresence>
+          {milestone && !touch && (
+            <motion.span
+              key={`b${n}`}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-1 rounded-full bg-gradient-to-r from-amber-300 to-orange-500 px-2 py-0.5 text-[11px] font-black text-amber-950"
+            >
+              觀眾沸騰！雙方能量 UP
+            </motion.span>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+/** 覺醒中的狀態（手機）：桌機看左下角的量表 */
+const AwakenStatus = ({ hud }: { hud: HudState }) =>
+  hud.awaken && hud.awaken.hits > 0 ? (
+    <div className="mb-1.5 animate-pulse rounded-full bg-gradient-to-r from-amber-300 to-red-500 px-2.5 py-0.5 text-[11px] font-black text-slate-950 shadow-[0_0_16px_rgba(245,158,11,0.9)]">
+      無雙覺醒 · 剩 {hud.awaken.hits} 拍
+    </div>
+  ) : null;
+
 /** 發球力道條：綠色區間內才會進，越接近上緣越深 */
 const ServeMeter = ({ power }: { power: number }) => {
   const win = GameEngine.serveWindow();
@@ -245,6 +398,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
   const replay = hud.review?.state === 'reviewing' ? 'opacity-0' : '';
   return (
     <div className="pointer-events-none absolute inset-0 z-10 select-none">
+      <AwakenTint hud={hud} />
       <div className={`absolute inset-x-0 top-3 flex justify-center transition-opacity max-md:justify-start max-md:pl-3 ${replay}`}>
         <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
       </div>
@@ -254,6 +408,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
         <div className={`absolute bottom-4 left-3 transition-opacity ${replay}`}>
           <EnergyBar hud={hud} touch={touch} />
           <SkillChip hud={hud} touch={touch} />
+          <AwakenChip hud={hud} />
           {hud.mode === 'match' && (
             <div className="mt-1.5 flex w-56 items-center justify-between rounded-xl bg-slate-950/50 px-3 py-1 text-[11px] font-bold text-white/70 backdrop-blur-md">
               <span>電視輔助判決</span>
@@ -280,6 +435,12 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 連擊數：畫面左側（桌機在能量條上方的空位；手機在記分板下方、搖桿與機會球提示上方） */}
+      <div className={`absolute transition-opacity ${touch ? 'left-3 top-[34%] landscape:top-[6.5rem]' : 'left-4 top-[30%]'} ${replay}`}>
+        {touch && <AwakenStatus hud={hud} />}
+        <ComboCounter hud={hud} touch={touch} />
+      </div>
 
       {/* 玩家擊球回饋 */}
       <div className="absolute inset-x-0 top-[38%] flex justify-center">
@@ -447,7 +608,9 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       )}
 
       <AnimatePresence>
-        {cutIn && <CutIn key={cutIn.id} spec={cutIn.spec} skill={cutIn.skill} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />}
+        {cutIn && (
+          <CutIn key={cutIn.id} spec={cutIn.spec} skill={cutIn.skill} awaken={cutIn.awaken} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />
+        )}
         <ReviewOverlay review={hud.review} onChallenge={onChallenge} onAccept={onAccept} />
       </AnimatePresence>
     </div>

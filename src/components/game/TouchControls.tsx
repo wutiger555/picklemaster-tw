@@ -15,7 +15,39 @@ interface SpecialButton {
   armed: boolean;
   color: string;
   name: string;
+  /** 能量 0–100；沒給就只看 ready */
+  energy?: number;
 }
+
+/** 圓形招式鍵：外圈是能量環，集滿發光；手機上取代左上角的能量條，省畫面 */
+const MoveButton = ({ b, label, onPress }: { b: SpecialButton; label: string; onPress: () => void }) => {
+  const pct = b.ready ? 100 : Math.min(99, Math.floor(b.energy ?? 0));
+  return (
+    <button
+      type="button"
+      disabled={!b.ready || b.armed}
+      onPointerDown={onPress}
+      aria-label={`${label}・${b.name}`}
+      className={`touch-none relative grid h-16 w-16 place-items-center rounded-full p-[3px] transition-transform ${b.ready && !b.armed ? 'animate-pulse' : ''} ${
+        b.armed ? 'scale-110' : ''
+      }`}
+      style={{
+        background: `conic-gradient(${b.color} ${pct}%, rgba(255,255,255,0.14) 0)`,
+        boxShadow: b.ready ? `0 0 ${b.armed ? 28 : 18}px ${b.color}` : undefined,
+      }}
+    >
+      <span
+        className="flex h-full w-full flex-col items-center justify-center rounded-full text-white"
+        style={{ background: b.ready ? `radial-gradient(circle at 50% 35%, ${b.color}, #0f172ae6 75%)` : 'rgba(15,23,42,0.85)' }}
+      >
+        <span className={`text-sm font-black leading-none ${b.ready ? '' : 'opacity-60'}`}>{label}</span>
+        <span className="mt-0.5 text-[9px] font-bold leading-none opacity-80">
+          {b.armed ? '就緒！' : b.ready ? '按我' : b.energy !== undefined ? `${pct}%` : '充能中'}
+        </span>
+      </span>
+    </button>
+  );
+};
 
 /** 手機操作：左手虛擬搖桿移動（擊球瞬間的方向 = 瞄準），右手三顆擊球鍵＋必殺鍵＋絕招鍵 */
 export const TouchControls = ({
@@ -77,39 +109,11 @@ export const TouchControls = ({
         />
       </div>
       <div className="pointer-events-auto flex flex-col items-end gap-3">
-        {special && (
-          <button
-            type="button"
-            disabled={!special.ready || special.armed}
-            onPointerDown={() => {
-              touch.current.special = true;
-            }}
-            className={`touch-none rounded-full px-4 py-2 text-sm font-black text-white transition-all ${
-              special.ready ? 'animate-pulse' : 'opacity-40'
-            }`}
-            style={{
-              background: special.ready ? `linear-gradient(90deg, ${special.color}, #ffffff33)` : 'rgba(15,23,42,0.6)',
-              boxShadow: special.ready ? `0 0 22px ${special.color}` : undefined,
-            }}
-          >
-            {special.armed ? '蓄勢中！' : `必殺・${special.name}`}
-          </button>
-        )}
-        {skill && (
-          <button
-            type="button"
-            disabled={!skill.ready || skill.armed}
-            onPointerDown={() => {
-              touch.current.skill = true;
-            }}
-            className={`touch-none rounded-full px-4 py-2 text-sm font-black text-white transition-all ${skill.ready ? '' : 'opacity-40'}`}
-            style={{
-              background: skill.ready ? `linear-gradient(90deg, ${skill.color}, #ffffff22)` : 'rgba(15,23,42,0.6)',
-              boxShadow: skill.ready ? `0 0 16px ${skill.color}` : undefined,
-            }}
-          >
-            {skill.armed ? '絕招就緒！' : `絕招・${skill.name}`}
-          </button>
+        {(special || skill) && (
+          <div className="flex gap-3">
+            {skill && <MoveButton b={skill} label="絕招" onPress={() => void (touch.current.skill = true)} />}
+            {special && <MoveButton b={special} label="必殺" onPress={() => void (touch.current.special = true)} />}
+          </div>
         )}
       <div className="grid grid-cols-2 gap-3">
         {BUTTONS.map((b, i) => (

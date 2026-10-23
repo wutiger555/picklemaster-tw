@@ -204,8 +204,9 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
         <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
       </div>
 
-      {hud.specials && (
-        <div className={`absolute left-3 transition-opacity ${touch ? 'top-[7.5rem]' : 'bottom-4'} ${replay}`}>
+      {/* 手機上能量改顯示在招式鍵的外圈，不再佔左上角；判決剩餘次數在申請時的提示裡也看得到 */}
+      {hud.specials && !touch && (
+        <div className={`absolute bottom-4 left-3 transition-opacity ${replay}`}>
           <EnergyBar hud={hud} touch={touch} />
           <SkillChip hud={hud} touch={touch} />
           {hud.mode === 'match' && (
@@ -324,7 +325,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       </AnimatePresence>
 
       {/* 下方：發球提示、蓄力、廚房警示 */}
-      <div className={`absolute inset-x-0 flex flex-col items-center gap-2 ${touch ? 'bottom-[15.5rem]' : 'bottom-5'}`}>
+      <div className={`absolute inset-x-0 flex flex-col items-center gap-2 px-3 ${touch ? 'top-[7.5rem]' : 'bottom-5'}`}>
         {hud.inKitchen && hud.phase === 'rally' && (
           <div
             className={`rounded-full px-3 py-1 text-xs font-bold shadow-lg ${

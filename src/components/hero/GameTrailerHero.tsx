@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
+import { ComicTitle } from '../game/ComicTitle';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const src = (file: string) => `${base}/game/trailer/${file}`;
@@ -46,7 +47,7 @@ const GameTrailerHero = () => {
     <Link
       ref={frame}
       to={ROUTES.GAME}
-      aria-label="進入匹克球對戰遊戲"
+      aria-label="進入匹克硬邦幫對戰遊戲"
       className="group relative block aspect-[4/3] w-full sm:aspect-video overflow-hidden rounded-3xl bg-neutral-950 shadow-2xl shadow-emerald-900/25 ring-1 ring-neutral-900/10"
     >
       <video
@@ -75,9 +76,7 @@ const GameTrailerHero = () => {
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-4 pb-4 pt-12 text-left sm:px-6 sm:pb-6 sm:pt-16 md:px-8 md:pb-7 md:pt-24">
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <div className="font-display text-xl font-black tracking-tight text-white sm:text-2xl md:text-4xl">
-              Pickle Master<span className="hidden sm:inline"> 對戰遊戲</span>
-            </div>
+            <ComicTitle as="div" stroke={4} className="text-3xl sm:text-4xl md:text-6xl" />
             <p className="mt-1 hidden text-sm text-white/75 sm:block md:text-base">真實物理、照片選手、殺球攔網與必殺技 —— 打開瀏覽器就能玩</p>
           </div>
           <span className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 px-4 py-2.5 text-sm font-black text-emerald-950 shadow-lg shadow-emerald-500/30 transition-transform group-hover:scale-105 sm:gap-2 sm:px-6 sm:py-3 sm:text-base">

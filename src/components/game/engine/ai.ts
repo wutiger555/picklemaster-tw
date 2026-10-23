@@ -88,6 +88,10 @@ export interface AIPlan {
   /** 預計的擊球點（出界球則為落地點） */
   contact: { x: number; y: number; z: number };
   timingError: number;
+  /** 預計在落地前截擊 */
+  volley: boolean;
+  /** 依目前位置與跑速來得及跑到站位 */
+  feasible: boolean;
 }
 
 export interface AIState {
@@ -152,13 +156,15 @@ export const planContact = (
       leave: true,
       swung: false,
       timingError: 0,
+      volley: false,
+      feasible: true,
       contact: { x: land.x, y: 0, z: land.z },
     };
   }
 
   const reactLeft = Math.max(0, eng.rally.lastHitTime + prof.reaction - now);
   const atNet = Math.abs(a.pos.z) < COURT.kitchen + 1.1;
-  let best: { s: PathSample; stand: { x: number; z: number }; cost: number; feasible: boolean } | null = null;
+  let best: { s: PathSample; stand: { x: number; z: number }; cost: number; feasible: boolean; volley: boolean } | null = null;
 
   for (const s of path) {
     if (b0 + s.bounces > 1) break;
@@ -191,7 +197,7 @@ export const planContact = (
     else if (atNet && s.pos.y > netHeightAt(s.pos.x) + 0.08) cost -= 0.3 + (s.pos.y - netHeightAt(s.pos.x)) * 0.6;
     if (preferT !== undefined && Number.isFinite(preferT)) cost += Math.abs(now + s.t - preferT) * 3;
     if (!feasible) cost += 5 + (needed - s.t) * 4;
-    if (!best || cost < best.cost) best = { s, stand: { x: standX, z: standZ }, cost, feasible };
+    if (!best || cost < best.cost) best = { s, stand: { x: standX, z: standZ }, cost, feasible, volley };
   }
   if (!best) return null;
 
@@ -206,6 +212,8 @@ export const planContact = (
     swung: false,
     timingError,
     contact: { x: best.s.pos.x, y: best.s.pos.y, z: best.s.pos.z },
+    volley: best.volley,
+    feasible: best.feasible,
   };
 };
 

@@ -1,5 +1,5 @@
 import { type MutableRefObject, useRef, useState } from 'react';
-import type { ShotButton } from './engine/shots';
+import type { AttackKind, ShotButton } from './engine/shots';
 import type { TouchInput } from './useGameInput';
 
 const BUTTONS: { id: ShotButton; label: string; sub: string; className: string }[] = [
@@ -7,6 +7,19 @@ const BUTTONS: { id: ShotButton; label: string; sub: string; className: string }
   { id: 'drive', label: '抽', sub: '抽／殺', className: 'from-orange-400 to-red-500 shadow-red-900/40' },
   { id: 'soft', label: '軟', sub: 'Dink', className: 'from-emerald-400 to-teal-600 shadow-teal-900/40' },
 ];
+
+/** 機會球時「抽」鍵變身：直接告訴玩家這一按會打出什麼 */
+const CHANCE_FACE: Record<AttackKind, { label: string; sub: string }> = {
+  smash: { label: '殺', sub: '殺球！' },
+  punch: { label: '攔', sub: '截擊！' },
+  speedup: { label: '突', sub: '突擊！' },
+};
+
+/** 變身時的外觀用 inline style 蓋過按鈕原本的漸層，不動按鈕排版 */
+const CHANCE_STYLE = {
+  backgroundImage: 'linear-gradient(135deg, #fcd34d, #f97316 55%, #dc2626)',
+  boxShadow: '0 0 0 4px rgba(254,240,138,0.85), 0 0 26px rgba(251,146,60,0.95)',
+};
 
 const RADIUS = 56;
 
@@ -52,10 +65,13 @@ const MoveButton = ({ b, label, onPress }: { b: SpecialButton; label: string; on
 /** 手機操作：左手虛擬搖桿移動（擊球瞬間的方向 = 瞄準），右手三顆擊球鍵＋必殺鍵＋絕招鍵 */
 export const TouchControls = ({
   touch,
+  chance,
   special,
   skill,
 }: {
   touch: MutableRefObject<TouchInput>;
+  /** 機會球：這一球按抽球鍵會打出的進攻球路 */
+  chance: AttackKind | null;
   special: SpecialButton | null;
   skill: SpecialButton | null;
 }) => {
@@ -123,6 +139,7 @@ export const TouchControls = ({
             className={`touch-none flex h-[4.5rem] w-[4.5rem] flex-col items-center justify-center rounded-full bg-gradient-to-br text-white shadow-lg transition-transform ${b.className} ${
               active === b.id ? 'scale-90 ring-4 ring-white/60' : ''
             } ${i === 0 ? 'col-span-2 justify-self-center' : ''}`}
+            style={b.id === 'drive' && chance ? CHANCE_STYLE : undefined}
             onPointerDown={(e) => {
               e.currentTarget.setPointerCapture(e.pointerId);
               touch.current.held = b.id;
@@ -138,8 +155,8 @@ export const TouchControls = ({
             }}
             onContextMenu={(e) => e.preventDefault()}
           >
-            <span className="text-2xl font-black leading-none">{b.label}</span>
-            <span className="mt-0.5 text-[10px] font-semibold opacity-90">{b.sub}</span>
+            <span className="text-2xl font-black leading-none">{b.id === 'drive' && chance ? CHANCE_FACE[chance].label : b.label}</span>
+            <span className="mt-0.5 text-[10px] font-semibold opacity-90">{b.id === 'drive' && chance ? CHANCE_FACE[chance].sub : b.sub}</span>
           </button>
         ))}
       </div>

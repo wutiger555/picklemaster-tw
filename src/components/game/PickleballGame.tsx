@@ -261,8 +261,10 @@ const PickleballGame = () => {
             break;
           case 'hit': {
             const perfect = e.team === 0 && e.quality !== null && e.quality >= 0.9;
+            const attack = e.team === 0 && !e.special && !e.skill && (e.kind === 'smash' || e.kind === 'punch' || e.kind === 'speedup');
             audio.hit(e.speed, perfect);
-            if (e.team === 0) buzz(e.special ? [30, 40, 60] : perfect ? 25 : 12);
+            if (attack) audio.attack(e.kind === 'smash');
+            if (e.team === 0) buzz(e.special ? [30, 40, 60] : attack ? [20, 30, 45] : perfect ? 25 : 12);
             if (perfect && e.streak >= 2) audio.streak(e.streak);
             const kmh = `${Math.round(e.speed * 3.6)} km/h`;
             if (e.team === 0) {
@@ -275,7 +277,7 @@ const PickleballGame = () => {
                     : e.quality >= 0.65
                       ? 'good'
                       : 'off';
-              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone, streak: perfect ? e.streak : 0 };
+              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone, streak: perfect ? e.streak : 0, kind: attack ? e.kind : undefined };
               setToasts([t]);
               later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900);
             } else {
@@ -334,6 +336,10 @@ const PickleballGame = () => {
             break;
           case 'cord':
             audio.cord();
+            break;
+          case 'chance':
+            audio.chance();
+            buzz(10);
             break;
           case 'highlight': {
             audio.highlight();
@@ -484,6 +490,7 @@ const PickleballGame = () => {
           {touch && !paused && (
             <TouchControls
               touch={touchRef}
+              chance={hud.phase === 'rally' ? hud.chance : null}
               special={hud.specials ? { ready: hud.energy[0] >= 100, armed: hud.armed, color: mySpecial.color, name: mySpecial.name, energy: hud.energy[0] } : null}
               skill={
                 hud.specials && hud.skill

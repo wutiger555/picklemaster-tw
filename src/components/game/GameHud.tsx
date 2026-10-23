@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { GameEngine, type HudState } from './engine/game';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
-import { SHOT_LABEL } from './engine/shots';
+import { type AttackKind, type ShotKind, SHOT_LABEL } from './engine/shots';
 import { SPECIALS } from './engine/paddles';
 import { SKILLS } from './engine/skills';
 import { CutIn, type CutInInfo } from './CutIn';
@@ -14,7 +14,35 @@ export interface Toast {
   tone: 'perfect' | 'good' | 'off' | 'plain' | 'special';
   /** 連續完美擊球數 */
   streak?: number;
+  /** 打出進攻球（殺球／推擋截擊／突擊）時才有，顯示大字戳章 */
+  kind?: ShotKind;
 }
+
+/** 機會球提示與進攻戳章的文字與配色 */
+const ATTACK: Record<AttackKind, { cue: string; stamp: string; glow: string; text: string; chip: string }> = {
+  smash: { cue: '殺球機會', stamp: 'SMASH!', glow: 'rgba(239,68,68,0.85)', text: 'text-amber-300', chip: 'from-amber-300 to-red-500' },
+  punch: { cue: '截擊機會', stamp: '攔截！', glow: 'rgba(251,146,60,0.85)', text: 'text-orange-300', chip: 'from-orange-300 to-orange-500' },
+  speedup: { cue: '突擊機會', stamp: '突擊！', glow: 'rgba(244,63,94,0.85)', text: 'text-rose-300', chip: 'from-rose-300 to-rose-500' },
+};
+
+const isAttack = (k: ShotKind | null | undefined): k is AttackKind => k === 'smash' || k === 'punch' || k === 'speedup';
+
+/** 機會球提示：告訴玩家「現在按抽球鍵就是殺球／截擊／突擊」；已經按著就顯示就緒 */
+const ChanceCue = ({ kind, ready, touch }: { kind: AttackKind; ready: boolean; touch: boolean }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 1.5 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.9 }}
+    transition={{ type: 'spring', stiffness: 520, damping: 20 }}
+    className={`flex items-center gap-1.5 rounded-full bg-gradient-to-r px-3 py-1.5 font-black text-slate-950 shadow-lg md:px-4 ${ATTACK[kind].chip} ${ready ? '' : 'animate-pulse'}`}
+    style={{ boxShadow: `0 0 22px ${ATTACK[kind].glow}` }}
+  >
+    <span className="text-sm italic md:text-lg">{ATTACK[kind].cue}！</span>
+    <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-xs text-white">
+      {ready ? '就緒 · 自動出手' : touch ? '按「抽」' : '按 K'}
+    </span>
+  </motion.div>
+);
 
 export interface PointCard {
   id: number;
@@ -240,7 +268,28 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       <div className="absolute inset-x-0 top-[38%] flex justify-center">
         <AnimatePresence>
           {toasts.slice(-1).map((t) =>
-            t.tone === 'perfect' ? (
+            isAttack(t.kind) ? (
+              // 進攻球：大字戳章（殺球最大）
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, scale: 2.6, rotate: -10 }}
+                animate={{ opacity: 1, scale: 1, rotate: -5 }}
+                exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                transition={{ type: 'spring', stiffness: 560, damping: 16 }}
+                className="flex flex-col items-center"
+              >
+                <span
+                  className={`font-display font-black italic tracking-tight ${ATTACK[t.kind].text} ${t.kind === 'smash' ? 'text-5xl md:text-6xl' : 'text-4xl md:text-5xl'}`}
+                  style={{ textShadow: `0 0 20px ${ATTACK[t.kind].glow}, 3px 3px 0 #000` }}
+                >
+                  {ATTACK[t.kind].stamp}
+                </span>
+                <span className="mt-0.5 rounded-full bg-black/55 px-3 py-0.5 text-xs font-bold text-white">
+                  {t.text}
+                  {t.sub && <span className="ml-2 opacity-70">{t.sub}</span>}
+                </span>
+              </motion.div>
+            ) : t.tone === 'perfect' ? (
               // 完美擊球：金色大字戳章，帶連擊數
               <motion.div
                 key={t.id}
@@ -323,6 +372,15 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 機會球提示：獨立一塊，手機版靠左放在搖桿上方，避開右側的必殺／絕招鍵 */}
+      <div className={`absolute flex ${touch ? 'bottom-[17.5rem] left-3 landscape:bottom-[10.5rem]' : 'inset-x-0 bottom-[6.5rem] justify-center'}`}>
+        <AnimatePresence>
+          {hud.chance && hud.phase === 'rally' && (
+            <ChanceCue key={hud.chance} kind={hud.chance} ready={hud.aimKind === hud.chance} touch={touch} />
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* 下方：發球提示、蓄力、廚房警示 */}
       <div className={`absolute inset-x-0 flex flex-col items-center gap-2 px-3 ${touch ? 'top-[7.5rem]' : 'bottom-5'}`}>

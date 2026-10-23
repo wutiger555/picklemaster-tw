@@ -228,30 +228,36 @@ const Rig = ({
 };
 
 /**
- * 預先編譯著色器、上傳貼圖：平常藏起來的東西（招式特效、地面痕跡）第一次出現時才編譯會當場卡住。
- * gl.compile 只走看得見的物件，所以先全部打開、編完再還原。選手模型是非同步載入的，物件數變了就再做一次。
+ * 預先編譯著色器、上傳貼圖：平常藏起來的東西（招式特效、分身球、地面痕跡）第一次出現時才編譯會當場卡住。
+ * gl.compile 只走看得見的物件，所以先全部打開、編完再還原。模型與貼圖是非同步載入的，
+ * 物件數或貼圖變了（貼圖晚到也會換著色器）就再做一次。
  */
 const Prewarm = () => {
   const { gl, scene, camera } = useThree();
-  const seen = useRef(-1);
+  const seen = useRef('');
   const tick = useRef(0);
   useFrame(() => {
     if (tick.current++ % 30 !== 1) return;
     let count = 0;
-    scene.traverse(() => count++);
-    if (count === seen.current) return;
-    seen.current = count;
-    const hidden: THREE.Object3D[] = [];
     const textures = new Set<THREE.Texture>();
+    scene.traverse((o) => {
+      count++;
+      const mat = (o as THREE.Mesh).material;
+      for (const m of Array.isArray(mat) ? mat : mat ? [mat] : []) {
+        for (const v of Object.values(m)) if (v instanceof THREE.Texture) textures.add(v);
+      }
+    });
+    let ver = 0;
+    for (const t of textures) ver += t.version;
+    const sig = `${count}/${textures.size}/${ver}`;
+    if (sig === seen.current) return;
+    seen.current = sig;
+    const hidden: THREE.Object3D[] = [];
     scene.traverse((o) => {
       // 燈光不能打開：燈的數量會寫進著色器，數量不同就等於編了一份用不到的
       if (!o.visible && !(o as THREE.Light).isLight) {
         hidden.push(o);
         o.visible = true;
-      }
-      const mat = (o as THREE.Mesh).material;
-      for (const m of Array.isArray(mat) ? mat : mat ? [mat] : []) {
-        for (const v of Object.values(m)) if (v instanceof THREE.Texture) textures.add(v);
       }
     });
     gl.compile(scene, camera);

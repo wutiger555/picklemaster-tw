@@ -40,6 +40,7 @@ import {
 } from './rules';
 import { type AIProfile, type AIState, type Difficulty, AI_PROFILES, chooseShot, createAI, homePosition, planContact, steer } from './ai';
 import { type V3, v3, clamp, clone, gauss, len } from './vec';
+import { REPLAY_STRIDE, ReplayTape } from './replay';
 
 export type GameMode = 'match' | 'dink';
 /**
@@ -184,6 +185,11 @@ export interface RallyState {
   dinkChain: number;
   /** 這一分哪一隊飛撲救回過球（拿下這分就是精彩好球） */
   diveSaved: [boolean, boolean];
+  /** 這一分雙方最近一次放必殺、飛撲救球的時間（沒有就是 -1，精彩重播對準這一刻） */
+  specialAt: [number, number];
+  diveAt: [number, number];
+  /** 這一分雙方有沒有在覺醒中擊球 */
+  awakened: [boolean, boolean];
 }
 
 export interface TeamStats {
@@ -245,7 +251,11 @@ export type GameEvent =
       call: string;
       sideOut: boolean;
       rallyHits: number;
+      /** 精彩球（致勝球、必殺、覺醒中得分、長連擊、撲救成功）的標籤，平凡的一分是 null */
+      highlight: string | null;
     }
+  /** 精彩重播開始 */
+  | { type: 'replay'; label: string }
   | { type: 'highlight'; text: string }
   /** 機會球出現（每顆來球只發一次，給音效與震動） */
   | { type: 'chance'; kind: AttackKind }
@@ -291,6 +301,8 @@ export interface HudState {
   diving: boolean;
   /** 雙方剩下的電視輔助判決次數 */
   challenges: [number, number];
+  /** 精彩重播中：這一球的標籤 */
+  replay: string | null;
   /** 電視輔助判決進行中 */
   review: {
     state: 'offer' | 'reviewing';
@@ -392,6 +404,12 @@ const SWING_TOTAL = PLAYER.swingWindup + PLAYER.swingFollow;
 const IDEAL_FWD = 0.3;
 const IDEAL_LAT = 0.55;
 const POINT_PAUSE = 2.1;
+/**
+ * 精彩重播：從關鍵一拍前 0.6 秒播到後 0.7 秒，關鍵一拍附近最慢，整段約 2.5 秒；
+ * 在得分慶祝鏡頭（約 1.9 秒）之後、下一分發球之前播
+ */
+const REPLAY = { before: 0.6, after: 0.7, slow: 0.32, fast: 0.7, maxReal: 3.2 } as const;
+export type ReplayAngle = 'side' | 'low';
 /** 擊球輔助自動抓時機的品質：「漂亮」等級，關掉輔助自己抓到「完美」才打得更穩 */
 const ASSIST_QUALITY = 0.78;
 /** auto 操作：按下到擊球超過這麼久就是「蓄滿」 */
@@ -507,6 +525,17 @@ export class GameEngine {
   celebration: { team: Team; start: number; big: boolean } | null = null;
   /** 電視輔助判決 */
   review: ReviewState | null = null;
+  /** 精彩重播（真實時間 start；t 是重播到的比賽時間） */
+  replay: { label: string; team: Team; start: number; t: number; to: number; key: number; angle: ReplayAngle } | null = null;
+  /** 每次重播開始、結束都加一：畫面看到變了就清掉拖尾（球會瞬移） */
+  replayCuts = 0;
+  /** 這一分是精彩球：分數結算後要重播 */
+  private pendingReplay: { label: string; team: Team; key: number } | null = null;
+  private replayCount = 0;
+  private tape = new ReplayTape(2, this.freshRally());
+  private tapeTick = 0;
+  /** 這一分走過電視輔助判決（已經看過重播，不再播精彩重播） */
+  private reviewedPoint = false;
   challenges: [number, number] = [CHALLENGES, CHALLENGES];
   private lastCall: LineCall | null = null;
   /** 最近 3.5 秒的球路（重播用） */
@@ -631,6 +660,9 @@ export class GameEngine {
       atp: false,
       dinkChain: 0,
       diveSaved: [false, false],
+      specialAt: [-1, -1],
+      diveAt: [-1, -1],
+      awakened: [false, false],
     };
   }
 
@@ -653,6 +685,9 @@ export class GameEngine {
     this.lastCall = null;
     this.ballHistory = [];
     this.skillShot = null;
+    this.tape.clear();
+    this.pendingReplay = null;
+    this.reviewedPoint = false;
     for (const a of this.athletes) {
       a.vel = v3();
       a.swing = idleSwing();
@@ -782,6 +817,10 @@ export class GameEngine {
     if (this.cinematic && this.real > this.slowUntil) this.cinematic = null;
     if (this.awakening && this.real - this.awakening.start > 2) this.awakening = null;
     this.input = input;
+    if (this.replay) {
+      this.updateReplay(realDt);
+      return;
+    }
     // 電視輔助判決中：比賽暫停，只跑重播
     if (this.review) {
       this.updateReview();
@@ -805,11 +844,13 @@ export class GameEngine {
     this.refreshHumanPath();
 
     this.acc += dt;
-    while (this.acc >= PHYSICS_DT) {
+    // 一分打完接著開始精彩重播時就停下來，剩下的時間不再推進（重播自己設定畫面狀態）
+    while (this.acc >= PHYSICS_DT && !this.replay) {
       this.acc -= PHYSICS_DT;
       this.fixedStep(PHYSICS_DT);
     }
-    this.alpha = this.acc / PHYSICS_DT;
+    if (this.replay) this.acc = 0;
+    else this.alpha = this.acc / PHYSICS_DT;
   }
 
   private fixedStep(dt: number) {
@@ -845,6 +886,7 @@ export class GameEngine {
       }
     }
 
+    if ((this.phase === 'rally' || this.phase === 'dead') && ++this.tapeTick % REPLAY_STRIDE === 0) this.tape.record(this);
     if (this.phase === 'dead' && this.time >= this.phaseUntil) this.nextPoint();
   }
 
@@ -1521,7 +1563,12 @@ export class GameEngine {
     r.lastKindByTeam[a.team] = plan.kind;
     r.atp = false;
     r.dinkChain = plan.kind === 'dink' && !popped ? r.dinkChain + 1 : 0;
-    if (diving) r.diveSaved[a.team] = true;
+    if (diving) {
+      r.diveSaved[a.team] = true;
+      r.diveAt[a.team] = this.time;
+    }
+    if (fire) r.specialAt[a.team] = this.time;
+    if (a.awakenHits > 0) r.awakened[a.team] = true;
     if (this.mode === 'match' && (r.dinkChain === 6 || r.dinkChain === 10)) {
       this.emit({ type: 'highlight', text: r.dinkChain === 6 ? `Dink 對決 ×${r.dinkChain}：比耐心！` : `Dink ×${r.dinkChain}！誰先沉不住氣？` });
     }
@@ -2013,6 +2060,7 @@ export class GameEngine {
         }
       } else this.challenges[rv.challenger] -= 1;
     }
+    this.reviewedPoint = true;
     this.phase = 'rally';
     this.finishRally(winner, reason, faultTeam);
   }
@@ -2047,6 +2095,8 @@ export class GameEngine {
       if (a.team === winner && faultTeam === null) this.gainEnergy(a, ENERGY.winner);
     }
     this.celebration = { team: winner, start: this.real, big };
+    const highlight = this.highlightOf(winner, reason, faultTeam);
+    this.pendingReplay = highlight;
 
     let title: string;
     let lesson: string | null = null;
@@ -2080,7 +2130,73 @@ export class GameEngine {
       call: this.mode === 'match' ? scoreCall(this.match) : String(this.dinkStreak),
       sideOut,
       rallyHits: r.hits,
+      highlight: highlight?.label ?? null,
     });
+  }
+
+  /**
+   * 這一分算不算精彩球（要重播、可以存成影片）：自己的必殺得分、撲救成功、覺醒中得分、致勝球，
+   * 或不管誰贏的 10 拍以上長連擊。示範賽、練習模式、走過判決重播的不算。
+   */
+  private highlightOf(winner: Team, reason: PointReason, faultTeam: Team | null): { label: string; team: Team; key: number } | null {
+    const h = this.human;
+    if (this.mode !== 'match' || h.ai || this.reviewedPoint) return null;
+    const r = this.rally;
+    const me = h.team;
+    const won = winner === me;
+    const last = r.lastHitTime;
+    if (won && r.specialAt[me] >= 0) return { label: `必殺 ${SPECIALS[h.paddle.special].name}`, team: me, key: r.specialAt[me] };
+    if (won && r.diveAt[me] >= 0) return { label: '飛身神救球', team: me, key: r.diveAt[me] };
+    if (won && r.awakened[me]) return { label: '覺醒得分', team: me, key: last };
+    if (r.hits >= COMBO_STEP) return { label: `${r.hits} HIT 連擊`, team: winner, key: last };
+    if (won && faultTeam === null) return { label: reason === 'ace' ? '發球 ACE' : '致勝球', team: me, key: last };
+    return null;
+  }
+
+  private startReplay() {
+    const p = this.pendingReplay!;
+    this.pendingReplay = null;
+    const span = this.tape.span();
+    if (!span) return false;
+    const from = Math.max(span[0], p.key - REPLAY.before);
+    const to = Math.min(span[1], p.key + REPLAY.after);
+    if (to - from < 0.5) return false;
+    this.tape.begin(this);
+    this.replay = { label: p.label, team: p.team, start: this.real, t: from, to, key: p.key, angle: this.replayCount++ % 2 ? 'low' : 'side' };
+    this.replayCuts++;
+    this.celebration = null;
+    this.tape.show(this, from);
+    this.emit({ type: 'replay', label: p.label });
+    return true;
+  }
+
+  /** 重播的時間流速：關鍵一拍附近最慢 */
+  private replayRate() {
+    const rp = this.replay!;
+    const d = Math.abs(rp.t - (rp.key + 0.1));
+    const k = clamp((d - 0.15) / 0.25, 0, 1);
+    return REPLAY.slow + (REPLAY.fast - REPLAY.slow) * k * k * (3 - 2 * k);
+  }
+
+  private updateReplay(realDt: number) {
+    const rp = this.replay!;
+    this.timeScale = this.replayRate();
+    rp.t += realDt * this.timeScale;
+    if (rp.t >= rp.to || this.real - rp.start > REPLAY.maxReal) {
+      this.skipReplay();
+      return;
+    }
+    this.tape.show(this, rp.t);
+  }
+
+  /** 跳過（或播完）重播：換回現場，進下一分 */
+  skipReplay() {
+    if (!this.replay) return;
+    this.replay = null;
+    this.replayCuts++;
+    this.tape.end(this);
+    this.timeScale = 1;
+    this.nextPoint();
   }
 
   /** 覺醒量表：連丟分慢慢累積，落後 3 分以上直接集滿；量表只增不減 */
@@ -2097,6 +2213,7 @@ export class GameEngine {
   }
 
   private nextPoint() {
+    if (this.pendingReplay && this.startReplay()) return;
     if (this.match.winner !== null) {
       this.phase = 'over';
       this.emit({ type: 'gameOver', winner: this.match.winner });
@@ -2214,6 +2331,7 @@ export class GameEngine {
       diving: !!h.dive,
       challenges: [this.challenges[0], this.challenges[1]],
       review: this.reviewHud(),
+      replay: this.replay?.label ?? null,
     };
   }
 
@@ -2237,7 +2355,7 @@ export class GameEngine {
   aimPreview(): { target: V3; kind: ShotKind } | null {
     const h = this.human;
     const sw = h.swing;
-    if (sw.state !== 'charging') return null;
+    if (sw.state !== 'charging' || this.replay) return null;
     const opponent = this.opponentOf(h).pos;
     if (sw.button === 'serve') {
       return previewTarget({

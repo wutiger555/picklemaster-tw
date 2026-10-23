@@ -16,6 +16,8 @@ export interface Toast {
   streak?: number;
   /** 打出進攻球（殺球／推擋截擊／突擊）時才有，顯示大字戳章 */
   kind?: ShotKind;
+  /** 飛身撲接救回來的 */
+  dive?: boolean;
 }
 
 /** 機會球提示與進攻戳章的文字與配色 */
@@ -41,6 +43,21 @@ const ChanceCue = ({ kind, ready, touch }: { kind: AttackKind; ready: boolean; t
     <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-xs text-white">
       {ready ? '就緒 · 自動出手' : touch ? '按「抽」' : '按 K'}
     </span>
+  </motion.div>
+);
+
+/** 撲接提示：跑不到了，但撲得到 */
+const DiveCue = ({ touch }: { touch: boolean }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 1.5, x: -12 }}
+    animate={{ opacity: 1, scale: 1, x: 0 }}
+    exit={{ opacity: 0, scale: 0.9 }}
+    transition={{ type: 'spring', stiffness: 560, damping: 20 }}
+    className="flex animate-pulse items-center gap-1.5 rounded-full bg-gradient-to-r from-cyan-200 to-sky-500 px-3 py-1.5 font-black text-slate-950 shadow-lg md:px-4"
+    style={{ boxShadow: '0 0 22px rgba(34,211,238,0.85)' }}
+  >
+    <span className="text-sm italic md:text-lg">跑不到！撲過去</span>
+    <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-xs text-white">{touch ? '點「撲」' : '按 Shift'}</span>
   </motion.div>
 );
 
@@ -268,7 +285,28 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       <div className="absolute inset-x-0 top-[38%] flex justify-center">
         <AnimatePresence>
           {toasts.slice(-1).map((t) =>
-            isAttack(t.kind) ? (
+            t.dive ? (
+              // 飛身撲接救回來：漫畫風大字
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, scale: 2.8, rotate: 10 }}
+                animate={{ opacity: 1, scale: 1, rotate: 4 }}
+                exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                transition={{ type: 'spring', stiffness: 540, damping: 15 }}
+                className="flex flex-col items-center"
+              >
+                <span
+                  className="font-display text-5xl font-black italic tracking-tight text-cyan-200 md:text-6xl"
+                  style={{ textShadow: '0 0 22px rgba(34,211,238,0.9), 3px 3px 0 #000, -1px -1px 0 #000' }}
+                >
+                  神救球！
+                </span>
+                <span className="mt-0.5 rounded-full bg-black/55 px-3 py-0.5 text-xs font-bold text-cyan-50">
+                  {t.text}
+                  <span className="ml-2 opacity-70">快爬起來！</span>
+                </span>
+              </motion.div>
+            ) : isAttack(t.kind) ? (
               // 進攻球：大字戳章（殺球最大）
               <motion.div
                 key={t.id}
@@ -379,6 +417,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
           {hud.chance && hud.phase === 'rally' && (
             <ChanceCue key={hud.chance} kind={hud.chance} ready={hud.aimKind === hud.chance} touch={touch} />
           )}
+          {!hud.chance && hud.dive && hud.phase === 'rally' && <DiveCue key="dive" touch={touch} />}
         </AnimatePresence>
       </div>
 

@@ -21,6 +21,15 @@ const CHANCE_STYLE = {
   boxShadow: '0 0 0 4px rgba(254,240,138,0.85), 0 0 26px rgba(251,146,60,0.95)',
 };
 
+/** 撲接鍵：平常低調，跑不到但撲得到時亮起來 */
+const DIVE_STYLE = {
+  idle: { backgroundImage: 'linear-gradient(135deg, #67e8f9, #0284c7 60%, #1e3a8a)' },
+  hint: {
+    backgroundImage: 'linear-gradient(135deg, #fef08a, #22d3ee 50%, #2563eb)',
+    boxShadow: '0 0 0 4px rgba(165,243,252,0.85), 0 0 26px rgba(34,211,238,0.95)',
+  },
+};
+
 const RADIUS = 56;
 
 interface SpecialButton {
@@ -62,18 +71,21 @@ const MoveButton = ({ b, label, onPress }: { b: SpecialButton; label: string; on
   );
 };
 
-/** 手機操作：左手虛擬搖桿移動（擊球瞬間的方向 = 瞄準），右手三顆擊球鍵＋必殺鍵＋絕招鍵 */
+/** 手機操作：左手虛擬搖桿移動（擊球瞬間的方向 = 瞄準），右手三顆擊球鍵＋撲接鍵＋必殺鍵＋絕招鍵 */
 export const TouchControls = ({
   touch,
   chance,
   special,
   skill,
+  dive,
 }: {
   touch: MutableRefObject<TouchInput>;
   /** 機會球：這一球按抽球鍵會打出的進攻球路 */
   chance: AttackKind | null;
   special: SpecialButton | null;
   skill: SpecialButton | null;
+  /** 撲接：hint = 跑不到但撲得到；busy = 撲出去、還沒爬起來 */
+  dive: { hint: boolean; busy: boolean };
 }) => {
   const [knob, setKnob] = useState({ x: 0, y: 0 });
   const [active, setActive] = useState<ShotButton | null>(null);
@@ -125,12 +137,23 @@ export const TouchControls = ({
         />
       </div>
       <div className="pointer-events-auto flex flex-col items-end gap-3">
-        {(special || skill) && (
-          <div className="flex gap-3">
-            {skill && <MoveButton b={skill} label="絕招" onPress={() => void (touch.current.skill = true)} />}
-            {special && <MoveButton b={special} label="必殺" onPress={() => void (touch.current.special = true)} />}
-          </div>
-        )}
+        <div className="flex items-end gap-3">
+          <button
+            type="button"
+            onPointerDown={() => void (touch.current.dive = true)}
+            onContextMenu={(e) => e.preventDefault()}
+            aria-label="撲接（飛身救球）"
+            className={`touch-none flex h-16 w-16 flex-col items-center justify-center rounded-full text-white shadow-lg transition-transform ${
+              dive.hint ? 'scale-110 animate-pulse' : ''
+            } ${dive.busy ? 'opacity-40' : ''}`}
+            style={dive.hint ? DIVE_STYLE.hint : DIVE_STYLE.idle}
+          >
+            <span className="text-xl font-black leading-none">撲</span>
+            <span className="mt-0.5 text-[9px] font-bold leading-none opacity-90">{dive.hint ? '撲過去！' : '撲救'}</span>
+          </button>
+          {skill && <MoveButton b={skill} label="絕招" onPress={() => void (touch.current.skill = true)} />}
+          {special && <MoveButton b={special} label="必殺" onPress={() => void (touch.current.special = true)} />}
+        </div>
       <div className="grid grid-cols-2 gap-3">
         {BUTTONS.map((b, i) => (
           <button

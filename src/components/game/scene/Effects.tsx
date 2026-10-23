@@ -275,6 +275,9 @@ const COLOR = (hex: string) => new THREE.Color(hex);
 const FIRE_A = COLOR('#fff1a8');
 const FIRE_B = COLOR('#ff3d00');
 const SPARK = COLOR('#fff7cc');
+/** 撲倒揚起的球場灰塵 */
+const DUST_A = COLOR('#9c8f7a');
+const DUST_B = COLOR('#4a4136');
 const SPECIAL_COLORS: Record<SpecialId, [THREE.Color, THREE.Color]> = {
   inferno: [FIRE_A, FIRE_B],
   thunder: [COLOR('#ffffff'), COLOR('#3d6bff')],
@@ -398,6 +401,10 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
         ring(p, SPECIALS[e.special].color, 4, false, 0.6);
         flash(p, SPECIALS[e.special].glow, 6);
         ballTrail.clear();
+      } else if (e.dive) {
+        // 飛身救球：青色光環
+        ring(p, '#67e8f9', 1.8, false, 0.45);
+        flash(p, '#cffafe', 3);
       } else if (e.quality !== null && e.quality >= 0.9 && e.team === 0) {
         // 完美擊球：金色星爆＋光環
         ring(p, '#fde047', 1.6, false, 0.4);
@@ -477,6 +484,18 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       const p = new THREE.Vector3(a.pos.x, 1.1, a.pos.z);
       const [c1, c2] = SPECIAL_COLORS[e.id];
       pool.emit({ pos: p, count: 60, speed: 5, life: 0.7, size: 0.16, color: c1, color2: c2 });
+    } else if (e.type === 'dive') {
+      // 蹬地起跳：腳下一小撮土
+      const p = tmp.set(e.pos.x, 0.03, e.pos.z).clone();
+      pool.emit({ pos: p, count: 14, speed: 1.6, up: 0.5, life: 0.4, size: 0.12, grow: 1.4, color: DUST_A, color2: DUST_B, gravity: 1.5, drag: 3 });
+    } else if (e.type === 'diveLand') {
+      // 撲倒落地：一大片揚塵往撲的方向噴，地上一圈衝擊波
+      const a = engine.athletes[e.team];
+      const p = tmp.set(e.pos.x, 0.04, e.pos.z).clone();
+      const dir = a.dive ? dirTmp.set(a.dive.dir.x, 0.25, a.dive.dir.z).normalize() : undefined;
+      pool.emit({ pos: p, count: 70, speed: 3.2, up: 0.9, life: 0.85, size: 0.22, grow: 2, color: DUST_A, color2: DUST_B, gravity: 1.2, drag: 3 });
+      if (dir) pool.emit({ pos: p, count: 40, speed: 4.5, dir, spread: 0.6, life: 0.7, size: 0.16, grow: 1.6, color: DUST_A, color2: DUST_B, gravity: 1, drag: 3.5 });
+      ring(p, '#b8ab96', 2.4, true, 0.45);
     } else if (e.type === 'net') {
       pool.emit({ pos: tmp.set(e.pos.x, e.pos.y, e.pos.z).clone(), count: 8, speed: 1.5, life: 0.3, size: 0.06, color: COLOR('#e2e8f0'), gravity: -5 });
     }

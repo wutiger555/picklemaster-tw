@@ -140,6 +140,9 @@ export const ControlsHelp = ({ touch, controls }: { touch: boolean; controls: Co
         <Key>空白鍵</Key> 能量滿時蓄勢，下一拍放出必殺；接必殺球時抓到「完美」就能破解
       </li>
       <li className="flex flex-wrap items-center gap-1.5">
+        <Key>Shift</Key> 飛身撲接：跑不到的球撲過去救，觸及很遠，但回球又軟又高，撲完要倒地爬起來
+      </li>
+      <li className="flex flex-wrap items-center gap-1.5">
         <Key>U</Key> 角色絕招（每人一招招牌打法），用掉後打完 4 分再充好
       </li>
       <li className="flex flex-wrap items-center gap-1.5">

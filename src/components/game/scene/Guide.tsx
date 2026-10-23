@@ -68,7 +68,7 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
     const t = clock.current;
     const g = engine.guide;
     const h = engine.human;
-    const live = engine.phase === 'rally' && !h.ai;
+    const live = engine.phase === 'rally' && !h.ai && !engine.replay;
 
     // 站位圈：輔助模式時是「自動跑過去的目標」，手動模式是「建議站這裡」
     if (stand.current) {

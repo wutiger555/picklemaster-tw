@@ -19,6 +19,8 @@ import { useGameInput } from './useGameInput';
 import { GameAudio } from './audio';
 import { ChallengeIntro } from './ShareCard';
 import { type Challenge, decodeChallenge, emptyHighlights, trackHit } from './share';
+import { ClipRecorder, clipMime } from './clip';
+import { type ClipStatus, SaveClipButton } from './HighlightClip';
 
 const RECORDS_KEY = 'pm-game-records';
 const SETTINGS_KEY = 'pm-game-settings';
@@ -92,6 +94,18 @@ const detectLowSpec = () => {
 
 type Screen = 'menu' | 'character' | 'paddle' | 'play' | 'over';
 
+/** 下載影片（不支援分享檔案的瀏覽器，例如桌機 Firefox） */
+const downloadFile = (file: File) => {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = file.name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+};
+
 const PickleballGame = () => {
   const [screen, setScreen] = useState<Screen>('menu');
   // 開場標題：每次進遊戲頁播一次
@@ -139,6 +153,12 @@ const PickleballGame = () => {
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [intro, setIntro] = useState(false);
   const highlights = useRef(emptyHighlights());
+  // 精彩球錄影：瀏覽器不支援錄影（mime 是 null）就整個不出現
+  const [recMime] = useState(clipMime);
+  const [recorder, setRecorder] = useState<ClipRecorder | null>(null);
+  const [clip, setClip] = useState<{ id: number; label: string; status: ClipStatus } | null>(null);
+  /** 這一球的影片：收尾中是 promise，好了另外放一份，點按鈕時可以同步呼叫分享（Safari 要求在點擊當下） */
+  const clipFile = useRef<{ id: number; label: string; file: Promise<File | null> | null; ready: File | null } | null>(null);
 
   const playing = screen === 'play';
   const togglePause = useCallback(() => setPaused((p) => (screen === 'play' ? !p : p)), [screen]);
@@ -171,6 +191,31 @@ const PickleballGame = () => {
   useEffect(() => {
     if (import.meta.env.DEV) (window as unknown as { __pmGame?: GameEngine }).__pmGame = engine;
   }, [engine]);
+
+  // 開打就開始錄（保留最近幾秒），離開比賽畫面就停
+  useEffect(() => {
+    if (!playing || !recMime) return;
+    const r = new ClipRecorder(recMime, { lowSpec, audio: audio.captureTrack() });
+    setRecorder(r);
+    if (import.meta.env.DEV) (window as unknown as { __pmClip?: ClipRecorder }).__pmClip = r;
+    return () => {
+      r.dispose();
+      setRecorder(null);
+    };
+  }, [playing, engine, recMime, lowSpec, audio]);
+
+  useEffect(() => recorder?.setPaused(paused), [recorder, paused]);
+
+  // 精彩重播時按任意鍵跳過（暫停鍵除外）
+  const replaying = !!hud.replay;
+  useEffect(() => {
+    if (!replaying || paused) return;
+    const down = (e: KeyboardEvent) => {
+      if (e.code !== 'Escape' && e.code !== 'KeyP' && !e.repeat) engine.skipReplay();
+    };
+    window.addEventListener('keydown', down);
+    return () => window.removeEventListener('keydown', down);
+  }, [replaying, paused, engine]);
 
   // HUD 不需要每幀重繪：約 15 Hz 讀一次引擎狀態，有變才更新
   useEffect(() => {
@@ -421,6 +466,13 @@ const PickleballGame = () => {
           }
           case 'point': {
             const won = e.winner === 0;
+            if (recorder && e.highlight) {
+              // 漂亮的一分：留住這段錄影，重播播完（下一分發球）再收尾
+              recorder.hold();
+              const c = { id: ++ids.current, label: e.highlight, status: 'cutting' as const };
+              clipFile.current = { id: c.id, label: c.label, file: null, ready: null };
+              setClip(c);
+            }
             audio.point(won);
             if (e.faultTeam === null) audio.cheer(e.rallyHits > 8);
             // 球評：出界、掛網直接講；長來回贏球大讚；自己失誤就打氣
@@ -455,6 +507,13 @@ const PickleballGame = () => {
           case 'closeCall':
             audio.whoosh();
             break;
+          case 'replay':
+            audio.whoosh();
+            break;
+          case 'serveReady':
+            if (recorder?.held) cutClip(true);
+            else recorder?.restart();
+            break;
           case 'reviewStart':
             audio.highlight();
             audio.say('review', { priority: true, cooldown: 0 });
@@ -467,14 +526,61 @@ const PickleballGame = () => {
             audio.cheer(e.overturned);
             break;
           case 'gameOver':
+            if (recorder?.held) cutClip(false);
             finish(engine);
             break;
           default:
         }
       }
     },
-    [screen, audio, engine, finish, characters, touch],
+    // cutClip 只讀 ref 和 recorder
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [screen, audio, engine, finish, characters, touch, recorder],
   );
+
+  /** 收尾這一球的影片；比賽中的按鈕留 12 秒（結算畫面上一直留著） */
+  function cutClip(expire: boolean) {
+    const c = clipFile.current;
+    if (!recorder || !c || c.file) return;
+    c.file = recorder.finalize(`匹克硬邦幫-${c.label.replace(/\s+/g, '')}`);
+    void c.file.then((f) => {
+      c.ready = f;
+      setClip((x) => (x?.id === c.id ? (f ? { ...x, status: 'ready' } : null) : x));
+      if (expire) later(() => setClip((x) => (x?.id === c.id ? null : x)), 12_000);
+    });
+  }
+
+  /** 存下這球：能分享檔案就叫出分享選單（Threads、IG），不行就下載 */
+  const saveClip = () => {
+    const c = clipFile.current;
+    if (!c) return;
+    const mark = (status: ClipStatus) => setClip((x) => (x?.id === c.id ? { ...x, status } : x));
+    const deliver = (file: File) => {
+      if (navigator.canShare?.({ files: [file] })) {
+        // 分享選單會蓋住畫面：比賽先暫停
+        if (screen === 'play') setPaused(true);
+        const text = `${c.label}！來 #匹克硬邦幫 打一場 ${window.location.origin}/game/`;
+        navigator.share({ files: [file], text }).then(
+          () => mark('shared'),
+          (err: unknown) => {
+            if ((err as DOMException)?.name === 'AbortError') return;
+            downloadFile(file);
+            mark('saved');
+          },
+        );
+        return;
+      }
+      downloadFile(file);
+      mark('saved');
+    };
+    if (c.ready) {
+      deliver(c.ready);
+      return;
+    }
+    // 重播還沒播完就按：現在就收尾
+    if (!c.file) cutClip(screen === 'play');
+    void c.file?.then((f) => f && deliver(f));
+  };
 
   const start = (s: Settings = settings) => {
     audio.unlock();
@@ -493,6 +599,8 @@ const PickleballGame = () => {
     const opp = pickOpponent(mine.id);
     e.setSkills([mine.skill, opp.skill]);
     highlights.current = emptyHighlights();
+    clipFile.current = null;
+    setClip(null);
     setEngine(e);
     setCharacters([mine, opp]);
     setHud(e.hud());
@@ -552,7 +660,16 @@ const PickleballGame = () => {
           onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
           flipflops={3}
         />
-        <GameScene engine={engine} characters={characters} readInput={read} paused={paused || screen === 'over'} onEvents={onEvents} lowSpec={lowSpec} venue={settings.venue ?? 'arena'} />
+        <GameScene
+          engine={engine}
+          characters={characters}
+          readInput={read}
+          paused={paused || screen === 'over'}
+          onEvents={onEvents}
+          lowSpec={lowSpec}
+          venue={settings.venue ?? 'arena'}
+          clip={recorder}
+        />
       </Canvas>
 
       {playing && (
@@ -570,6 +687,7 @@ const PickleballGame = () => {
             oppName={characters[1].name}
             onChallenge={() => engine.requestReview()}
             onAccept={() => engine.declineReview()}
+            onSkipReplay={() => engine.skipReplay()}
           />
           {touch && !paused && (
             <TouchControls
@@ -627,6 +745,16 @@ const PickleballGame = () => {
             </button>
           </div>
         </>
+      )}
+
+      {(playing || screen === 'over') && (
+        <div
+          className={`pointer-events-none absolute inset-x-0 z-[60] flex justify-center px-3 ${
+            touch ? 'top-[max(0.75rem,env(safe-area-inset-top))] max-md:portrait:top-[10.25rem]' : 'top-[7.75rem]'
+          }`}
+        >
+          <SaveClipButton clip={clip} onSave={saveClip} />
+        </div>
       )}
 
       {immersive && !playing && (

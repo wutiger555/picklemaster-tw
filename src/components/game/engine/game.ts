@@ -45,6 +45,24 @@ import type { Level, LevelFx, LevelHud, Puddle } from './levels';
 
 /** drill = 冒險模式的小遊戲（發球機餵球，計分交給關卡） */
 export type GameMode = 'match' | 'dink' | 'drill';
+
+/**
+ * 新手教學的練習（搭在 dink 模式上，教練站網前餵球、不回擊）：
+ * mid＝餵到玩家面前的好打球；popup＝落到玩家附近時還夠高、可以殺的高球；
+ * wide＝打到玩家跑不到、只能撲過去救的大角度球。練習中失誤不會結束，也不要求 dink 落在廚房。
+ */
+export interface Practice {
+  feed: 'mid' | 'popup' | 'wide';
+}
+
+/**
+ * 教練餵球的球路與玩家的起始站位；aimWorldX 有給就固定打到那個 x（wide 用）
+ */
+export const PRACTICE_FEED: Record<Practice['feed'], { button: ShotButton; charge: number; aimDepth: number; humanX: number; humanZ: number; aimWorldX?: number }> = {
+  mid: { button: 'drive', charge: 0.1, aimDepth: 0.4, humanX: 0.5, humanZ: 6.1 },
+  popup: { button: 'lob', charge: 0, aimDepth: -1, humanX: 0.5, humanZ: COURT.kitchen + 2.6 },
+  wide: { button: 'drive', charge: 0.1, aimDepth: 0.4, humanX: 0.8, humanZ: 5.6, aimWorldX: -1.6 },
+};
 /**
  * 擊球操作：
  * - auto：瑪利歐網球式，提早按下擊球鍵就定案，球到最佳擊球點自動揮拍，越早按蓄力越飽（預設）
@@ -570,6 +588,8 @@ export class GameEngine {
   longestRally = 0;
   /** 新手輔助：預測的落地點 */
   landingMarker: V3 | null = null;
+  /** 新手教學的練習設定；一般比賽是 null */
+  readonly practice: Practice | null;
 
   private events: GameEvent[] = [];
   private acc = 0;
@@ -612,8 +632,10 @@ export class GameEngine {
     paddles?: [string, string?];
     rand?: () => number;
     level?: Level;
+    practice?: Practice;
   }) {
     this.mode = opts.mode;
+    this.practice = opts.practice ?? null;
     this.difficulty = opts.difficulty;
     this.assist = opts.assist;
     this.controls = opts.controls ?? 'auto';
@@ -730,7 +752,8 @@ export class GameEngine {
       }
     }
     if (this.mode === 'dink') {
-      this.human.pos = v3(0.5, 0, COURT.kitchen + 0.35);
+      const df = this.practice ? PRACTICE_FEED[this.practice.feed] : null;
+      this.human.pos = df ? v3(df.humanX, 0, df.humanZ) : v3(0.5, 0, COURT.kitchen + 0.35);
       this.athletes[1].pos = v3(0, 0, -(COURT.kitchen + 0.35));
       this.match.serving = 1;
     } else if (this.mode === 'drill') {
@@ -782,11 +805,13 @@ export class GameEngine {
   private serve(a: Athlete, power: number, aimX: number) {
     const feed = this.mode === 'dink';
     this.holdBall();
+    // 教學餵球：照 PRACTICE_FEED 的球路（瞄準值 × side × 2.3 = 世界 x）
+    const df = feed && this.practice ? PRACTICE_FEED[this.practice.feed] : null;
     const req: ShotRequest = {
-      button: feed ? 'soft' : 'serve',
-      charge: feed ? 0.3 : power,
-      aimX,
-      aimDepth: 0,
+      button: !feed ? 'serve' : df ? df.button : 'soft',
+      charge: !feed ? power : df ? df.charge : 0.3,
+      aimX: df ? (df.aimWorldX !== undefined ? df.aimWorldX / (teamSide(a.team) * 2.3) : aimX * 0.5) : aimX,
+      aimDepth: df ? df.aimDepth : 0,
       contact: clone(this.ball.pos),
       incomingSpeed: 0,
       opponent: this.opponentOf(a).pos,
@@ -1991,7 +2016,7 @@ export class GameEngine {
       }
       r.bouncesSinceHit = 1;
       if (r.atp) this.emit({ type: 'highlight', text: 'ATP！繞柱球' });
-      if (this.mode === 'dink' && hitter === this.human.team) {
+      if (this.mode === 'dink' && !this.practice && hitter === this.human.team) {
         if (Math.abs(pos.z) <= COURT.kitchen) {
           this.dinkStreak += 1;
           this.emit({ type: 'dinkCount', n: this.dinkStreak });
@@ -2194,7 +2219,7 @@ export class GameEngine {
   private finishRally(winner: Team, reason: PointReason, faultTeam: Team | null) {
     if (this.phase !== 'rally') return;
     this.phase = 'dead';
-    this.phaseUntil = this.time + (this.level?.pause ?? POINT_PAUSE);
+    this.phaseUntil = this.time + (this.practice && this.mode === 'dink' ? 0.9 : (this.level?.pause ?? POINT_PAUSE));
     const r = this.rally;
     this.longestRally = Math.max(this.longestRally, r.hits);
 
@@ -2230,7 +2255,7 @@ export class GameEngine {
     if (this.mode === 'match') {
       sideOut = awardRally(this.match, winner).sideOut;
       this.fillAwaken(winner);
-    } else if (this.mode === 'dink' && (faultTeam === this.human.team || winner !== this.human.team)) {
+    } else if (this.mode === 'dink' && !this.practice && (faultTeam === this.human.team || winner !== this.human.team)) {
       this.match.winner = 1;
     }
     this.level?.rallyEnd?.(this, winner, reason, faultTeam, r.hits);
@@ -2368,6 +2393,12 @@ export class GameEngine {
       return;
     }
     const coming = this.rally.lastTeam !== a.team;
+    // 教學餵球：教練不回擊、往旁邊閃開，球落地就重新餵一顆，每球軌跡都一樣好練
+    if (coming && this.practice && this.mode === 'dink') {
+      ai.plan = null;
+      steer(a, this.ball.pos.x > 0 ? -2.6 : 2.6, a.pos.z, ai.profile.maxSpeed, dt);
+      return;
+    }
     if (!coming) {
       ai.plan = null;
       const home = homePosition(this, a);

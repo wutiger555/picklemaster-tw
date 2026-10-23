@@ -179,15 +179,37 @@ interface MenuProps {
   onTour: () => void;
   onChange: (s: Settings) => void;
   onNext: () => void;
+  onTutorial: () => void;
+  /** 教學做完過了：入口縮成一行小字 */
+  tutorialDone: boolean;
 }
 
-export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext }: MenuProps) => (
+export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onTutorial, tutorialDone }: MenuProps) => (
   <Shell>
     <div className="w-full max-w-2xl py-4">
       <div className="text-center">
         <ComicTitle className="text-5xl md:text-7xl" />
         <p className="mt-3 text-sm text-white/70">真實物理 × 熱血必殺技的匹克球對戰</p>
       </div>
+
+      {tutorialDone ? (
+        <button type="button" onClick={onTutorial} className="mx-auto mt-3 block text-xs font-semibold text-emerald-300/80 underline-offset-2 hover:text-emerald-200 hover:underline">
+          🎓 重看新手教學
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={onTutorial}
+          className="mt-5 flex w-full items-center gap-3 rounded-2xl border border-amber-300/60 bg-gradient-to-r from-amber-400/20 to-orange-500/15 p-3.5 text-left shadow-lg shadow-amber-500/10 transition-colors hover:from-amber-400/30"
+        >
+          <span className="text-3xl">🎓</span>
+          <span className="flex-1">
+            <span className="block font-black text-white">第一次玩？1 分鐘學會 5 招</span>
+            <span className="mt-0.5 block text-xs leading-relaxed text-white/70">擊球、殺球、飛身撲救、必殺技、角色絕招，每招做到一次就過</span>
+          </span>
+          <span className="rounded-full bg-amber-300 px-3 py-1.5 text-sm font-black text-amber-950">新手教學 →</span>
+        </button>
+      )}
 
       {/* 冒險模式入口：漫畫風大橫幅 */}
       <motion.button

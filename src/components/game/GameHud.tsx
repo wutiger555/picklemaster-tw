@@ -395,22 +395,26 @@ interface HudProps {
   onSkipReplay: () => void;
   /** 踢館之旅的關卡：名稱、Boss、得分彈出字 */
   level?: { name: string; boss?: { name: string; portrait: string | null }; pops: LevelPop[] };
+  /** 新手教學：不顯示比分（上方換成教學卡），提示往下移 */
+  practice?: boolean;
 }
 
-export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, onChallenge, onAccept, onSkipReplay, level }: HudProps) => {
+export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, onChallenge, onAccept, onSkipReplay, level, practice = false }: HudProps) => {
   const humanServing = hud.phase === 'serve' && hud.serving === 0 && hud.mode === 'match';
   // 判決重播時收起比分和能量條，畫面留給轉播
   const replay = hud.review?.state === 'reviewing' || hud.replay ? 'opacity-0' : '';
   return (
     <div className="pointer-events-none absolute inset-0 z-10 select-none">
       <AwakenTint hud={hud} />
-      <div className={`absolute inset-x-0 top-3 flex justify-center transition-opacity max-md:justify-start max-md:pl-3 ${replay}`}>
-        {hud.level && level ? (
-          <LevelBoard level={hud.level} name={level.name} boss={level.boss} pops={level.pops} touch={touch} />
-        ) : (
-          <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
-        )}
-      </div>
+      {!practice && (
+        <div className={`absolute inset-x-0 top-3 flex justify-center transition-opacity max-md:justify-start max-md:pl-3 ${replay}`}>
+          {hud.level && level ? (
+            <LevelBoard level={hud.level} name={level.name} boss={level.boss} pops={level.pops} touch={touch} />
+          ) : (
+            <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
+          )}
+        </div>
+      )}
 
       {/* 手機上能量改顯示在招式鍵的外圈，不再佔左上角；判決剩餘次數在申請時的提示裡也看得到 */}
       {hud.specials && !touch && (
@@ -592,7 +596,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       </div>
 
       {/* 下方：發球提示、蓄力、廚房警示 */}
-      <div className={`absolute inset-x-0 flex flex-col items-center gap-2 px-3 ${touch ? 'top-[7.5rem]' : 'bottom-5'}`}>
+      <div className={`absolute inset-x-0 flex flex-col items-center gap-2 px-3 ${touch ? (practice ? 'top-[12rem] landscape:top-[9.5rem]' : 'top-[7.5rem]') : 'bottom-5'}`}>
         {hud.inKitchen && hud.phase === 'rally' && !hud.replay && (
           <div
             className={`rounded-full px-3 py-1 text-xs font-bold shadow-lg ${

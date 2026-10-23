@@ -134,7 +134,8 @@ export const planContact = (
   const side = teamSide(a.team);
   const now = eng.time;
   const path = eng.predict(2.4);
-  const requireBounce = eng.rally.hits <= 2 || eng.mode === 'dink';
+  // Dink 挑戰只打落地球；教學練習可以截擊、空中殺球
+  const requireBounce = eng.rally.hits <= 2 || (eng.mode === 'dink' && !eng.practice);
   // 預測開始前球可能已經在這邊落地過一次
   const b0 = eng.rally.bouncesSinceHit;
 

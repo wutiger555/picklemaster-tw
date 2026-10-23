@@ -32,6 +32,21 @@ const DIVE_STYLE = {
 
 const RADIUS = 56;
 
+/** 新手教學要玩家按的那個鍵：亮黃框閃爍，旁邊掛「按這裡」 */
+export type TouchHighlight = 'stick' | 'shots' | ShotButton | 'special' | 'skill' | 'dive' | null;
+
+/** right：靠右對齊（螢幕右緣的圓鍵，置中會被切掉） */
+const Pointer = ({ right = false }: { right?: boolean }) => (
+  <span
+    className={`pointer-events-none absolute -top-7 animate-bounce whitespace-nowrap rounded-full bg-yellow-300 px-2 py-0.5 text-[11px] font-black text-slate-900 shadow-lg ${
+      right ? 'right-0' : 'left-1/2 -translate-x-1/2'
+    }`}
+  >
+    按這裡 ↓
+  </span>
+);
+const GLOW = 'ring-4 ring-yellow-300 ring-offset-2 ring-offset-transparent';
+
 interface SpecialButton {
   ready: boolean;
   armed: boolean;
@@ -42,7 +57,7 @@ interface SpecialButton {
 }
 
 /** 圓形招式鍵：外圈是能量環，集滿發光；手機上取代左上角的能量條，省畫面 */
-const MoveButton = ({ b, label, onPress }: { b: SpecialButton; label: string; onPress: () => void }) => {
+const MoveButton = ({ b, label, onPress, glow = false }: { b: SpecialButton; label: string; onPress: () => void; glow?: boolean }) => {
   const pct = b.ready ? 100 : Math.min(99, Math.floor(b.energy ?? 0));
   return (
     <button
@@ -52,7 +67,7 @@ const MoveButton = ({ b, label, onPress }: { b: SpecialButton; label: string; on
       aria-label={`${label}・${b.name}`}
       className={`touch-none relative grid h-16 w-16 place-items-center rounded-full p-[3px] transition-transform ${b.ready && !b.armed ? 'animate-pulse' : ''} ${
         b.armed ? 'scale-110' : ''
-      }`}
+      } ${glow ? GLOW : ''}`}
       style={{
         background: `conic-gradient(${b.color} ${pct}%, rgba(255,255,255,0.14) 0)`,
         boxShadow: b.ready ? `0 0 ${b.armed ? 28 : 18}px ${b.color}` : undefined,
@@ -67,6 +82,7 @@ const MoveButton = ({ b, label, onPress }: { b: SpecialButton; label: string; on
           {b.armed ? '就緒！' : b.ready ? '按我' : b.energy !== undefined ? `${pct}%` : '充能中'}
         </span>
       </span>
+      {glow && !b.armed && <Pointer right />}
     </button>
   );
 };
@@ -79,6 +95,8 @@ export const TouchControls = ({
   skill,
   awaken,
   dive,
+  highlight = null,
+  hideDive = false,
 }: {
   touch: MutableRefObject<TouchInput>;
   /** 機會球：這一球按抽球鍵會打出的進攻球路 */
@@ -89,6 +107,10 @@ export const TouchControls = ({
   awaken: SpecialButton | null;
   /** 撲接：hint = 跑不到但撲得到；busy = 撲出去、還沒爬起來 */
   dive: { hint: boolean; busy: boolean };
+  /** 新手教學：要玩家按的鍵 */
+  highlight?: TouchHighlight;
+  /** 新手教學先不放撲接鍵，畫面單純一點 */
+  hideDive?: boolean;
 }) => {
   const [knob, setKnob] = useState({ x: 0, y: 0 });
   const [active, setActive] = useState<ShotButton | null>(null);
@@ -122,7 +144,7 @@ export const TouchControls = ({
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end justify-between p-4 pb-[max(1rem,env(safe-area-inset-bottom))] select-none">
       <div
-        className="pointer-events-auto relative h-36 w-36 touch-none rounded-full border border-white/25 bg-white/10 backdrop-blur-sm"
+        className={`pointer-events-auto relative h-36 w-36 touch-none rounded-full border border-white/25 bg-white/10 backdrop-blur-sm ${highlight === 'stick' ? GLOW : ''}`}
         onPointerDown={(e) => {
           e.currentTarget.setPointerCapture(e.pointerId);
           const r = e.currentTarget.getBoundingClientRect();
@@ -138,6 +160,7 @@ export const TouchControls = ({
           className="absolute left-1/2 top-1/2 h-14 w-14 rounded-full bg-white/80 shadow-lg"
           style={{ transform: `translate(calc(-50% + ${knob.x}px), calc(-50% + ${knob.y}px))` }}
         />
+        {highlight === 'stick' && <Pointer />}
       </div>
       {/* 覺醒鍵：直拿放在搖桿上方，橫拿放在搖桿右邊（右手邊已經擠滿擊球鍵） */}
       {awaken && (
@@ -147,29 +170,34 @@ export const TouchControls = ({
       )}
       <div className="pointer-events-auto flex flex-col items-end gap-3">
         <div className="flex items-end gap-3">
+          {!hideDive && (
           <button
             type="button"
             onPointerDown={() => void (touch.current.dive = true)}
             onContextMenu={(e) => e.preventDefault()}
             aria-label="撲接（飛身救球）"
-            className={`touch-none flex h-16 w-16 flex-col items-center justify-center rounded-full text-white shadow-lg transition-transform ${
+            className={`touch-none relative flex h-16 w-16 flex-col items-center justify-center rounded-full text-white shadow-lg transition-transform ${
               dive.hint ? 'scale-110 animate-pulse' : ''
-            } ${dive.busy ? 'opacity-40' : ''}`}
+            } ${dive.busy ? 'opacity-40' : ''} ${highlight === 'dive' ? GLOW : ''}`}
             style={dive.hint ? DIVE_STYLE.hint : DIVE_STYLE.idle}
           >
             <span className="text-xl font-black leading-none">撲</span>
             <span className="mt-0.5 text-[9px] font-bold leading-none opacity-90">{dive.hint ? '撲過去！' : '撲救'}</span>
+            {highlight === 'dive' && dive.hint && <Pointer right />}
           </button>
-          {skill && <MoveButton b={skill} label="絕招" onPress={() => void (touch.current.skill = true)} />}
-          {special && <MoveButton b={special} label="必殺" onPress={() => void (touch.current.special = true)} />}
+          )}
+          {skill && <MoveButton b={skill} label="絕招" glow={highlight === 'skill'} onPress={() => void (touch.current.skill = true)} />}
+          {special && <MoveButton b={special} label="必殺" glow={highlight === 'special'} onPress={() => void (touch.current.special = true)} />}
         </div>
       <div className="grid grid-cols-2 gap-3">
-        {BUTTONS.map((b, i) => (
+        {BUTTONS.map((b, i) => {
+          const glow = highlight === b.id || highlight === 'shots';
+          return (
           <button
             key={b.id}
             type="button"
-            className={`touch-none flex h-[4.5rem] w-[4.5rem] flex-col items-center justify-center rounded-full bg-gradient-to-br text-white shadow-lg transition-transform ${b.className} ${
-              active === b.id ? 'scale-90 ring-4 ring-white/60' : ''
+            className={`touch-none relative flex h-[4.5rem] w-[4.5rem] flex-col items-center justify-center rounded-full bg-gradient-to-br text-white shadow-lg transition-transform ${b.className} ${
+              active === b.id ? 'scale-90 ring-4 ring-white/60' : glow ? GLOW : ''
             } ${i === 0 ? 'col-span-2 justify-self-center' : ''}`}
             style={b.id === 'drive' && chance ? CHANCE_STYLE : undefined}
             onPointerDown={(e) => {
@@ -189,8 +217,10 @@ export const TouchControls = ({
           >
             <span className="text-2xl font-black leading-none">{b.id === 'drive' && chance ? CHANCE_FACE[chance].label : b.label}</span>
             <span className="mt-0.5 text-[10px] font-semibold opacity-90">{b.id === 'drive' && chance ? CHANCE_FACE[chance].sub : b.sub}</span>
+            {glow && highlight !== 'shots' && <Pointer />}
           </button>
-        ))}
+          );
+        })}
       </div>
       </div>
     </div>

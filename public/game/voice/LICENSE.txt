@@ -1,0 +1,4 @@
+Taiwanese (Tâi-gí) commentator lines synthesized with the GPT-SoVITS Taiwanese model
+by KaedeTai (https://huggingface.co/KaedeTai/gpt-sovits-tw, MIT License),
+using the repo's MIT-licensed demo recording tw_samples/demo_02 as the voice reference.
+Line scripts and the generation script are in scripts/voice/.

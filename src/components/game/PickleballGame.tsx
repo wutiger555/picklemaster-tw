@@ -25,6 +25,10 @@ import { type LevelOutcome, LevelResult, StoryComic, TourMap } from './TourScree
 import type { LevelPop } from './LevelHud';
 import { ClipRecorder, clipMime } from './clip';
 import { type ClipStatus, SaveClipButton } from './HighlightClip';
+import { type LessonProgress, LESSONS, applyEvents, freshProgress, markTutorialDone, tutorialDone } from './tutorial';
+import { CoachTip, TutorialDone, TutorialPanel } from './TutorialOverlay';
+
+const TIPS_KEY = 'pm-game-tips';
 
 const RECORDS_KEY = 'pm-game-records';
 const SETTINGS_KEY = 'pm-game-settings';
@@ -169,6 +173,16 @@ const PickleballGame = () => {
   const [outcome, setOutcome] = useState<LevelOutcome | null>(null);
   const [pops, setPops] = useState<LevelPop[]>([]);
   const pearls = useRef(0);
+  // 新手教學：目前第幾關（null＝不在教學中）與進度；事件回呼裡用 ref 讀，避免拿到舊值
+  const [lesson, setLesson] = useState<number | null>(null);
+  const [cleared, setCleared] = useState(false);
+  const [lessonsDone, setLessonsDone] = useState(false);
+  const [doneBefore, setDoneBefore] = useState(tutorialDone);
+  const lessonRef = useRef<number | null>(null);
+  const progressRef = useRef<LessonProgress>(freshProgress());
+  // 比賽中的教練提示：每種只在第一次遇到時跳一次
+  const [tip, setTip] = useState<{ id: number; text: string } | null>(null);
+  const tipsSeen = useRef<string[]>(load<{ seen: string[] }>(TIPS_KEY, { seen: [] }).seen);
 
   const playing = screen === 'play';
   const togglePause = useCallback(() => setPaused((p) => (screen === 'play' ? !p : p)), [screen]);
@@ -299,6 +313,18 @@ const PickleballGame = () => {
   const later = (fn: () => void, ms: number) => {
     timers.current.push(window.setTimeout(fn, ms));
   };
+
+  const coach = (key: string, touchText: string, keyText: string) => {
+    if (tipsSeen.current.includes(key)) return;
+    tipsSeen.current = [...tipsSeen.current, key];
+    save(TIPS_KEY, { seen: tipsSeen.current });
+    const t = { id: ++ids.current, text: touch ? touchText : keyText };
+    setTip(t);
+    later(() => setTip((x) => (x?.id === t.id ? null : x)), 5000);
+  };
+
+  // 事件回呼要呼叫這兩個函式，但它們每次 render 都是新的：放進 ref，回呼就不用跟著重建
+  const latest = useRef({ coach, clearLesson: (() => {}) as (i: number) => void });
 
   const finish = useCallback(
     (eng: GameEngine) => {
@@ -475,6 +501,17 @@ const PickleballGame = () => {
         }
         return;
       }
+      const li = lessonRef.current;
+      if (li !== null) {
+        const L = LESSONS[li];
+        progressRef.current = applyEvents(L, progressRef.current, events);
+        if (progressRef.current.done) latest.current.clearLesson(li);
+        // 必殺、絕招關：每一球都補滿，沒放成功也能馬上再試
+        if (events.some((e) => e.type === 'point')) {
+          if (L.id === 'special') engine.human.energy = 100;
+          if (L.id === 'skill') engine.human.skillReady = true;
+        }
+      }
       for (const e of events) {
         switch (e.type) {
           case 'swing':
@@ -549,7 +586,13 @@ const PickleballGame = () => {
             break;
           }
           case 'energyFull':
-            if (e.team === 0) audio.energyFull();
+            if (e.team === 0) {
+              audio.energyFull();
+              if (!engine.practice) latest.current.coach('energy', '能量滿了！先點「必殺」蓄勢，下一拍就會放出必殺技', '能量滿了！先按空白鍵蓄勢，下一拍就會放出必殺技');
+            }
+            break;
+          case 'skillReady':
+            if (e.team === 0 && !engine.practice) latest.current.coach('skill', '絕招充好了！點「絕招」放出你的招牌打法', '絕招充好了！按 U 放出你的招牌打法');
             break;
           case 'awakenReady':
             if (e.team === 0) {
@@ -588,6 +631,7 @@ const PickleballGame = () => {
             audio.whoosh();
             if (e.team === 0) {
               audio.say('oops', { cooldown: 5 });
+              if (!engine.practice) latest.current.coach('whiff', '球飛來之前就先按擊球鍵，球到身邊會自動揮拍；球上的圈變金色＝蓄滿', '球飛來之前就先按 J／K／L，球到身邊會自動揮拍；球上的圈變金色＝蓄滿');
               const t: Toast = { id: ++ids.current, text: '揮空了', tone: 'off' };
               setToasts([t]);
               later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 700);
@@ -607,6 +651,10 @@ const PickleballGame = () => {
           case 'chance':
             audio.chance();
             buzz(10);
+            if (!engine.practice) {
+              if (e.kind === 'smash') latest.current.coach('smash', '地上的圈變金色＝殺球機會！按「抽」用力殺下去', '地上的圈變金色＝殺球機會！按 K 用力殺下去');
+              else latest.current.coach('attack', '圈變紅色＝網前進攻機會！按「抽」把球推過去', '圈變紅色＝網前進攻機會！按 K 把球推過去');
+            }
             break;
           case 'highlight': {
             audio.highlight();
@@ -616,6 +664,8 @@ const PickleballGame = () => {
             break;
           }
           case 'point': {
+            // 教學練習：每一球都會結束，不用報分、歡呼和說明卡
+            if (engine.practice) break;
             const won = e.winner === 0;
             if (recorder && e.highlight) {
               // 漂亮的一分：留住這段錄影，重播播完（下一分發球）再收尾
@@ -664,6 +714,8 @@ const PickleballGame = () => {
           case 'serveReady':
             if (recorder?.held) cutClip(true);
             else recorder?.restart();
+            if (e.serving === 0 && !engine.practice)
+              latest.current.coach('serve', '輪到你發球：按住任一擊球鍵蓄力，右邊力道條到綠色區時放開', '輪到你發球：按住 J／K／L 蓄力，右邊力道條到綠色區時放開（← → 調方向）');
             break;
           case 'reviewStart':
             audio.highlight();
@@ -789,7 +841,74 @@ const PickleballGame = () => {
     }
   };
 
+  /** 開始第 i 關（超過最後一關就是教學完成） */
+  const startLesson = (i: number) => {
+    setCleared(false);
+    progressRef.current = freshProgress();
+    if (i >= LESSONS.length) {
+      lessonRef.current = null;
+      setLesson(null);
+      setLessonsDone(true);
+      markTutorialDone();
+      setDoneBefore(true);
+      audio.win(true);
+      return;
+    }
+    const L = LESSONS[i];
+    const e = new GameEngine({
+      mode: 'dink',
+      difficulty: 'rookie',
+      assist: L.setup.assist,
+      controls: settings.controls ?? 'auto',
+      specials: L.setup.specials,
+      paddles: [settings.paddle],
+      practice: L.setup.practice,
+    });
+    const mine = characterById(settings.character);
+    const coachChar = pickOpponent(mine.id);
+    // 絕招關：沒有絕招的選手借「秒蹲大力一揮」來練
+    e.setSkills([L.id === 'skill' ? (mine.skill ?? 'squatSmash') : null, null]);
+    if (L.id === 'special') e.human.energy = 100;
+    lessonRef.current = i;
+    setLesson(i);
+    setLessonsDone(false);
+    setEngine(e);
+    setCharacters([mine, coachChar]);
+    setHud(e.hud());
+    setToasts([]);
+    setCard(null);
+    setBanner(null);
+    setCutIn(null);
+    setPaused(false);
+    setScreen('play');
+    stage.current?.focus({ preventScroll: true });
+  };
+
+  const startTutorial = () => {
+    audio.unlock();
+    audio.ambience(true);
+    enterImmersive(true);
+    startLesson(0);
+  };
+
+  /** 過關：大字「過關！」停一下再進下一關 */
+  const clearLesson = (i: number) => {
+    if (lessonRef.current !== i) return;
+    lessonRef.current = null;
+    setCleared(true);
+    audio.highlight();
+    audio.say('nice', { priority: true, cooldown: 0 });
+    later(() => startLesson(i + 1), 1400);
+  };
+
+  useEffect(() => {
+    latest.current = { coach, clearLesson };
+  });
+
   const toMenu = () => {
+    lessonRef.current = null;
+    setLesson(null);
+    setLessonsDone(false);
     audio.ambience(false);
     audio.rain(false);
     const d = newDemo();
@@ -849,6 +968,7 @@ const PickleballGame = () => {
           tour: { stage: levelDef.stage.name, boss: levelDef.stage.boss, stars: outcome.stars, timeLeft: outcome.score },
         }
       : null;
+  const current = lesson !== null ? LESSONS[lesson] : null;
   const mySpecial = SPECIALS[engine.human.paddle.special];
 
   return (
@@ -878,7 +998,7 @@ const PickleballGame = () => {
           engine={engine}
           characters={characters}
           readInput={read}
-          paused={paused || screen === 'over'}
+          paused={paused || screen === 'over' || lessonsDone}
           onEvents={onEvents}
           lowSpec={lowSpec}
           venue={engine.level ? 'beach' : (settings.venue ?? 'arena')}
@@ -886,7 +1006,7 @@ const PickleballGame = () => {
         />
       </Canvas>
 
-      {playing && (
+      {playing && !lessonsDone && (
         <>
           <GameHud
             hud={hud}
@@ -911,10 +1031,14 @@ const PickleballGame = () => {
                   }
                 : undefined
             }
+            practice={lesson !== null}
           />
+          <CoachTip tip={lesson === null ? tip : null} />
           {touch && !paused && (
             <TouchControls
               touch={touchRef}
+              highlight={current?.highlight ?? null}
+              hideDive={current !== null && current.id !== 'dive'}
               chance={hud.phase === 'rally' ? hud.chance : null}
               dive={{ hint: hud.dive, busy: hud.diving }}
               special={hud.specials ? { ready: hud.energy[0] >= 100, armed: hud.armed, color: mySpecial.color, name: mySpecial.name, energy: hud.energy[0] } : null}
@@ -979,6 +1103,16 @@ const PickleballGame = () => {
           <SaveClipButton clip={clip} onSave={saveClip} />
         </div>
       )}
+      {playing && current && !paused && (
+        <TutorialPanel
+          lesson={current}
+          index={lesson!}
+          touch={touch}
+          cleared={cleared}
+          onSkip={() => startLesson(lesson! + 1)}
+          onExit={toMenu}
+        />
+      )}
 
       {immersive && !playing && (
         <button
@@ -1041,6 +1175,8 @@ const PickleballGame = () => {
               audio.unlock();
               setScreen('character');
             }}
+            onTutorial={startTutorial}
+            tutorialDone={doneBefore}
           />
         )}
         {screen === 'character' && !cover && (
@@ -1075,13 +1211,23 @@ const PickleballGame = () => {
             }}
           />
         )}
-        {playing && paused && (
+        {lessonsDone && (
+          <TutorialDone
+            key="tutorial-done"
+            onPlay={() => {
+              setLessonsDone(false);
+              start();
+            }}
+            onMenu={toMenu}
+          />
+        )}
+        {playing && paused && !lessonsDone && (
           <PauseScreen
             key="pause"
             touch={touch}
             controls={engine.controls}
             onResume={() => setPaused(false)}
-            onRestart={() => start(settings, levelId)}
+            onRestart={() => (lesson !== null ? startLesson(lesson) : start(settings, levelId))}
             onMenu={levelId ? toTour : toMenu}
           />
         )}

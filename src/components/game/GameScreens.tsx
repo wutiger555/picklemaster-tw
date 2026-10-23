@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { ComicTitle } from './ComicTitle';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
 import type { Controls, GameMode, TeamStats } from './engine/game';
+import type { Challenge, MatchResult } from './share';
+import { ChallengeVerdict, ShareActions } from './ShareCard';
 
 
 export interface Records {
@@ -140,6 +142,9 @@ export const ControlsHelp = ({ touch, controls }: { touch: boolean; controls: Co
       <li>同一顆鍵會看情況變招：站位圈<b className="text-amber-300">金色</b>＝殺球機會（按抽）；<b className="text-rose-300">紅色</b>＝網前推擋／突擊（按抽）；被重抽時按軟＝卸力擋，擋回廚房</li>
       <li className="flex flex-wrap items-center gap-1.5">
         <Key>空白鍵</Key> 能量滿時蓄勢，下一拍放出必殺；接必殺球時抓到「完美」就能破解
+      </li>
+      <li className="flex flex-wrap items-center gap-1.5">
+        <Key>Shift</Key> 飛身撲接：跑不到的球撲過去救，觸及很遠，但回球又軟又高，撲完要倒地爬起來
       </li>
       <li className="flex flex-wrap items-center gap-1.5">
         <Key>U</Key> 角色絕招（每人一招招牌打法），用掉後打完 4 分再充好
@@ -406,6 +411,10 @@ interface OverProps {
   /** 這個難度的最長連擊紀錄（已含這一場） */
   comboBest: number;
   difficulty: Difficulty;
+  /** 比賽模式才有：分享卡用的完整戰績 */
+  result: MatchResult | null;
+  /** 從挑戰連結進來、且打的是同一個難度時，顯示和挑戰者的比較 */
+  challenge: Challenge | null;
   onAgain: () => void;
   onMenu: () => void;
 }
@@ -420,7 +429,8 @@ export const GameOverScreen = (p: OverProps) => {
   const accuracy = p.stats[0].shots ? Math.round((p.stats[0].perfect / p.stats[0].shots) * 100) : 0;
   return (
     <Shell>
-      <motion.div initial={{ scale: 0.92, y: 12 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-md text-center">
+      {/* my-auto：內容比舞台高時（加了分享區塊）從頂端開始捲，不會被置中裁掉 */}
+      <motion.div initial={{ scale: 0.92, y: 12 }} animate={{ scale: 1, y: 0 }} className="my-auto w-full max-w-md text-center">
         {p.mode === 'dink' ? (
           <>
             <div className="text-xs font-bold tracking-[0.25em] text-emerald-300">DINK 挑戰結束</div>
@@ -457,9 +467,11 @@ export const GameOverScreen = (p: OverProps) => {
                 <b className="text-white">{accuracy}%</b>
               </div>
             </div>
+            {p.challenge && <ChallengeVerdict challenge={p.challenge} score={p.score} />}
+            {p.result && <ShareActions result={p.result} />}
           </>
         )}
-        <div className="mt-5 grid grid-cols-2 gap-2">
+        <div className={`${p.result ? 'mt-2' : 'mt-5'} grid grid-cols-2 gap-2`}>
           <button type="button" onClick={p.onAgain} className="rounded-xl bg-emerald-400 py-3 font-bold text-emerald-950">
             再來一場
           </button>

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { InputState } from './engine/game';
 import type { ShotButton } from './engine/shots';
 
-/** 鍵盤對應：移動 WASD / 方向鍵；擊球 J K L（或 Z X C）；必殺 空白鍵（或 I）；覺醒 Q */
+/** 鍵盤對應：移動 WASD / 方向鍵；擊球 J K L（或 Z X C）；必殺 空白鍵（或 I）；撲接 Shift（或 ;）；覺醒 Q */
 const SHOT_KEYS: Record<string, ShotButton> = {
   KeyJ: 'soft',
   KeyZ: 'soft',
@@ -33,6 +33,8 @@ export interface TouchInput {
   skill: boolean;
   /** 覺醒鍵被點了一下（讀取後清除） */
   awaken: boolean;
+  /** 撲接鍵被點了一下（讀取後清除） */
+  dive: boolean;
 }
 
 /**
@@ -42,10 +44,11 @@ export interface TouchInput {
 export const useGameInput = (enabled: boolean, onPause: () => void) => {
   const keys = useRef(new Set<string>());
   const shotOrder = useRef<string[]>([]);
-  const touch = useRef<TouchInput>({ moveX: 0, moveY: 0, held: null, special: false, skill: false, awaken: false });
+  const touch = useRef<TouchInput>({ moveX: 0, moveY: 0, held: null, special: false, skill: false, awaken: false, dive: false });
   const specialTap = useRef(false);
   const skillTap = useRef(false);
   const awakenTap = useRef(false);
+  const diveTap = useRef(false);
   const input = useRef<InputState>({ moveX: 0, moveY: 0, held: null });
   const pauseRef = useRef(onPause);
   pauseRef.current = onPause;
@@ -62,6 +65,7 @@ export const useGameInput = (enabled: boolean, onPause: () => void) => {
       if (e.code === 'Space' || e.code === 'KeyI') specialTap.current = true;
       if (e.code === 'KeyU' || e.code === 'KeyO') skillTap.current = true;
       if (e.code === 'KeyQ') awakenTap.current = true;
+      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'Semicolon') diveTap.current = true;
       keys.current.add(e.code);
       if (SHOT_KEYS[e.code]) shotOrder.current.push(e.code);
     };
@@ -112,6 +116,9 @@ export const useGameInput = (enabled: boolean, onPause: () => void) => {
     i.awaken = awakenTap.current || touch.current.awaken;
     awakenTap.current = false;
     touch.current.awaken = false;
+    i.dive = diveTap.current || touch.current.dive;
+    diveTap.current = false;
+    touch.current.dive = false;
     return i;
   };
 

@@ -1,4 +1,5 @@
 import { TOURNAMENTS_2026 } from '../data/tournamentsData';
+import { GAME_SEO } from '../data/gameSeoData';
 
 // SEO 元數據配置
 export interface SEOConfig {
@@ -44,9 +45,10 @@ export const pageSEO: Record<string, SEOConfig> = {
     keywords: '匹克球技巧,匹克球教學,匹克球訓練,匹克球發球,匹克球截擊,匹克球戰術,匹克球策略,pickleball technique'
   },
   game: {
-    title: '免費玩！Pickle Master 匹克球 3D 互動遊戲 - 邊玩邊學規則',
-    description: '無聊嗎？來場線上匹克球對戰！真實物理引擎模擬，在遊戲中熟悉雙彈跳與截擊時機。免下載直接玩，挑戰最高分！',
-    keywords: '匹克球遊戲,pickleball game,匹克球練習,匹克球模擬,線上匹克球,匹克球訓練遊戲'
+    title: GAME_SEO.title,
+    description: GAME_SEO.description,
+    keywords: '匹克球遊戲,匹克球小遊戲,線上匹克球遊戲,免費匹克球遊戲,匹克球手機遊戲,pickleball game,匹克硬邦幫,3D 匹克球',
+    ogImage: 'https://picklemastertw.com/game/og-game.jpg'
   },
   scorer: {
     title: '專業匹克球計分器 (App 免下載) - 支援單雙打 & 語音報分',

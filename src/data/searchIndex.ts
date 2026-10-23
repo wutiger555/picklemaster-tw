@@ -25,7 +25,7 @@ const STATIC_PAGES: SearchEntry[] = [
   { title: '術語字典', description: '匹克球術語完整解釋', path: ROUTES.GLOSSARY, category: '術語', keywords: ['術語', '字典', '名詞', 'glossary'] },
   { title: '職業選手', description: '世界頂尖匹克球選手資料庫', path: ROUTES.PRO_PLAYERS, category: '選手', keywords: ['選手', '職業', 'player', 'pro'] },
   { title: '計分器', description: '專業比賽計分工具', path: ROUTES.SCORER, category: '工具', keywords: ['計分', 'scorer', '比賽', '裁判'] },
-  { title: '互動遊戲', description: '線上匹克球模擬遊戲', path: ROUTES.GAME, category: '工具', keywords: ['遊戲', 'game', '練習', '模擬'] },
+  { title: '匹克球遊戲（匹克硬邦幫）', description: '免費線上 3D 匹克球對戰遊戲，手機免下載', path: ROUTES.GAME, category: '工具', keywords: ['遊戲', '匹克球遊戲', '小遊戲', 'game', '匹克硬邦幫', '練習', '模擬'] },
   { title: '常見問題', description: '匹克球常見問題解答', path: ROUTES.FAQ, category: '幫助', keywords: ['FAQ', '問題', '幫助', 'help', '入門'] },
 ];
 

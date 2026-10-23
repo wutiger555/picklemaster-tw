@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import PickleballGame from '../components/game/PickleballGame';
 import { ComicTitle } from '../components/game/ComicTitle';
 import { ROUTES } from '../utils/constants';
-import { usePageTitle } from '../hooks/usePageTitle';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import SEOHead from '../components/common/SEOHead';
+import { GAME_FAQ, GAME_SEO, GAME_SHOTS } from '../data/gameSeoData';
 
 const PHYSICS = [
   { value: '30–34 in', label: '78 吋落下的反彈高度', note: '依 USA Pickleball 球規調出球與地面的恢復係數' },
@@ -36,14 +36,9 @@ const TIPS = [
 ];
 
 const Game = () => {
-  usePageTitle('匹克硬邦幫｜匹克球對戰遊戲');
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50/70 via-white to-white">
-      <SEOHead
-        title="匹克硬邦幫｜免費 3D 匹克球對戰遊戲・真實物理 × 熱血必殺技"
-        description="匹克硬邦幫：免下載的 3D 匹克球網頁遊戲：夜間體育館、四支真實規格球拍各帶一招必殺技（火焰抽擊、天雷貫地、幻影分身、絕對零度）。球的彈性、空氣阻力與旋轉照真實數據模擬，雙彈跳、廚房規則照比賽判，也有寫實模式。"
-      />
+      <SEOHead page="game" title={GAME_SEO.title} description={GAME_SEO.description} image="https://picklemastertw.com/game/og-game.jpg" />
 
       <section className="container mx-auto px-4 pt-8 pb-6 md:pt-12">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -53,7 +48,10 @@ const Game = () => {
             </span>
             <span className="text-sm font-semibold uppercase tracking-wide text-teal-600">Pickleball Game</span>
           </div>
-          <ComicTitle as="h1" className="mb-4 text-5xl md:text-6xl lg:text-7xl" />
+          <h1 className="mb-4">
+            <ComicTitle as="span" className="text-5xl md:text-6xl lg:text-7xl" />
+            <span className="mt-3 block text-xl font-bold text-neutral-800 md:text-2xl">免費線上 3D 匹克球遊戲・手機免下載</span>
+          </h1>
           <p className="max-w-2xl text-lg text-neutral-600">
             底子是真的：球的彈性、球拍反彈係數、空氣阻力與旋轉照真實數據模擬，規則照比賽判。上面再疊一層熱血：挑一支球拍當武器，集滿能量放出必殺技。想專心學規則，也可以切到寫實模式。
           </p>
@@ -76,6 +74,27 @@ const Game = () => {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
           <PickleballGame />
         </motion.div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-8">
+        <h2 className="mb-1 text-2xl font-bold text-neutral-900">遊戲畫面</h2>
+        <p className="mb-4 text-sm text-neutral-500">以下都是實機截圖：必殺技、殺球、撲接、覺醒與電視輔助判決</p>
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0">
+          {GAME_SHOTS.map((s) => (
+            <figure key={s.src} className="w-72 shrink-0 snap-start md:w-auto">
+              <img
+                src={s.src}
+                alt={s.alt}
+                width={1280}
+                height={720}
+                loading="lazy"
+                decoding="async"
+                className="aspect-video w-full rounded-2xl object-cover shadow-sm ring-1 ring-black/5"
+              />
+              <figcaption className="mt-1.5 text-xs font-medium text-neutral-600">{s.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
       </section>
 
       <section className="container mx-auto px-4 pb-6">
@@ -175,6 +194,21 @@ const Game = () => {
             </Link>
           </div>
         </motion.div>
+
+        <div className="mt-10">
+          <h2 className="text-2xl font-bold text-neutral-900">匹克球遊戲常見問題</h2>
+          <div className="mt-4 divide-y divide-neutral-200 overflow-hidden rounded-3xl border border-neutral-200/70 bg-white shadow-sm">
+            {GAME_FAQ.map((f) => (
+              <details key={f.q} className="group px-5 py-4 md:px-6">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-neutral-900 [&::-webkit-details-marker]:hidden">
+                  {f.q}
+                  <span className="shrink-0 text-xl leading-none text-teal-600 transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-600">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );

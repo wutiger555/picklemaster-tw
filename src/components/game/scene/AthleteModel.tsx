@@ -222,8 +222,13 @@ interface Rig {
   headTop: number;
   /** 模型本身有鞋子 */
   hasShoes: boolean;
+  /** 這個選手自己的材質（覺醒時全身發光用；都是複製出來的，不會影響另一位選手） */
+  glow: THREE.MeshStandardMaterial[];
   dispose: () => void;
 }
+
+const ownMaterials = (list: { dispose: () => void }[]) =>
+  list.filter((d): d is THREE.MeshStandardMaterial => d instanceof THREE.MeshStandardMaterial);
 
 const collectBones = (scene: THREE.Object3D) => {
   scene.updateMatrixWorld(true);
@@ -326,6 +331,7 @@ const buildRig = (assets: AthleteAssets, hair: THREE.Object3D, look: Look, face:
     // 頭骨在 1.60、頭頂約 1.81
     headTop: 0.21,
     hasShoes: false,
+    glow: ownMaterials(disposables),
     dispose: () => disposables.forEach((d) => d.dispose()),
   };
 };
@@ -454,6 +460,7 @@ const buildMixamoRig = (body: MixamoBody, look: Look, face: HTMLImageElement | n
     unit: 0.01,
     headTop: top - headY,
     hasShoes: true,
+    glow: ownMaterials(disposables),
     dispose: () => disposables.forEach((d) => d.dispose()),
   };
 };
@@ -548,6 +555,9 @@ export const AthleteModel = ({ engine, index, look, trackTip = true }: Props) =>
   const mountL = useMemo(() => paddleMount(rig.bindQ.get(rig.bone('hand_l'))!, 'l'), [rig]);
   const tip = useRef<THREE.Object3D>(null);
   const wob = useRef({ amp: 0, last: -1, t: 0 });
+  // 覺醒發光：只改既有材質的自發光顏色（uniform），不換材質、不重編著色器
+  const glow = useRef({ k: 0, t: 0 });
+  const glowBase = useMemo(() => rig.glow.map((m) => [m.emissive.clone(), m.emissiveIntensity] as const), [rig]);
 
   // 頭飾、鞋子掛在骨頭上：用綁定姿勢的反旋轉，讓子物件可以直接用模型座標擺放
   const inv = useMemo(() => {
@@ -572,6 +582,20 @@ export const AthleteModel = ({ engine, index, look, trackTip = true }: Props) =>
     }
     wb.t += rdt;
     wb.amp *= Math.exp(-rdt * 9);
+
+    const gl = glow.current;
+    const gk = a.awakenHits > 0 ? 1 : 0;
+    if (gk || gl.k > 0.001) {
+      gl.k += (gk - gl.k) * Math.min(1, rdt * 5);
+      gl.t += rdt;
+      const pulse = gl.k * (0.2 + 0.08 * Math.sin(gl.t * 9));
+      rig.glow.forEach((m, i) => {
+        const [c, intensity] = glowBase[i];
+        m.emissive.setRGB(c.r + (1 - c.r) * gl.k, c.g + (0.45 - c.g) * gl.k, c.b + (0.08 - c.b) * gl.k);
+        m.emissiveIntensity = intensity + (pulse - intensity) * gl.k;
+      });
+      if (gl.k <= 0.001) gl.k = 0;
+    }
     if (paddleGrp.current) paddleGrp.current.rotation.x = Math.sin(wb.t * 70) * wb.amp;
 
     if (trackTip && tip.current) {

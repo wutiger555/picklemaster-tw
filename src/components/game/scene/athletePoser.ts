@@ -161,12 +161,24 @@ const OVERLAYS = [
 type Overlay = (typeof OVERLAYS)[number];
 
 /** 得分慶祝（隨機挑一種）：[動作, 從第幾秒開始播, 機率權重] */
-const CELEBRATIONS: [Overlay, number, number][] = [
-  ['Yes', 0.1, 4],
+type Celebration = [Overlay, number, number];
+/** 漂亮得分（致勝球、殺球、長連擊、覺醒中）：跳舞、飛膝 */
+const CELEBRATIONS: Celebration[] = [
   ['Mx_HipHop', 1.5, 2.5],
   ['Mx_Shuffle', 1.0, 2.5],
-  ['Mx_KneeCombo', 0.25, 1],
+  ['Mx_KneeCombo', 0.25, 1.5],
+  ['Yes', 0.1, 1],
 ];
+/** 撿到對手失誤：握拳、扛拍耍帥挑釁，偶爾跳一段曳步舞 */
+const TAUNTS: Celebration[] = [
+  ['Yes', 0.1, 3],
+  ['Mx_PowerIdle', 0, 2.5],
+  ['Mx_Shuffle', 1.0, 1],
+];
+const pick = (list: Celebration[]) => {
+  let r = Math.random() * list.reduce((n, c) => n + c[2], 0);
+  return list.find((c) => (r -= c[2]) < 0) ?? list[0];
+};
 /** 必殺技出手後的身段：[動作, 高潮時間點] */
 const SPECIAL_MOVES: Record<string, [Overlay, number]> = {
   inferno: ['Mx_BigSlash', 1.67],
@@ -320,7 +332,9 @@ export class AthletePoser {
   private spinFrom = -99;
   /** 絕招動作額外的前傾 */
   private extraLean = 0;
-  private celebration: [Overlay, number, number] = CELEBRATIONS[0];
+  private celebration: Celebration = CELEBRATIONS[0];
+  /** 失分的反應：true = 先被打到踉蹌再搖頭，false = 直接搖頭 */
+  private stagger = false;
   private knockAt = -1;
   private knockUntil = 0;
   private jumpAt = 0;
@@ -335,6 +349,19 @@ export class AthletePoser {
   private debugging = false;
   /** 會被程序化疊加修改的骨頭，以及它們這一幀的動畫值 */
   private animQ = new Map<THREE.Object3D, THREE.Quaternion>();
+  /** 站直時骨盆離地多高（飛撲時繞骨盆把整個人放倒） */
+  private pelvisH = 0.95;
+  /** 飛撲把身體放倒的旋轉（世界座標） */
+  private diveQ = new THREE.Quaternion();
+  private diveTgt: Target = {
+    sweet: new THREE.Vector3(),
+    paddle: new THREE.Quaternion(),
+    pole: new THREE.Vector3(),
+    off: new THREE.Vector3(),
+    yaw: 0,
+    lean: 0,
+    faceK: 0.5,
+  };
 
   private group: THREE.Object3D;
   private scene: THREE.Object3D;
@@ -378,6 +405,7 @@ export class AthletePoser {
       };
     };
     this.arms = { r: arm('r'), l: arm('l') };
+    this.pelvisH = pos('pelvis').y || 0.95;
     this.mount = paddleMount(this.bindQ.get(this.bone('hand_r'))!);
     this.offset.copy(this.mount.p).add(new THREE.Vector3(0, sweetY, 0).applyQuaternion(this.mount.q));
 
@@ -427,10 +455,12 @@ export class AthletePoser {
     const st = this.cur;
     const tau = st ? t - st.tC : 99;
     const strokeOn = st !== null && tau < FOL + REC;
+    // 飛身撲接：放倒的角度、骨盆高度、爬起來的進度（0 = 還趴著，1 = 站好）
+    const dive = a.dive ? this.divePose(a.dive, t) : null;
 
     // 跨步搆球：擊球點超出手臂＋球拍的長度時，擊球前後身體往球的方向跨過去（最多 50 cm）
     const reachT = _v[9].set(0, 0, 0);
-    if (st && st.swung && tau > -0.3 && tau < 0.35) {
+    if (!dive && st && st.swung && tau > -0.3 && tau < 0.35) {
       const sh = _v[0].set(g.position.x, 0, g.position.z).addScaledVector(_v[1].set(s > 0 ? 1 : -1, 0, 0), 0.2);
       const dx = st.c.x - sh.x;
       const dz = st.c.z - sh.z;
@@ -446,8 +476,9 @@ export class AthletePoser {
     g.position.add(this.reach);
 
     // ── 移動：模型座標的速度（+Z 朝網）
-    const vx = -s * a.vel.x;
-    const vz = -s * a.vel.z;
+    // 飛撲時腳不跑步：照撲出去的姿勢
+    const vx = dive ? 0 : -s * a.vel.x;
+    const vz = dive ? 0 : -s * a.vel.z;
     const speed = Math.hypot(vx, vz);
     // 主要往左右移動：用側併步，身體一直面向球網（不再整個人轉過去跑）
     const side = smoothstep(0.3, 0.8, speed) * smoothstep(0.6, 0.85, speed > 0.01 ? Math.abs(vx) / speed : 0);
@@ -487,7 +518,9 @@ export class AthletePoser {
     let crouchT = incoming ? 0.42 : 0.3;
     if (strokeDef && strokeOn) crouchT = crouchT + (strokeDef.crouch - crouchT) * Math.max(prep, tau > -FWD ? 1 : 0);
     if (squat) crouchT = 1;
-    this.crouch = approach(this.crouch, crouchT, squat ? 14 : 6, dt);
+    // 撲出去身體伸直（腳打直）；爬起來時先蹲著再站起來
+    if (dive) crouchT = dive.up > 0 ? 1 - dive.up * 0.6 : 0;
+    this.crouch = approach(this.crouch, crouchT, squat || dive ? 14 : 6, dt);
 
     const run = smoothstep(0, 0.6, speed);
     const spr = smoothstep(3.0, 4.2, speed);
@@ -536,13 +569,24 @@ export class AthletePoser {
     const since = t - opp.swing.contactAt;
     if (engine.phase === 'rally' && since > 0 && since < 0.22) lift += Math.sin((since / 0.22) * Math.PI) * 0.05;
     g.position.y = lift + skillLift;
+    if (dive) {
+      // 繞骨盆把整個人往撲的方向放倒（頭先過去），骨盆照飛撲的弧線走
+      const ax = _v[0].set(a.dive!.dir.z, 0, -a.dive!.dir.x);
+      this.diveQ.setFromAxisAngle(ax, dive.angle);
+      g.quaternion.premultiply(this.diveQ);
+      const piv = _v[1].set(0, this.pelvisH, 0).applyQuaternion(this.diveQ);
+      g.position.y = dive.pelvisY - piv.y;
+      g.position.x -= piv.x;
+      g.position.z -= piv.z;
+    }
     g.updateMatrixWorld(true);
 
     // ── 上半身：揮拍目標 → 腰 → 手臂 IK → 頭
     const w = 1 - ov;
     if (w < 0.02) return;
-    const tgt = this.evaluate(engine, baseYaw, st, tau, prep, run);
+    let tgt = this.evaluate(engine, baseYaw, st, tau, prep, run);
     if (!tgt) return;
+    if (dive) tgt = this.diveTarget(engine, a, st, tgt, dive.up);
     this.smooth(tgt, rdt, Math.abs(tau) < 0.12 ? 90 : 30);
     let sm = this.sm!;
     if (spinYaw !== 0) {
@@ -684,6 +728,56 @@ export class AthletePoser {
   private prepWeight(a: Athlete, st: NonNullable<AthletePoser['cur']>, t: number) {
     if (a.swing.state !== 'idle') return 1;
     return smoothstep(0.85, 0.3, st.tC - t);
+  }
+
+  // ───────────────────────────── 飛身撲接 ─────────────────────────────
+
+  /** 撲接各階段：起跳很快放倒 → 空中 → 落地趴著滑 → 最後半秒爬起來 */
+  private divePose(d: NonNullable<Athlete['dive']>, t: number) {
+    const GETUP = 0.5;
+    const air = clamp01((t - d.t0) / Math.max(0.05, d.landAt - d.t0));
+    const up = smoothstep(d.upAt - GETUP, d.upAt, t);
+    const flat = 1.5;
+    const angle = (air < 1 ? flat * smoothstep(0, 0.5, air) : flat) * (1 - up);
+    const ground = 0.17;
+    const pelvisY =
+      air < 1 ? this.pelvisH + (ground - this.pelvisH) * air ** 1.6 + Math.sin(Math.PI * air) * 0.12 : ground + (this.pelvisH * 0.8 - ground) * up;
+    return { angle, pelvisY, up, landed: air >= 1 };
+  }
+
+  /** 撲接的手：觸球前整隻手往球伸直，之後拍子順勢甩到前方地上；非持拍手撐地 */
+  private diveTarget(engine: GameEngine, a: Athlete, st: AthletePoser['cur'], normal: Target, up: number): Target {
+    const d = a.dive!;
+    const t = engine.time;
+    const D = _v[2].set(d.dir.x, 0, d.dir.z);
+    const S = this.bone('upperarm_r').getWorldPosition(_v[3]);
+    const chest = this.bone('spine_03').getWorldPosition(_v[4]);
+    const m = this.diveTgt;
+    const reaching = st !== null && st.swung && d.hitAt !== null && t < st.tC + 0.06;
+    if (reaching) m.sweet.copy(st!.c);
+    else if (t < d.landAt) m.sweet.copy(S).addScaledVector(D, 0.85).setY(Math.max(0.15, S.y - 0.15));
+    else m.sweet.copy(S).addScaledVector(D, 0.8).setY(0.12);
+    // 拍頭朝撲的方向、拍面朝對手場地往上撈
+    const s = teamSide(a.team);
+    const tip = _v[5].copy(D).setY(reaching ? 0.35 : 0.1).normalize();
+    const palm = _v[6].set(0, 0.6, -s);
+    palm.addScaledVector(tip, -palm.dot(tip)).normalize();
+    const x = _v[7].crossVectors(tip, palm);
+    m.paddle.setFromRotationMatrix(_m[0].makeBasis(x, tip, palm));
+    m.pole.set(0, 1, 0).addScaledVector(D, -0.4).normalize();
+    m.off.copy(chest).addScaledVector(D, 0.45).setY(Math.max(0.06, chest.y - 0.55));
+    m.yaw = this.yaw;
+    m.lean = 0;
+    m.faceK = 0.55;
+    if (up <= 0) return m;
+    // 爬起來：手慢慢回到平常的準備姿勢
+    m.sweet.lerp(normal.sweet, up);
+    m.off.lerp(normal.off, up);
+    m.paddle.slerp(normal.paddle, up);
+    m.pole.lerp(normal.pole, up).normalize();
+    m.yaw += (normal.yaw - m.yaw) * up;
+    m.lean = normal.lean * up;
+    return m;
   }
 
   // ───────────────────────────── 揮拍軌跡 ─────────────────────────────
@@ -953,22 +1047,26 @@ export class AthletePoser {
       oT.Jump_Loop = 0.5;
       this.overlay.Jump_Loop.time = 0.6;
     }
-    if (engine.phase === 'dead' && a.mood && t - a.mood.at < 1.9) {
+    if (engine.phase === 'dead' && a.mood && !a.dive && t - a.mood.at < 1.9) {
       const since = t - a.mood.at;
+      if (this.celebrateAt !== a.mood.at) {
+        this.celebrateAt = a.mood.at;
+        // 每一分隨機挑一種：漂亮得分跳舞，撿到失誤就挑釁；被打穿的一方偶爾誇張地踉蹌
+        this.celebration = pick(a.mood.big ? CELEBRATIONS : TAUNTS);
+        this.stagger = !a.mood.error && Math.random() < 0.55;
+      }
       if (a.mood.won) {
-        // 每一分隨機挑一種慶祝：握拳、街舞、曳步舞、飛膝
-        if (this.celebrateAt !== a.mood.at) {
-          this.celebrateAt = a.mood.at;
-          const total = CELEBRATIONS.reduce((n, c) => n + c[2], 0);
-          let r = Math.random() * total;
-          this.celebration = CELEBRATIONS.find((c) => (r -= c[2]) < 0) ?? CELEBRATIONS[0];
-        }
         const [clip, start] = this.celebration;
         oT[clip] = 0.92;
         this.overlay[clip].time = Math.min(this.overlay[clip].getClip().duration, start + since);
+      } else if (this.stagger && since < 0.75) {
+        // 被打穿：往後踉蹌（慢放擊退動作），再接搖頭
+        oT.Hit_Knockback = 0.9;
+        this.overlay.Hit_Knockback.time = Math.min(0.6, since * 0.8);
       } else {
-        oT.Idle_No_Loop = 0.85;
-        this.overlay.Idle_No_Loop.time = Math.min(this.overlay.Idle_No_Loop.getClip().duration, since + 0.4);
+        // 自己失誤：懊惱搖頭
+        oT.Idle_No_Loop = 0.88;
+        this.overlay.Idle_No_Loop.time = Math.min(this.overlay.Idle_No_Loop.getClip().duration, since + (this.stagger ? -0.35 : 0.4));
       }
     }
     // 必殺技出手後：誇張的身段（用真實時間，頓幀慢動作時照樣播）
@@ -979,8 +1077,14 @@ export class AthletePoser {
       oT[clip] = 0.9 * (1 - smoothstep(1.1, 1.45, s));
       this.overlay[clip].time = clamp(peak - 0.3 + s * 0.8, 0, this.overlay[clip].getClip().duration);
     }
+    // 覺醒發動：雙手持拍的架勢，氣場爆開（真實時間）
+    const awk = engine.awakening;
+    if (awk && awk.team === a.team && engine.real - awk.start < 1.8) {
+      oT.Mx_PowerIdle = 0.95;
+      this.overlay.Mx_PowerIdle.time = Math.min(this.overlay.Mx_PowerIdle.getClip().duration, (engine.real - awk.start) * 0.9);
+    }
     // 蓄勢（下一拍放必殺）：雙手持拍的架勢
-    if (a.armed && engine.phase !== 'dead' && !st && Math.hypot(a.vel.x, a.vel.z) < 0.6) {
+    if (a.armed && !a.dive && engine.phase !== 'dead' && !st && Math.hypot(a.vel.x, a.vel.z) < 0.6) {
       oT.Mx_PowerIdle = 0.85;
       this.overlay.Mx_PowerIdle.time = this.idleT % this.overlay.Mx_PowerIdle.getClip().duration;
     }

@@ -1,5 +1,5 @@
-import { COURT, PHYSICS_DT, PLAYER, netHeightAt } from './constants';
-import { type PathSample, predictPath, isInCourt } from './ball';
+import { COURT, PLAYER, netHeightAt } from './constants';
+import { type PathSample, isInCourt } from './ball';
 import { type ShotButton, SMASH_HEIGHT } from './shots';
 import { teamSide } from './rules';
 import { clamp, gauss, hypot2 } from './vec';
@@ -133,7 +133,7 @@ export const planContact = (
   const prof = profile ?? a.ai!.profile;
   const side = teamSide(a.team);
   const now = eng.time;
-  const path = predictPath(eng.ball, 2.4, PHYSICS_DT);
+  const path = eng.predict(2.4);
   const requireBounce = eng.rally.hits <= 2 || eng.mode === 'dink';
   // 預測開始前球可能已經在這邊落地過一次
   const b0 = eng.rally.bouncesSinceHit;

@@ -10,6 +10,8 @@ export interface Records {
   wins: Record<Difficulty, number>;
   plays: Record<Difficulty, number>;
   dinkBest: Record<Difficulty, number>;
+  /** 最長連擊（熱血與寫實都算） */
+  comboBest: Record<Difficulty, number>;
 }
 
 /** 比賽場地 */
@@ -140,6 +142,9 @@ export const ControlsHelp = ({ touch, controls }: { touch: boolean; controls: Co
       <li>同一顆鍵會看情況變招：站位圈<b className="text-amber-300">金色</b>＝殺球機會（按抽）；<b className="text-rose-300">紅色</b>＝網前推擋／突擊（按抽）；被重抽時按軟＝卸力擋，擋回廚房</li>
       <li className="flex flex-wrap items-center gap-1.5">
         <Key>空白鍵</Key> 能量滿時蓄勢，下一拍放出必殺；接必殺球時抓到「完美」就能破解
+      </li>
+      <li className="flex flex-wrap items-center gap-1.5">
+        <Key>Shift</Key> 飛身撲接：跑不到的球撲過去救，觸及很遠，但回球又軟又高，撲完要倒地爬起來
       </li>
       <li className="flex flex-wrap items-center gap-1.5">
         <Key>U</Key> 角色絕招（每人一招招牌打法），用掉後打完 4 分再充好
@@ -403,6 +408,8 @@ interface OverProps {
   newRecord: boolean;
   stats: [TeamStats, TeamStats];
   longestRally: number;
+  /** 這個難度的最長連擊紀錄（已含這一場） */
+  comboBest: number;
   difficulty: Difficulty;
   /** 比賽模式才有：分享卡用的完整戰績 */
   result: MatchResult | null;
@@ -455,7 +462,9 @@ export const GameOverScreen = (p: OverProps) => {
                 </div>
               ))}
               <div className="border-t border-white/10 py-2 text-xs text-white/60">
-                最長來回 <b className="text-white">{p.longestRally}</b> 拍 · 完美擊球率 <b className="text-white">{accuracy}%</b>
+                最長連擊 <b className="text-white">{p.longestRally} HIT</b>
+                {p.newRecord ? <b className="ml-1 text-amber-300">新紀錄！</b> : <span className="ml-1">（紀錄 {p.comboBest}）</span>} · 完美擊球率{' '}
+                <b className="text-white">{accuracy}%</b>
               </div>
             </div>
             {p.challenge && <ChallengeVerdict challenge={p.challenge} score={p.score} />}

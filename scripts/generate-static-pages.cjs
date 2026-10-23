@@ -253,35 +253,12 @@ const pageSEO = {
         }
     },
     game: {
-        title: '匹克硬邦幫｜免費 3D 匹克球對戰遊戲 - 真實物理 × 熱血必殺技',
-        description: '匹克硬邦幫：免下載的 3D 匹克球網頁遊戲，四支真實規格球拍各帶一招必殺技，火焰抽擊、天雷貫地樣樣來。球的彈性與旋轉照真實數據模擬，雙彈跳、廚房規則照比賽判，也有寫實模式，手機也能玩。',
-        keywords: '匹克硬邦幫,匹克球遊戲,pickleball game,匹克球練習,匹克球模擬,線上匹克球,匹克球訓練遊戲',
-        structuredData: {
-            "@context": "https://schema.org",
-            "@graph": [
-                {
-                    "@type": "WebPage",
-                    "@id": "https://picklemastertw.com/game#webpage",
-                    "url": "https://picklemastertw.com/game/",
-                    "name": "匹克硬邦幫 匹克球對戰遊戲",
-                    "isPartOf": { "@id": "https://picklemastertw.com/#website" }
-                },
-                {
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://picklemastertw.com/" },
-                        { "@type": "ListItem", "position": 2, "name": "互動遊戲", "item": "https://picklemastertw.com/game/" }
-                    ]
-                },
-                {
-                    "@type": "SoftwareApplication",
-                    "name": "匹克硬邦幫 匹克球對戰遊戲",
-                    "applicationCategory": "Game",
-                    "operatingSystem": "Web",
-                    "offers": { "@type": "Offer", "price": "0" }
-                }
-            ]
-        }
+        // 標題、描述、FAQ、截圖都從 src/data/gameSeoData.ts 來（React 頁面也讀同一份）。
+        // 用 getter：此物件在 loadTsModule 的 tsModuleCache 宣告之前就會被求值。
+        get title() { return loadTsModule('src/data/gameSeoData.ts').GAME_SEO.title; },
+        get description() { return loadTsModule('src/data/gameSeoData.ts').GAME_SEO.description; },
+        keywords: '匹克球遊戲,匹克球小遊戲,線上匹克球遊戲,免費匹克球遊戲,匹克球手機遊戲,pickleball game,匹克硬邦幫,3D 匹克球',
+        get structuredData() { return gameStructuredData(); }
     },
     scorer: {
         title: '專業匹克球計分器 (App 免下載) - 支援單雙打 & 語音報分',
@@ -860,6 +837,77 @@ function loadTsModule(relPath) {
     new Function('module', 'exports', 'require', out.outputFiles[0].text)(mod, mod.exports, require);
     tsModuleCache.set(relPath, mod.exports);
     return mod.exports;
+}
+
+/**
+ * /game 的 JSON-LD：VideoGame（含截圖、預告片）＋ FAQPage。
+ * 只寫遊戲真的有的東西：沒有評分系統就不寫 aggregateRating，只有單人對 AI 就寫 SinglePlayer。
+ */
+function gameStructuredData() {
+    const { GAME_SEO, GAME_SHOTS, GAME_FAQ } = loadTsModule('src/data/gameSeoData.ts');
+    const url = `${BASE_URL}/game/`;
+    const shots = GAME_SHOTS.map(s => ({ "@type": "ImageObject", "contentUrl": `${BASE_URL}${s.src}`, "caption": s.alt }));
+    return {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebPage",
+                "@id": `${BASE_URL}/game#webpage`,
+                "url": url,
+                "name": GAME_SEO.title,
+                "description": GAME_SEO.description,
+                "isPartOf": { "@id": `${BASE_URL}/#website` },
+                "primaryImageOfPage": { "@type": "ImageObject", "contentUrl": `${BASE_URL}/game/og-game.jpg` },
+                "mainEntity": { "@id": `${BASE_URL}/game#videogame` }
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    { "@type": "ListItem", "position": 1, "name": "首頁", "item": `${BASE_URL}/` },
+                    { "@type": "ListItem", "position": 2, "name": "匹克球遊戲", "item": url }
+                ]
+            },
+            {
+                "@type": ["VideoGame", "SoftwareApplication"],
+                "@id": `${BASE_URL}/game#videogame`,
+                "name": "匹克硬邦幫",
+                "alternateName": ["匹克球遊戲 匹克硬邦幫", "Pickle Hard-Bang Gang", "匹克硬邦幫 匹克球對戰遊戲"],
+                "url": url,
+                "description": GAME_SEO.description,
+                "inLanguage": "zh-TW",
+                "genre": ["運動遊戲", "Sports game", "Pickleball"],
+                "gamePlatform": ["網頁瀏覽器", "手機瀏覽器", "電腦瀏覽器"],
+                "playMode": "SinglePlayer",
+                "applicationCategory": "GameApplication",
+                "applicationSubCategory": "SportsGame",
+                "operatingSystem": "Web, iOS, Android, Windows, macOS",
+                "isAccessibleForFree": true,
+                "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TWD", "availability": "https://schema.org/InStock" },
+                "datePublished": GAME_SEO.published,
+                "dateModified": GAME_SEO.updated,
+                "image": `${BASE_URL}/game/og-game.jpg`,
+                "screenshot": shots,
+                "author": { "@id": `${BASE_URL}/#organization` },
+                "publisher": { "@id": `${BASE_URL}/#organization` },
+                "trailer": {
+                    "@type": "VideoObject",
+                    "name": "匹克硬邦幫 匹克球遊戲實機預告",
+                    "description": "匹克球遊戲「匹克硬邦幫」實機畫面：必殺技、殺球、撲接與 3D 真實物理對打。",
+                    "thumbnailUrl": `${BASE_URL}/game/trailer/poster.webp`,
+                    "contentUrl": `${BASE_URL}/game/trailer/trailer.mp4`,
+                    "uploadDate": "2026-10-23",
+                    "duration": "PT12S"
+                }
+            },
+            {
+                "@type": "FAQPage",
+                "mainEntity": GAME_FAQ.map(f => ({
+                    "@type": "Question", "name": f.q,
+                    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+                }))
+            }
+        ]
+    };
 }
 
 /** 賽事 SportsEvent：只放資料裡真的有的欄位（image、performer、offers 沒有就不寫，不捏造）。 */
@@ -1518,6 +1566,8 @@ async function generateStaticPages() {
                     intro: '匹克球規則的核心只有幾條：雙彈跳、廚房區禁止截擊、下手發球、發球方才能得分。本站提供 3D 互動式球場教學，點擊球場任一區域即可看到對應解說。以下是規則相關術語的完整定義。',
                     termsHeading: `規則術語（${RULE_TERMS.length}）`,
                     terms: RULE_TERMS.map(t => ({ t: t.term, meta: t.termEn, d: t.definition })),
+                    itemsHeading: '實際打一場',
+                    items: [{ href: '/game', label: '看懂規則了？到匹克球遊戲實際打一場', sub: '免費 3D 匹克球遊戲「匹克硬邦幫」照比賽規則判，雙彈跳、廚房犯規都會告訴你是哪一條' }],
                     foot: foot('newcomer', 'glossary', 'courts'),
                 },
                 {
@@ -1613,16 +1663,26 @@ async function generateStaticPages() {
                     ],
                     foot: foot('newcomer', 'courts'),
                 },
-                {
-                    route: 'game', h1: '匹克球規則小測驗', crumb: '規則測驗',
-                    intro: '用互動測驗檢查自己的匹克球規則觀念：發球、雙彈跳、廚房區、計分與界內外判定，答錯會告訴你正確規則與原因。',
-                    itemsHeading: '延伸閱讀',
-                    items: [
-                        { href: '/rules', label: '3D 互動規則教學', sub: '先看懂規則再來測驗' },
-                        { href: '/faq', label: '常見問題', sub: '規則爭議最常出現的狀況' },
-                    ],
-                    foot: foot('glossary', 'newcomer'),
-                },
+                (() => {
+                    // 內容與 React 頁面同源（src/data/gameSeoData.ts）
+                    const { GAME_FEATURES, GAME_FAQ, GAME_SHOTS } = loadTsModule('src/data/gameSeoData.ts');
+                    return {
+                        route: 'game', h1: '匹克硬邦幫：免費線上 3D 匹克球遊戲', crumb: '匹克球遊戲',
+                        intro: '「匹克硬邦幫」是免費的線上匹克球遊戲，不用下載、不用註冊，手機和電腦打開瀏覽器就能玩。底子是真的：球的彈性、球拍反彈係數、空氣阻力與旋轉照真實數據模擬，雙彈跳、廚房規則照比賽判。上面再疊一層熱血：挑一支球拍當武器，集滿能量放出必殺技，還有殺球、飛身撲接、無雙覺醒和電視輔助判決。',
+                        sections: [
+                            { heading: '遊戲特色', terms: GAME_FEATURES.map(f => ({ t: f.t, d: f.d })) },
+                            { heading: '匹克球遊戲常見問題', terms: GAME_FAQ.map(f => ({ t: f.q, d: f.a })) },
+                        ],
+                        images: GAME_SHOTS,
+                        itemsHeading: '邊玩邊學：延伸閱讀',
+                        items: [
+                            { href: '/rules', label: '匹克球規則教學', sub: '雙彈跳、廚房、換發球制，遊戲裡判的規則都在這裡' },
+                            { href: '/learning', label: '匹克球技巧教學', sub: 'dink、抽球、殺球在真實球場怎麼打' },
+                            { href: '/courts', label: '全台匹克球場地圖', sub: '玩完遊戲，找附近的球場實際打一場' },
+                        ],
+                        foot: foot('glossary', 'newcomer'),
+                    };
+                })(),
                 {
                     route: 'newcomer-guide', h1: '匹克球新手入門指南', crumb: '新手懶人包',
                     intro: '第一次打匹克球需要知道的事：要花多少錢、第一支球拍怎麼挑、去哪裡找人一起打、球敘現場的規矩、以及從羽球或網球轉過來需要調整什麼。',
@@ -1758,6 +1818,16 @@ async function generateStaticPages() {
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(page.termsHeading || `完整內容（${terms.length}）`)}</h2>
           <dl style="margin:0;">${terms.map(t => `<dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">${esc(t.t)}${t.meta ? `<span style="color:#6b7280;font-weight:400;font-size:14px;"> — ${esc(t.meta)}</span>` : ''}</dt><dd style="margin:0;font-size:15px;color:#4b5563;">${esc(t.d)}</dd>`).join('')}</dl>
         </section>` : ''}
+        ${(page.sections || []).map(sec => `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(sec.heading)}</h2>
+          <dl style="margin:0;">${sec.terms.map(t => `<dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">${esc(t.t)}</dt><dd style="margin:0;font-size:15px;color:#4b5563;">${esc(t.d)}</dd>`).join('')}</dl>
+        </section>`).join('')}
+        ${(page.images || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">遊戲畫面</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">${page.images.map(im => `<figure style="margin:0;"><img src="${im.src}" alt="${esc(im.alt)}" width="1280" height="720" loading="lazy" style="width:100%;height:auto;border-radius:10px;" /><figcaption style="font-size:13px;color:#6b7280;margin-top:4px;">${esc(im.caption)}</figcaption></figure>`).join('')}</div>
+        </section>` : ''}
         <p style="font-size:15px;">${page.foot}</p>`;
             // 有些頁的 title/description 需要用即時算出來的數字（例如 /data-method 的查證統計），
             // 才能跟 React 端 SEOHead 產出的字串一致。
@@ -1779,6 +1849,13 @@ async function generateStaticPages() {
                     title: '揪團約打', type: 'court', badge: '臨打報名',
                     subtitle: '取個暱稱就能報名 · 額滿自動候補 · 不用下載 App',
                 });
+            }
+            if (page.route === 'game') {
+                // 實機截圖做的分享圖（public/game/og-game.jpg），比文字卡更能讓人想點
+                const og = `${BASE_URL}/game/og-game.jpg`;
+                content = content.replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${og}" />`);
+                content = content.replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${og}" />`);
+                content = content.replace(/<meta property="og:image:alt" content=".*?" \/>/, `<meta property="og:image:alt" content="匹克球遊戲「匹克硬邦幫」必殺技畫面" />`);
             }
             if (page.route === 'aepl') {
                 content = applyOg(content, 'og/aepl.png', {
@@ -2383,6 +2460,7 @@ async function generateStaticPages() {
                         .sort((a, b) => b.n - a.n);
                     const sections = [
                         { href: '/courts', label: `全台匹克球場地圖（${total} 座）`, sub: `${cityCounts.length} 縣市球場名單，含地址、開放時間、費用與 GPS 導航` },
+                        { href: '/game', label: '免費匹克球遊戲「匹克硬邦幫」', sub: '免下載的 3D 匹克球對戰遊戲，手機也能玩：必殺技、殺球、飛身撲接、電視輔助判決' },
                         { href: '/rules', label: '匹克球規則教學', sub: '3D 互動式教學，秒懂雙彈跳、廚房區與發球順序' },
                         { href: '/newcomer-guide', label: '新手入門指南', sub: '第一次打匹克球需要準備什麼、怎麼找人一起打' },
                         { href: '/equipment', label: '裝備選購指南', sub: '球拍、球鞋、球的選購重點與台灣購買管道' },
@@ -2390,7 +2468,7 @@ async function generateStaticPages() {
                         { href: '/glossary', label: '中英術語字典', sub: 'dink、ATP、第三球下切等術語的中英對照與解釋' },
                     ];
                     const body = `
-        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">Picklemaster 是台灣的匹克球（Pickleball，也常被寫成皮克球）資訊平台：全台 ${total} 座球場地圖、3D 互動規則教學、賽事追蹤、裝備選購與術語字典。球場資料逐座人工查證並標示查證日期。</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">Picklemaster 是台灣的匹克球（Pickleball，也常被寫成皮克球）資訊平台：全台 ${total} 座球場地圖、3D 互動規則教學、免費的匹克球遊戲、賽事追蹤、裝備選購與術語字典。球場資料逐座人工查證並標示查證日期。</p>
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">主要單元</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${sections.map(s => `<li style="margin-bottom:8px;"><a href="${s.href}" style="color:#0d9488;font-weight:600;">${esc(s.label)}</a><br><span style="color:#6b7280;font-size:13px;">${esc(s.sub)}</span></li>`).join('')}</ul>
@@ -2427,7 +2505,7 @@ async function generateStaticPages() {
             ratings: { p: '0.9', f: 'monthly' },
             resources: { p: '0.85', f: 'weekly' },
             'pro-players': { p: '0.85', f: 'monthly' },
-            game: { p: '0.8', f: 'monthly' },
+            game: { p: '0.9', f: 'weekly' },
             scorer: { p: '0.75', f: 'monthly' },
             about: { p: '0.7', f: 'monthly' },
             play: { p: '0.85', f: 'daily' },
@@ -2438,12 +2516,13 @@ async function generateStaticPages() {
         // 而 Google 的作法是：lastmod 一旦被判定不可信，就整個忽略掉。
         // 球場 181 筆本來就有人工查證日（last_updated），文章有 updatedDate，
         // 新聞有發佈日；其餘拿不到真實日期的，寧可不寫 —— lastmod 本來就是選填。
-        const urlEntry = (loc, { lastmod, changefreq, priority }) => `
+        const urlEntry = (loc, { lastmod, changefreq, priority, images = [] }) => `
     <url>
         <loc>${loc}</loc>${lastmod ? `
         <lastmod>${lastmod}</lastmod>` : ''}
         <changefreq>${changefreq}</changefreq>
-        <priority>${priority}</priority>
+        <priority>${priority}</priority>${images.map(im => `
+        <image:image><image:loc>${BASE_URL}${im.src}</image:loc></image:image>`).join('')}
     </url>`;
 
         // 球場異動日：城市頁取該市最新、/ 與 /courts 取全站最新
@@ -2461,9 +2540,12 @@ async function generateStaticPages() {
 
         for (const route of Object.keys(pageSEO)) {
             const meta = priorityMap[route] || { p: '0.7', f: 'monthly' };
+            // 遊戲頁：改版日寫在 gameSeoData.ts（真實日期），並附上遊戲截圖給圖片搜尋
+            const game = route === 'game' ? loadTsModule('src/data/gameSeoData.ts') : null;
             sitemapContent += urlEntry(`${BASE_URL}/${route}/`, {
-                lastmod: route === 'courts' ? courtsNewest : undefined,
+                lastmod: route === 'courts' ? courtsNewest : game ? game.GAME_SEO.updated : undefined,
                 changefreq: meta.f, priority: meta.p,
+                images: game ? game.GAME_SHOTS : [],
             });
         }
 

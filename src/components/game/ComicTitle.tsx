@@ -29,27 +29,22 @@ const FONT = "'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif";
 /** 一個字：黑色粗描邊＋錯位黑影墊在後面，前面疊漸層字 */
 const Glyph = ({ ch, i, stroke }: { ch: string; i: number; stroke: number }) => (
   <span className="relative inline-grid" style={{ transform: `rotate(${TILT[i % TILT.length]}deg) translateY(${LIFT[i % LIFT.length]}em)` }}>
+    {/* 描邊與錯位黑影用 ::before 畫：文字只在 DOM 裡出現一次，搜尋引擎讀標題才不會變成「匹匹匹克克克」 */}
     <span
       aria-hidden
-      className="col-start-1 row-start-1 text-slate-950"
+      data-ch={ch}
+      className="col-start-1 row-start-1 text-slate-950 before:content-[attr(data-ch)]"
       style={{ WebkitTextStroke: `${stroke}px #0b0b14`, transform: `translate(${stroke * 0.55}px, ${stroke * 0.7}px)` }}
-    >
-      {ch}
-    </span>
-    <span aria-hidden className="relative col-start-1 row-start-1 text-slate-950" style={{ WebkitTextStroke: `${stroke}px #0b0b14` }}>
-      {ch}
-    </span>
-    <span
-      aria-hidden
-      className="relative col-start-1 row-start-1 bg-gradient-to-b from-yellow-200 via-amber-300 to-orange-500 bg-clip-text text-transparent"
-    >
+    />
+    <span aria-hidden data-ch={ch} className="relative col-start-1 row-start-1 text-slate-950 before:content-[attr(data-ch)]" style={{ WebkitTextStroke: `${stroke}px #0b0b14` }} />
+    <span className="relative col-start-1 row-start-1 bg-gradient-to-b from-yellow-200 via-amber-300 to-orange-500 bg-clip-text text-transparent">
       {ch}
     </span>
   </span>
 );
 
 /** 選單等處用的靜態標題 */
-export const ComicTitle = ({ className = '', stroke = 6, as: Tag = 'h2' }: { className?: string; stroke?: number; as?: 'h1' | 'h2' | 'div' }) => {
+export const ComicTitle = ({ className = '', stroke = 6, as: Tag = 'h2' }: { className?: string; stroke?: number; as?: 'h1' | 'h2' | 'div' | 'span' }) => {
   useTitleFont();
   return (
     <Tag className={`inline-flex select-none font-black leading-none tracking-tight ${className}`} style={{ fontFamily: FONT }} aria-label={GAME_NAME}>

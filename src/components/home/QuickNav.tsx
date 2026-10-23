@@ -53,8 +53,8 @@ const QuickNav = () => {
     },
     {
       icon: '🎮',
-      title: '線上互動遊戲',
-      description: '在遊戲中學習規則',
+      title: '免費匹克球遊戲',
+      description: '3D 對戰、必殺技，邊玩邊學規則',
       path: ROUTES.GAME,
       tag: '推薦',
     },

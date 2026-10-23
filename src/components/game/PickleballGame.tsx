@@ -9,6 +9,7 @@ import { SKILLS } from './engine/skills';
 import type { CutInInfo } from './CutIn';
 import { GameScene } from './GameScene';
 import { GameHud, type PointCard, type Toast } from './GameHud';
+import { ComicTitle, TitleSplash } from './ComicTitle';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
 import { PaddleSelect } from './PaddleSelect';
 import { CharacterSelect } from './CharacterSelect';
@@ -90,6 +91,9 @@ type Screen = 'menu' | 'character' | 'paddle' | 'play' | 'over';
 
 const PickleballGame = () => {
   const [screen, setScreen] = useState<Screen>('menu');
+  // 開場標題：每次進遊戲頁播一次
+  const [splash, setSplash] = useState(true);
+  const endSplash = useCallback(() => setSplash(false), []);
   const [settings, setSettings] = useState<Settings>(() =>
     load<Settings>(SETTINGS_KEY, {
       mode: 'match',
@@ -552,11 +556,8 @@ const PickleballGame = () => {
 
       {cover && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-end bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent p-6 pb-8 text-center">
-          <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold tracking-[0.25em] text-emerald-300">
-            PICKLEBALL GAME
-          </span>
-          <h2 className="mt-2 font-display text-4xl font-black tracking-tight text-white drop-shadow-lg">Pickle Master</h2>
-          <p className="mt-1.5 text-sm text-white/75">左手搖桿跑位、右手按鍵擊球，集滿能量放必殺</p>
+          <ComicTitle className="text-5xl" />
+          <p className="mt-3 text-sm text-white/75">左手搖桿跑位、右手按鍵擊球，集滿能量放必殺</p>
           <motion.button
             type="button"
             whileTap={{ scale: 0.96 }}
@@ -572,6 +573,7 @@ const PickleballGame = () => {
         </div>
       )}
 
+      <AnimatePresence>{splash && <TitleSplash key="splash" onDone={endSplash} />}</AnimatePresence>
       <AnimatePresence>
         {screen === 'menu' && !cover && (
           <MenuScreen

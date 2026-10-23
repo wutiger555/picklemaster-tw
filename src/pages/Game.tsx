@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PickleballGame from '../components/game/PickleballGame';
+import { ComicTitle } from '../components/game/ComicTitle';
 import { ROUTES } from '../utils/constants';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { staggerContainer, staggerItem } from '../utils/animations';
@@ -35,13 +36,13 @@ const TIPS = [
 ];
 
 const Game = () => {
-  usePageTitle('匹克球對戰遊戲');
+  usePageTitle('匹克硬邦幫｜匹克球對戰遊戲');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50/70 via-white to-white">
       <SEOHead
-        title="Pickle Master 匹克球對戰遊戲｜真實物理 × 熱血必殺技"
-        description="免下載的 3D 匹克球網頁遊戲：夜間體育館、四支真實規格球拍各帶一招必殺技（火焰抽擊、天雷貫地、幻影分身、絕對零度）。球的彈性、空氣阻力與旋轉照真實數據模擬，雙彈跳、廚房規則照比賽判，也有寫實模式。"
+        title="匹克硬邦幫｜免費 3D 匹克球對戰遊戲・真實物理 × 熱血必殺技"
+        description="匹克硬邦幫：免下載的 3D 匹克球網頁遊戲：夜間體育館、四支真實規格球拍各帶一招必殺技（火焰抽擊、天雷貫地、幻影分身、絕對零度）。球的彈性、空氣阻力與旋轉照真實數據模擬，雙彈跳、廚房規則照比賽判，也有寫實模式。"
       />
 
       <section className="container mx-auto px-4 pt-8 pb-6 md:pt-12">
@@ -52,7 +53,7 @@ const Game = () => {
             </span>
             <span className="text-sm font-semibold uppercase tracking-wide text-teal-600">Pickleball Game</span>
           </div>
-          <h1 className="mb-3 text-3xl font-bold text-neutral-900 md:text-4xl lg:text-5xl">匹克球對戰遊戲</h1>
+          <ComicTitle as="h1" className="mb-4 text-5xl md:text-6xl lg:text-7xl" />
           <p className="max-w-2xl text-lg text-neutral-600">
             底子是真的：球的彈性、球拍反彈係數、空氣阻力與旋轉照真實數據模擬，規則照比賽判。上面再疊一層熱血：挑一支球拍當武器，集滿能量放出必殺技。想專心學規則，也可以切到寫實模式。
           </p>

@@ -1,7 +1,7 @@
-import { Component, type MutableRefObject, type ReactNode, Suspense, useMemo, useRef } from 'react';
+import { Component, type MutableRefObject, type ReactNode, type Ref, Suspense, memo, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Bloom, ChromaticAberration, EffectComposer, Vignette } from '@react-three/postprocessing';
-import { BlendFunction } from 'postprocessing';
+import { BlendFunction, type ChromaticAberrationEffect } from 'postprocessing';
 import * as THREE from 'three';
 import { COURT } from './engine/constants';
 import type { GameEngine, GameEvent, InputState } from './engine/game';
@@ -268,12 +268,16 @@ const Prewarm = () => {
   return null;
 };
 
-/** 後處理：光暈讓火焰與燈光發亮；必殺演出時加一點色差。白天場地門檻拉高，免得白牆、天空整片發光 */
-const PostFx = ({ aberration, lowSpec, day }: { aberration: Num; lowSpec: boolean; day: boolean }) => {
-  const offset = useMemo(() => new THREE.Vector2(0, 0), []);
+/**
+ * 後處理：光暈讓火焰與燈光發亮；必殺演出時加一點色差。白天場地門檻拉高，免得白牆、天空整片發光。
+ * 效果結構要從開場就固定：EffectComposer 每次重繪都會拆掉重建 pass，而效果元件的 props 一變（JSON 比對）就換新實例、
+ * 被排到最後，pass 分組跟著變，著色器當場重編。所以 memo 擋掉父層重繪，色差 offset 只走 ref、不進 props。
+ */
+const PostFx = memo(({ aberration, lowSpec, day }: { aberration: Num; lowSpec: boolean; day: boolean }) => {
+  const chroma = useRef<ChromaticAberrationEffect>(null);
   useFrame(() => {
     const a = aberration.current * 0.003;
-    offset.set(a, a * 0.6);
+    chroma.current?.offset.set(a, a * 0.6);
   });
   if (lowSpec) {
     return (
@@ -286,11 +290,12 @@ const PostFx = ({ aberration, lowSpec, day }: { aberration: Num; lowSpec: boolea
   return (
     <EffectComposer multisampling={2}>
       <Bloom mipmapBlur luminanceThreshold={day ? 1.1 : 0.72} luminanceSmoothing={0.2} intensity={day ? 0.7 : 1.15} radius={0.75} />
-      <ChromaticAberration offset={offset} blendFunction={BlendFunction.NORMAL} radialModulation={false} modulationOffset={0} />
+      {/* 套件把 ref 型別寫成類別本身，實際拿到的是實例 */}
+      <ChromaticAberration ref={chroma as unknown as Ref<typeof ChromaticAberrationEffect>} blendFunction={BlendFunction.NORMAL} radialModulation={false} modulationOffset={0} />
       <Vignette eskil={false} offset={0.25} darkness={day ? 0.35 : 0.55} />
     </EffectComposer>
   );
-};
+});
 
 export const GameScene = (props: SceneProps) => {
   const { engine, lowSpec, venue } = props;

@@ -72,7 +72,8 @@ const Game = () => {
       </section>
 
       <section className="container mx-auto px-4 pb-12">
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}>
+        {/* 只淡入不縮放：祖先元素有 transform 時，遊戲全螢幕用的 position: fixed 會失效 */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
           <PickleballGame />
         </motion.div>
       </section>

@@ -29,6 +29,34 @@ export const SMASH_HEIGHT = 1.45;
 export const NET_ZONE = COURT.kitchen + 1.5;
 /** 來球快過這個速度時按軟球鍵，就是卸力擋（把重球擋回廚房） */
 export const BLOCK_SPEED = 12;
+/**
+ * 網前進攻的高度門檻（相對網高）：截擊在網高下 20 cm 以上就能推擋、
+ * 落地球彈到網高下 8 cm 以上就能突擊。真實比賽的突擊多半從網高附近出手，
+ * 只收「高過網」的球，dink 對打幾乎永遠等不到。
+ */
+const PUNCH_BELOW = 0.2;
+const SPEEDUP_BELOW = 0.08;
+
+export type AttackKind = 'smash' | 'punch' | 'speedup';
+
+/**
+ * 這個擊球點按抽球鍵會打出哪種進攻球（沒有就是普通抽球）。機會球提示也用它。
+ * slack：判定放寬（公尺）。玩家擊球時放寬一點，提示亮了、按了抽球鍵，就不會因為
+ * 實際擊球點比提示低幾公分而變回普通抽球（和「放大打擊區」同一個道理）。
+ */
+export const attackKind = (contact: V3, volley: boolean, slack = 0): AttackKind | null => {
+  const depthFromNet = Math.abs(contact.z);
+  if (contact.y > SMASH_HEIGHT - slack && depthFromNet < 6 + slack) return 'smash';
+  if (depthFromNet < NET_ZONE + slack) {
+    const netTop = netHeightAt(contact.x);
+    if (volley && contact.y > netTop - PUNCH_BELOW - slack) return 'punch';
+    if (!volley && contact.y > netTop - SPEEDUP_BELOW - slack) return 'speedup';
+  }
+  return null;
+};
+
+/** 玩家進攻判定的寬容度（公尺） */
+export const ATTACK_SLACK = 0.15;
 
 interface FlightResult {
   /** 落地點（找不到則 null） */
@@ -165,6 +193,8 @@ export interface ShotRequest {
   paddle?: { pace: number; spin: number };
   /** 球還沒落地就打（截擊） */
   volley?: boolean;
+  /** 進攻球路判定的寬容度（玩家用 ATTACK_SLACK，AI 為 0） */
+  slack?: number;
 }
 
 /**
@@ -195,7 +225,7 @@ export interface ShotPlan {
 /**
  * 依按鍵與情境判斷球路（同一顆鍵，看球的高度、位置、快慢自動變化）：
  * - 軟球鍵：一般是 dink／放小球；來球很重時變成卸力擋
- * - 抽球鍵：高球是殺球；網前沒落地的球是推擋截擊；網前彈起高過網的球是突擊；其餘是抽球
+ * - 抽球鍵：高球是殺球；網前沒落地的球是推擋截擊；網前彈到網高附近的球是突擊；其餘是抽球
  */
 export const classifyShot = (req: ShotRequest): ShotKind => {
   if (req.button === 'serve') return 'serve';
@@ -205,13 +235,7 @@ export const classifyShot = (req: ShotRequest): ShotKind => {
     if (req.incomingSpeed > BLOCK_SPEED) return 'block';
     return depthFromNet > COURT.kitchen + 1.7 ? 'drop' : 'dink';
   }
-  if (req.contact.y > SMASH_HEIGHT && depthFromNet < 6) return 'smash';
-  if (depthFromNet < NET_ZONE) {
-    const netTop = netHeightAt(req.contact.x);
-    if (req.volley && req.contact.y > netTop - 0.05) return 'punch';
-    if (!req.volley && req.contact.y > netTop + 0.05) return 'speedup';
-  }
-  return 'drive';
+  return attackKind(req.contact, !!req.volley, req.slack) ?? 'drive';
 };
 
 const NO_ERROR: Perturb = { depth: 0, lateral: 0, arc: 0, speed: 0 };

@@ -250,6 +250,18 @@ export class GameAudio {
     this.sweep(1200, 2600, big ? 0.2 : 0.1, big ? 1.6 : 1, 0.1, 0.7);
   }
 
+  /** 機會球出現：短促上揚的「叮叮」，提示該進攻了 */
+  chance() {
+    this.tone(1318.5, 'triangle', 0.12, 0.09);
+    this.tone(1975.5, 'triangle', 0.12, 0.14, 0.07);
+  }
+
+  /** 打出殺球／推擋／突擊：低頻重擊加一道往上衝的風切 */
+  attack(smash: boolean) {
+    this.tone(smash ? 70 : 110, 'sine', smash ? 0.5 : 0.32, smash ? 0.3 : 0.18, 0, 38);
+    this.sweep(800, smash ? 3600 : 2600, smash ? 0.22 : 0.14, 0.18, 0, 0.9);
+  }
+
   highlight() {
     [659.25, 880, 1318.5].forEach((f, i) => this.tone(f, 'sine', 0.14, 0.3, i * 0.06));
   }

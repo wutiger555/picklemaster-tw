@@ -283,7 +283,7 @@ const SPECIAL_COLORS: Record<SpecialId, [THREE.Color, THREE.Color]> = {
 };
 
 export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxBus; lowSpec: boolean }) => {
-  const { camera, scene } = useThree();
+  const { camera } = useThree();
   const pool = useMemo(() => new ParticlePool(), []);
   const ballTrail = useMemo(() => new Ribbon(28, '#ffffff'), []);
   const swingTrails = useMemo(() => engine.athletes.map(() => new Ribbon(14, '#ffffff')), [engine]);
@@ -309,6 +309,21 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
     [],
   );
   const decals = useRef<Decal[]>([]);
+  // 地面痕跡（焦痕、冰霜、裂痕）事先建好放著重複用：放招時才建網格與材質會當場編譯著色器、上傳貼圖而卡頓
+  const decalPool = useMemo(() => {
+    const geo = new THREE.PlaneGeometry(1, 1);
+    return (['scorch', 'frost', 'crack'] as const).flatMap((kind) =>
+      Array.from({ length: 4 }, () => {
+        const m = new THREE.Mesh(
+          geo,
+          new THREE.MeshBasicMaterial({ map: decalTexture(kind), transparent: true, depthWrite: false, toneMapped: kind !== 'frost' }),
+        );
+        m.visible = false;
+        m.userData.kind = kind;
+        return m;
+      }),
+    );
+  }, []);
   const flashLight = useRef<THREE.PointLight>(null);
   const flashSprite = useRef<THREE.Sprite>(null);
   const clock = useRef(0);
@@ -328,13 +343,15 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
   };
 
   const decal = (p: THREE.Vector3, kind: 'scorch' | 'frost' | 'crack', size: number) => {
-    const m = new THREE.Mesh(
-      new THREE.PlaneGeometry(size, size),
-      new THREE.MeshBasicMaterial({ map: decalTexture(kind), transparent: true, depthWrite: false, toneMapped: kind !== 'frost' }),
-    );
+    // 同種類裡挑一個閒置的；都在用就重用最舊的
+    const pool = decalPool.filter((d) => d.userData.kind === kind);
+    const m = pool.find((d) => !d.visible) ?? decals.current.find((d) => d.mesh.userData.kind === kind)?.mesh ?? pool[0];
+    decals.current = decals.current.filter((d) => d.mesh !== m);
+    m.scale.set(size, size, 1);
     m.rotation.set(-Math.PI / 2, 0, Math.random() * Math.PI * 2);
     m.position.set(p.x, 0.008 + decals.current.length * 0.0005, p.z);
-    scene.add(m);
+    (m.material as THREE.MeshBasicMaterial).opacity = 1;
+    m.visible = true;
     decals.current.push({ mesh: m, born: clock.current, life: 3.5 });
   };
 
@@ -581,9 +598,7 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       const m = d.mesh.material as THREE.MeshBasicMaterial;
       m.opacity = age < d.life - 1 ? 1 : Math.max(0, d.life - age);
       if (age > d.life) {
-        scene.remove(d.mesh);
-        d.mesh.geometry.dispose();
-        m.dispose();
+        d.mesh.visible = false;
         return false;
       }
       return true;
@@ -606,6 +621,9 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       <primitive object={bolts} />
       {rings.map((r, i) => (
         <primitive key={i} object={r} />
+      ))}
+      {decalPool.map((d, i) => (
+        <primitive key={`d${i}`} object={d} />
       ))}
       {engine.athletes.map((a, i) => (
         <mesh key={a.id} ref={(m) => void (auras.current[i] = m)} material={auraMats[i]} visible={false}>

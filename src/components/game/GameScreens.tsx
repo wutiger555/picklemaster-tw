@@ -156,9 +156,10 @@ const Shell = ({ children }: { children: React.ReactNode }) => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="absolute inset-0 z-30 flex items-center justify-center overflow-y-auto bg-gradient-to-b from-slate-950/80 via-slate-950/70 to-emerald-950/80 p-4 backdrop-blur-[2px]"
+    className="absolute inset-0 z-30 flex overflow-y-auto overscroll-contain bg-gradient-to-b from-slate-950/80 via-slate-950/70 to-emerald-950/80 p-4 backdrop-blur-[2px]"
   >
-    {children}
+    {/* 內容比畫面高時從頂端開始捲（items-center 會把上半截切掉） */}
+    <div className="m-auto flex w-full justify-center">{children}</div>
   </motion.div>
 );
 
@@ -321,15 +322,18 @@ export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuP
         />
       </label>
 
+      {/* 手機上設定很長，下一步按鈕黏在底部，不用捲到最下面找 */}
+      <div className="sticky -bottom-4 z-10 -mx-1 mt-4 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent px-1 pb-4 pt-4 md:static md:bg-none md:p-0">
       <motion.button
         type="button"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.97 }}
         onClick={onNext}
-        className="mt-4 w-full rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-3.5 text-lg font-black text-emerald-950 shadow-xl shadow-emerald-500/25"
+        className="w-full rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-3.5 text-lg font-black text-emerald-950 shadow-xl shadow-emerald-500/25"
       >
         下一步：選擇選手 →
       </motion.button>
+      </div>
 
       <p className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-white/60">
         {touch ? (

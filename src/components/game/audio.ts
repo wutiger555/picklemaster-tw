@@ -172,6 +172,7 @@ export class GameAudio {
   dispose() {
     this.murmur = null;
     this.tap = null;
+    this.rainNode = null;
     void this.ctx?.close();
     this.ctx = null;
   }
@@ -609,6 +610,76 @@ export class GameAudio {
   highlight() {
     this.smallGong(0.3);
     this.smallGong(0.3, 0.16);
+  }
+
+  // ───────── 踢館之旅（關卡） ─────────
+
+  /** 發球機出球：氣壓砲「噗」 */
+  feed() {
+    this.thump(220, 90, 0.35, 0.12, { wet: 0.1 });
+    this.burst(700, 1, 0.2, 0.08, { wet: 0.1 }, 'lowpass');
+  }
+
+  /** 打倒手搖杯：塑膠杯「喀啦」＋飲料潑出來；大杯更響 */
+  cup(big: boolean) {
+    const p = big ? 0.8 : 1 + Math.random() * 0.15;
+    this.burst(2600 * p, 2.5, 0.45, 0.05, { wet: 0.1 });
+    this.burst(1400 * p, 4, 0.35, 0.08, { delay: 0.04, wet: 0.1 });
+    this.sweep(2200, 500, big ? 0.3 : 0.18, 0.28, { delay: 0.05, wet: 0.2 }, 0.8);
+  }
+
+  /** 撿到珍珠：「啵」一聲，連續撿音高往上爬 */
+  pearl(n: number) {
+    const p = Math.pow(2, Math.min(n % 8, 7) / 12);
+    this.tone(880 * p, 'sine', 0.22, 0.09, { wet: 0.2 }, 1320 * p);
+  }
+
+  /** 被砲彈打中、珍珠掉滿地 */
+  spill() {
+    this.thump(180, 60, 0.6, 0.2, {}, true);
+    for (let i = 0; i < 6; i++) this.tone(700 + Math.random() * 700, 'sine', 0.08, 0.06, { delay: 0.08 + i * 0.05, wet: 0.2 });
+  }
+
+  /** 換風向：一陣呼嘯 */
+  gust() {
+    this.sweep(300, 900, 0.22, 1.2, { wet: 0.3 }, 0.5);
+    this.sweep(500, 1600, 0.12, 1.0, { delay: 0.3, wet: 0.3 }, 0.7);
+  }
+
+  /** 雷聲（颱風關的閃電） */
+  thunder() {
+    this.thump(90, 30, 0.7, 1.2, { wet: 0.6 }, true);
+    this.burst(200, 0.5, 0.35, 1.4, { delay: 0.05, wet: 0.6 }, 'lowpass');
+  }
+
+  private rainNode: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
+
+  /** 雨聲：持續的高通雜訊（颱風關才開） */
+  rain(on: boolean) {
+    const ctx = this.ctx;
+    if (!on || this.muted) {
+      if (this.rainNode && ctx) {
+        this.rainNode.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+        const m = this.rainNode;
+        window.setTimeout(() => m.src.stop(), 1500);
+        this.rainNode = null;
+      }
+      return;
+    }
+    if (!ctx || !this.sfx || !this.noise || this.rainNode) return;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noise;
+    src.loop = true;
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'bandpass';
+    hp.frequency.value = 2600;
+    hp.Q.value = 0.4;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.gain.setTargetAtTime(0.07, ctx.currentTime, 0.8);
+    src.connect(hp).connect(gain).connect(this.sfx);
+    src.start();
+    this.rainNode = { src, gain };
   }
 
   /** 終場：贏了鑼鼓＋嗩吶＋一長串鞭炮；輸了一聲沉鑼配往下滑的嗩吶 */

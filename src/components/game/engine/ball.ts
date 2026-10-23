@@ -38,6 +38,8 @@ export interface BallState {
   spin: V3;
   special: BallSpecial | null;
   curve?: BallCurve | null;
+  /** 風速（m/s，水平）：空氣阻力改用相對風的速度算，球會被吹著走（颱風關） */
+  wind?: { x: number; z: number } | null;
 }
 
 export type BallEvent =
@@ -59,6 +61,7 @@ export const cloneBall = (b: BallState): BallState => ({
   spin: clone(b.spin),
   special: b.special ? { ...b.special, target: clone(b.special.target), perp: { ...b.special.perp } } : null,
   curve: b.curve ? { ...b.curve, perp: { ...b.curve.perp } } : null,
+  wind: b.wind ? { ...b.wind } : null,
 });
 
 /** 空氣中的加速度：重力＋二次阻力＋馬格努斯升力 */
@@ -68,11 +71,16 @@ const accelerate = (b: BallState, dt: number) => {
   let ax = 0;
   let ay = -AIR.gravity;
   let az = 0;
+  // 有風時阻力用「球相對空氣」的速度：順風飛得遠、逆風掉得快、側風把球吹偏
+  const wx = b.wind ? vel.x - b.wind.x : vel.x;
+  const wz = b.wind ? vel.z - b.wind.z : vel.z;
+  const rel = b.wind ? Math.hypot(wx, vel.y, wz) : speed;
+  if (rel > 1e-4) {
+    ax -= DRAG_K * rel * wx;
+    ay -= DRAG_K * rel * vel.y;
+    az -= DRAG_K * rel * wz;
+  }
   if (speed > 1e-4) {
-    ax -= DRAG_K * speed * vel.x;
-    ay -= DRAG_K * speed * vel.y;
-    az -= DRAG_K * speed * vel.z;
-
     const w = len(spin);
     if (w > 1e-3) {
       // 自旋參數 S = rω/v，升力係數與它近似成正比；洞洞球效果較弱

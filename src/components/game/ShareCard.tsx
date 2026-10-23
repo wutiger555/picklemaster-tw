@@ -13,6 +13,7 @@ import {
   drawShareCard,
   type MatchResult,
   shareText,
+  tourUrl,
 } from './share';
 
 /** 複製文字：先用 Clipboard API，不行（舊版 in-app 瀏覽器）再退回 execCommand */
@@ -177,7 +178,7 @@ export const ShareActions = ({ result }: { result: MatchResult }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState<'text' | 'link' | null>(null);
-  const url = challengeUrl({ difficulty: result.difficulty, score: result.score, character: result.character.id, paddle: result.paddle });
+  const url = result.tour ? tourUrl() : challengeUrl({ difficulty: result.difficulty, score: result.score, character: result.character.id, paddle: result.paddle });
   const text = shareText(result, url);
 
   // 結束畫面一出現就先畫好圖：Safari 的 navigator.share 必須在點擊當下呼叫，不能等畫圖
@@ -248,7 +249,7 @@ export const ShareActions = ({ result }: { result: MatchResult }) => {
           onClick={shareLink}
           className="rounded-xl border border-white/15 bg-white/5 px-3.5 text-sm font-bold text-white hover:bg-white/10"
         >
-          {copied === 'link' ? '已複製 ✓' : '傳挑戰連結'}
+          {copied === 'link' ? '已複製 ✓' : result.tour ? '揪朋友踢館' : '傳挑戰連結'}
         </button>
       </div>
 

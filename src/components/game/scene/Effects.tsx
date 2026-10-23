@@ -280,6 +280,9 @@ const AWAKEN_A = COLOR('#fff3b0');
 const AWAKEN_B = COLOR('#ff5a1f');
 /** 撲倒揚起的球場灰塵 */
 const DUST_A = COLOR('#9c8f7a');
+/** 奶茶潑出來（加法混色，用偏亮的奶茶色才看得到） */
+const TEA_A = COLOR('#fff1dc');
+const TEA_B = COLOR('#d6a36e');
 const DUST_B = COLOR('#4a4136');
 const SPECIAL_COLORS: Record<SpecialId, [THREE.Color, THREE.Color]> = {
   inferno: [FIRE_A, FIRE_B],
@@ -502,6 +505,40 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       ring(p, '#b8ab96', 2.4, true, 0.45);
     } else if (e.type === 'net') {
       pool.emit({ pos: tmp.set(e.pos.x, e.pos.y, e.pos.z).clone(), count: 8, speed: 1.5, life: 0.3, size: 0.06, color: COLOR('#e2e8f0'), gravity: -5 });
+    } else if (e.type === 'level' && e.pos) {
+      // 踢館之旅：杯子潑出奶茶、撿到珍珠閃一下、扣 Boss 血噴火花
+      const p = tmp.set(e.pos.x, e.pos.y, e.pos.z).clone();
+      if (e.fx === 'cup') {
+        pool.emit({ pos: p, count: 36, speed: 2.6, up: 2.2, life: 0.7, size: 0.09, color: TEA_A, color2: TEA_B, gravity: -9 });
+        ring(tmp.set(p.x, 0.03, p.z).clone(), '#fde68a', 1.1, true, 0.4);
+      } else if (e.fx === 'row') {
+        ring(p, '#fbbf24', 5, true, 0.7);
+      } else if (e.fx === 'dunk') {
+        pool.emit({ pos: p, count: 90, speed: 3.5, up: 4.5, life: 1, size: 0.12, color: TEA_A, color2: TEA_B, gravity: -9 });
+        ring(p, '#fde047', 3, true, 0.7);
+        flash(p, '#fff3c4', 6);
+      } else if (e.fx === 'pearl') {
+        pool.emit({ pos: p, count: 10, speed: 1.6, up: 1.2, life: 0.45, size: 0.07, color: COLOR('#fff7cc'), color2: COLOR('#f59e0b'), gravity: -4 });
+      } else if (e.fx === 'gold') {
+        pool.emit({ pos: p, count: 46, speed: 3.5, up: 1.6, life: 0.7, size: 0.12, color: COLOR('#fff7b0'), color2: COLOR('#f59e0b'), drag: 2.5 });
+        ring(p, '#fde047', 2, true, 0.5);
+        flash(p, '#fff6c2', 4);
+      } else if (e.fx === 'drop') {
+        const q = tmp.set(p.x, 0.9, p.z).clone();
+        pool.emit({ pos: q, count: 40, speed: 3, life: 0.5, size: 0.1, color: COLOR('#fecaca'), color2: COLOR('#e11d48'), drag: 3 });
+        ring(tmp.set(p.x, 0.03, p.z).clone(), '#fb7185', 1.8, true, 0.45);
+      } else if (e.fx === 'damage') {
+        const q = tmp.set(p.x, 1.2, p.z).clone();
+        pool.emit({ pos: q, count: 30 + Math.min(40, (e.n ?? 0) * 2), speed: 4.5, life: 0.5, size: 0.11, color: COLOR('#fff1a8'), color2: COLOR('#ff3d00'), drag: 3 });
+        ring(q, '#fb923c', 1.6, false, 0.35);
+      } else if (e.fx === 'ko') {
+        const q = tmp.set(p.x, 1.1, p.z).clone();
+        pool.emit({ pos: q, count: 160, speed: 8, life: 0.9, size: 0.16, grow: 1.4, color: COLOR('#ffffff'), color2: COLOR('#f59e0b'), drag: 2.5 });
+        ring(q, '#fde047', 6, false, 0.8);
+        flash(q, '#fff6c2', 10);
+      } else if (e.fx === 'feed') {
+        pool.emit({ pos: p, count: 12, speed: 1.2, up: 0.4, life: 0.5, size: 0.14, grow: 1.6, color: COLOR('#cbd5e1'), color2: COLOR('#475569'), drag: 3 });
+      }
     }
   };
 

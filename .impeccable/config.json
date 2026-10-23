@@ -38,6 +38,15 @@
         ],
         "createdAt": "2026-10-22T18:59:32.387Z",
         "reason": "Claude: user asked for an exaggerated manga-style game logo; yellow-orange gradient fill with black stroke is the comic lettering itself, not a decorative heading"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "src/components/game/TourScreens.tsx"
+        ],
+        "createdAt": "2026-10-23T16:20:56.466Z",
+        "reason": "Claude triage: remaining hits are text-slate-950 (near-black comic ink) on amber panels, matching ComicTitle's black outline style; real slate-500/600/700-on-amber cases were changed to amber-950 tints"
       }
     ]
   }

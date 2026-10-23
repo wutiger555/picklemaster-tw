@@ -8,6 +8,8 @@ import type { GameEngine, GameEvent, InputState } from './engine/game';
 import { teamSide } from './engine/rules';
 import { Stadium } from './scene/Stadium';
 import { RoseGardenVenue } from './scene/RoseGardenVenue';
+import { BeachVenue } from './scene/BeachVenue';
+import { LevelProps } from './scene/LevelProps';
 import type { Venue } from './GameScreens';
 import { AthleteModel } from './scene/AthleteModel';
 import { lookFromCharacter } from './scene/characterData';
@@ -44,7 +46,7 @@ interface SceneProps {
   paused: boolean;
   onEvents: (events: GameEvent[]) => void;
   lowSpec: boolean;
-  /** 比賽場地：夜間體育館或新生公園戶外場 */
+  /** 比賽場地：夜間體育館、新生公園戶外場，或踢館之旅的海邊 */
   venue: Venue;
   /** 精彩球錄影（不支援錄影的瀏覽器是 null） */
   clip: ClipRecorder | null;
@@ -399,7 +401,8 @@ const ClipCapture = ({ clip, engine, characters }: { clip: ClipRecorder; engine:
 
 export const GameScene = (props: SceneProps) => {
   const { engine, lowSpec, venue } = props;
-  const day = venue === 'rosegarden';
+  const day = venue !== 'arena';
+  const storm = engine.level?.id === 'typhoon';
   const bus = useMemo(createFxBus, []);
   const excite = useRef(0);
   const flash = useRef(0);
@@ -408,7 +411,13 @@ export const GameScene = (props: SceneProps) => {
   const looks = useMemo(() => characters.map(lookFromCharacter), [characters]);
   return (
     <>
-      {day ? (
+      {venue === 'beach' ? (
+        <>
+          <color attach="background" args={[storm ? '#2b3744' : '#7d8f9e']} />
+          <fog attach="fog" args={[storm ? '#3a4652' : '#8a9bab', storm ? 18 : 30, storm ? 85 : 120]} />
+          <BeachVenue engine={engine} />
+        </>
+      ) : day ? (
         <>
           <color attach="background" args={['#a9cdf0']} />
           <fog attach="fog" args={['#c9dcea', 45, 150]} />
@@ -428,6 +437,7 @@ export const GameScene = (props: SceneProps) => {
           </Suspense>
         </SkipOnError>
       ))}
+      <LevelProps engine={engine} lowSpec={lowSpec} />
       <Guide engine={engine} />
       <ReviewFx engine={engine} />
       <BallModel engine={engine} />

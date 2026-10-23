@@ -650,3 +650,146 @@ export const gardenSignTexture = () =>
     g.font = '600 36px "PingFang TC", "Noto Sans TC", sans-serif';
     g.fillText('新生公園 · 羽毛球場', 278, 330);
   });
+
+// ───────────────────────────── 海邊・颱風天（踢館之旅）─────────────────────────────
+
+/** 颱風天的天空：低垂的灰雲，越靠地平線越亮（storm = 颱風正面，暗很多） */
+export const stormSkyTexture = (storm: boolean) =>
+  make(`storm-sky-${storm}`, 1024, 512, (g, w, h) => {
+    const grd = g.createLinearGradient(0, 0, 0, h / 2);
+    grd.addColorStop(0, storm ? '#1a2230' : '#4b5c70');
+    grd.addColorStop(0.7, storm ? '#3a4a5c' : '#8496a8');
+    grd.addColorStop(1, storm ? '#6b7b88' : '#b9c6cf');
+    g.fillStyle = grd;
+    g.fillRect(0, 0, w, h / 2);
+    g.fillStyle = storm ? '#2b3a44' : '#5d7180';
+    g.fillRect(0, h / 2, w, h / 2);
+    const r = rng(311);
+    // 一層層扁扁的雲帶（颱風外圍環流），橫向拉長
+    for (let i = 0; i < 70; i++) {
+      const y = h * (0.04 + r() * 0.44);
+      const x = r() * w;
+      const rx = 80 + r() * 220;
+      const ry = 8 + r() * 26;
+      const dark = r() < 0.6;
+      const a = storm ? 0.25 + r() * 0.35 : 0.15 + r() * 0.25;
+      for (const off of [-w, 0, w]) {
+        const c = g.createRadialGradient(x + off, y, 0, x + off, y, rx);
+        c.addColorStop(0, dark ? `rgba(20,28,40,${a})` : `rgba(200,210,220,${a * 0.6})`);
+        c.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = c;
+        g.save();
+        g.translate(x + off, y);
+        g.scale(1, ry / rx);
+        g.translate(-(x + off), -y);
+        g.beginPath();
+        g.arc(x + off, y, rx, 0, Math.PI * 2);
+        g.fill();
+        g.restore();
+      }
+    }
+  });
+
+/** 沙灘：細沙顆粒＋零星貝殼碎 */
+export const sandTexture = () => {
+  const t = make('sand', 512, 512, (g, w, h) => {
+    noiseFill(g, w, h, '#c9b28a', 34, 91);
+    const r = rng(5);
+    for (let i = 0; i < 260; i++) {
+      g.fillStyle = r() < 0.5 ? 'rgba(255,248,230,0.5)' : 'rgba(120,96,64,0.35)';
+      g.fillRect(r() * w, r() * h, 1 + r() * 2, 1 + r() * 2);
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(14, 14);
+  return t;
+};
+
+/** 海面：一條條浪紋（貼圖往岸邊捲動，看起來在打浪） */
+export const seaTexture = () => {
+  const t = make('sea', 256, 256, (g, w, h) => {
+    const grd = g.createLinearGradient(0, 0, 0, h);
+    grd.addColorStop(0, '#2b5566');
+    grd.addColorStop(1, '#335f70');
+    g.fillStyle = grd;
+    g.fillRect(0, 0, w, h);
+    const r = rng(77);
+    for (let i = 0; i < 90; i++) {
+      const y = r() * h;
+      const x = r() * w;
+      const len = 20 + r() * 70;
+      g.strokeStyle = `rgba(220,240,245,${0.12 + r() * 0.3})`;
+      g.lineWidth = 1 + r() * 2.5;
+      g.beginPath();
+      g.moveTo(x, y);
+      g.quadraticCurveTo(x + len / 2, y - 3, x + len, y);
+      g.stroke();
+      g.beginPath();
+      g.moveTo(x - w, y);
+      g.quadraticCurveTo(x - w + len / 2, y - 3, x - w + len, y);
+      g.stroke();
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(10, 6);
+  return t;
+};
+
+/** 飲料攤的條紋遮雨棚 */
+export const awningTexture = () =>
+  make('awning', 256, 64, (g, w, h) => {
+    for (let i = 0; i < 8; i++) {
+      g.fillStyle = i % 2 ? '#fff7ed' : '#e11d48';
+      g.fillRect((i * w) / 8, 0, w / 8 + 1, h);
+    }
+    g.fillStyle = 'rgba(0,0,0,0.12)';
+    g.fillRect(0, h - 10, w, 10);
+  });
+
+/** 飲料攤招牌：黃底紅字，夜市味 */
+export const boothSignTexture = () =>
+  make('booth-sign', 512, 160, (g, w, h) => {
+    g.fillStyle = '#facc15';
+    g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#7c2d12';
+    g.lineWidth = 10;
+    g.strokeRect(5, 5, w - 10, h - 10);
+    g.fillStyle = '#b91c1c';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = '900 86px "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+    g.fillText('颱風珍奶', w / 2, h / 2 - 8);
+    g.fillStyle = '#7c2d12';
+    g.font = '800 26px "PingFang TC", "Noto Sans TC", sans-serif';
+    g.fillText('風雨無阻・全糖去冰', w / 2, h - 24);
+  });
+
+/** 手搖杯的杯身貼紙（一圈） */
+export const cupLabelTexture = () => {
+  const t = make('cup-label', 256, 128, (g, w, h) => {
+    const grd = g.createLinearGradient(0, 0, 0, h);
+    grd.addColorStop(0, '#f2dcc0');
+    grd.addColorStop(0.55, '#c99b6d');
+    grd.addColorStop(1, '#7a5233');
+    g.fillStyle = grd;
+    g.fillRect(0, 0, w, h);
+    // 杯底的珍珠
+    const r = rng(23);
+    for (let i = 0; i < 60; i++) {
+      g.fillStyle = `rgba(40,22,12,${0.7 + r() * 0.3})`;
+      g.beginPath();
+      g.arc(r() * w, h - 6 - r() * 26, 4 + r() * 3, 0, Math.PI * 2);
+      g.fill();
+    }
+    // 杯身貼紙
+    g.fillStyle = '#fff7ed';
+    g.fillRect(w * 0.3, h * 0.2, w * 0.4, h * 0.32);
+    g.fillStyle = '#e11d48';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = '900 30px "PingFang TC", "Noto Sans TC", sans-serif';
+    g.fillText('珍奶', w * 0.5, h * 0.36);
+  });
+  t.wrapS = THREE.RepeatWrapping;
+  return t;
+};

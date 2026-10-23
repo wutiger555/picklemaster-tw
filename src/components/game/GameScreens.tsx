@@ -14,8 +14,8 @@ export interface Records {
   comboBest: Record<Difficulty, number>;
 }
 
-/** 比賽場地 */
-export type Venue = 'arena' | 'rosegarden';
+/** 比賽場地（beach 是踢館之旅颱風站專用，不在選單裡） */
+export type Venue = 'arena' | 'rosegarden' | 'beach';
 
 export interface Settings {
   mode: GameMode;
@@ -35,7 +35,7 @@ export interface Settings {
 const DIFFS: Difficulty[] = ['rookie', 'club', 'pro'];
 
 /** 場地縮圖：用 SVG 畫，不必另外下載圖 */
-const VenueThumb = ({ venue }: { venue: Venue }) =>
+const VenueThumb = ({ venue }: { venue: Exclude<Venue, 'beach'> }) =>
   venue === 'arena' ? (
     <svg viewBox="0 0 160 64" preserveAspectRatio="xMidYMid slice" className="h-full w-full" aria-hidden>
       <defs>
@@ -174,17 +174,47 @@ interface MenuProps {
   settings: Settings;
   records: Records;
   touch: boolean;
+  /** 踢館之旅拿到的星星總數 */
+  tourStars: number;
+  onTour: () => void;
   onChange: (s: Settings) => void;
   onNext: () => void;
 }
 
-export const MenuScreen = ({ settings, records, touch, onChange, onNext }: MenuProps) => (
+export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext }: MenuProps) => (
   <Shell>
     <div className="w-full max-w-2xl py-4">
       <div className="text-center">
         <ComicTitle className="text-5xl md:text-7xl" />
         <p className="mt-3 text-sm text-white/70">真實物理 × 熱血必殺技的匹克球對戰</p>
       </div>
+
+      {/* 冒險模式入口：漫畫風大橫幅 */}
+      <motion.button
+        type="button"
+        onClick={onTour}
+        whileHover={{ y: -2, rotate: -0.4 }}
+        whileTap={{ scale: 0.98 }}
+        className="relative mt-5 flex w-full items-center gap-3 overflow-hidden rounded-2xl border-[3px] border-slate-950 bg-gradient-to-r from-amber-300 via-orange-400 to-rose-400 px-4 py-3 text-left text-slate-950 shadow-[5px_5px_0_#0b0b14]"
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-20"
+          style={{ backgroundImage: 'radial-gradient(#7c2d12 1.2px, transparent 1.5px)', backgroundSize: '8px 8px' }}
+        />
+        <span className="relative text-3xl md:text-4xl">🗺️</span>
+        <span className="relative min-w-0 flex-1">
+          <span className="flex items-center gap-2">
+            <span className="text-lg font-black md:text-xl">踢館之旅</span>
+            <span className="rounded-md border-2 border-slate-950 bg-slate-950 px-1.5 text-[10px] font-black text-amber-300">NEW</span>
+          </span>
+          <span className="block text-xs font-bold text-slate-950/75">全台踢館！第一站：海邊・颱風天，打倒颱風黑框</span>
+        </span>
+        <span className="relative shrink-0 text-right">
+          <span className="block text-sm font-black">★ {tourStars}</span>
+          <span className="block text-xs font-black">出發 →</span>
+        </span>
+      </motion.button>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
         {(

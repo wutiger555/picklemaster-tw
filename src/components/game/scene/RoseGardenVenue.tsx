@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { COURT } from '../engine/constants';
 import { Net } from './Stadium';
+import { buildPalmFrond } from './palmGeometry';
 import {
   badmintonLinesTexture,
   buildingTexture,
@@ -421,20 +422,6 @@ const GardenSign = ({ x, z }: { x: number; z: number }) => (
 // ───────────────────────────── 樹木 ─────────────────────────────
 
 const PALM_FRONDS = 9;
-
-const buildPalmFrond = () => {
-  const len = 3.6;
-  const geo = new THREE.PlaneGeometry(1.2, len, 1, 10);
-  const pos = geo.attributes.position;
-  for (let i = 0; i < pos.count; i++) {
-    const y = pos.getY(i) + len / 2;
-    const x = pos.getX(i);
-    // 先往外上揚，再往下垂
-    pos.setXYZ(i, x * (0.4 + (y / len) * 0.6), y * 0.55 - y * y * 0.17, y * 0.92);
-  }
-  geo.computeVertexNormals();
-  return geo;
-};
 
 const Trees = ({ lowSpec }: { lowSpec: boolean }) => {
   const data = useMemo(() => {

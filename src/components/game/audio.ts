@@ -240,6 +240,16 @@ export class GameAudio {
     this.burst(3500, 1, 0.7, 0.15);
   }
 
+  /** 無雙覺醒：太鼓三連打＋往上衝的聲浪＋大和弦 */
+  awaken() {
+    [0, 0.14, 0.28].forEach((d, i) => {
+      this.tone(70 - i * 6, 'sine', 0.55, 0.35, d, 38);
+      this.burst(180, 0.6, 0.7, 0.18, d);
+    });
+    this.sweep(200, 3200, 0.4, 0.9, 0.3, 0.7);
+    [261.6, 329.6, 392, 523.25, 659.25].forEach((f) => this.tone(f, 'sawtooth', 0.06, 1.2, 0.55));
+  }
+
   energyFull() {
     [523.25, 783.99, 1046.5].forEach((f, i) => this.tone(f, 'sine', 0.12, 0.35, i * 0.06));
   }

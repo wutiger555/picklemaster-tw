@@ -161,12 +161,24 @@ const OVERLAYS = [
 type Overlay = (typeof OVERLAYS)[number];
 
 /** 得分慶祝（隨機挑一種）：[動作, 從第幾秒開始播, 機率權重] */
-const CELEBRATIONS: [Overlay, number, number][] = [
-  ['Yes', 0.1, 4],
+type Celebration = [Overlay, number, number];
+/** 漂亮得分（致勝球、殺球、長連擊、覺醒中）：跳舞、飛膝 */
+const CELEBRATIONS: Celebration[] = [
   ['Mx_HipHop', 1.5, 2.5],
   ['Mx_Shuffle', 1.0, 2.5],
-  ['Mx_KneeCombo', 0.25, 1],
+  ['Mx_KneeCombo', 0.25, 1.5],
+  ['Yes', 0.1, 1],
 ];
+/** 撿到對手失誤：握拳、扛拍耍帥挑釁，偶爾跳一段曳步舞 */
+const TAUNTS: Celebration[] = [
+  ['Yes', 0.1, 3],
+  ['Mx_PowerIdle', 0, 2.5],
+  ['Mx_Shuffle', 1.0, 1],
+];
+const pick = (list: Celebration[]) => {
+  let r = Math.random() * list.reduce((n, c) => n + c[2], 0);
+  return list.find((c) => (r -= c[2]) < 0) ?? list[0];
+};
 /** 必殺技出手後的身段：[動作, 高潮時間點] */
 const SPECIAL_MOVES: Record<string, [Overlay, number]> = {
   inferno: ['Mx_BigSlash', 1.67],
@@ -320,7 +332,9 @@ export class AthletePoser {
   private spinFrom = -99;
   /** 絕招動作額外的前傾 */
   private extraLean = 0;
-  private celebration: [Overlay, number, number] = CELEBRATIONS[0];
+  private celebration: Celebration = CELEBRATIONS[0];
+  /** 失分的反應：true = 先被打到踉蹌再搖頭，false = 直接搖頭 */
+  private stagger = false;
   private knockAt = -1;
   private knockUntil = 0;
   private jumpAt = 0;
@@ -955,20 +969,24 @@ export class AthletePoser {
     }
     if (engine.phase === 'dead' && a.mood && t - a.mood.at < 1.9) {
       const since = t - a.mood.at;
+      if (this.celebrateAt !== a.mood.at) {
+        this.celebrateAt = a.mood.at;
+        // 每一分隨機挑一種：漂亮得分跳舞，撿到失誤就挑釁；被打穿的一方偶爾誇張地踉蹌
+        this.celebration = pick(a.mood.big ? CELEBRATIONS : TAUNTS);
+        this.stagger = !a.mood.error && Math.random() < 0.55;
+      }
       if (a.mood.won) {
-        // 每一分隨機挑一種慶祝：握拳、街舞、曳步舞、飛膝
-        if (this.celebrateAt !== a.mood.at) {
-          this.celebrateAt = a.mood.at;
-          const total = CELEBRATIONS.reduce((n, c) => n + c[2], 0);
-          let r = Math.random() * total;
-          this.celebration = CELEBRATIONS.find((c) => (r -= c[2]) < 0) ?? CELEBRATIONS[0];
-        }
         const [clip, start] = this.celebration;
         oT[clip] = 0.92;
         this.overlay[clip].time = Math.min(this.overlay[clip].getClip().duration, start + since);
+      } else if (this.stagger && since < 0.75) {
+        // 被打穿：往後踉蹌（慢放擊退動作），再接搖頭
+        oT.Hit_Knockback = 0.9;
+        this.overlay.Hit_Knockback.time = Math.min(0.6, since * 0.8);
       } else {
-        oT.Idle_No_Loop = 0.85;
-        this.overlay.Idle_No_Loop.time = Math.min(this.overlay.Idle_No_Loop.getClip().duration, since + 0.4);
+        // 自己失誤：懊惱搖頭
+        oT.Idle_No_Loop = 0.88;
+        this.overlay.Idle_No_Loop.time = Math.min(this.overlay.Idle_No_Loop.getClip().duration, since + (this.stagger ? -0.35 : 0.4));
       }
     }
     // 必殺技出手後：誇張的身段（用真實時間，頓幀慢動作時照樣播）
@@ -978,6 +996,12 @@ export class AthletePoser {
       const s = engine.real - cine.start;
       oT[clip] = 0.9 * (1 - smoothstep(1.1, 1.45, s));
       this.overlay[clip].time = clamp(peak - 0.3 + s * 0.8, 0, this.overlay[clip].getClip().duration);
+    }
+    // 覺醒發動：雙手持拍的架勢，氣場爆開（真實時間）
+    const awk = engine.awakening;
+    if (awk && awk.team === a.team && engine.real - awk.start < 1.8) {
+      oT.Mx_PowerIdle = 0.95;
+      this.overlay.Mx_PowerIdle.time = Math.min(this.overlay.Mx_PowerIdle.getClip().duration, (engine.real - awk.start) * 0.9);
     }
     // 蓄勢（下一拍放必殺）：雙手持拍的架勢
     if (a.armed && engine.phase !== 'dead' && !st && Math.hypot(a.vel.x, a.vel.z) < 0.6) {

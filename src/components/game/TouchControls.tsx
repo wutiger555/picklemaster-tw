@@ -68,12 +68,15 @@ export const TouchControls = ({
   chance,
   special,
   skill,
+  awaken,
 }: {
   touch: MutableRefObject<TouchInput>;
   /** 機會球：這一球按抽球鍵會打出的進攻球路 */
   chance: AttackKind | null;
   special: SpecialButton | null;
   skill: SpecialButton | null;
+  /** 無雙覺醒：量表累積中就顯示（外圈是量表），集滿才按得下去；用過就收起來 */
+  awaken: SpecialButton | null;
 }) => {
   const [knob, setKnob] = useState({ x: 0, y: 0 });
   const [active, setActive] = useState<ShotButton | null>(null);
@@ -124,6 +127,12 @@ export const TouchControls = ({
           style={{ transform: `translate(calc(-50% + ${knob.x}px), calc(-50% + ${knob.y}px))` }}
         />
       </div>
+      {/* 覺醒鍵：直拿放在搖桿上方，橫拿放在搖桿右邊（右手邊已經擠滿擊球鍵） */}
+      {awaken && (
+        <div className="pointer-events-auto absolute bottom-[calc(max(1rem,env(safe-area-inset-bottom))+9.75rem)] left-4 landscape:bottom-[max(1rem,env(safe-area-inset-bottom))] landscape:left-[10.75rem]">
+          <MoveButton b={awaken} label="覺醒" onPress={() => void (touch.current.awaken = true)} />
+        </div>
+      )}
       <div className="pointer-events-auto flex flex-col items-end gap-3">
         {(special || skill) && (
           <div className="flex gap-3">

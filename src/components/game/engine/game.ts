@@ -59,6 +59,8 @@ export interface InputState {
   special?: boolean;
   /** 絕招鍵（同上） */
   skill?: boolean;
+  /** 覺醒鍵（同上） */
+  awaken?: boolean;
 }
 
 export interface SwingState {
@@ -101,8 +103,8 @@ export interface Athlete {
   knockedUntil: number;
   /** 天雷跳殺的騰空時間（給動畫用） */
   jumpUntil: number;
-  /** 最近一次得分慶祝／懊惱（給動畫用） */
-  mood: { won: boolean; at: number } | null;
+  /** 最近一次得分慶祝／懊惱（給動畫用）：big = 漂亮得分（致勝球、長連擊、覺醒中），error = 自己失誤丟分 */
+  mood: { won: boolean; at: number; big: boolean; error: boolean } | null;
   /** 角色絕招（沒有就是 null） */
   skill: SkillId | null;
   /** 絕招可以用了 */
@@ -115,6 +117,14 @@ export interface Athlete {
   skillAt: number;
   /** 被噴水：腳下打滑，跑不快 */
   slipUntil: number;
+  /** 無雙覺醒量表 0..100（落後或連續丟分時累積，集滿才能發動） */
+  awaken: number;
+  /** 這一局已經覺醒過（每局最多一次） */
+  awakenUsed: boolean;
+  /** 覺醒剩下幾拍（> 0 = 覺醒中） */
+  awakenHits: number;
+  /** 連續丟掉幾分（覺醒量表用） */
+  lostStreak: number;
   /** 上一個物理步的位置（畫面內插用） */
   prevPos: V3;
 }
@@ -181,6 +191,11 @@ export type GameEvent =
   | { type: 'special'; team: Team; id: SpecialId }
   | { type: 'skill'; team: Team; id: SkillId }
   | { type: 'skillReady'; team: Team }
+  | { type: 'awakenReady'; team: Team }
+  | { type: 'awaken'; team: Team }
+  | { type: 'awakenEnd'; team: Team }
+  /** 連擊到 10、20、30… 拍 */
+  | { type: 'comboMilestone'; n: number }
   | { type: 'closeCall'; challenger: Team; calledIn: boolean }
   | { type: 'reviewStart'; team: Team }
   | { type: 'reviewVerdict'; team: Team; overturned: boolean }
@@ -229,7 +244,11 @@ export interface HudState {
   skill: SkillId | null;
   skillReady: boolean;
   skillArmed: boolean;
+  /** 無雙覺醒：量表、剩下幾拍、用過了沒；對手覺醒中剩幾拍 */
+  awaken: { gauge: number; hits: number; used: boolean; opp: number } | null;
   rallyHits: number;
+  /** 這一局最長連擊 */
+  bestCombo: number;
   dinkStreak: number;
   inKitchen: boolean;
   kitchenLocked: boolean;
@@ -289,6 +308,30 @@ export interface ReviewState {
 }
 
 export type ReviewAngle = 'mini' | 'broadcast' | 'line' | 'hawk';
+
+/**
+ * 無雙覺醒（每局一次的逆轉手段）：落後 3 分以上或連丟 4 分時集滿，發動後持續幾拍：
+ * 自己的擊球一律完美、飛向自己的球變慢、必殺能量累積加快、絕招立刻充好。
+ */
+export const AWAKEN = {
+  /** 持續幾拍（自己的擊球數，可以跨分） */
+  hits: 12,
+  /** 飛向覺醒者的球，球的時間流速 */
+  ballSlow: 0.8,
+  /** 接覺醒者的球：對手的失誤倍率（球又重又刁） */
+  pressure: 1.6,
+  /** 必殺能量累積倍率 */
+  energyRate: 2,
+  /** 發動時直接補的能量 */
+  energyBoost: 30,
+  /** 每連丟一分加多少量表（連丟 5 分集滿） */
+  perLost: 20,
+  /** 落後幾分直接集滿 */
+  deficit: 3,
+} as const;
+/** 連擊每 10 拍的里程碑：雙方都加能量 */
+const COMBO_STEP = 10;
+const comboBonus = (n: number) => Math.min(30, 5 + n / 2);
 
 /** 每人每局可申請的電視輔助判決次數（判決推翻就不扣，MLB 規則） */
 export const CHALLENGES = 2;
@@ -399,6 +442,10 @@ export class GameEngine {
   timeScale = 1;
   /** 正在播放的必殺切入演出 */
   cinematic: { team: Team; id: SpecialId; start: number } | null = null;
+  /** 覺醒發動的演出（真實時間，鏡頭特寫用） */
+  awakening: { team: Team; start: number } | null = null;
+  /** 得分慶祝（真實時間，鏡頭帶到得分者用） */
+  celebration: { team: Team; start: number; big: boolean } | null = null;
   /** 電視輔助判決 */
   review: ReviewState | null = null;
   challenges: [number, number] = [CHALLENGES, CHALLENGES];
@@ -432,6 +479,7 @@ export class GameEngine {
   private pendingServe: { power: number; aimX: number } | null = null;
   private prevSpecial = false;
   private prevSkill = false;
+  private prevAwaken = false;
   /** AI 對哪一顆來球擲過絕招骰子（athlete id → 對手擊球時間） */
   private skillRolled = new Map<number, number>();
   /** 已經開打幾分（絕招充能用） */
@@ -482,6 +530,10 @@ export class GameEngine {
       skillUsedAt: 0,
       skillAt: -99,
       slipUntil: 0,
+      awaken: 0,
+      awakenUsed: false,
+      awakenHits: 0,
+      lostStreak: 0,
       prevPos: v3(0, 0, z),
     });
     // 預留雙打：athletes 陣列可以放四人，規則與 AI 都以 team 為單位
@@ -659,6 +711,7 @@ export class GameEngine {
     this.timeScale = this.computeTimeScale();
     const dt = realDt * this.timeScale;
     if (this.cinematic && this.real > this.slowUntil) this.cinematic = null;
+    if (this.awakening && this.real - this.awakening.start > 2) this.awakening = null;
     this.input = input;
     // 電視輔助判決中：比賽暫停，只跑重播
     if (this.review) {
@@ -669,6 +722,8 @@ export class GameEngine {
     this.prevSpecial = !!input.special;
     if (input.skill && !this.prevSkill) this.tryArmSkill(this.human);
     this.prevSkill = !!input.skill;
+    if (input.awaken && !this.prevAwaken && !this.human.ai) this.tryAwaken(this.human);
+    this.prevAwaken = !!input.awaken;
     for (const a of this.athletes) {
       if (a.swing.state === 'swinging' && this.time - a.swing.swingStart >= SWING_TOTAL) {
         a.swing = { ...idleSwing(), forehand: a.swing.forehand };
@@ -701,7 +756,7 @@ export class GameEngine {
       this.holdBall();
     } else {
       const prev = clone(this.ball.pos);
-      const ev = stepBall(this.ball, dt);
+      const ev = stepBall(this.ball, dt * this.ballSlow());
       if (this.phase === 'rally') {
         const hist = this.ballHistory;
         hist.push({ t: this.time, pos: clone(this.ball.pos) });
@@ -764,6 +819,37 @@ export class GameEngine {
     return true;
   }
 
+  /** 覺醒量表集滿：發動無雙覺醒（每局一次） */
+  tryAwaken(a: Athlete) {
+    if (!this.specials || this.mode !== 'match' || a.awakenUsed || a.awaken < 100 || this.review) return false;
+    if (this.phase !== 'serve' && this.phase !== 'rally') return false;
+    a.awakenUsed = true;
+    a.awaken = 0;
+    a.awakenHits = AWAKEN.hits;
+    a.energy = Math.min(ENERGY.max, a.energy + AWAKEN.energyBoost);
+    if (a.skill && !a.skillReady) {
+      a.skillReady = true;
+      this.emit({ type: 'skillReady', team: a.team });
+    }
+    // 切入演出（約 1.1 秒）時比賽幾乎凍結，接著慢動作特寫發光的選手
+    this.awakening = { team: a.team, start: this.real };
+    this.freezeUntil = Math.max(this.freezeUntil, this.real + 1.1);
+    this.slowUntil = Math.max(this.slowUntil, this.real + 1.9);
+    this.emit({ type: 'awaken', team: a.team });
+    return true;
+  }
+
+  /** 球的時間流速：飛向覺醒者的球變慢（軌跡不變，只是飛得比較久） */
+  ballSlow() {
+    if (this.phase !== 'rally' || this.rally.lastTeam === null) return 1;
+    return this.athletes.some((a) => a.team !== this.rally.lastTeam && a.awakenHits > 0) ? AWAKEN.ballSlow : 1;
+  }
+
+  /** 預測軌跡（時間軸已換算成球的流速） */
+  predict(duration: number) {
+    return predictPath(this.ball, duration, PHYSICS_DT, this.ballSlow());
+  }
+
   /** 設定雙方的角色絕招（選角之後由畫面層告訴引擎） */
   setSkills(skills: [SkillId | null, SkillId | null]) {
     this.athletes.forEach((a, i) => {
@@ -775,7 +861,7 @@ export class GameEngine {
 
   private gainEnergy(a: Athlete, amount: number) {
     if (!this.specials) return;
-    const rate = a.ai ? AI_ENERGY_RATE[this.difficulty] : 1;
+    const rate = (a.ai ? AI_ENERGY_RATE[this.difficulty] : 1) * (a.awakenHits > 0 ? AWAKEN.energyRate : 1);
     const before = a.energy;
     a.energy = Math.min(ENERGY.max, a.energy + amount * rate);
     if (before < ENERGY.max && a.energy >= ENERGY.max) this.emit({ type: 'energyFull', team: a.team });
@@ -940,7 +1026,7 @@ export class GameEngine {
     pre?: { path: PathSample[]; pathT0: number; pathBounces0: number },
   ) {
     const sw = a.swing;
-    const p = pre?.path ?? predictPath(this.ball, 1.4, PHYSICS_DT);
+    const p = pre?.path ?? this.predict(1.4);
     a.swing = {
       ...sw,
       state: 'swinging',
@@ -969,7 +1055,7 @@ export class GameEngine {
     this.humanPathAt = this.time;
     this.humanPathT0 = this.time;
     this.humanPathBounces0 = this.rally.bouncesSinceHit;
-    this.humanPath = predictPath(this.ball, 2.0, PHYSICS_DT);
+    this.humanPath = this.predict(2.0);
     this.refreshGuide();
     this.landingMarker = null;
     if (this.rally.lastTeam !== this.human.team && this.rally.bouncesSinceHit === 0) {
@@ -1185,6 +1271,11 @@ export class GameEngine {
       offset = best ? this.time - best.t : PLAYER.swingWindup;
       quality = clamp(1 - (Math.abs(offset) - 0.02) / 0.13, 0, 1);
     }
+    // 覺醒中：每一拍都是完美擊球（反射擋球除外）
+    if (a.awakenHits > 0 && !sw.reflex) {
+      quality = 1;
+      offset = 0;
+    }
 
     const volley = this.rally.bouncesSinceHit === 0;
     if (volley && this.rally.hits <= 2 && this.mode === 'match') {
@@ -1257,6 +1348,7 @@ export class GameEngine {
           spinControl *
           pressure *
           (1 + underAttack * 1.4) *
+          (this.opponentOf(a).awakenHits > 0 ? AWAKEN.pressure : 1) *
           // 互 dink 太久，AI 開始沉不住氣：dink 越來越不穩、容易吊高給人突擊
           (a.ai && kind0 === 'dink' ? 1 + Math.max(0, this.rally.dinkChain - 3) * 0.07 : 1),
         zone: !!fire || !!skill,
@@ -1329,6 +1421,11 @@ export class GameEngine {
     }
     if (volley) a.kitchenLockUntil = this.time + 0.6;
     if (a.ai) a.ai.plan = null;
+    if (this.mode === 'match' && r.hits % COMBO_STEP === 0) {
+      this.emit({ type: 'comboMilestone', n: r.hits });
+      for (const o of this.athletes) this.gainEnergy(o, comboBonus(r.hits));
+    }
+    if (a.awakenHits > 0 && --a.awakenHits === 0) this.emit({ type: 'awakenEnd', team: a.team });
 
     const st = this.stats[a.team];
     st.shots += 1;
@@ -1686,10 +1783,12 @@ export class GameEngine {
       this.stats[winner].winners += 1;
       if (reason === 'ace') this.stats[winner].aces += 1;
     }
+    const big = faultTeam === null && (r.hits >= COMBO_STEP || this.athletes[winner].awakenHits > 0 || r.lastKindByTeam[winner] === 'smash' || reason === 'ace');
     for (const a of this.athletes) {
-      a.mood = { won: a.team === winner, at: this.time };
+      a.mood = { won: a.team === winner, at: this.time, big, error: faultTeam === a.team };
       if (a.team === winner && faultTeam === null) this.gainEnergy(a, ENERGY.winner);
     }
+    this.celebration = { team: winner, start: this.real, big };
 
     let title: string;
     let lesson: string | null = null;
@@ -1706,10 +1805,10 @@ export class GameEngine {
     let sideOut = false;
     if (this.mode === 'match') {
       sideOut = awardRally(this.match, winner).sideOut;
+      this.fillAwaken(winner);
     } else if (faultTeam === this.human.team || winner !== this.human.team) {
       this.match.winner = 1;
     }
-    if (r.hits >= 12) this.emit({ type: 'highlight', text: `${r.hits} 拍來回！` });
     this.emit({
       type: 'point',
       winner,
@@ -1721,6 +1820,19 @@ export class GameEngine {
       sideOut,
       rallyHits: r.hits,
     });
+  }
+
+  /** 覺醒量表：連丟分慢慢累積，落後 3 分以上直接集滿；量表只增不減 */
+  private fillAwaken(winner: Team) {
+    for (const a of this.athletes) {
+      a.lostStreak = a.team === winner ? 0 : a.lostStreak + 1;
+      if (!this.specials || a.awakenUsed || a.awaken >= 100) continue;
+      const deficit = this.match.score[other(a.team)] - this.match.score[a.team];
+      const fill = deficit >= AWAKEN.deficit ? 100 : Math.max(a.lostStreak * AWAKEN.perLost, deficit * AWAKEN.perLost);
+      if (fill <= a.awaken) continue;
+      a.awaken = Math.min(100, fill);
+      if (a.awaken >= 100) this.emit({ type: 'awakenReady', team: a.team });
+    }
   }
 
   private nextPoint() {
@@ -1736,6 +1848,8 @@ export class GameEngine {
 
   private thinkAI(a: Athlete, dt: number) {
     const ai = a.ai!;
+    // 覺醒：集滿就在下一分開打前發動（切入演出擋在發球前，看得最清楚）
+    if (this.phase === 'serve' && a.awaken >= 100 && !a.awakenUsed && !this.awakening && this.time >= ai.serveAt - 0.8) this.tryAwaken(a);
     if (this.phase === 'serve') {
       if (this.match.serving === a.team && this.time >= ai.serveAt) {
         const prof = ai.profile;
@@ -1813,7 +1927,12 @@ export class GameEngine {
       skill: h.skill,
       skillReady: h.skillReady,
       skillArmed: h.skillArmed,
+      awaken:
+        this.specials && this.mode === 'match'
+          ? { gauge: h.awaken, hits: h.awakenHits, used: h.awakenUsed, opp: this.athletes[1].awakenHits }
+          : null,
       rallyHits: this.rally.hits,
+      bestCombo: this.longestRally,
       dinkStreak: this.dinkStreak,
       inKitchen: feetInKitchen(h.pos),
       kitchenLocked: this.time < h.kitchenLockUntil,

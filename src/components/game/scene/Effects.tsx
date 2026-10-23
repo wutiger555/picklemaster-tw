@@ -275,6 +275,9 @@ const COLOR = (hex: string) => new THREE.Color(hex);
 const FIRE_A = COLOR('#fff1a8');
 const FIRE_B = COLOR('#ff3d00');
 const SPARK = COLOR('#fff7cc');
+const AWAKEN_COLOR = '#f59e0b';
+const AWAKEN_A = COLOR('#fff3b0');
+const AWAKEN_B = COLOR('#ff5a1f');
 const SPECIAL_COLORS: Record<SpecialId, [THREE.Color, THREE.Color]> = {
   inferno: [FIRE_A, FIRE_B],
   thunder: [COLOR('#ffffff'), COLOR('#3d6bff')],
@@ -571,8 +574,14 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
       const aura = auras.current[i];
       const am = auraMats[i];
       am.uniforms.time.value = clock.current;
-      am.uniforms.color.value.set(SPECIALS[special].color);
-      const target = a.armed ? 0.8 : firing ? 0.7 : 0;
+      // 覺醒中：金色氣場＋往上竄的火星（蓄勢、放必殺時照樣用招式的顏色）
+      const awake = a.awakenHits > 0;
+      am.uniforms.color.value.set(awake && !a.armed && !firing ? AWAKEN_COLOR : SPECIALS[special].color);
+      const target = a.armed ? 0.8 : firing ? 0.7 : awake ? 0.4 : 0;
+      if (awake && Math.random() < (lowSpec ? 0.35 : 0.8)) {
+        tmp.set(a.pos.x + (Math.random() - 0.5) * 0.7, 0.2 + Math.random() * 1.4, a.pos.z + (Math.random() - 0.5) * 0.5);
+        pool.emit({ pos: tmp, count: 1, speed: 0.3, up: 2.2, life: 0.7, size: 0.07, color: AWAKEN_A, color2: AWAKEN_B, gravity: 1.5 });
+      }
       am.uniforms.strength.value += (target - am.uniforms.strength.value) * Math.min(1, dt * 6);
       if (aura) {
         aura.visible = am.uniforms.strength.value > 0.02;

@@ -1,4 +1,4 @@
-import { Component, type MutableRefObject, type ReactNode, Suspense, useMemo, useRef } from 'react';
+import { Component, type MutableRefObject, type ReactNode, Suspense, useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Bloom, ChromaticAberration, EffectComposer, Vignette } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
@@ -110,6 +110,13 @@ const Rig = ({
           aberration.current = 0.8;
         } else if (e.type === 'point') {
           excite.current = Math.max(excite.current, e.faultTeam === null ? 1 : 0.35);
+        } else if (e.type === 'awaken' || e.type === 'comboMilestone') {
+          // 覺醒、連擊里程碑：全場起立
+          excite.current = 1;
+          if (e.type === 'awaken') {
+            flash.current = 1;
+            aberration.current = 1;
+          }
         } else if (e.type === 'net') shake.current = Math.max(shake.current, 0.04);
       }
       onEvents(events);
@@ -122,6 +129,10 @@ const Rig = ({
 
     const cin = engine.cinematic;
     const cinAge = cin ? engine.real - cin.start : 99;
+    const awk = engine.awakening;
+    const awkAge = awk ? engine.real - awk.start : 99;
+    const cel = engine.celebration;
+    const celAge = cel && engine.phase === 'dead' ? engine.real - cel.start : 99;
     let fov = portrait ? 63 : 46;
     const rv = engine.reviewView();
     if (rv) {
@@ -183,6 +194,28 @@ const Rig = ({
       cam.lookAt(look.current);
       cam.rotateZ(-0.12 * s);
       fov = 40;
+    } else if (awk && awkAge < 1.85) {
+      // 覺醒：切入畫面後面先就位，切入收掉後從正前方低角度往上搖，選手全身入鏡、慢慢繞到側面
+      const a = engine.athletes.find((x) => x.team === awk.team)!;
+      const s = teamSide(a.team);
+      const orbit = -0.45 + awkAge * 0.5;
+      const kk = 1 - Math.exp(-delta * 12);
+      base.current.lerp(v.a.set(a.pos.x + Math.sin(orbit) * 3.4 * s, 0.7 + awkAge * 0.5, a.pos.z - Math.cos(orbit) * 3.4 * s), kk);
+      cam.position.copy(base.current);
+      look.current.lerp(v.b.set(a.pos.x, 1.15, a.pos.z), kk);
+      cam.lookAt(look.current);
+      fov = 42;
+    } else if (cel && celAge > 0.25 && celAge < 1.85) {
+      // 得分慶祝：鏡頭帶到得分者（從網前斜側拍，選手站在畫面下半，上面留給得分卡）
+      const a = engine.athletes.find((x) => x.team === cel.team)!;
+      const s = teamSide(a.team);
+      const side = a.pos.x * s > 0 ? -1 : 1;
+      const kk = 1 - Math.exp(-delta * 4.5);
+      base.current.lerp(v.a.set(a.pos.x + side * 1.6 * s, 1.5, a.pos.z - 3.6 * s), kk);
+      cam.position.copy(base.current);
+      look.current.lerp(v.b.set(a.pos.x, 1.45, a.pos.z), kk);
+      cam.lookAt(look.current);
+      fov = cel.big ? 40 : 44;
     } else {
       // 轉播視角：鏡頭在玩家身後斜上方，跟著左右移動；上網時拉近
       const h = engine.human.pos;
@@ -234,6 +267,10 @@ const Rig = ({
  */
 const Prewarm = () => {
   const { gl, scene, camera } = useThree();
+  // 畫面一律經過後處理（先畫到離屏緩衝）：著色器的色調映射、色彩空間設定和直接畫到螢幕不同，
+  // 預熱時也要綁一個離屏目標，編出來的才是之後真的會用到的版本
+  const target = useMemo(() => new THREE.WebGLRenderTarget(1, 1), []);
+  useEffect(() => () => target.dispose(), [target]);
   const seen = useRef('');
   const tick = useRef(0);
   useFrame(() => {
@@ -261,7 +298,10 @@ const Prewarm = () => {
         o.visible = true;
       }
     });
+    const prev = gl.getRenderTarget();
+    gl.setRenderTarget(target);
     gl.compile(scene, camera);
+    gl.setRenderTarget(prev);
     for (const t of textures) gl.initTexture(t);
     for (const o of hidden) o.visible = false;
   });

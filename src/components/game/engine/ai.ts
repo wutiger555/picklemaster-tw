@@ -309,7 +309,7 @@ export const homePosition = (eng: GameEngine, a: Athlete) => {
 };
 
 /** AI 的移動：朝目標加速、接近時減速，和玩家同一套速度上限 */
-export const steer = (a: Athlete, tx: number, tz: number, maxSpeed: number, dt: number) => {
+export const steer = (a: Athlete, tx: number, tz: number, maxSpeed: number, dt: number, grip = 1) => {
   const dx = tx - a.pos.x;
   const dz = tz - a.pos.z;
   const dist = Math.hypot(dx, dz);
@@ -318,8 +318,10 @@ export const steer = (a: Athlete, tx: number, tz: number, maxSpeed: number, dt: 
   const want = Math.min(maxSpeed * slow, Math.sqrt(2 * PLAYER.decel * 0.7 * dist));
   const wx = dist > 1e-3 ? (dx / dist) * want : 0;
   const wz = dist > 1e-3 ? (dz / dist) * want : 0;
-  const ax = clamp((wx - a.vel.x) / dt, -PLAYER.accel * 1.4, PLAYER.accel * 1.4);
-  const az = clamp((wz - a.vel.z) / dt, -PLAYER.accel * 1.4, PLAYER.accel * 1.4);
+  // grip < 1：踩在積水上，加速與煞車都會滑
+  const lim = PLAYER.accel * 1.4 * grip;
+  const ax = clamp((wx - a.vel.x) / dt, -lim, lim);
+  const az = clamp((wz - a.vel.z) / dt, -lim, lim);
   a.vel.x += ax * dt;
   a.vel.z += az * dt;
 };

@@ -6,6 +6,7 @@ import { SPECIALS } from './engine/paddles';
 import { SKILLS } from './engine/skills';
 import { CutIn, type CutInInfo } from './CutIn';
 import { ReviewOverlay } from './ReviewOverlay';
+import { LevelBoard, type LevelPop } from './LevelHud';
 
 export interface Toast {
   id: number;
@@ -390,9 +391,11 @@ interface HudProps {
   touch: boolean;
   onChallenge: () => void;
   onAccept: () => void;
+  /** 踢館之旅的關卡：名稱、Boss、得分彈出字 */
+  level?: { name: string; boss?: { name: string; portrait: string | null }; pops: LevelPop[] };
 }
 
-export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, onChallenge, onAccept }: HudProps) => {
+export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, onChallenge, onAccept, level }: HudProps) => {
   const humanServing = hud.phase === 'serve' && hud.serving === 0 && hud.mode === 'match';
   // 判決重播時收起比分和能量條，畫面留給轉播
   const replay = hud.review?.state === 'reviewing' ? 'opacity-0' : '';
@@ -400,7 +403,11 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
     <div className="pointer-events-none absolute inset-0 z-10 select-none">
       <AwakenTint hud={hud} />
       <div className={`absolute inset-x-0 top-3 flex justify-center transition-opacity max-md:justify-start max-md:pl-3 ${replay}`}>
-        <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
+        {hud.level && level ? (
+          <LevelBoard level={hud.level} name={level.name} boss={level.boss} pops={level.pops} touch={touch} />
+        ) : (
+          <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
+        )}
       </div>
 
       {/* 手機上能量改顯示在招式鍵的外圈，不再佔左上角；判決剩餘次數在申請時的提示裡也看得到 */}

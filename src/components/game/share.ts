@@ -61,6 +61,8 @@ export const decodeChallenge = (raw: string | null): Challenge | null => {
 };
 
 export const challengeUrl = (c: Challenge) => `${window.location.origin}/game/?vs=${encodeChallenge(c)}`;
+/** 踢館之旅的分享連結：直接打開地圖 */
+export const tourUrl = () => `${window.location.origin}/game/?tour=1`;
 
 /** 輸 3 分以內叫「惜敗」，輸更多就只說「挑戰」，不硬說差一點 */
 const lossVerb = (score: [number, number]) => (score[1] - score[0] <= 3 ? '惜敗' : '挑戰');
@@ -83,6 +85,8 @@ export interface MatchResult {
   highlights: Highlights;
   character: CharacterDef;
   paddle: string;
+  /** 踢館之旅打倒 Boss 的戰績（有這欄就畫成踢館卡） */
+  tour?: { stage: string; boss: string; stars: number; timeLeft: number };
 }
 
 export interface Title {
@@ -93,6 +97,12 @@ export interface Title {
 /** 依表現給稱號：由最罕見的成就往下找，第一個符合的就是 */
 export const titleFor = (r: MatchResult): Title => {
   const h = r.highlights;
+  if (r.tour) {
+    const t = r.tour;
+    if (t.stars >= 3) return { name: '颱風剋星', line: `剩 ${t.timeLeft} 秒就 K.O. ${t.boss}` };
+    if (h.specials + h.skills >= 3) return { name: '逆風必殺王', line: `頂著強風放了 ${h.specials + h.skills} 次必殺` };
+    return { name: '踢館成功', line: `在${t.stage}打倒${t.boss}` };
+  }
   const diff = r.score[0] - r.score[1];
   if (r.won && r.score[1] === 0) return { name: '完封之王', line: '對手一分都沒拿到' };
   if (h.specials + h.skills >= 4) return { name: '必殺狂熱者', line: `一場放出 ${h.specials + h.skills} 次必殺與絕招` };
@@ -111,6 +121,10 @@ export const titleFor = (r: MatchResult): Title => {
 export const shareText = (r: MatchResult, url: string) => {
   const ai = AI_PROFILES[r.difficulty].label;
   const t = titleFor(r);
+  if (r.tour) {
+    const stars = '⭐'.repeat(r.tour.stars);
+    return `我在 Pickle Master 踢館之旅打倒「${r.tour.boss}」${stars}\n剩 ${r.tour.timeLeft} 秒 K.O.，稱號「${t.name}」\n颱風天也要打球？你也來踢館 👉 ${url}\n#匹克球`;
+  }
   const head = r.won
     ? `我在 Pickle Master 用 ${r.score[0]}:${r.score[1]} 打贏${ai} AI 🏆`
     : `我在 Pickle Master 以 ${r.score[0]}:${r.score[1]} ${lossVerb(r.score)}${ai} AI 😤`;
@@ -315,34 +329,51 @@ export const drawShareCard = async (r: MatchResult): Promise<HTMLCanvasElement> 
   ctx.fillStyle = accent;
   ctx.font = `800 30px ${NUM}`;
   ctx.letterSpacing = '8px';
-  ctx.fillText(r.won ? 'VICTORY' : lossVerb(r.score) === '惜敗' ? 'SO CLOSE' : 'GAME OVER', pad, 210);
+  const tour = r.tour;
+  ctx.fillText(tour ? 'K.O.!' : r.won ? 'VICTORY' : lossVerb(r.score) === '惜敗' ? 'SO CLOSE' : 'GAME OVER', pad, 210);
   ctx.letterSpacing = '0px';
   ctx.fillStyle = '#ffffff';
   ctx.font = `900 72px ${CJK}`;
-  ctx.fillText(r.won ? `擊敗${ai.label} AI` : `${lossVerb(r.score)}${ai.label} AI`, pad, 290);
+  if (tour) fitFont(ctx, `踢館成功：${tour.boss}`, 900, 72, CJK, 560);
+  ctx.fillText(tour ? `踢館成功：${tour.boss}` : r.won ? `擊敗${ai.label} AI` : `${lossVerb(r.score)}${ai.label} AI`, pad, 290);
   ctx.fillStyle = 'rgba(255,255,255,0.55)';
-  ctx.font = `600 30px ${NUM}`;
-  ctx.fillText(`對手程度 ${ai.rating}`, pad, 352);
+  ctx.font = `600 30px ${tour ? CJK : NUM}`;
+  ctx.fillText(tour ? `踢館之旅・${tour.stage}` : `對手程度 ${ai.rating}`, pad, 352);
 
-  // 比分
+  // 比分（踢館卡改畫三顆星＋剩餘秒數）
   // 兩位數對兩位數（11:10）會變很寬，縮字避免壓到選手的臉
   ctx.textBaseline = 'alphabetic';
+  if (tour) {
+    ctx.font = `900 150px ${CJK}`;
+    for (let i = 0; i < 3; i++) {
+      ctx.fillStyle = i < tour.stars ? '#fbbf24' : 'rgba(255,255,255,0.14)';
+      ctx.shadowColor = i < tour.stars ? 'rgba(251,191,36,0.6)' : 'transparent';
+      ctx.shadowBlur = i < tour.stars ? 40 : 0;
+      ctx.fillText('★', pad - 6 + i * 140, 560);
+    }
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `800 40px ${CJK}`;
+    ctx.fillText(`剩 ${tour.timeLeft} 秒 K.O.`, pad, 630);
+  }
   const s0 = String(r.score[0]);
   const s1 = String(r.score[1]);
-  const big = fitFont(ctx, `${s0}${s1}`, 900, 250, NUM, 420);
-  const k = big / 250;
-  const w0 = ctx.measureText(s0).width;
-  ctx.fillStyle = '#ffffff';
-  ctx.shadowColor = r.won ? 'rgba(52,211,153,0.45)' : 'rgba(251,146,60,0.4)';
-  ctx.shadowBlur = 60;
-  ctx.fillText(s0, pad - 8, 620);
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = 'rgba(255,255,255,0.25)';
-  ctx.font = `900 ${Math.round(150 * k)}px ${NUM}`;
-  ctx.fillText(':', pad + w0 + 10 * k, 620 - 30 * k);
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.font = `900 ${big}px ${NUM}`;
-  ctx.fillText(s1, pad + w0 + 80 * k, 620);
+  if (!tour) {
+    const big = fitFont(ctx, `${s0}${s1}`, 900, 250, NUM, 420);
+    const k = big / 250;
+    const w0 = ctx.measureText(s0).width;
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = r.won ? 'rgba(52,211,153,0.45)' : 'rgba(251,146,60,0.4)';
+    ctx.shadowBlur = 60;
+    ctx.fillText(s0, pad - 8, 620);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = `900 ${Math.round(150 * k)}px ${NUM}`;
+    ctx.fillText(':', pad + w0 + 10 * k, 620 - 30 * k);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = `900 ${big}px ${NUM}`;
+    ctx.fillText(s1, pad + w0 + 80 * k, 620);
+  }
 
   // 選手名牌
   ctx.textBaseline = 'middle';
@@ -437,7 +468,7 @@ export const drawShareCard = async (r: MatchResult): Promise<HTMLCanvasElement> 
   ctx.stroke();
   ctx.fillStyle = '#ffffff';
   ctx.font = `900 46px ${CJK}`;
-  ctx.fillText('你敢挑戰嗎？', pad, fy + 70);
+  ctx.fillText(tour ? '你也來踢館？' : '你敢挑戰嗎？', pad, fy + 70);
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
   ctx.font = `600 28px ${NUM}`;
   ctx.fillText('picklemastertw.com/game・免下載直接玩', pad, fy + 122);

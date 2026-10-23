@@ -18,7 +18,11 @@ import { TouchControls } from './TouchControls';
 import { useGameInput } from './useGameInput';
 import { GameAudio } from './audio';
 import { ChallengeIntro } from './ShareCard';
-import { type Challenge, decodeChallenge, emptyHighlights, trackHit } from './share';
+import { type Challenge, type MatchResult, decodeChallenge, emptyHighlights, trackHit } from './share';
+import { type LevelId, createLevel } from './engine/levels';
+import { TOUR_KEY, type TourProgress, emptyTour, levelById } from './tour';
+import { type LevelOutcome, LevelResult, StoryComic, TourMap } from './TourScreens';
+import type { LevelPop } from './LevelHud';
 
 const RECORDS_KEY = 'pm-game-records';
 const SETTINGS_KEY = 'pm-game-settings';
@@ -90,7 +94,7 @@ const detectLowSpec = () => {
   }
 };
 
-type Screen = 'menu' | 'character' | 'paddle' | 'play' | 'over';
+type Screen = 'menu' | 'character' | 'paddle' | 'play' | 'over' | 'tour' | 'story';
 
 const PickleballGame = () => {
   const [screen, setScreen] = useState<Screen>('menu');
@@ -139,6 +143,12 @@ const PickleballGame = () => {
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [intro, setIntro] = useState(false);
   const highlights = useRef(emptyHighlights());
+  // 踢館之旅：進度、選到的關卡、結算、關卡中的得分彈出字
+  const [tour, setTour] = useState<TourProgress>(() => load<TourProgress>(TOUR_KEY, emptyTour()));
+  const [levelId, setLevelId] = useState<LevelId | null>(null);
+  const [outcome, setOutcome] = useState<LevelOutcome | null>(null);
+  const [pops, setPops] = useState<LevelPop[]>([]);
+  const pearls = useRef(0);
 
   const playing = screen === 'play';
   const togglePause = useCallback(() => setPaused((p) => (screen === 'play' ? !p : p)), [screen]);
@@ -158,9 +168,15 @@ const PickleballGame = () => {
     };
   }, [audio]);
 
-  // 從挑戰連結進來：先秀挑戰卡，並把遊戲舞台捲進畫面
+  // 從挑戰連結進來：先秀挑戰卡，並把遊戲舞台捲進畫面；踢館之旅的分享連結直接開地圖
   useEffect(() => {
-    const c = decodeChallenge(new URLSearchParams(window.location.search).get('vs'));
+    const q = new URLSearchParams(window.location.search);
+    if (q.has('tour')) {
+      setScreen('tour');
+      stage.current?.scrollIntoView({ block: 'center' });
+      return;
+    }
+    const c = decodeChallenge(q.get('vs'));
     if (!c) return;
     setChallenge(c);
     setIntro(true);
@@ -241,6 +257,38 @@ const PickleballGame = () => {
 
   const finish = useCallback(
     (eng: GameEngine) => {
+      const lv = eng.level;
+      if (lv) {
+        // 踢館之旅：記星數與最佳成績（颱風關記打倒時剩幾秒）
+        const id = lv.id;
+        const stars = lv.stars();
+        const prevStars = tour.stars[id] ?? 0;
+        const prevBest = tour.best[id] ?? 0;
+        const score = lv.cleared || id !== 'typhoon' ? lv.score : 0;
+        const next: TourProgress = {
+          ...tour,
+          stars: { ...tour.stars, [id]: Math.max(prevStars, stars) },
+          best: { ...tour.best, [id]: Math.max(prevBest, lv.cleared ? score : 0) },
+        };
+        setTour(next);
+        save(TOUR_KEY, next);
+        setOutcome({
+          id,
+          stars,
+          score,
+          best: prevBest,
+          newBest: lv.cleared && score > prevBest,
+          cleared: lv.cleared,
+          firstClear: prevStars === 0 && stars > 0,
+          hp: 'hp' in lv ? Math.ceil(lv.hp as number) : undefined,
+        });
+        audio.ambience(false);
+        audio.rain(false);
+        audio.win(lv.cleared);
+        audio.say(lv.cleared ? 'win' : 'lose', { priority: true, cooldown: 0, delay: 0.5 });
+        setScreen('over');
+        return;
+      }
       const d = settings.difficulty;
       const next = structuredClone(records);
       let record = false;
@@ -265,7 +313,110 @@ const PickleballGame = () => {
       audio.say(won ? 'win' : 'lose', { priority: true, cooldown: 0, delay: 0.5 });
       setScreen('over');
     },
-    [records, settings.difficulty, audio],
+    [records, settings.difficulty, audio, tour],
+  );
+
+  /** 關卡中的得分彈出字 */
+  const pop = useCallback((text: string, tone: LevelPop['tone']) => {
+    const p = { id: ++ids.current, text, tone };
+    setPops((ps) => [...ps.slice(-2), p]);
+    timers.current.push(window.setTimeout(() => setPops((ps) => ps.filter((x) => x.id !== p.id)), 1100));
+  }, []);
+
+  /** 關卡事件：音效、震動、彈出字與橫幅 */
+  const levelFx = useCallback(
+    (e: Extract<GameEvent, { type: 'level' }>) => {
+      const n = e.n ?? 0;
+      const flash = (text: string, ms = 1400) => {
+        const b = { id: ++ids.current, text };
+        setBanner(b);
+        timers.current.push(window.setTimeout(() => setBanner((x) => (x?.id === b.id ? null : x)), ms));
+      };
+      switch (e.fx) {
+        case 'feed':
+          audio.feed();
+          break;
+        case 'cup':
+          audio.cup(n >= 300);
+          pop(n >= 300 ? `+${n} 大杯！` : `+${n}`, n >= 300 ? 'gold' : 'good');
+          buzz(12);
+          break;
+        case 'row':
+          audio.highlight();
+          audio.cheer(true);
+          flash(`整排倒光！+${n}`);
+          break;
+        case 'combo':
+          audio.cheer(false);
+          flash(`${n} 杯連鎖！`);
+          break;
+        case 'dunk':
+          audio.counter();
+          audio.cheer(true);
+          audio.say('wow', { priority: true, cooldown: 0 });
+          buzz([30, 40, 60]);
+          flash(`灌籃！霸王杯 +${n}`, 1800);
+          break;
+        case 'pearl':
+          audio.pearl(++pearls.current);
+          break;
+        case 'gold':
+          audio.energyFull();
+          pop(`+${n} 金珍珠！`, 'gold');
+          buzz(25);
+          break;
+        case 'goldSpawn': {
+          audio.chance();
+          const t: Toast = { id: ++ids.current, text: touch ? '金珍珠！點「撲」飛過去' : '金珍珠！按 Shift 撲過去', tone: 'special' };
+          setToasts([t]);
+          timers.current.push(window.setTimeout(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900));
+          break;
+        }
+        case 'drop':
+          audio.spill();
+          pearls.current = 0;
+          pop(n > 0 ? `-${n} 被砲彈打中！` : '被砲彈打中！', 'bad');
+          buzz([30, 40, 30]);
+          break;
+        case 'returned':
+          audio.highlight();
+          pop(`+${n} 打回去！`, 'good');
+          break;
+        case 'damage':
+          audio.attack(n >= 15);
+          pop(`-${n}`, 'hit');
+          break;
+        case 'tired':
+          flash('黑框喘了！來回越長扣越多');
+          break;
+        case 'windWarn':
+          audio.gust();
+          flash('風向要變了！');
+          break;
+        case 'wind':
+          audio.gust();
+          break;
+        case 'thunder':
+          audio.thunder();
+          break;
+        case 'ko':
+          audio.awaken();
+          audio.cheer(true);
+          buzz([40, 30, 40, 30, 80]);
+          flash('K.O.！！', 2200);
+          break;
+        case 'timeUp':
+          audio.highlight();
+          flash('時間到！');
+          break;
+        case 'hurry':
+          audio.highlight();
+          flash('最後 10 秒！');
+          break;
+        default:
+      }
+    },
+    [audio, pop, touch],
   );
 
   const onEvents = useCallback(
@@ -466,6 +617,9 @@ const PickleballGame = () => {
             }
             audio.cheer(e.overturned);
             break;
+          case 'level':
+            levelFx(e);
+            break;
           case 'gameOver':
             finish(engine);
             break;
@@ -473,31 +627,47 @@ const PickleballGame = () => {
         }
       }
     },
-    [screen, audio, engine, finish, characters, touch],
+    [screen, audio, engine, finish, characters, touch, levelFx],
   );
 
-  const start = (s: Settings = settings) => {
+  /** 開打：一般比賽，或踢館之旅的某一關（關卡用自己的規則、對手和海邊場地） */
+  const start = (s: Settings = settings, level: LevelId | null = null) => {
     audio.unlock();
     audio.ambience(true);
     audio.say('start', { priority: true, cooldown: 0, delay: 0.8 });
     save(SETTINGS_KEY, s);
+    const def = level ? levelById(level) : null;
+    const boss = def?.level.kind === 'boss';
     const e = new GameEngine({
-      mode: s.mode,
-      difficulty: s.difficulty,
+      mode: def ? (boss ? 'match' : 'drill') : s.mode,
+      difficulty: def ? 'club' : s.difficulty,
       assist: s.assist,
       controls: s.controls ?? 'auto',
-      specials: s.specials,
+      specials: def ? boss : s.specials,
       paddles: [s.paddle],
+      level: level ? createLevel(level) : undefined,
     });
-    const mine = characterById(s.character);
-    const opp = pickOpponent(mine.id);
+    // 關卡的對手固定：Boss 是站主，小遊戲是顧發球機的飲料攤老闆（帽哥）；自己選的角色跟站主撞了就換台灣隊
+    const mine = characterById(def && s.character === def.stage.bossChar ? 'default' : s.character);
+    const opp = def ? characterById(boss ? def.stage.bossChar : 'p5') : pickOpponent(mine.id);
     e.setSkills([mine.skill, opp.skill]);
+    setLevelId(level);
+    setOutcome(null);
+    setPops([]);
+    pearls.current = 0;
+    audio.rain(level === 'typhoon');
+    if (def) {
+      // 開場先講這關的目標
+      const c: PointCard = { id: ++ids.current, won: true, headline: def.level.name, title: `教你：${def.level.teaches}`, lesson: def.level.goal, call: '' };
+      later(() => setCard(c), 300);
+      later(() => setCard((x) => (x?.id === c.id ? null : x)), 2800);
+    }
     highlights.current = emptyHighlights();
     setEngine(e);
     setCharacters([mine, opp]);
     setHud(e.hud());
     setToasts([]);
-    setCard(null);
+    if (!def) setCard(null);
     setBanner(null);
     setCutIn(null);
     setPaused(false);
@@ -513,20 +683,64 @@ const PickleballGame = () => {
 
   const toMenu = () => {
     audio.ambience(false);
+    audio.rain(false);
     const d = newDemo();
     setEngine(d.engine);
     setCharacters(d.chars);
     setPaused(false);
     setCard(null);
     setCutIn(null);
+    setLevelId(null);
     setScreen('menu');
     exitImmersive();
+  };
+
+  /** 回踢館之旅的地圖（留在全螢幕裡） */
+  const toTour = () => {
+    audio.ambience(false);
+    audio.rain(false);
+    const d = newDemo();
+    setEngine(d.engine);
+    setCharacters(d.chars);
+    setPaused(false);
+    setCard(null);
+    setCutIn(null);
+    setScreen('tour');
+  };
+
+  /** 選關：第一次玩先看劇情 */
+  const playLevel = (id: LevelId) => {
+    audio.unlock();
+    setLevelId(id);
+    if (tour.seen[id]) start(settings, id);
+    else setScreen('story');
   };
 
   // 手機在頁面裡只放封面＋大按鈕，點了才全螢幕進選單：小框框裡捲選單、按小按鈕太難用
   // 從挑戰連結進來時改由挑戰卡當封面（接受挑戰就直接全螢幕開打）
   const cover = touch && !immersive && screen !== 'play' && screen !== 'over' && !(intro && challenge);
   const best = records.dinkBest[settings.difficulty];
+  const levelDef = levelId ? levelById(levelId) : null;
+  const nextLevel = (() => {
+    if (!levelDef) return null;
+    const ls = levelDef.stage.levels;
+    return ls[ls.findIndex((l) => l.id === levelDef.level.id) + 1] ?? null;
+  })();
+  // 打倒 Boss 才產生戰績卡
+  const tourShare: MatchResult | null =
+    outcome && outcome.cleared && levelDef?.level.kind === 'boss'
+      ? {
+          won: true,
+          score: [engine.match.score[0], engine.match.score[1]],
+          difficulty: 'club',
+          stats: engine.stats[0],
+          longestRally: engine.longestRally,
+          highlights: highlights.current,
+          character: characters[0],
+          paddle: settings.paddle,
+          tour: { stage: levelDef.stage.name, boss: levelDef.stage.boss, stars: outcome.stars, timeLeft: outcome.score },
+        }
+      : null;
   const mySpecial = SPECIALS[engine.human.paddle.special];
 
   return (
@@ -552,7 +766,15 @@ const PickleballGame = () => {
           onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
           flipflops={3}
         />
-        <GameScene engine={engine} characters={characters} readInput={read} paused={paused || screen === 'over'} onEvents={onEvents} lowSpec={lowSpec} venue={settings.venue ?? 'arena'} />
+        <GameScene
+          engine={engine}
+          characters={characters}
+          readInput={read}
+          paused={paused || screen === 'over'}
+          onEvents={onEvents}
+          lowSpec={lowSpec}
+          venue={engine.level ? 'beach' : (settings.venue ?? 'arena')}
+        />
       </Canvas>
 
       {playing && (
@@ -570,6 +792,15 @@ const PickleballGame = () => {
             oppName={characters[1].name}
             onChallenge={() => engine.requestReview()}
             onAccept={() => engine.declineReview()}
+            level={
+              levelDef
+                ? {
+                    name: levelDef.level.name,
+                    boss: levelDef.level.kind === 'boss' ? { name: levelDef.stage.boss, portrait: characters[1].portrait } : undefined,
+                    pops,
+                  }
+                : undefined
+            }
           />
           {touch && !paused && (
             <TouchControls
@@ -680,6 +911,11 @@ const PickleballGame = () => {
             settings={settings}
             records={records}
             touch={touch}
+            tourStars={Object.values(tour.stars).reduce((a, b) => a + (b ?? 0), 0)}
+            onTour={() => {
+              audio.unlock();
+              setScreen('tour');
+            }}
             onChange={setSettings}
             onNext={() => {
               audio.unlock();
@@ -706,10 +942,42 @@ const PickleballGame = () => {
             onStart={() => start()}
           />
         )}
-        {playing && paused && (
-          <PauseScreen key="pause" touch={touch} controls={engine.controls} onResume={() => setPaused(false)} onRestart={() => start()} onMenu={toMenu} />
+        {screen === 'tour' && !cover && <TourMap key="tour" progress={tour} onPlay={playLevel} onBack={toMenu} />}
+        {screen === 'story' && levelDef && !cover && (
+          <StoryComic
+            key="story"
+            def={levelDef.level}
+            onDone={() => {
+              const next = { ...tour, seen: { ...tour.seen, [levelDef.level.id]: true } };
+              setTour(next);
+              save(TOUR_KEY, next);
+              start(settings, levelDef.level.id);
+            }}
+          />
         )}
-        {screen === 'over' && (
+        {playing && paused && (
+          <PauseScreen
+            key="pause"
+            touch={touch}
+            controls={engine.controls}
+            onResume={() => setPaused(false)}
+            onRestart={() => start(settings, levelId)}
+            onMenu={levelId ? toTour : toMenu}
+          />
+        )}
+        {screen === 'over' && outcome && levelDef && (
+          <LevelResult
+            key="level-over"
+            def={levelDef.level}
+            outcome={outcome}
+            next={nextLevel}
+            share={tourShare}
+            onRetry={() => start(settings, outcome.id)}
+            onNext={() => nextLevel && playLevel(nextLevel.id)}
+            onMap={toTour}
+          />
+        )}
+        {screen === 'over' && !outcome && (
           <GameOverScreen
             key="over"
             mode={engine.mode}

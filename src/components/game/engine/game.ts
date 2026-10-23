@@ -40,8 +40,10 @@ import {
 } from './rules';
 import { type AIProfile, type AIState, type Difficulty, AI_PROFILES, chooseShot, createAI, homePosition, planContact, steer } from './ai';
 import { type V3, v3, clamp, clone, gauss, len } from './vec';
+import type { Level, LevelFx, LevelHud, Puddle } from './levels';
 
-export type GameMode = 'match' | 'dink';
+/** drill = 冒險模式的小遊戲（發球機餵球，計分交給關卡） */
+export type GameMode = 'match' | 'dink' | 'drill';
 /**
  * 擊球操作：
  * - auto：瑪利歐網球式，提早按下擊球鍵就定案，球到最佳擊球點自動揮拍，越早按蓄力越飽（預設）
@@ -251,6 +253,8 @@ export type GameEvent =
   | { type: 'chance'; kind: AttackKind }
   | { type: 'serveReady'; serving: Team; call: string; fromRight: boolean }
   | { type: 'dinkCount'; n: number }
+  /** 冒險關卡的事件（打倒杯子、撿到珍珠、扣 Boss 血、換風向…） */
+  | { type: 'level'; fx: LevelFx; pos?: V3; n?: number }
   | { type: 'gameOver'; winner: Team | null };
 
 export interface HudState {
@@ -305,6 +309,8 @@ export interface HudState {
     /** 揭曉判決後才有 */
     verdict: { overturned: boolean; truthIn: boolean; marginCm: number } | null;
   } | null;
+  /** 冒險關卡（一般比賽是 null） */
+  level: LevelHud | null;
 }
 
 /** 壓線球的現場判決（司線員可能誤判，可以申請電視輔助判決） */
@@ -398,6 +404,10 @@ const ASSIST_QUALITY = 0.78;
 export const AUTO_CHARGE = 0.75;
 /** 被噴水打滑時的移動速度倍率 */
 const SLIP_MOVE = 0.6;
+/** 有風時出手會修正幾成的吹偏（剩下的就是被風吹偏） */
+const WIND_READ = 0.75;
+/** 踩在積水上：加速、煞車都只剩這麼多（會滑） */
+const PUDDLE_GRIP = 0.3;
 /** auto 操作：擊球前多久開始揮拍（揮拍動作要有前揮的時間） */
 const AUTO_LEAD = 0.14;
 /** 發球：放開按鍵後前揮多久才擊球 */
@@ -554,6 +564,14 @@ export class GameEngine {
   private humanPathBounces0 = 0;
   private humanPathAt = -1;
   private rand: () => number;
+  /** 冒險關卡規則（一般比賽是 null） */
+  readonly level: Level | null;
+  /** 場上的積水（踩到會打滑） */
+  puddles: Puddle[] = [];
+  /** 絕招用掉後幾分充好 */
+  skillRecharge = SKILL_RECHARGE_POINTS;
+  /** AI 放絕招的意願（null = 照難度） */
+  aiSkillChance: number | null = null;
 
   constructor(opts: {
     mode: GameMode;
@@ -564,6 +582,7 @@ export class GameEngine {
     /** [玩家, 對手] 的球拍 id；對手沒指定就隨機挑一支不同的 */
     paddles?: [string, string?];
     rand?: () => number;
+    level?: Level;
   }) {
     this.mode = opts.mode;
     this.difficulty = opts.difficulty;
@@ -602,7 +621,13 @@ export class GameEngine {
       dive: null,
     });
     // 預留雙打：athletes 陣列可以放四人，規則與 AI 都以 team 為單位
-    this.athletes = [athlete(0, 0, 6, mine, null), athlete(1, 1, -6, theirs, createAI(opts.difficulty))];
+    this.athletes = [athlete(0, 0, 6, mine, null), athlete(1, 1, -6, theirs, opts.mode === 'drill' ? null : createAI(opts.difficulty))];
+    this.level = opts.level ?? null;
+    if (this.level) {
+      // 關卡自己決定勝負：比分只用來輪發球
+      this.match = newMatch(999);
+      this.level.init?.(this);
+    }
     this.setupPoint();
   }
 
@@ -638,7 +663,7 @@ export class GameEngine {
     return { winners: 0, errors: 0, aces: 0, kitchenFaults: 0, perfect: 0, shots: 0 };
   }
 
-  private emit(e: GameEvent) {
+  emit(e: GameEvent) {
     this.events.push(e);
   }
 
@@ -660,7 +685,7 @@ export class GameEngine {
       a.knockedUntil = 0;
       a.slipUntil = 0;
       a.dive = null;
-      if (a.skill && !a.skillReady && this.pointsPlayed - a.skillUsedAt >= SKILL_RECHARGE_POINTS) {
+      if (a.skill && !a.skillReady && this.pointsPlayed - a.skillUsedAt >= this.skillRecharge) {
         a.skillReady = true;
         this.emit({ type: 'skillReady', team: a.team });
       }
@@ -672,6 +697,9 @@ export class GameEngine {
     if (this.mode === 'dink') {
       this.human.pos = v3(0.5, 0, COURT.kitchen + 0.35);
       this.athletes[1].pos = v3(0, 0, -(COURT.kitchen + 0.35));
+      this.match.serving = 1;
+    } else if (this.mode === 'drill') {
+      // 小遊戲：玩家留在原地，球由發球機出
       this.match.serving = 1;
     } else {
       const sp = servePositions(this.match);
@@ -687,6 +715,7 @@ export class GameEngine {
         fromRight: serveFromRight(this.match),
       });
     }
+    this.level?.setup?.(this);
     this.holdBall();
     for (const a of this.athletes) a.prevPos = clone(a.pos);
     this.prevBall = clone(this.ball.pos);
@@ -697,6 +726,15 @@ export class GameEngine {
 
   /** 發球前球拿在發球者手上（腰部以下） */
   private holdBall() {
+    const from = this.level?.feedFrom;
+    if (from) {
+      this.ball.pos = clone(from);
+      this.ball.vel = v3();
+      this.ball.spin = v3();
+      this.ball.special = null;
+      this.ball.curve = null;
+      return;
+    }
     const server = this.athletes.find((a) => a.team === this.match.serving)!;
     const s = teamSide(server.team);
     this.ball.pos = v3(server.pos.x + s * 0.3, 0.55, server.pos.z - s * 0.4);
@@ -736,7 +774,7 @@ export class GameEngine {
       },
       this.rand,
     );
-    const plan = planShot(req, err);
+    const plan = this.windAware(req, err);
     this.ball.vel = plan.vel;
     this.ball.spin = plan.spin;
     this.rally.hits = feed ? 3 : 1;
@@ -768,6 +806,72 @@ export class GameEngine {
       streak: 0,
       dive: false,
     });
+  }
+
+  /** 發球機出球（冒險關卡用）：當成對手打過來的第三拍之後的球，可以截擊 */
+  feed(from: V3, vel: V3, spin: V3) {
+    const r = this.rally;
+    this.ball.pos = clone(from);
+    this.ball.vel = clone(vel);
+    this.ball.spin = clone(spin);
+    this.ball.special = null;
+    this.ball.curve = null;
+    this.prevBall = clone(from);
+    r.hits = 3;
+    r.lastTeam = 1;
+    r.lastHitTime = this.time;
+    r.bouncesSinceHit = 0;
+    r.lastKindByTeam[1] = 'drive';
+    this.phase = 'rally';
+    this.emit({ type: 'level', fx: 'feed', pos: clone(from) });
+  }
+
+  /** 關卡自己結束這一球（例如球已經滾去撞完杯子） */
+  levelEndRally(winner: Team, reason: PointReason, faultTeam: Team | null) {
+    this.endRally(winner, reason, faultTeam);
+  }
+
+  /** 關卡演出用的慢動作（真實時間秒數） */
+  slowMo(seconds: number) {
+    this.slowUntil = Math.max(this.slowUntil, this.real + seconds);
+  }
+
+  /**
+   * 有風時的出手：先照無風算球路，看被吹偏多少，再往反方向修正一部分（選手會看風打），
+   * 剩下的偏移加上陣風就是「被風吹偏」。沒有風就是一般的 planShot。
+   */
+  private windAware(req: ShotRequest, err: Perturb): ShotPlan {
+    const plan = planShot(req, err);
+    const w = this.ball.wind;
+    if (!w || (!w.x && !w.z)) return plan;
+    const sim = createBall();
+    sim.pos = clone(req.contact);
+    sim.vel = clone(plan.vel);
+    sim.spin = clone(plan.spin);
+    sim.wind = { ...w };
+    for (let i = 0; i < 1200; i++) {
+      if (stepBall(sim, PHYSICS_DT * 2, true)?.type === 'bounce') break;
+    }
+    const s = Math.sign(req.contact.z) || 1;
+    const dx = sim.pos.x - plan.target.x;
+    const dz = sim.pos.z - plan.target.z;
+    return planShot(req, { ...err, lateral: err.lateral - WIND_READ * dx * s, depth: err.depth + WIND_READ * dz * s });
+  }
+
+  /** 腳下有沒有積水 */
+  private inPuddle(a: Athlete) {
+    return this.puddles.some((p) => Math.hypot(a.pos.x - p.x, a.pos.z - p.z) < p.r);
+  }
+
+  /** 抓地力：踩在積水上會滑 */
+  private grip(a: Athlete) {
+    return this.puddles.length && this.inPuddle(a) ? PUDDLE_GRIP : 1;
+  }
+
+  /** 關卡時間到、或 Boss 被打倒（打倒時等這一分的演出播完） */
+  private endLevel() {
+    this.phase = 'over';
+    this.emit({ type: 'gameOver', winner: this.level!.cleared ? 0 : 1 });
   }
 
   // ───────────────────────────── 主迴圈 ─────────────────────────────
@@ -845,6 +949,11 @@ export class GameEngine {
       }
     }
 
+    if (this.level && this.phase !== 'over') {
+      this.level.step(this, dt);
+      // 時間到：馬上結束；Boss 被打倒：等這一分的停頓（慢動作 K.O.）播完
+      if (this.level.done && this.phase !== 'dead') this.endLevel();
+    }
     if (this.phase === 'dead' && this.time >= this.phaseUntil) this.nextPoint();
   }
 
@@ -987,7 +1096,7 @@ export class GameEngine {
     const maxV = PLAYER.maxSpeed * slow;
     const tx = wx * maxV;
     const tz = wz * maxV;
-    const rate = m > 0.05 ? PLAYER.accel : PLAYER.decel;
+    const rate = (m > 0.05 ? PLAYER.accel : PLAYER.decel) * this.grip(h);
     const dvx = tx - h.vel.x;
     const dvz = tz - h.vel.z;
     const dv = Math.hypot(dvx, dvz);
@@ -1005,6 +1114,8 @@ export class GameEngine {
     if (!this.human.ai) this.steerHuman(this.human, dt);
     for (const a of this.athletes) {
       if (a.dive) this.updateDive(a, dt);
+      // 踩過積水：離開後還會滑一下
+      if (this.puddles.length && this.inPuddle(a)) a.slipUntil = Math.max(a.slipUntil, this.time + 0.35);
       a.pos.x += a.vel.x * dt;
       a.pos.z += a.vel.z * dt;
       const s = teamSide(a.team);
@@ -1152,7 +1263,7 @@ export class GameEngine {
 
   /** 磁吸跑位的目標：有導引就去導引站位；輔助模式下球飛走時自動回到好位置 */
   private autoTarget(h: Athlete): { x: number; z: number } | null {
-    if (this.phase !== 'rally') return null;
+    if (this.phase !== 'rally' || this.level?.noGuide) return null;
     if (this.guide) return this.guide.stand;
     if (!this.assist || this.rally.lastTeam !== h.team) return null;
     const s = teamSide(h.team);
@@ -1166,7 +1277,7 @@ export class GameEngine {
   /** 更新玩家導引：用 AI 的規劃算站位與擊球點 */
   private refreshGuide() {
     const h = this.human;
-    if (h.ai || this.phase !== 'rally' || this.rally.lastTeam === h.team) {
+    if (h.ai || this.phase !== 'rally' || this.rally.lastTeam === h.team || this.level?.noGuide) {
       this.guide = null;
       this.chance = null;
       this.diveHint = false;
@@ -1320,7 +1431,7 @@ export class GameEngine {
    */
   private reflexBlock() {
     const h = this.human;
-    if (h.ai || h.dive || this.rally.lastTeam === h.team) return;
+    if (h.ai || h.dive || this.rally.lastTeam === h.team || this.level?.noReflex) return;
     if (h.swing.state === 'swinging' && !h.swing.done) return;
     const b = this.ball;
     const s = teamSide(h.team);
@@ -1462,7 +1573,7 @@ export class GameEngine {
     );
     err.arc += popUp;
     err.depth += popUp * 1.2;
-    let plan: ShotPlan = fire ? planSpecial(fire, req, err) : ((skill && planSkill(skill, req, err)) ?? planShot(req, err));
+    let plan: ShotPlan = fire ? planSpecial(fire, req, err) : ((skill && planSkill(skill, req, err)) ?? this.windAware(req, err));
     // 被逼急的軟球／截擊會被打飛：時機差、伸長手勉強碰到、硬接重球時，球軟軟地飄高到中場 → 對方的殺球機會
     let popped = false;
     if (diving) plan = this.diveReturn(a, dist);
@@ -1536,6 +1647,7 @@ export class GameEngine {
     const st = this.stats[a.team];
     st.shots += 1;
     if (quality >= 0.9) st.perfect += 1;
+    this.level?.hit?.(this, a, { kind: plan.kind, special: fire, skill, quality });
 
     // 能量：完美、漂亮擊球與長來回累積；放必殺會清空
     if (fire) {
@@ -1696,7 +1808,10 @@ export class GameEngine {
 
   /** 飛身撲接：往球的方向撲出去（沒有撲得到的球就往導引／搖桿方向撲空） */
   tryDive(a: Athlete, path?: PathSample[], pathT0?: number, pathBounces0?: number) {
-    if (this.phase !== 'rally' || a.dive || this.rally.lastTeam === a.team || this.time < a.knockedUntil) return false;
+    // 撿珍珠的關卡隨時都能撲（撲過去撿）
+    const free = !!this.level?.freeDive && (this.phase === 'rally' || this.phase === 'serve');
+    if (!free && (this.phase !== 'rally' || this.rally.lastTeam === a.team)) return false;
+    if (a.dive || this.time < a.knockedUntil) return false;
     if (a.swing.state === 'swinging' && !a.swing.done) return false;
     const p = path ?? this.humanPath;
     const pT0 = pathT0 ?? this.humanPathT0;
@@ -1774,7 +1889,7 @@ export class GameEngine {
 
   /** AI 判斷這一拍適不適合放絕招 */
   private aiWantsSkill(a: Athlete, h: number) {
-    const chance = { rookie: 0.25, club: 0.35, pro: 0.45 }[this.difficulty];
+    const chance = this.aiSkillChance ?? { rookie: 0.25, club: 0.35, pro: 0.45 }[this.difficulty];
     if (this.rand() > chance) return false;
     if (a.skill === 'squatSmash') return h < 1.2;
     if (a.skill === 'spinSmash') return h > 0.7;
@@ -1802,6 +1917,7 @@ export class GameEngine {
       return;
     }
     this.emit({ type: 'bounce', pos, speed, special: this.ball.special?.id ?? null });
+    if (this.level?.bounce?.(this, pos)) return;
     const r = this.rally;
     const hitter = r.lastTeam!;
     const side = Math.sign(pos.z);
@@ -2030,7 +2146,7 @@ export class GameEngine {
   private finishRally(winner: Team, reason: PointReason, faultTeam: Team | null) {
     if (this.phase !== 'rally') return;
     this.phase = 'dead';
-    this.phaseUntil = this.time + POINT_PAUSE;
+    this.phaseUntil = this.time + (this.level?.pause ?? POINT_PAUSE);
     const r = this.rally;
     this.longestRally = Math.max(this.longestRally, r.hits);
 
@@ -2046,7 +2162,7 @@ export class GameEngine {
       a.mood = { won: a.team === winner, at: this.time, big, error: faultTeam === a.team };
       if (a.team === winner && faultTeam === null) this.gainEnergy(a, ENERGY.winner);
     }
-    this.celebration = { team: winner, start: this.real, big };
+    if (this.mode !== 'drill') this.celebration = { team: winner, start: this.real, big };
 
     let title: string;
     let lesson: string | null = null;
@@ -2064,9 +2180,11 @@ export class GameEngine {
     if (this.mode === 'match') {
       sideOut = awardRally(this.match, winner).sideOut;
       this.fillAwaken(winner);
-    } else if (faultTeam === this.human.team || winner !== this.human.team) {
+    } else if (this.mode === 'dink' && (faultTeam === this.human.team || winner !== this.human.team)) {
       this.match.winner = 1;
     }
+    this.level?.rallyEnd?.(this, winner, reason, faultTeam, r.hits);
+    if (this.mode === 'drill') return;
     if (r.diveSaved[winner] && faultTeam !== winner) {
       this.emit({ type: 'highlight', text: winner === this.human.team ? '神救球！撲回來還拿下這一分' : '對手撲救成功，還拿下這一分！' });
     }
@@ -2097,6 +2215,10 @@ export class GameEngine {
   }
 
   private nextPoint() {
+    if (this.level?.done) {
+      this.endLevel();
+      return;
+    }
     if (this.match.winner !== null) {
       this.phase = 'over';
       this.emit({ type: 'gameOver', winner: this.match.winner });
@@ -2132,7 +2254,7 @@ export class GameEngine {
     if (!coming) {
       ai.plan = null;
       const home = homePosition(this, a);
-      steer(a, home.x, home.z, ai.profile.maxSpeed * 0.85, dt);
+      steer(a, home.x, home.z, ai.profile.maxSpeed * 0.85, dt, this.grip(a));
       return;
     }
     if (this.time < a.knockedUntil) {
@@ -2169,7 +2291,7 @@ export class GameEngine {
         return;
       }
     }
-    steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed * (this.time < a.slipUntil ? SLIP_MOVE : 1), dt);
+    steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed * (this.time < a.slipUntil ? SLIP_MOVE : 1), dt, this.grip(a));
     if (!p.leave && !p.swung && this.time >= p.contactT + p.timingError - PLAYER.swingWindup) {
       p.swung = true;
       this.startSwing(a, this.time + PLAYER.swingWindup, null, p);
@@ -2214,6 +2336,7 @@ export class GameEngine {
       diving: !!h.dive,
       challenges: [this.challenges[0], this.challenges[1]],
       review: this.reviewHud(),
+      level: this.level ? this.level.hud() : null,
     };
   }
 

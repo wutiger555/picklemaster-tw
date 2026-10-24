@@ -601,7 +601,7 @@ const CourtDetail = () => {
                       to={`/play/?new&court=${court.id}`}
                       className="block w-full text-center bg-lime-300 hover:bg-lime-400 text-lime-950 font-bold px-4 py-3 rounded-xl transition-colors"
                     >
-                      🏓 在這裡開一團揪人
+                      🙌 在這裡開一團揪人
                     </Link>
                   )}
                   {court.booking_url && (

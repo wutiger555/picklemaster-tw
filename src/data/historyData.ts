@@ -18,7 +18,7 @@ export const HISTORY_TIMELINE: HistoryEvent[] = [
     title: '匹克球誕生於美國華盛頓州',
     description: '三位父親 Joel Pritchard（後成為華盛頓州州長）、Bill Bell、Barney McCallum 在 Bainbridge Island 島上，為了讓小孩有事可做，發明了這項運動。使用桌球拍、羽球場、有孔塑膠球。',
     category: '全球',
-    icon: '🏓',
+    icon: '🥒',
     milestone: true,
   },
   {

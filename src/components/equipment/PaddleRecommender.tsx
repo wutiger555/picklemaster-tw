@@ -424,7 +424,7 @@ const PaddleRecommender = () => {
               {/* 推薦品牌/型號 */}
               <div className="bg-white rounded-xl p-6 shadow-md">
                 <h4 className="font-bold text-gray-800 mb-4 flex items-center">
-                  <span className="text-2xl mr-2">🏓</span>
+                  <span className="text-2xl mr-2">🎒</span>
                   推薦品牌與型號
                 </h4>
                 <div className="flex flex-wrap gap-3">

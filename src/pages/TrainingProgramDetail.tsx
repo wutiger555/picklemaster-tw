@@ -281,7 +281,7 @@ const TrainingProgramDetail = () => {
 
         {/* 下一步：跨區導流 */}
         <section className="mt-10 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl p-7 md:p-9 text-white">
-          <h2 className="text-2xl font-bold mb-2">練好了，找場地開打 🏓</h2>
+          <h2 className="text-2xl font-bold mb-2">練好了，找場地開打 💪</h2>
           <p className="text-emerald-50/90 mb-6 max-w-xl">把菜單練到位，就到球場實戰驗收。順便看看技巧百科與學習路徑，把每一球打得更扎實。</p>
           <div className="flex flex-wrap gap-3">
             <Link to="/courts" className="px-5 py-2.5 bg-white text-teal-700 rounded-xl text-sm font-bold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all">

@@ -21,7 +21,7 @@ const QuickNav = () => {
       bgColor: 'bg-blue-50',
     },
     {
-      title: '🏓 選球拍',
+      title: '🎒 選球拍',
       description: '裝備推薦',
       path: ROUTES.EQUIPMENT,
       color: 'from-orange-500 to-amber-500',

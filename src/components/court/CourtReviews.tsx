@@ -120,7 +120,7 @@ export default function CourtReviews({ courtId, courtName }: { courtId: number; 
         </div>
       ) : (
         <div className="flex min-h-[56px] items-center gap-3 rounded-xl bg-neutral-50 p-3">
-          <span className="grid h-9 w-9 flex-none place-items-center rounded-full bg-lime-300 text-base" aria-hidden>🏓</span>
+          <span className="grid h-9 w-9 flex-none place-items-center rounded-full bg-lime-300 text-base" aria-hidden>🥒</span>
           <p className="text-sm text-neutral-600">還沒有球友評過{courtName}。打過的話，花 10 秒幫下一位球友選幾個標籤吧。</p>
         </div>
       )}

@@ -51,7 +51,7 @@ const PaddleDetailPage = () => {
   if (!paddle) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
-        <div className="text-5xl">🏓</div>
+        <div className="text-5xl">🎒</div>
         <h1 className="text-xl font-black text-neutral-900">找不到這支球拍</h1>
         <Link to="/paddles" className="text-emerald-600 font-bold hover:underline">← 回到球拍資料庫</Link>
       </div>

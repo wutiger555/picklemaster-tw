@@ -30,7 +30,7 @@ export const FOUNDERS: HoFMember[] = [
     era: '1965 - 1989',
     contribution: '與 Pritchard 共同發明匹克球。他的兒子 Frank Bell 後來繼承父業，繼續推廣這項運動。',
     inducted: '2018 USAPA 名人堂',
-    emoji: '🏓',
+    emoji: '🥒',
     category: '創辦人',
   },
   {

@@ -21,12 +21,12 @@ const RULES = [
 ];
 
 const SPECIAL_LIST = [
-  { name: '烈焰爆裂抽擊', paddle: '赤焰・長拍', color: 'from-orange-500 to-red-600', text: '時速破百的火球直線轟出，接不準會被震退。' },
-  { name: '天雷貫地', paddle: '蒼雷・標準拍', color: 'from-blue-500 to-indigo-600', text: '把球擊上高空，落雷般垂直砸下再暴衝彈跳。' },
-  { name: '幻影分身', paddle: '幻月・寬拍', color: 'from-purple-500 to-fuchsia-600', text: '球分裂成三顆幻影蛇行，只有一顆是真的。' },
-  { name: '絕對零度', paddle: '霜鋒・混合拍', color: 'from-cyan-400 to-sky-600', text: '極強下旋，落地瞬間凍結，落點還會結冰讓人打滑。' },
-  { name: '龍捲旋風', paddle: '疾風・輕量拍', color: 'from-teal-400 to-emerald-600', text: '螺旋鑽進場內，落地被旋風捲著往側邊竄開。' },
-  { name: '震地重砲', paddle: '鎮岳・加重拍', color: 'from-amber-500 to-orange-700', text: '重砲砸在腳邊掀起震波，附近的人站不穩。' },
+  { name: '烈焰爆裂抽擊', paddle: 'JOOLA Perseus・長拍', color: 'from-orange-500 to-red-600', text: '時速破百的火球直線轟出，接不準會被震退。' },
+  { name: '天雷貫地', paddle: 'Selkirk Vanguard・長拍', color: 'from-blue-500 to-indigo-600', text: '把球擊上高空，落雷般垂直砸下再暴衝彈跳。' },
+  { name: '幻影分身', paddle: 'Franklin Signature・長拍', color: 'from-purple-500 to-fuchsia-600', text: '球分裂成三顆幻影蛇行，只有一顆是真的。' },
+  { name: '絕對零度', paddle: 'Six Zero DBD・混合拍', color: 'from-cyan-400 to-sky-600', text: '極強下旋，落地瞬間凍結，落點還會結冰讓人打滑。' },
+  { name: '龍捲旋風', paddle: 'Paddletek Tempest・標準拍', color: 'from-teal-400 to-emerald-600', text: '螺旋鑽進場內，落地被旋風捲著往側邊竄開。' },
+  { name: '震地重砲', paddle: 'Engage Pursuit・寬拍', color: 'from-amber-500 to-orange-700', text: '重砲砸在腳邊掀起震波，附近的人站不穩。' },
 ];
 
 const TIPS = [

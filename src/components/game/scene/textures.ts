@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { PaddleSpec } from '../engine/paddles';
+import type { PaddleLook, PaddleSpec } from '../engine/paddles';
 
 /**
  * 全部用 canvas 即時畫出來的貼圖：不需要下載任何圖檔，也沒有授權問題。
@@ -105,143 +105,105 @@ const drawCarbon = (g: CanvasRenderingContext2D, w: number, h: number, base: str
   }
 };
 
-/** 球拍拍面：底材＋品牌花紋＋型號字樣 */
+/** 生碳面（粗糙）的球拍 */
+export const RAW_FACE = new Set<PaddleLook['pattern']>(['slash', 'diamonds', 'wave', 'raw']);
+
+/** 球拍拍面：底材＋原廠配色版型＋型號字樣 */
 export const paddleFaceTexture = (spec: PaddleSpec) =>
   make(`paddle-${spec.id}`, 512, 1024, (g, w, h) => {
     const L = spec.look;
-    drawCarbon(g, w, h, L.base, spec.look.pattern === 'rawcarbon' ? '#3a4048' : '#2b2b30', spec.look.pattern === 'rawcarbon' ? 10 : 16);
-    const r = rng(spec.id.length * 97);
+    // 生碳面（粗糙、細紋）與一般碳纖維／玻纖面
+    const raw = RAW_FACE.has(L.pattern);
+    drawCarbon(g, w, h, L.base, raw ? '#3a3f46' : '#2b2b30', raw ? 8 : 16);
     g.save();
-    if (L.pattern === 'flame') {
-      // 由下往上竄的火焰
-      for (let i = 0; i < 9; i++) {
-        const x0 = r() * w;
-        const grd = g.createLinearGradient(0, h, 0, h * 0.15);
-        grd.addColorStop(0, L.accent);
-        grd.addColorStop(0.45, L.primary);
-        grd.addColorStop(1, 'rgba(0,0,0,0)');
-        g.fillStyle = grd;
-        g.globalAlpha = 0.55 + r() * 0.4;
-        g.beginPath();
-        g.moveTo(x0 - 90, h);
-        const top = h * (0.12 + r() * 0.35);
-        g.bezierCurveTo(x0 - 60, h * 0.7, x0 + 70 * (r() - 0.5), top + 200, x0 + 30 * (r() - 0.5), top);
-        g.bezierCurveTo(x0 + 50, top + 220, x0 + 80, h * 0.7, x0 + 90, h);
-        g.fill();
-      }
-    } else if (L.pattern === 'bolt') {
-      // 斜向雷光條紋
-      g.globalAlpha = 0.9;
-      g.fillStyle = L.primary;
+    // 照原廠的配色版型畫（近似，不畫品牌標誌）
+    if (L.pattern === 'slash') {
+      // JOOLA Perseus：黑面，下半部一道斜切的漸層色塊＋細線
+      const grd = g.createLinearGradient(0, h, w, h * 0.55);
+      grd.addColorStop(0, L.primary);
+      grd.addColorStop(1, L.accent);
+      g.fillStyle = grd;
       g.beginPath();
-      g.moveTo(0, h * 0.55);
-      g.lineTo(w, h * 0.25);
-      g.lineTo(w, h * 0.42);
-      g.lineTo(0, h * 0.72);
-      g.fill();
-      g.fillStyle = L.accent;
-      g.beginPath();
-      g.moveTo(w * 0.62, h * 0.08);
-      g.lineTo(w * 0.36, h * 0.46);
-      g.lineTo(w * 0.52, h * 0.46);
-      g.lineTo(w * 0.3, h * 0.86);
-      g.lineTo(w * 0.72, h * 0.38);
-      g.lineTo(w * 0.55, h * 0.38);
-      g.lineTo(w * 0.78, h * 0.08);
+      g.moveTo(0, h * 0.62);
+      g.lineTo(w, h * 0.5);
+      g.lineTo(w, h * 0.62);
+      g.lineTo(0, h * 0.74);
       g.closePath();
       g.fill();
-    } else if (L.pattern === 'holo') {
-      // 全像漸層
-      const grd = g.createLinearGradient(0, 0, w, h);
-      grd.addColorStop(0, L.primary);
-      grd.addColorStop(0.35, '#ff6ad5');
-      grd.addColorStop(0.6, L.accent);
-      grd.addColorStop(1, L.primary);
-      g.globalAlpha = 0.75;
-      g.fillStyle = grd;
-      g.fillRect(0, 0, w, h);
-      g.globalAlpha = 0.25;
-      g.strokeStyle = '#ffffff';
-      for (let i = 0; i < 18; i++) {
-        g.lineWidth = 2 + r() * 6;
-        g.beginPath();
-        g.arc(w / 2, h * 0.45, 60 + i * 26, 0, Math.PI * 2);
-        g.stroke();
-      }
-    } else if (L.pattern === 'wind') {
-      // 疾風：一道道彎曲的風切線，越往拍頭越密
-      g.lineCap = 'round';
-      for (let i = 0; i < 14; i++) {
-        const y0 = h * (0.08 + i * 0.065);
-        g.globalAlpha = 0.35 + r() * 0.55;
-        g.strokeStyle = i % 3 === 0 ? L.accent : L.primary;
-        g.lineWidth = 4 + r() * 10;
-        g.beginPath();
-        g.moveTo(-20, y0 + 40);
-        g.bezierCurveTo(w * 0.3, y0 - 60 * r(), w * 0.6, y0 + 70 * r(), w + 20, y0 - 30);
-        g.stroke();
-      }
-      // 拍面中央的旋渦
-      g.globalAlpha = 0.8;
       g.strokeStyle = L.accent;
       g.lineWidth = 6;
       g.beginPath();
-      for (let k = 0; k < 120; k++) {
-        const a = k * 0.16;
-        const rad = 8 + k * 1.3;
-        const x = w / 2 + Math.cos(a) * rad;
-        const y = h * 0.32 + Math.sin(a) * rad;
-        if (k === 0) g.moveTo(x, y);
-        else g.lineTo(x, y);
-      }
+      g.moveTo(0, h * 0.79);
+      g.lineTo(w, h * 0.67);
       g.stroke();
-    } else if (L.pattern === 'stone') {
-      // 鎮岳：岩層裂紋，縫裡透出熔岩光
-      for (let i = 0; i < 7; i++) {
-        let x = r() * w;
-        let y = r() * h;
-        g.globalAlpha = 0.9;
-        g.strokeStyle = L.primary;
-        g.shadowColor = L.primary;
-        g.shadowBlur = 18;
-        g.lineWidth = 3 + r() * 5;
-        g.beginPath();
-        g.moveTo(x, y);
-        for (let k = 0; k < 9; k++) {
-          x += (r() - 0.5) * 120;
-          y += (r() - 0.3) * 110;
-          g.lineTo(x, y);
-        }
-        g.stroke();
-      }
-      g.shadowBlur = 0;
-      g.globalAlpha = 0.18;
+    } else if (L.pattern === 'cap') {
+      // Selkirk Vanguard：黑面，拍頭一圈色帶＋中央細直線
+      g.fillStyle = L.primary;
+      g.fillRect(0, 0, w, h * 0.12);
       g.fillStyle = L.accent;
-      for (let i = 0; i < 40; i++) g.fillRect(r() * w, r() * h, 6 + r() * 18, 3 + r() * 8);
-    } else {
-      // 生碳纖維：保留碳紋，加冰藍色細線
-      g.globalAlpha = 0.85;
-      g.strokeStyle = L.primary;
-      for (let i = 0; i < 6; i++) {
-        g.lineWidth = i % 2 ? 3 : 10;
+      g.fillRect(0, h * 0.12, w, 8);
+      g.fillRect(w / 2 - 3, h * 0.12, 6, h * 0.8);
+    } else if (L.pattern === 'gloss') {
+      // Franklin Signature：亮面玻纖整片底色，下方白色大斜塊
+      g.fillStyle = L.primary;
+      g.fillRect(0, 0, w, h);
+      g.fillStyle = L.accent;
+      g.beginPath();
+      g.moveTo(0, h * 0.78);
+      g.lineTo(w, h * 0.66);
+      g.lineTo(w, h);
+      g.lineTo(0, h);
+      g.closePath();
+      g.fill();
+    } else if (L.pattern === 'diamonds') {
+      // Six Zero Double Black Diamond：黑色生碳面，拍頭兩顆菱形
+      g.fillStyle = L.accent;
+      for (const dx of [-0.11, 0.11]) {
+        const cx = w * (0.5 + dx);
+        const cy = h * 0.12;
         g.beginPath();
-        g.moveTo(-50, h * (0.2 + i * 0.12));
-        g.lineTo(w + 50, h * (0.05 + i * 0.12));
-        g.stroke();
+        g.moveTo(cx, cy - 34);
+        g.lineTo(cx + 26, cy);
+        g.lineTo(cx, cy + 34);
+        g.lineTo(cx - 26, cy);
+        g.closePath();
+        g.fill();
       }
+      g.fillRect(0, h * 0.86, w, 5);
+    } else if (L.pattern === 'wave') {
+      // Paddletek Tempest Wave：上半整片色、下緣是一道波浪
+      g.fillStyle = L.primary;
+      g.beginPath();
+      g.moveTo(0, 0);
+      g.lineTo(w, 0);
+      g.lineTo(w, h * 0.42);
+      for (let x = w; x >= 0; x -= 8) g.lineTo(x, h * 0.42 + Math.sin((x / w) * Math.PI * 3) * 26);
+      g.closePath();
+      g.fill();
+      g.strokeStyle = L.accent;
+      g.lineWidth = 5;
+      g.beginPath();
+      for (let x = 0; x <= w; x += 8) g.lineTo(x, h * 0.47 + Math.sin((x / w) * Math.PI * 3) * 26);
+      g.stroke();
+    } else {
+      // Engage Pursuit：黑色生碳面，拍喉上方三道細色線
+      g.fillStyle = L.primary;
+      for (let k = 0; k < 3; k++) g.fillRect(0, h * (0.8 + k * 0.03), w, 6);
     }
     g.restore();
-    // 品牌字樣與型號
+    // 型號與品牌字樣
     g.save();
     g.translate(w / 2, h * 0.5);
     g.rotate(-Math.PI / 2);
     g.textAlign = 'center';
     g.fillStyle = 'rgba(255,255,255,0.95)';
-    g.font = 'italic 900 96px "Inter", "Helvetica Neue", Arial, sans-serif';
-    g.fillText(spec.model.split(' ')[0], 0, 34);
+    // 型號字樣（純文字，不畫品牌標誌）；字太長就縮小
+    const label = spec.name.toUpperCase();
+    g.font = `italic 900 ${Math.min(96, Math.floor(1400 / label.length))}px "Inter", "Helvetica Neue", Arial, sans-serif`;
+    g.fillText(label, 0, 34);
     g.font = '700 30px "Inter", Arial, sans-serif';
     g.fillStyle = L.accent;
-    g.fillText('PICKLE MASTER TW', 0, 86);
+    g.fillText(spec.brand.toUpperCase(), 0, 86);
     g.restore();
     // 下方規格標
     g.fillStyle = 'rgba(255,255,255,0.8)';

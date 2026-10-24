@@ -1,7 +1,7 @@
 import { forwardRef, useMemo } from 'react';
 import * as THREE from 'three';
 import type { PaddleSpec } from '../engine/paddles';
-import { gripTexture, paddleFaceTexture } from './textures';
+import { RAW_FACE, gripTexture, paddleFaceTexture } from './textures';
 
 import { HANDLE_LEN, HANDLE_R } from './paddleGeometry';
 
@@ -106,7 +106,7 @@ export const PaddleModel = forwardRef<THREE.Group, Props>(({ spec, glow = 0 }, r
           <meshStandardMaterial
             attach="material-0"
             map={faceTex}
-            roughness={spec.look.pattern === 'rawcarbon' ? 0.75 : 0.32}
+            roughness={RAW_FACE.has(spec.look.pattern) ? 0.75 : spec.look.pattern === 'gloss' ? 0.2 : 0.38}
             metalness={0.25}
             emissive={glowColor}
             emissiveIntensity={glow}

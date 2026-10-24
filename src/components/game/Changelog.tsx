@@ -4,6 +4,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 /** 版本說明：新版本加在最前面 */
 const VERSIONS: { v: string; date: string; items: string[] }[] = [
   {
+    v: '1.5',
+    date: '2026-10-24',
+    items: [
+      '主選單改版：一頁大按鈕直接開打，細項設定收進「比賽設定」面板',
+      '熱血版／正規版分開：正規版沒有必殺、絕招、踢館之旅，純競技',
+      '球拍換成真實名拍：JOOLA、Selkirk、Franklin、Six Zero、Paddletek、Engage，尺寸重量照官方規格',
+    ],
+  },
+  {
     v: '1.4',
     date: '2026-10-24',
     items: [

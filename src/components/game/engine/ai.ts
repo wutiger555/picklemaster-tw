@@ -191,7 +191,7 @@ export const planContact = (
       if (Math.abs(standZ) - Math.abs(s.pos.z) > 0.7) continue;
     }
     const travel = hypot2(standX - a.pos.x, standZ - a.pos.z);
-    const needed = travel / prof.maxSpeed + 0.12 + reactLeft;
+    const needed = travel / (prof.maxSpeed * a.traits.speed) + 0.12 + reactLeft;
     const feasible = needed <= s.t;
 
     const idealY = volley ? 1.0 : 0.85;
@@ -248,7 +248,7 @@ export const chooseShot = (eng: GameEngine, a: Athlete, rand: () => number): AIS
   // 被逼著跑、伸手救球時打保守：往中間瞄；程度越高越敢瞄邊線
   const ownDx = eng.ball.pos.x - a.pos.x;
   const ownDz = eng.ball.pos.z - a.pos.z;
-  const pressure = clamp(Math.hypot(a.vel.x, a.vel.z) / prof.maxSpeed + Math.max(0, Math.hypot(ownDx, ownDz) - 0.75) * 2, 0, 1);
+  const pressure = clamp(Math.hypot(a.vel.x, a.vel.z) / (prof.maxSpeed * a.traits.speed) + Math.max(0, Math.hypot(ownDx, ownDz) - 0.75) * 2, 0, 1);
   const wide = (0.9 + 0.9 * prof.aggression) * (1 - 0.55 * pressure);
   const opps = eng.opponentsOf(a);
   // 雙打：一半的球打兩人中間的空隙（誰接都猶豫），其餘打離最近那位遠的一側

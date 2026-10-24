@@ -260,6 +260,7 @@ const SCENE_BG: Record<StoryPanel['scene'], string> = {
   stall: 'linear-gradient(180deg,#7c2d12 0%,#ea580c 55%,#fbbf24 100%)',
   beach: 'linear-gradient(180deg,#334155 0%,#0e7490 60%,#d6c7a1 100%)',
   ko: 'linear-gradient(180deg,#facc15 0%,#f97316 100%)',
+  court: 'linear-gradient(180deg,#0b1a3a 0%,#1d4ed8 55%,#15803d 100%)',
 };
 
 /** 去背照片轉正後的斜邊用橢圓淡出藏起來（和挑戰卡同一招） */
@@ -268,7 +269,7 @@ const PORTRAIT_MASK = {
   maskImage: 'radial-gradient(ellipse 72% 80% at 50% 40%, #000 60%, transparent 100%)',
 };
 
-const SCENE_ART: Record<StoryPanel['scene'], string> = { storm: '🌀', stall: '🧋', beach: '🌊', ko: '💥' };
+const SCENE_ART: Record<StoryPanel['scene'], string> = { storm: '🌀', stall: '🧋', beach: '🌊', ko: '💥', court: '🏟️' };
 
 const Panel = ({ p, i }: { p: StoryPanel; i: number }) => {
   const who = p.who ? characterById(p.who) : null;
@@ -338,7 +339,19 @@ const Panel = ({ p, i }: { p: StoryPanel; i: number }) => {
 };
 
 /** 2–3 格短漫畫：一格一格砸出來，點一下跳下一格，可以整段跳過 */
-export const StoryComic = ({ def, onDone }: { def: LevelDef; onDone: () => void }) => {
+/** 漫畫分格：踢館之旅每關的開場，也用在第一次進遊戲的世界觀介紹（cta 換最後的按鈕字） */
+export const StoryComic = ({
+  def,
+  onDone,
+  onSkip,
+  cta = '開打！',
+}: {
+  def: Pick<LevelDef, 'name' | 'story'>;
+  onDone: () => void;
+  /** 「跳過」另外處理（預設跟看完一樣） */
+  onSkip?: () => void;
+  cta?: string;
+}) => {
   const [shown, setShown] = useState(1);
   const all = shown >= def.story.length;
   useEffect(() => {
@@ -363,7 +376,7 @@ export const StoryComic = ({ def, onDone }: { def: LevelDef; onDone: () => void 
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onDone();
+            (onSkip ?? onDone)();
           }}
           className="rounded-full border-2 border-slate-950 bg-white px-3 py-1 text-xs font-black text-slate-950 shadow-[2px_2px_0_#0b0b14] hover:bg-amber-50 md:text-sm"
         >
@@ -383,7 +396,7 @@ export const StoryComic = ({ def, onDone }: { def: LevelDef; onDone: () => void 
       >
         {all ? (
           <span className="inline-block -rotate-1 rounded-xl border-[3px] border-slate-950 bg-gradient-to-r from-amber-300 to-orange-400 px-6 py-2 text-lg font-black text-slate-950 shadow-[4px_4px_0_#0b0b14] md:text-xl">
-            開打！
+            {cta}
           </span>
         ) : (
           <span className="text-xs font-bold text-amber-950/75">點一下繼續</span>

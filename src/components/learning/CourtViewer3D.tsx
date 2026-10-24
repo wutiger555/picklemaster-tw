@@ -319,7 +319,7 @@ const CourtViewer3D = () => {
     {
       id: 'serve-position',
       name: '發球站位',
-      icon: '🎾',
+      icon: '📍',
       highlightZone: 'service-bottom-right',
       positions: [
         { pos: [1.1, 0, -4.0] as [number, number, number], label: '發球方（偶數區）', color: '#3b82f6' },
@@ -403,7 +403,7 @@ const CourtViewer3D = () => {
             '💪 掌控球場，給對方施加壓力',
             '🎯 有更多的角度選擇（cross-court, down-the-line）',
             '✅ 縮短對方反應時間，更容易得分',
-            '🎾 可以打出有效的截擊球（put-away）',
+            '💥 可以打出有效的截擊球（put-away）',
           ],
         },
         {

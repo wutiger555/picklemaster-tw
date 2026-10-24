@@ -651,7 +651,7 @@ const TechniqueViewer3D = () => {
     {
       id: 'serve',
       name: '發球技術',
-      icon: '🎾',
+      icon: '🟡',
       steps: [
         {
           name: '準備姿勢',

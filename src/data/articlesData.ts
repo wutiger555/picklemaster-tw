@@ -1129,7 +1129,7 @@ Ben Johns 親用款。全新 Propulsion Core 技術，進攻力驚人，同時�
     author: 'Picklemaster Taiwan',
     summary: '匹克球室內球（26 孔）與戶外球（40 孔）完整比較：設計差異、球速、彈跳、耐用度、Dura、Franklin、JOOLA 等主流品牌實測。',
     tags: ['球', '裝備', '規則知識'],
-    coverEmoji: '🎾',
+    coverEmoji: '🟡',
     tableOfContents: [
       '為什麼室內與戶外球不一樣',
       '物理結構差異',

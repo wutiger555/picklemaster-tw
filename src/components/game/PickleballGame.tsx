@@ -12,6 +12,7 @@ import { GameHud, type PointCard, type Toast } from './GameHud';
 import { ComicTitle, GAME_NAME, TitleSplash } from './ComicTitle';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings, type Venue } from './GameScreens';
 import { MatchSetup } from './MatchSetup';
+import { NEWEST_VENUES } from './venues';
 import { VenueIntroCard } from './VenueIntroCard';
 import { introDuration } from './scene/venueIntro';
 import { PaddleSelect } from './PaddleSelect';
@@ -136,8 +137,8 @@ const PickleballGame = () => {
   // 開場標題：每次進遊戲頁播一次
   const [splash, setSplash] = useState(true);
   const endSplash = useCallback(() => setSplash(false), []);
-  const [settings, setSettings] = useState<Settings>(() =>
-    load<Settings>(SETTINGS_KEY, {
+  const [settings, setSettings] = useState<Settings>(() => {
+    const s = load<Settings>(SETTINGS_KEY, {
       mode: 'match',
       difficulty: 'rookie',
       assist: true,
@@ -146,8 +147,10 @@ const PickleballGame = () => {
       paddle: PADDLES[0].id,
       character: CHARACTERS[1]?.id ?? 'default',
       venue: 'arena',
-    }),
-  );
+    });
+    // 沒自己選過場地：輪流用最新的場地（大家才會看到新球場），點過就照自己選的
+    return s.venuePicked ? s : { ...s, venue: NEWEST_VENUES[Math.floor(Math.random() * NEWEST_VENUES.length)] };
+  });
   const [records, setRecords] = useState<Records>(() => load<Records>(RECORDS_KEY, emptyRecords()));
   const [initialDemo] = useState(newDemo);
   const [engine, setEngine] = useState<GameEngine>(initialDemo.engine);

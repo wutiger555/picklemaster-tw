@@ -8,6 +8,7 @@ import type { GameEngine, GameEvent, InputState } from './engine/game';
 import { teamSide } from './engine/rules';
 import { Stadium } from './scene/Stadium';
 import { RiversideParkVenue } from './scene/RiversideParkVenue';
+import { XINYI_CAGE } from './venues';
 import { RoseGardenVenue } from './scene/RoseGardenVenue';
 import { XinyiRooftopVenue } from './scene/XinyiRooftopVenue';
 import { VENUE_SHOTS, introDuration } from './scene/venueIntro';
@@ -349,6 +350,18 @@ const Rig = ({
       else cam.clearViewOffset();
     }
     fovKick.current += (0 - fovKick.current) * Math.min(1, delta * 9);
+    // 信義頂樓：重播、判決的轉播鏡頭原本擺在場邊 8～10 m 外，會跑到防護網籠外被網和擋風布擋住；
+    // 把鏡頭收回籠內，並維持原本要看的那一點（近端沒有網，玩家身後的比賽鏡頭不受影響）
+    if (venue === 'xinyi') {
+      const p = cam.position;
+      const lim = { x: XINYI_CAGE.x - 0.45, z: XINYI_CAGE.z - 0.45, y: XINYI_CAGE.h - 0.4 };
+      if (Math.abs(p.x) > lim.x || p.z < -lim.z || p.y > lim.y) {
+        cam.getWorldDirection(v.a);
+        const aim = v.b.copy(p).addScaledVector(v.a, Math.max(4, p.length()));
+        p.set(THREE.MathUtils.clamp(p.x, -lim.x, lim.x), Math.min(p.y, lim.y), Math.max(p.z, -lim.z));
+        cam.lookAt(aim);
+      }
+    }
     const targetFov = fov + fovKick.current;
     if (Math.abs(cam.fov - targetFov) > 0.05) {
       cam.fov += (targetFov - cam.fov) * Math.min(1, delta * 10);

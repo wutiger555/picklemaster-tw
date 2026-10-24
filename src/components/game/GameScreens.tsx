@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Changelog } from './Changelog';
 import { VenueThumb } from './VenueThumb';
-import { VENUES, venueById } from './venues';
+import { NEWEST_VENUES, VENUES, venueById } from './venues';
 import { readSeen, VERSIONS } from './changelogData';
 import { characterById } from './characters';
 import { paddleById } from './engine/paddles';
@@ -38,6 +38,8 @@ export interface Settings {
   character: string;
   /** 比賽場地（舊存檔沒有這欄，當作夜間體育館） */
   venue?: Venue;
+  /** 玩家自己點過場地；沒點過就輪流用最新的場地，讓大家看到新球場 */
+  venuePicked?: boolean;
   /** 雙打（你＋隊友 vs 兩個電腦） */
   doubles?: boolean;
   /** 雙打隊友的角色 id */
@@ -146,6 +148,7 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
   // 標題畫面只放「選一個玩法就開打」；對手、場地、操作這些細項收進設定面板（像多數獨立遊戲的標題選單）
   const [sheet, setSheet] = useState(false);
   const [news, setNews] = useState(false);
+  const [venueSheet, setVenueSheet] = useState(false);
   const me = characterById(settings.character);
   const paddle = paddleById(settings.paddle);
   const start = (mode: GameMode, doubles = false) => {
@@ -207,9 +210,9 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
           variants={{ show: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } } }}
           className="flex flex-col gap-2.5 [@media(max-height:500px)]:landscape:grid [@media(max-height:500px)]:landscape:grid-flow-col [@media(max-height:500px)]:landscape:grid-rows-2 [@media(max-height:500px)]:landscape:gap-2"
         >
+          <motion.div variants={TILE} className="flex flex-col gap-2">
           {/* 快速開打：上次的選手、球拍、場地，一鍵就比 */}
           <motion.button
-            variants={TILE}
             type="button"
             whileHover={{ scale: 1.015 }}
             whileTap={{ scale: 0.97 }}
@@ -236,6 +239,26 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
             </span>
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-950/85 text-lg text-white">▶</span>
           </motion.button>
+
+          {/* 球場：直接看得到現在在哪打、點一下就換（新球場掛 NEW） */}
+          <button
+            type="button"
+            onClick={() => setVenueSheet(true)}
+            className="flex w-full items-center gap-3 rounded-xl border border-white/15 bg-slate-900/75 p-1.5 pr-3 text-left backdrop-blur-md transition-colors hover:bg-slate-800/80"
+          >
+            <span className="h-10 w-16 shrink-0 overflow-hidden rounded-lg ring-1 ring-white/20">
+              <VenueThumb venue={venueById(settings.venue).id} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-1.5 text-[10px] font-bold text-white/55">
+                今天的球場
+                {NEWEST_VENUES.includes(venueById(settings.venue).id) && <span className="rounded bg-rose-500 px-1 text-[9px] font-black text-white">NEW</span>}
+              </span>
+              <span className="block truncate text-sm font-black text-white">{venueById(settings.venue).title}</span>
+            </span>
+            <span className="shrink-0 rounded-full bg-amber-300 px-3 py-1.5 text-xs font-black text-amber-950">換球場 ›</span>
+          </button>
+          </motion.div>
 
           <div className="grid grid-cols-2 gap-2.5">
             {(
@@ -395,7 +418,7 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
                   <button
                     key={v.id}
                     type="button"
-                    onClick={() => onChange({ ...settings, venue: v.id })}
+                    onClick={() => onChange({ ...settings, venue: v.id, venuePicked: true })}
                     aria-pressed={sel}
                     className={`overflow-hidden rounded-xl border text-left transition-all ${
                       sel ? 'border-amber-300/70 bg-amber-400/15 shadow-lg shadow-amber-500/10' : 'border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10'
@@ -511,6 +534,62 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
                 <button type="button" onClick={() => setNews(false)} className="w-full rounded-2xl bg-white py-3 text-base font-black text-slate-950">
                   知道了
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {venueSheet && (
+          <motion.div
+            key="venues"
+            className="absolute inset-0 z-40 flex items-end justify-center bg-slate-950/60 md:items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setVenueSheet(false)}
+          >
+            <motion.div
+              initial={{ y: 40 }}
+              animate={{ y: 0 }}
+              exit={{ y: 40 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+              onClick={(e) => e.stopPropagation()}
+              className="flex max-h-[88dvh] w-full max-w-2xl flex-col rounded-t-3xl border border-white/10 bg-slate-900 md:rounded-3xl"
+            >
+              <div className="px-5 pb-2 pt-4">
+                <div className="text-base font-black text-white">選擇球場</div>
+                <div className="text-xs text-white/50">都是台灣真實的球場，背景會馬上換過去</div>
+              </div>
+              <div className="grid min-h-0 flex-1 auto-rows-max content-start grid-cols-1 gap-2.5 overflow-y-auto overscroll-contain px-4 pb-4 sm:grid-cols-2 [@media(max-height:500px)]:grid-cols-2">
+                {VENUES.map((v) => {
+                  const sel = venueById(settings.venue).id === v.id;
+                  return (
+                    <motion.button
+                      key={v.id}
+                      type="button"
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => {
+                        onChange({ ...settings, venue: v.id, venuePicked: true });
+                        setVenueSheet(false);
+                      }}
+                      aria-pressed={sel}
+                      className={`relative overflow-hidden rounded-2xl text-left ring-2 transition-all ${sel ? 'ring-amber-300' : 'ring-white/10 hover:ring-white/30'}`}
+                    >
+                      <div className="h-24 [@media(max-height:500px)]:h-16">
+                        <VenueThumb venue={v.id} />
+                      </div>
+                      {NEWEST_VENUES.includes(v.id) && (
+                        <span className="absolute left-2 top-2 rounded-md bg-rose-500 px-1.5 py-0.5 text-[10px] font-black text-white shadow">NEW</span>
+                      )}
+                      {sel && <span className="absolute right-2 top-2 rounded-full bg-amber-300 px-2 py-0.5 text-[10px] font-black text-amber-950">使用中</span>}
+                      <div className="bg-slate-950/70 px-3 py-2">
+                        <div className="text-sm font-black text-white">{v.title}</div>
+                        <div className="text-[11px] text-white/60">{v.desc}</div>
+                      </div>
+                    </motion.button>
+                  );
+                })}
               </div>
             </motion.div>
           </motion.div>

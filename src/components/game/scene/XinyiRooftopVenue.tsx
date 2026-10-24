@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
-import { COURT } from '../engine/constants';
 import { Net } from './Stadium';
+import { XINYI_CAGE } from '../venues';
 import { buildingTexture, courtTexture, grainBump, netTexture } from './textures';
 import { Box, CourtPlate, DayLights, DaySky, Instanced } from './venueKit';
 import { type Inst, useSkyline } from './venueUtils';
@@ -12,13 +12,11 @@ import { type Inst, useSkyline } from './venueUtils';
  * 鏡頭在玩家身後往 −z 看。
  */
 
-const W = COURT.halfWidth;
-const L = COURT.halfLength;
 /** 防護網籠子的半寬、半長、高度 */
-const CX = W + 3;
-const CZ = L + 4.2;
+const CX = XINYI_CAGE.x;
+const CZ = XINYI_CAGE.z;
 /** 籠子要比直拿手機的比賽鏡頭（約 8.6 m）還高，鏡頭才會在網內、不會被頂上的鋼管擋住 */
-const CH = 9.2;
+const CH = XINYI_CAGE.h;
 const ROOF_X = 22;
 const ROOF_Z = 30;
 

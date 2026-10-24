@@ -1,6 +1,74 @@
 import type { NewsItem } from '../types/news';
 
 export const NEWS_DATA: NewsItem[] = [
+  {
+    id: 'tw-202610-aepl-hsinchu',
+    title: 'AEPL 新竹站：地主 YANKEY ACE 主場封王，終結雲豹開季三連冠',
+    summary: 'AEPL 創始賽季第 4 站 10 月 17、18 日在新竹孔廟前廣場舉行，地主新竹 YANKEY ACE 在冠軍戰 3:1 擊敗桃園永豐雲豹，拿下隊史首座分站冠軍，也終結雲豹前三站全勝的連霸紀錄。最後一回合以 21:20 一分之差守下冠軍點。',
+    content: `
+      <p><strong>AEPL 亞洲菁英匹克球聯盟</strong>創始賽季第 4 站於 <strong>10 月 17、18 日</strong>在<strong>新竹孔廟前廣場</strong>舉行，六支球隊齊聚。地主<strong>新竹 YANKEY ACE</strong> 在冠軍戰以 <strong>3:1</strong> 擊敗<strong>桃園永豐雲豹</strong>，收下隊史首座分站冠軍——同時終結雲豹從台中、高雄到宜蘭的開季三連冠。</p>
+
+      <p>冠軍戰各回合比分為 <strong>11:21、21:13、21:19、21:20</strong>。YANKEY ACE 先丟男雙首回合，接著連拿三回合逆轉：女雙易楷芬／陳懷恕 21:13 扳平，混雙陳懷恕搭王耀城 21:19 聽牌，最後一回合由易楷芬／陳昱翰在僅一分之差的 21:20 守住冠軍點。</p>
+
+      <p>4 強戰中，YANKEY ACE 以 21:18、21:11、15:21、21:18 擊敗台南旭日雷霆；雲豹則直落三（21:12、21:15、21:13）勝高雄富瑞特。季軍戰由台南旭日雷霆直落三勝高雄富瑞特（21:20、21:15、21:16）。</p>
+
+      <p>賽後 YANKEY ACE 的陳懷恕說：「主場奪冠很開心，但仍要保持謙虛，前次和他們爭冠，我們表現也差不多，但這次身為地主，壓力確實較大。」守下最後一分的易楷芬坦言：「冠軍賽真的很害怕敗在最後 1 分，因為對手後來打很好。」雲豹隊長鍾振煒則說：「輸要知道輸在哪，並將其改善。」</p>
+
+      <p>四站完整比分與各隊戰績，見本站 <a href="/aepl" class="text-primary-600 hover:underline">AEPL 職業聯賽專區</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://aepltw.com/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">AEPL 官方賽事中心</a>、<a href="https://tw.sports.yahoo.com/news/aepl-yankey-ace%E6%8D%8D%E8%A1%9B%E4%B8%BB%E5%A0%B4-%E6%96%B0%E7%AB%B9%E7%AB%99%E4%B8%AD%E6%96%B7%E6%B0%B8%E8%B1%90%E9%9B%B2%E8%B1%B9%E9%96%8B%E5%AD%A33%E9%80%A3%E5%86%A0-082738659.html" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Yahoo 運動</a></p>
+    `,
+    date: '2026-10-19',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '新竹', '2026']
+  },
+  {
+    id: 'tw-202610-tmlp-final-stop',
+    title: 'TMLP 積分巡迴賽最終戰落幕：千人湧入林口高中，聽障好手邱弈偉盼進達福林匹克',
+    summary: '2026 台灣匹克球積分巡迴賽最終戰 10 月 17、18 日在新北市林口高中舉行，兩天超過千人報名。巡迴賽今年首辦，自 4 月起走過高雄、嘉義、苗栗、新竹，新北為第五站也是最後一站，11 月將在台北舉辦年終積分邀請賽。',
+    content: `
+      <p><strong>2026 台灣匹克球積分巡迴賽（TMLP）</strong>最終戰於 <strong>10 月 17、18 日</strong>在<strong>新北市林口高中</strong>舉行，兩天賽事<strong>超過千人報名參加</strong>。</p>
+
+      <p>這個巡迴賽今年首度舉辦，4 月起依序造訪<strong>高雄、嘉義、苗栗、新竹</strong>，新北是第五站、也是分站賽的最後一站，每一站規模都在 600 人以上。<strong>11 月</strong>將在台北舉辦年終積分邀請賽，為賽季畫下句點。</p>
+
+      <p>賽事中受到關注的是重度聽障選手<strong>邱弈偉</strong>。他 1 歲半時因發燒導致聽損，就讀一般學校並學會讀唇語，平時不喜歡戴助聽器。近期他赴美國、加拿大參加聽障匹克球錦標賽，帶回 1 金與 2 金 1 銀的成績，受訪時透過教練黃俊榮翻譯表示，希望未來能代表台灣參加聽障奧運（達福林匹克運動會）。他的搭檔莊哲瑋是聽人，兩人 2 年前在屏東比賽時認識。</p>
+
+      <p>完整賽事列表見本站 <a href="/tournaments" class="text-primary-600 hover:underline">2026 賽事總覽</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://sports.ltn.com.tw/news/breakingnews/5610711" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由體育</a></p>
+    `,
+    date: '2026-10-18',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', 'TMLP', '積分巡迴賽', '新北', '2026']
+  },
+  {
+    id: 'tw-202610-taichung-open-opening',
+    title: '台中國際匹克球公開賽開幕：16 國逾千名好手齊聚，總獎金 4.35 萬美元',
+    summary: '2026 台中國際匹克球公開賽 10 月 14 日在台中國際網球中心開幕，實到 16 個國家、逾 1,000 名選手，與賽前預估的 10 國 1,300 人組成不同。團體賽採美國匹克球小聯盟賽制，各組冠軍取得 2027 年美國小聯盟賽外卡。',
+    content: `
+      <p><strong>2026 台中國際匹克球公開賽</strong>於 <strong>10 月 14 日</strong>在<strong>台中國際網球中心</strong>開幕，為期四天。由台中市政府運動局與台中市匹克球協會主辦，開幕當日媒體報導實到 <strong>16 個國家、逾 1,000 名選手</strong>，參賽國包含美國、加拿大、日本、南韓、新加坡、荷蘭、菲律賓、印尼與馬來西亞。總獎金 <strong>43,500 美元</strong>。</p>
+
+      <p>賽程涵蓋團體賽與男女單打、雙打、混合雙打。<strong>團體賽採美國匹克球小聯盟（MiLP）賽制</strong>，各組團體冠軍可取得 <strong>2027 年美國小聯盟賽外卡</strong>——對台灣球友來說，這是少數能從國內賽事直通美國的管道。</p>
+
+      <p>開幕典禮由台中市副市長鄭照新代表市長盧秀燕出席，運動局長游志祥、亞洲匹克球聯合會秘書長 Chetan Sanil、運動部參事呂忠仁、中華民國匹克球協會理事長楊哲明，以及協會副理事長、玖壹壹成員洋蔥（陳皓宇）均到場。</p>
+
+      <p>完整賽事列表見本站 <a href="/tournaments" class="text-primary-600 hover:underline">2026 賽事總覽</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.ctee.com.tw/news/20261014702165-431401" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">工商時報</a>、<a href="https://udn.com/news/story/7241/9765281" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a></p>
+    `,
+    date: '2026-10-14',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '台中', '國際賽', 'MiLP', '2026']
+  },
   // ===== 2026 Q4 最新消息 =====
   {
     id: 'tw-202610-aepl-station3',

@@ -3092,14 +3092,14 @@
       ],
       "is_new": true,
       "added_date": "2026-07",
-      "last_updated": "2026-09-11",
+      "last_updated": "2026-10-21",
       "reviews": "2025 年封館整修後於 2026 年 1 月試營運重啟，正式支援匹克球",
       "iplay": {
         "venue": "淡水國民運動中心",
         "authority": "新北市政府體育局",
         "operator": "桑斯伯國際",
         "tel": "02-26261891",
-        "website": "http://tssc.tw",
+        "website": "https://wstssc.com.tw/",
         "park": "一般及無障礙停車場",
         "verified": "2026-09-02",
         "open_condition": "付費對外開放使用",
@@ -4365,7 +4365,7 @@
       "net_type": "permanent",
       "ownership": "private",
       "opening_hours": "24 小時",
-      "contact": "線上預約（app.ipickleball.tw）／LINE 社群",
+      "contact": "線上預約管道待查證（原 app.ipickleball.tw 已無法連線）；可透過場館 LINE 社群詢問",
       "facilities": [
         "冷氣",
         "獨立圍欄",
@@ -4380,9 +4380,8 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-10-21",
       "reviews": "潭子 24 小時室內館，4 面國際標準場附獨立圍欄",
-      "booking_url": "https://app.ipickleball.tw/",
       "price_details": {
         "weekday": "NT$300-700/時（依時段）"
       }
@@ -6402,8 +6401,11 @@
       "website": "https://dnapickleball.club/",
       "is_new": true,
       "added_date": "2026-10",
-      "last_updated": "2026-10-06",
-      "reviews": "桃園區春日路的匹克球專用館，由兩位教練共同經營，提供場地租借、私人教練課、入門體驗課與 Open Play 球敘。官網標示 2 面標準場，收費與開放時段以官方線上預約頁為準。地板材質官方未公告，暫記待查證。"
+      "last_updated": "2026-10-21",
+      "reviews": "桃園區春日路的匹克球專用館，由兩位教練共同經營，提供場地租借、私人教練課、入門體驗課與 Open Play 球敘。官網標示 2 面標準場，收費與開放時段以官方線上預約頁為準。地板材質官方未公告，暫記待查證。",
+      "status": "temporarily_closed",
+      "status_note": "Google 地圖標示「暫時關閉」，官網首頁同時顯示「網站目前整修中，暫時無法進行預約」。官網與社群均未說明恢復日期，建議前往前先私訊確認。",
+      "status_verified": "2026-10-21"
     },
     {
       "id": 162,
@@ -7291,6 +7293,78 @@
       "is_new": true,
       "added_date": "2026-10",
       "last_updated": "2026-10-06"
+    },
+    {
+      "id": 187,
+      "name": "PKL The Pickling Court 私人預約制匹克球場",
+      "location": {
+        "address": "新北市林口區文化北路二段190號",
+        "lat": 25.0847327,
+        "lng": 121.3724802,
+        "city": "新北市",
+        "district": "林口區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "預設時段 NT$850／小時起（尖峰、離峰與特殊日期另計）",
+      "courts_count": 4,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "預約制，開放時段以線上預約頁為準",
+      "contact": "無現場電話，採線上預約",
+      "contact_details": {
+        "website": "https://thepicklingclub.com/"
+      },
+      "facilities": [
+        "室內",
+        "冷氣",
+        "停車場"
+      ],
+      "features": [
+        "4 面國際標準場地",
+        "一號場 20×9.5 公尺，二至四號場 19.5×10 公尺",
+        "全館空調",
+        "場前可停 10 台車",
+        "LinkCourt 線上即時預約"
+      ],
+      "website": "https://thepicklingclub.com/",
+      "booking_url": "https://thepicklingclub.com/",
+      "reviews": "林口文化北路的私人預約制球館，官網載明 4 面符合國際標準尺寸的專用場地並標示各場尺寸，全館空調。原先在社群預告 10 月開幕，查證時線上預約系統已可運作。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-21"
+    },
+    {
+      "id": 188,
+      "name": "摩爾匹克 Moor Pickle",
+      "location": {
+        "address": "台中市西屯區安和三街98號",
+        "lat": 24.1772368,
+        "lng": 120.6244412,
+        "city": "台中市",
+        "district": "西屯區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "試營運中，價格未定（需洽 LINE 確認）",
+      "courts_count": 3,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "試營運中，時段請洽場館",
+      "contact": "無公開電話，採 LINE 聯繫",
+      "facilities": [
+        "室內",
+        "停車場"
+      ],
+      "features": [
+        "室內 3 面 PU 場地",
+        "2026 年新開幕，試營運中",
+        "夜間停車免費"
+      ],
+      "reviews": "台中西屯 2026 年新開的室內球館，2026 年 10 月仍在試營運。球友回報為 3 面 PU 場地，照明、球網等設施仍在陸續補齊，收費尚未定案，預約需透過場館 LINE。廁所在館外且僅一間，停車位充足。",
+      "is_new": true,
+      "added_date": "2026-10",
+      "last_updated": "2026-10-21"
     }
   ]
 }

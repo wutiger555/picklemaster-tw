@@ -29,6 +29,34 @@ export const COURT_UPDATE_KIND_LABEL: Record<CourtUpdateKind, string> = {
 // 新的在前
 export const COURT_UPDATES: CourtUpdate[] = [
   {
+    date: '2026-10-21',
+    kind: 'corrected',
+    title: '一一匹克的線上訂場連結已無法連線',
+    detail: '原本指向 ipickleball 的訂場子網域 app.ipickleball.tw，該網域雖仍有 DNS 紀錄但連線不通。移除失效連結，改註明預約管道待查證——網路上找到的替代聯絡資訊地址與本場館不符，未予採用。',
+    courtIds: [104],
+  },
+  {
+    date: '2026-10-21',
+    kind: 'added',
+    title: '新增 2 座：林口 PKL、台中西屯摩爾匹克',
+    detail: 'PKL The Pickling Court 官網載明 4 面國際標準場地並標出各場尺寸（一號場 20×9.5 公尺、二至四號場 19.5×10 公尺），查證時線上預約系統已可運作。摩爾匹克位於台中西屯安和三街，2026 年 10 月仍在試營運，球友回報為 3 面 PU 場地、收費未定案。',
+    courtIds: [187, 188],
+  },
+  {
+    date: '2026-10-21',
+    kind: 'status',
+    title: 'DNA Pickleball Club 暫時關閉',
+    detail: 'Google 地圖標示「暫時關閉」，官網首頁同時掛出「網站目前整修中，暫時無法進行預約」——兩個管道一致。官網與社群都沒有說明恢復日期，前往前請先私訊確認。',
+    courtIds: [161],
+  },
+  {
+    date: '2026-10-21',
+    kind: 'corrected',
+    title: '淡水國民運動中心的官網連結失效，改指現行營運團隊網站',
+    detail: '原先沿用 iPlay 開放資料的 tssc.tw 網域已無 DNS 紀錄，改為現行營運團隊「舞動陽光」的官網 wstssc.com.tw。',
+    courtIds: [74],
+  },
+  {
     date: '2026-10-06',
     kind: 'added',
     title: '再新增 12 座：高雄 4、新北 2、台中 2，台北、台南、彰化、花蓮各 1',

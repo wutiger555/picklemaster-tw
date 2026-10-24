@@ -1,3 +1,4 @@
+import type { Traits } from './engine/game';
 import type { SkillId } from './engine/skills';
 
 /**
@@ -32,13 +33,53 @@ export interface CharacterDef {
   headwearColor: string;
   number: string;
   jersey: string;
+  /** 角色類型（選角畫面的標籤） */
+  archetype: Archetype;
+  /** 素質 1–5：每位總和一樣是 12，只是分配不同 */
+  stats: Stats;
 }
+
+export interface Stats {
+  /** 跑速、加速 */
+  speed: number;
+  /** 出球力量（抽球、殺球的球速） */
+  power: number;
+  /** 控球（失誤率、落點準度） */
+  control: number;
+  /** 觸及（手長、截擊範圍、撲接距離） */
+  reach: number;
+}
+
+export type Archetype = '全能型' | '力量型' | '重砲型' | '速度型' | '敏捷型' | '技巧型' | '控球型' | '網前型';
+
+/** 類型的代表色（選角卡邊框、標籤） */
+export const ARCHETYPE_COLOR: Record<Archetype, string> = {
+  全能型: '#34d399',
+  力量型: '#f97316',
+  重砲型: '#ef4444',
+  速度型: '#38bdf8',
+  敏捷型: '#a78bfa',
+  技巧型: '#facc15',
+  控球型: '#2dd4bf',
+  網前型: '#f472b6',
+};
+
+/**
+ * 素質換算成物理倍率：每差 1 級，跑速 ±7%、球速 ±6.5%、誤差 ∓5%、觸及 ±7 cm。
+ * 3 級是標準選手（倍率剛好 1），所以沒設定素質時行為和以前完全一樣。
+ */
+export const traitsOf = (c: CharacterDef): Traits => ({
+  speed: 1 + (c.stats.speed - 3) * 0.07,
+  pace: 1 + (c.stats.power - 3) * 0.065,
+  error: 1 - (c.stats.control - 3) * 0.05,
+  reach: (c.stats.reach - 3) * 0.07,
+});
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const img = (file: string) => `${base}/game/characters/${file}`;
 
 /** VRM 角色：模型本身就是完整造型，配色欄位用不到給預設值；半身像由 scripts/render-vrm-portraits.mjs 算繪 */
-function vrmChar(c: { id: string; name: string; title: string; skill: SkillId; shirt: string; accent: string }): CharacterDef {
+function vrmChar(c: { id: string; name: string; title: string; skill: SkillId; shirt: string; accent: string; archetype: Archetype; stats: Stats }): CharacterDef {
   return {
     ...c,
     body: 'vrm',
@@ -77,6 +118,8 @@ export const CHARACTERS: CharacterDef[] = [
     headwearColor: '#f8fafc',
     number: '7',
     jersey: 'TAIWAN',
+    archetype: '全能型',
+    stats: { speed: 3, power: 3, control: 3, reach: 3 },
   },
   {
     id: 'p1',
@@ -97,6 +140,8 @@ export const CHARACTERS: CharacterDef[] = [
     headwearColor: '#ffffff',
     number: '1',
     jersey: 'HUI',
+    archetype: '力量型',
+    stats: { speed: 2, power: 5, control: 2, reach: 3 },
   },
   {
     id: 'p2',
@@ -117,6 +162,8 @@ export const CHARACTERS: CharacterDef[] = [
     headwearColor: '#ffffff',
     number: '11',
     jersey: 'CASTLE',
+    archetype: '技巧型',
+    stats: { speed: 3, power: 2, control: 5, reach: 2 },
   },
   {
     id: 'p4',
@@ -137,6 +184,8 @@ export const CHARACTERS: CharacterDef[] = [
     headwearColor: '#ffffff',
     number: '3',
     jersey: 'FRAME',
+    archetype: '網前型',
+    stats: { speed: 2, power: 3, control: 3, reach: 4 },
   },
   {
     id: 'p5',
@@ -157,15 +206,17 @@ export const CHARACTERS: CharacterDef[] = [
     headwearColor: '#bfae8a',
     number: '9',
     jersey: 'CAP',
+    archetype: '速度型',
+    stats: { speed: 4, power: 2, control: 3, reach: 3 },
   },
   ...[
     // VRM 角色（100Avatars 系列，CC0）：造型都在模型裡，顏色欄位只給選角卡與畫面點綴用
-    vrmChar({ id: 'cucumber', name: '酸黃瓜', title: '匹克球吉祥物', skill: 'pickle', shirt: '#4ade80', accent: '#bbf7d0' }),
-    vrmChar({ id: 'bao', name: '包子武士', title: '一口一個', skill: 'feast', shirt: '#f5e6c8', accent: '#dc2626' }),
-    vrmChar({ id: 'tiger', name: '虎爺', title: '廟口守護神', skill: 'roar', shirt: '#f97316', accent: '#fde68a' }),
-    vrmChar({ id: 'beachking', name: '海灘王', title: '颱風天照打', skill: 'wave', shirt: '#38bdf8', accent: '#f472b6' }),
-    vrmChar({ id: 'mecha', name: '運動機甲', title: '全自動揮拍', skill: 'overclock', shirt: '#f59e0b', accent: '#7c3aed' }),
-    vrmChar({ id: 'anna', name: '狐面', title: '月下狐影', skill: 'foxfire', shirt: '#1f1f2e', accent: '#f9a8d4' }),
+    vrmChar({ id: 'cucumber', name: '酸黃瓜', title: '匹克球吉祥物', skill: 'pickle', shirt: '#4ade80', accent: '#bbf7d0', archetype: '敏捷型', stats: { speed: 5, power: 2, control: 3, reach: 2 } }),
+    vrmChar({ id: 'bao', name: '包子武士', title: '一口一個', skill: 'feast', shirt: '#f5e6c8', accent: '#dc2626', archetype: '重砲型', stats: { speed: 1, power: 5, control: 3, reach: 3 } }),
+    vrmChar({ id: 'tiger', name: '虎爺', title: '廟口守護神', skill: 'roar', shirt: '#f97316', accent: '#fde68a', archetype: '力量型', stats: { speed: 2, power: 4, control: 2, reach: 4 } }),
+    vrmChar({ id: 'beachking', name: '海灘王', title: '颱風天照打', skill: 'wave', shirt: '#38bdf8', accent: '#f472b6', archetype: '全能型', stats: { speed: 3, power: 4, control: 2, reach: 3 } }),
+    vrmChar({ id: 'mecha', name: '運動機甲', title: '全自動揮拍', skill: 'overclock', shirt: '#f59e0b', accent: '#7c3aed', archetype: '控球型', stats: { speed: 2, power: 3, control: 5, reach: 2 } }),
+    vrmChar({ id: 'anna', name: '狐面', title: '月下狐影', skill: 'foxfire', shirt: '#1f1f2e', accent: '#f9a8d4', archetype: '速度型', stats: { speed: 5, power: 2, control: 4, reach: 1 } }),
   ],
 ];
 

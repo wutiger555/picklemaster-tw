@@ -240,6 +240,37 @@ const SKILL_EFFECT: Record<SkillId, SkillEffectId> = {
   cheer: 'cheer',
 };
 
+/** 落點：in 界內、out 出界、net 掛網；cm 是離最近的線多遠（界內＝離線還有多少，出界＝出去多少） */
+export interface Landing {
+  x: number;
+  z: number;
+  kind: 'in' | 'out' | 'net';
+  cm: number;
+}
+
+/** 重播畫面要畫的東西：球路、落點；失分重播另外有你當時的位置、建議站位和一句改進建議 */
+export interface ReplayInfo {
+  path: V3[];
+  landing: Landing | null;
+  review: { tip: string; me: { x: number; z: number } | null; stand: { x: number; z: number } | null } | null;
+}
+
+interface PendingReplay {
+  label: string;
+  team: Team;
+  key: number;
+  landing: Landing | null;
+  /** 失分重播的改進建議（精彩重播是 null） */
+  tip: string | null;
+}
+
+/** 離場地邊線多遠（公尺）：界內是離線還有多少、出界是出去多少 */
+const edgeDistance = (x: number, z: number) => {
+  const dx = Math.abs(x) - COURT.halfWidth;
+  const dz = Math.abs(z) - COURT.halfLength;
+  return dx <= 0 && dz <= 0 ? Math.min(-dx, -dz) : Math.hypot(Math.max(0, dx), Math.max(0, dz));
+};
+
 export interface RallyState {
   hits: number;
   lastTeam: Team | null;
@@ -255,6 +286,9 @@ export interface RallyState {
   diveSaved: [boolean, boolean];
   /** 這一拍在嘗試的高階技巧（落地在對方廚房才算成功）：發球方第三拍放小球、被重抽時的 Reset */
   tryTech: { team: Team; id: 'thirdDrop' | 'reset' } | null;
+  /** 這一拍的第一次落地點、掛網點（重播時標落點用） */
+  firstBounce: { pos: V3; hitter: Team } | null;
+  netAt: V3 | null;
   /** 這一分雙方最近一次放必殺、飛撲救球的時間（沒有就是 -1，精彩重播對準這一刻） */
   specialAt: [number, number];
   diveAt: [number, number];
@@ -381,6 +415,8 @@ export interface HudState {
   challenges: [number, number];
   /** 精彩重播中：這一球的標籤 */
   replay: string | null;
+  /** 重播的落點與失分建議（給 HUD 的文字；球路軌跡在 3D 場景裡畫） */
+  replayInfo: { landing: Landing | null; tip: string | null } | null;
   /** 角色絕招的持續效果（mine＝玩家放的）；left 是剩幾秒，分身是剩幾分 */
   effects: { id: SkillEffectId; mine: boolean; left: number; unit: 's' | 'pt' }[];
   /** 電視輔助判決進行中 */
@@ -619,11 +655,13 @@ export class GameEngine {
   /** 電視輔助判決 */
   review: ReviewState | null = null;
   /** 精彩重播（真實時間 start；t 是重播到的比賽時間） */
-  replay: { label: string; team: Team; start: number; t: number; to: number; key: number; angle: ReplayAngle } | null = null;
+  replay: { label: string; team: Team; start: number; t: number; to: number; key: number; angle: ReplayAngle; info: ReplayInfo } | null = null;
+  /** 連續幾分失分沒有播失分重播（不要每一球都播，太煩） */
+  private lostNoReview = 0;
   /** 每次重播開始、結束都加一：畫面看到變了就清掉拖尾（球會瞬移） */
   replayCuts = 0;
   /** 這一分是精彩球：分數結算後要重播 */
-  private pendingReplay: { label: string; team: Team; key: number } | null = null;
+  private pendingReplay: PendingReplay | null = null;
   private replayCount = 0;
   private tape = new ReplayTape(2, this.freshRally());
   private tapeTick = 0;
@@ -781,6 +819,8 @@ export class GameEngine {
       dinkChain: 0,
       diveSaved: [false, false],
       tryTech: null,
+      firstBounce: null,
+      netAt: null,
       specialAt: [-1, -1],
       diveAt: [-1, -1],
       awakened: [false, false],
@@ -2242,6 +2282,8 @@ export class GameEngine {
   // ───────────────────────────── 判定 ─────────────────────────────
 
   private onBallEvent(type: 'bounce' | 'net' | 'cord', pos: V3, speed: number) {
+    if (type === 'net') this.rally.netAt = clone(pos);
+    if (type === 'bounce' && this.rally.bouncesSinceHit === 0 && this.rally.lastTeam !== null) this.rally.firstBounce = { pos: clone(pos), hitter: this.rally.lastTeam };
     if (type !== 'bounce') {
       this.emit({ type, pos });
       return;
@@ -2500,7 +2542,7 @@ export class GameEngine {
       if (a.team === winner && faultTeam === null) this.gainEnergy(a, ENERGY.winner);
     }
     if (this.mode !== 'drill') this.celebration = { team: winner, start: this.real, big };
-    const highlight = this.highlightOf(winner, reason, faultTeam);
+    const highlight = this.pickReplay(winner, reason, faultTeam);
     this.pendingReplay = highlight;
 
     let title: string;
@@ -2537,7 +2579,7 @@ export class GameEngine {
       call: this.mode === 'match' ? scoreCall(this.match) : String(this.dinkStreak),
       sideOut,
       rallyHits: r.hits,
-      highlight: highlight?.label ?? null,
+      highlight: highlight && !highlight.tip ? highlight.label : null,
     });
   }
 
@@ -2560,6 +2602,57 @@ export class GameEngine {
     return null;
   }
 
+  /** 這一分要不要重播：精彩球照舊；失分時看清落點、講怎麼改（差一點的一定播，其他最多每 3 分播一次） */
+  private pickReplay(winner: Team, reason: PointReason, faultTeam: Team | null): PendingReplay | null {
+    const landing = this.landingOf(reason, faultTeam);
+    const hl = this.highlightOf(winner, reason, faultTeam);
+    if (hl) return { ...hl, landing, tip: null };
+    const h = this.human;
+    if (this.mode !== 'match' || h.ai || this.reviewedPoint || this.level || winner === h.team) return null;
+    const tip = this.reviewTip(reason, faultTeam, landing);
+    if (!tip) return null;
+    const close = !!landing && landing.kind !== 'net' && landing.cm < 40;
+    if (!close && ++this.lostNoReview < 3) return null;
+    this.lostNoReview = 0;
+    return { label: '看清落點', team: winner, key: this.rally.lastHitTime, landing, tip };
+  }
+
+  /** 決定這一分的那一球落在哪 */
+  private landingOf(reason: PointReason, faultTeam: Team | null): Landing | null {
+    const r = this.rally;
+    if (reason === 'net' && r.netAt) return { x: r.netAt.x, z: 0, kind: 'net', cm: 0 };
+    const fb = r.firstBounce;
+    if (!fb || fb.hitter !== r.lastTeam) return null;
+    // 發球的界內外看發球區（這裡只標落點，不算距離）
+    if (r.hits === 1) return { x: fb.pos.x, z: fb.pos.z, kind: faultTeam === null ? 'in' : 'out', cm: 0 };
+    const m = edgeDistance(fb.pos.x, fb.pos.z);
+    const out = reason === 'out' ? true : faultTeam !== null ? false : Math.abs(fb.pos.x) > COURT.halfWidth || Math.abs(fb.pos.z) > COURT.halfLength;
+    return { x: fb.pos.x, z: fb.pos.z, kind: out ? 'out' : 'in', cm: Math.round(m * 100) };
+  }
+
+  /** 失分的改進建議：講得出具體怎麼改的才重播 */
+  private reviewTip(reason: PointReason, faultTeam: Team | null, landing: Landing | null): string | null {
+    const me = this.human.team;
+    const keys = this.controls === 'auto';
+    if (faultTeam === me) {
+      if (reason === 'out' && landing) {
+        return landing.cm < 30
+          ? `差 ${landing.cm} 公分就進了！少蓄一點力，或瞄準時別推到底`
+          : `出界 ${landing.cm} 公分：太用力了。對手在網前時，放小球（軟）比硬抽穩`;
+      }
+      if (reason === 'net') return '掛網：低於網的球別硬抽，用「軟」把球推過去，或「挑」高到後場';
+      if (reason === 'serveLong' || reason === 'serveShort' || reason === 'serveWide') return '發球出界：力道條停在綠色區再放開，越接近上緣越深';
+      return null;
+    }
+    if (faultTeam !== null) return null;
+    // 被對手打穿：看你當時站在哪
+    const snap = this.tape.snapshot(this.rally.lastHitTime + 0.35, this.athletes.indexOf(this.human));
+    const off = snap?.stand ? Math.hypot(snap.pos.x - snap.stand.x, snap.pos.z - snap.stand.z) : 0;
+    if (off > 0.9) return '你離建議站位太遠：對手一出手就往地上的綠圈移動，來得及就打得到';
+    if (landing && landing.kind === 'in' && landing.cm < 40) return `對手壓到邊線（離線 ${landing.cm} 公分）：站位往中間收一點，兩邊都搆得到`;
+    return keys ? '對手出手就先按擊球鍵，球到身邊會自動揮拍，反應快很多' : '對手出手就開始蓄力，球到身邊再放開，別等球到了才按';
+  }
+
   private startReplay() {
     const p = this.pendingReplay!;
     this.pendingReplay = null;
@@ -2568,8 +2661,14 @@ export class GameEngine {
     const from = Math.max(span[0], p.key - REPLAY.before);
     const to = Math.min(span[1], p.key + REPLAY.after);
     if (to - from < 0.5) return false;
+    const snap = p.tip ? this.tape.snapshot(p.key + 0.35, this.athletes.indexOf(this.human)) : null;
+    const info: ReplayInfo = {
+      path: this.tape.ballPath(p.key - 0.02, to),
+      landing: p.landing,
+      review: p.tip ? { tip: p.tip, me: snap ? { x: snap.pos.x, z: snap.pos.z } : null, stand: snap?.stand ?? null } : null,
+    };
     this.tape.begin(this);
-    this.replay = { label: p.label, team: p.team, start: this.real, t: from, to, key: p.key, angle: this.replayCount++ % 2 ? 'low' : 'side' };
+    this.replay = { label: p.label, team: p.team, start: this.real, t: from, to, key: p.key, angle: this.replayCount++ % 2 ? 'low' : 'side', info };
     this.replayCuts++;
     this.celebration = null;
     this.tape.show(this, from);
@@ -2755,6 +2854,7 @@ export class GameEngine {
       challenges: [this.challenges[0], this.challenges[1]],
       review: this.reviewHud(),
       replay: this.replay?.label ?? null,
+      replayInfo: this.replay ? { landing: this.replay.info.landing, tip: this.replay.info.review?.tip ?? null } : null,
       effects: this.skillEffects
         .filter((e) => this.effectBy(e.id, e.team))
         .map((e) =>

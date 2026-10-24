@@ -1,10 +1,24 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import type { HudState, Landing } from './engine/game';
 
 /**
  * 精彩重播的轉播包裝：上下黑邊、紅色 REPLAY、這一球的名堂，右下角可以跳過。
  * 和電視輔助判決（ReviewOverlay）同一套視覺語言。
  */
-export const ReplayOverlay = ({ label, touch, onSkip }: { label: string; touch: boolean; onSkip: () => void }) => (
+const LANDING_TEXT = (l: Landing) =>
+  l.kind === 'net' ? '掛網' : l.cm === 0 ? (l.kind === 'in' ? '界內' : '出界') : l.kind === 'in' ? `界內・離線 ${l.cm} 公分` : `出界 ${l.cm} 公分`;
+
+export const ReplayOverlay = ({
+  label,
+  touch,
+  onSkip,
+  info,
+}: {
+  label: string;
+  touch: boolean;
+  onSkip: () => void;
+  info: HudState['replayInfo'];
+}) => (
   <motion.div className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }}>
     <motion.div className="absolute inset-x-0 top-0 h-[8%] origin-top bg-black/85" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} />
     <motion.div className="absolute inset-x-0 bottom-0 h-[8%] origin-bottom bg-black/85" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} />
@@ -25,11 +39,41 @@ export const ReplayOverlay = ({ label, touch, onSkip }: { label: string; touch: 
       >
         {label}
       </span>
+      {info?.landing && (
+        <span
+          className={`rounded-full px-3 py-1 text-sm font-black text-slate-950 shadow-lg ${
+            info.landing.kind === 'in' ? 'bg-emerald-400' : info.landing.kind === 'out' ? 'bg-red-400' : 'bg-orange-400'
+          }`}
+        >
+          落點：{LANDING_TEXT(info.landing)}
+        </span>
+      )}
     </motion.div>
+    {info?.tip && (
+      <motion.div
+        className={`absolute inset-x-0 flex justify-center px-4 ${touch ? 'bottom-[calc(8%+3.75rem)]' : 'bottom-[11%]'}`}
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <div className="max-w-lg rounded-2xl border border-emerald-300/40 bg-slate-950/85 px-4 py-3 text-white shadow-2xl backdrop-blur-md">
+          <div className="text-[11px] font-bold tracking-wider text-emerald-300">💡 下一球這樣改</div>
+          <div className="mt-1 text-sm font-semibold leading-relaxed md:text-base">{info.tip}</div>
+          <div className="mt-2 flex gap-3 text-[11px] text-white/60">
+            <span className="flex items-center gap-1">
+              <span className="inline-block h-2.5 w-2.5 rounded-full border-2 border-white" /> 你當時的位置
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block h-2.5 w-2.5 rounded-full border-2 border-emerald-400" /> 建議站位
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    )}
     <button
       type="button"
       onClick={onSkip}
-      className="pointer-events-auto absolute bottom-[10%] right-4 flex items-center gap-2 rounded-full bg-slate-950/70 px-4 py-2 text-sm font-bold text-white ring-1 ring-white/15 backdrop-blur-md transition hover:bg-slate-950/90"
+      className={`pointer-events-auto absolute right-4 flex ${touch ? 'bottom-[calc(8%+0.75rem)]' : 'bottom-[10%]'} items-center gap-2 rounded-full bg-slate-950/70 px-4 py-2 text-sm font-bold text-white ring-1 ring-white/15 backdrop-blur-md transition hover:bg-slate-950/90`}
     >
       跳過重播 <span aria-hidden>▸▸</span>
       {!touch && <span className="rounded bg-white/15 px-1.5 text-[10px] text-white/70">任意鍵</span>}
@@ -40,7 +84,16 @@ export const ReplayOverlay = ({ label, touch, onSkip }: { label: string; touch: 
 export type ClipStatus = 'cutting' | 'ready' | 'shared' | 'saved';
 
 /** 漂亮的一分打完出現：存下這球（分享到 Threads，不支援分享就下載） */
-export const SaveClipButton = ({ clip, onSave }: { clip: { id: number; label: string; status: ClipStatus } | null; onSave: () => void }) => (
+export const SaveClipButton = ({
+  clip,
+  onSave,
+  compact = false,
+}: {
+  clip: { id: number; label: string; status: ClipStatus } | null;
+  onSave: () => void;
+  /** 手機：縮成一顆小膠囊，不擋球場 */
+  compact?: boolean;
+}) => (
   <AnimatePresence>
     {clip && (
       <motion.button
@@ -53,7 +106,7 @@ export const SaveClipButton = ({ clip, onSave }: { clip: { id: number; label: st
         exit={{ opacity: 0, y: -10, scale: 0.95, transition: { duration: 0.2 } }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 460, damping: 24 }}
-        className="pointer-events-auto relative flex items-center gap-2.5 overflow-hidden rounded-2xl bg-gradient-to-r from-rose-500 via-orange-400 to-amber-300 py-2 pl-3 pr-4 text-left text-slate-950 shadow-xl shadow-orange-600/30 ring-1 ring-white/40 disabled:from-emerald-400 disabled:via-emerald-400 disabled:to-teal-400"
+        className={`pointer-events-auto relative flex items-center overflow-hidden bg-gradient-to-r ${compact ? 'gap-2 rounded-full py-1 pl-1 pr-3' : 'gap-2.5 rounded-2xl py-2 pl-3 pr-4'} from-rose-500 via-orange-400 to-amber-300 text-left text-slate-950 shadow-xl shadow-orange-600/30 ring-1 ring-white/40 disabled:from-emerald-400 disabled:via-emerald-400 disabled:to-teal-400`}
       >
         {/* 掃光：吸引目光但不擋畫面 */}
         {clip.status === 'ready' && (
@@ -65,7 +118,7 @@ export const SaveClipButton = ({ clip, onSave }: { clip: { id: number; label: st
             transition={{ duration: 1.1, repeat: Infinity, repeatDelay: 1.6, ease: 'easeInOut' }}
           />
         )}
-        <span className="relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-950/90">
+        <span className={`relative grid shrink-0 ${compact ? 'h-6 w-6' : 'h-8 w-8'} place-items-center rounded-full bg-slate-950/90`}>
           {clip.status === 'shared' || clip.status === 'saved' ? (
             <span className="text-sm text-emerald-300">✓</span>
           ) : (
@@ -73,12 +126,14 @@ export const SaveClipButton = ({ clip, onSave }: { clip: { id: number; label: st
           )}
         </span>
         <span className="relative flex flex-col leading-tight">
-          <span className="text-base font-black">
+          <span className={compact ? 'text-sm font-black' : 'text-base font-black'}>
             {clip.status === 'shared' ? '分享出去了！' : clip.status === 'saved' ? '影片已下載' : '存下這球'}
           </span>
+          {!compact && (
           <span className="text-[11px] font-bold text-slate-900/75">
             {clip.status === 'cutting' ? `${clip.label}・剪輯中…` : `${clip.label}・分享到 Threads`}
           </span>
+          )}
         </span>
       </motion.button>
     )}

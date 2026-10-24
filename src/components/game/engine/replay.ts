@@ -191,6 +191,28 @@ export class ReplayTape {
     });
   }
 
+  /** 一段時間內的球路（重播時畫軌跡用） */
+  ballPath(from: number, to: number): V3[] {
+    const out: V3[] = [];
+    for (let i = 0; i < this.count; i++) {
+      const f = this.at(i);
+      if (f.t >= from && f.t <= to) out.push(v3(f.ball.x, f.ball.y, f.ball.z));
+    }
+    return out;
+  }
+
+  /** 某個時間點：選手位置與當時的建議站位（失分重播講「你站這、應該站這」用） */
+  snapshot(t: number, athlete: number): { pos: V3; stand: { x: number; z: number } | null } | null {
+    let best: Frame | null = null;
+    for (let i = 0; i < this.count; i++) {
+      const f = this.at(i);
+      if (!best || Math.abs(f.t - t) < Math.abs(best.t - t)) best = f;
+    }
+    if (!best) return null;
+    const a = best.athletes[athlete];
+    return { pos: v3(a.pos.x, 0, a.pos.z), stand: best.guide && !best.guide.leave ? { x: best.guide.stand.x, z: best.guide.stand.z } : null };
+  }
+
   /** 錄到的時間範圍 */
   span(): [number, number] | null {
     return this.count >= 2 ? [this.at(0).t, this.at(this.count - 1).t] : null;

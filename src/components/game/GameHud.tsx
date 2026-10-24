@@ -509,7 +509,8 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
       {/* 玩家擊球回饋 */}
       <div className="absolute inset-x-0 top-[38%] flex justify-center">
         <AnimatePresence>
-          {toasts.slice(-1).map((t) =>
+          {/* 手機上一般擊球（沒有評分）不跳球速，只留戳章類的回饋 */}
+          {toasts.slice(-1).filter((t) => !(touch && t.tone === 'plain' && !t.dive && !isAttack(t.kind))).map((t) =>
             t.dive ? (
               // 飛身撲接救回來：漫畫風大字
               <motion.div
@@ -616,18 +617,18 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
             initial={{ opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute inset-x-0 top-[30%] flex justify-center px-4"
+            className={`absolute inset-x-0 flex justify-center px-4 ${touch ? 'top-[8.75rem] landscape:top-[7.25rem]' : 'top-[30%]'}`}
           >
             <div
-              className={`w-full max-w-sm rounded-2xl border px-5 py-4 text-center shadow-2xl backdrop-blur-xl ${
+              className={`w-full max-w-sm rounded-2xl border text-center shadow-2xl backdrop-blur-xl ${touch ? 'px-4 py-2.5' : 'px-5 py-4'} ${
                 card.won ? 'border-emerald-300/40 bg-emerald-950/75' : 'border-orange-300/40 bg-slate-950/80'
               }`}
             >
               <div className={`text-xs font-bold tracking-[0.2em] ${card.won ? 'text-emerald-300' : 'text-orange-300'}`}>{card.headline}</div>
-              <div className="mt-1 text-2xl font-black text-white">{card.title}</div>
-              {card.lesson && <p className="mt-2 text-sm leading-relaxed text-white/80">{card.lesson}</p>}
+              <div className={`mt-0.5 font-black text-white ${touch ? 'text-lg' : 'text-2xl'}`}>{card.title}</div>
+              {card.lesson && <p className={`text-white/80 ${touch ? 'mt-1 text-xs leading-snug' : 'mt-2 text-sm leading-relaxed'}`}>{card.lesson}</p>}
               {card.call && (
-                <div className="mt-3 text-xs text-white/50">
+                <div className={`text-xs text-white/50 ${touch ? 'mt-1' : 'mt-3'}`}>
                   報分 <span className="text-base font-bold text-white tabular-nums">{card.call}</span>
                 </div>
               )}
@@ -681,7 +682,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
           <CutIn key={cutIn.id} spec={cutIn.spec} skill={cutIn.skill} awaken={cutIn.awaken} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />
         )}
         <ReviewOverlay review={hud.review} onChallenge={onChallenge} onAccept={onAccept} />
-        {hud.replay && <ReplayOverlay key="replay" label={hud.replay} touch={touch} onSkip={onSkipReplay} />}
+        {hud.replay && <ReplayOverlay key="replay" label={hud.replay} touch={touch} onSkip={onSkipReplay} info={hud.replayInfo} />}
       </AnimatePresence>
     </div>
   );

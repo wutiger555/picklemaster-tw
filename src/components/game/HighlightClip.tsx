@@ -49,6 +49,28 @@ export const ReplayOverlay = ({
         </span>
       )}
     </motion.div>
+    {/* 定格：畫面中央蓋一個大大的落點判定 */}
+    <AnimatePresence>
+      {info?.hold && info.landing && (
+        <motion.div
+          key="hold"
+          className="absolute inset-x-0 top-[38%] flex justify-center"
+          initial={{ opacity: 0, scale: 1.8, rotate: -6 }}
+          animate={{ opacity: 1, scale: 1, rotate: -4 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 520, damping: 18 }}
+        >
+          <span
+            className={`font-display font-black italic tracking-tight ${touch ? 'text-4xl' : 'text-6xl'} ${
+              info.landing.kind === 'in' ? 'text-emerald-300' : info.landing.kind === 'out' ? 'text-red-400' : 'text-orange-300'
+            }`}
+            style={{ textShadow: '3px 3px 0 #000, 0 0 18px rgba(0,0,0,0.6)' }}
+          >
+            {LANDING_TEXT(info.landing)}
+          </span>
+        </motion.div>
+      )}
+    </AnimatePresence>
     {info?.tip && (
       <motion.div
         className={`absolute inset-x-0 flex justify-center px-4 ${touch ? 'bottom-[calc(8%+3.75rem)]' : 'bottom-[11%]'}`}
@@ -59,6 +81,7 @@ export const ReplayOverlay = ({
         <div className="max-w-lg rounded-2xl border border-emerald-300/40 bg-slate-950/85 px-4 py-3 text-white shadow-2xl backdrop-blur-md">
           <div className="text-[11px] font-bold tracking-wider text-emerald-300">💡 下一球這樣改</div>
           <div className="mt-1 text-sm font-semibold leading-relaxed md:text-base">{info.tip}</div>
+          {info.marks && (
           <div className="mt-2 flex gap-3 text-[11px] text-white/60">
             <span className="flex items-center gap-1">
               <span className="inline-block h-2.5 w-2.5 rounded-full border-2 border-white" /> 你當時的位置
@@ -67,6 +90,7 @@ export const ReplayOverlay = ({
               <span className="inline-block h-2.5 w-2.5 rounded-full border-2 border-emerald-400" /> 建議站位
             </span>
           </div>
+          )}
         </div>
       </motion.div>
     )}

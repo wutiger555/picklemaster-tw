@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Changelog } from './Changelog';
 import { ComicTitle } from './ComicTitle';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
 import type { Controls, GameMode, TeamStats } from './engine/game';
@@ -414,6 +415,7 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
           </>
         )}
       </p>
+      <Changelog />
     </div>
   </Shell>
 );

@@ -312,7 +312,7 @@ const PaddleGuide = () => {
         <div className="flex flex-wrap justify-center gap-3 mb-8">
           {[
             { id: 'anatomy' as const, name: '球拍結構', icon: '🔍' },
-            { id: 'types' as const, name: '球拍類型', icon: '🏓' },
+            { id: 'types' as const, name: '球拍類型', icon: '📐' },
             { id: 'materials' as const, name: '材質介紹', icon: '🧪' },
             { id: 'cores' as const, name: '核心結構', icon: '⚙️' },
             { id: 'specs' as const, name: '官方規格', icon: '📏' },

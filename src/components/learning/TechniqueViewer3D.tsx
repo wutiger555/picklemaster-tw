@@ -498,7 +498,7 @@ function PlayerModel({ technique, step }: { technique: string; step: number }) {
         <>
           <Html position={[-0.4, 0.65, 0]} center>
             <div className="bg-pickleball-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg">
-              🏓 擊球點（低於腰部）
+              🎯 擊球點（低於腰部）
             </div>
           </Html>
           <Html position={[0, 0.3, 0]} center>
@@ -660,7 +660,7 @@ const TechniqueViewer3D = () => {
             '🦶 至少一隻腳在底線後方',
             '⚖️ 重心均勻分配於雙腳',
             '👀 視線注視對角發球區',
-            '🏓 球拍自然握持，手腕放鬆',
+            '✋ 球拍自然握持，手腕放鬆',
           ],
           source: 'USA Pickleball Official Rulebook 2024, Section 4.A.4',
         },
@@ -679,7 +679,7 @@ const TechniqueViewer3D = () => {
           name: '擊球瞬間',
           description: '由下往上擊球，擊球點必須低於腰部高度',
           keyPoints: [
-            '🏓 擊球點必須低於腰部',
+            '🎯 擊球點必須低於腰部',
             '📐 球拍面由下往上揮動',
             '⬆️ 擊球時手臂向上延伸',
             '🎯 球必須越過廚房線落在對角區',
@@ -711,7 +711,7 @@ const TechniqueViewer3D = () => {
           keyPoints: [
             '📍 必須站在廚房區外',
             '⚖️ 重心略微下降，雙腳與肩同寬',
-            '🏓 球拍舉至胸前高度',
+            '💪 球拍舉至胸前高度',
             '👀 注視對方與來球',
           ],
           source: 'USA Pickleball Official Rulebook 2024, Section 9',
@@ -943,7 +943,7 @@ const TechniqueViewer3D = () => {
                 <h4 className="font-bold text-gray-800 mb-3 text-lg">下手發球規則（Underhand Serve）</h4>
                 <div className="space-y-2 text-sm text-gray-700">
                   <p className="flex items-start">
-                    <span className="mr-2">🏓</span>
+                    <span className="mr-2">🎯</span>
                     <span><strong>擊球點位置：</strong>擊球時，球必須在腰部以下。腰部定義為肚臍的位置。</span>
                   </p>
                   <p className="flex items-start">

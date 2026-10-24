@@ -609,7 +609,7 @@ export const ARTICLES: Article[] = [
     author: 'Picklemaster Taiwan',
     summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro IV、Selkirk Labs Project 002、Paddletek Bantam TS-5 等頂級選手愛用款，附新手/中階/高階完整推薦。',
     tags: ['球拍', '評測', '2026', 'JOOLA', 'Selkirk', 'Paddletek'],
-    coverEmoji: '🏓',
+    coverEmoji: '📝',
     featured: true,
     tableOfContents: [
       '2026 球拍市場趨勢：熱壓成型當道',

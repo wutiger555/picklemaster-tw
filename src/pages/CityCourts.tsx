@@ -315,7 +315,7 @@ const CityCourts = () => {
           <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute bottom-0 left-1/3 w-32 h-32 bg-cyan-300/20 rounded-full blur-2xl pointer-events-none" />
           <div className="relative z-10">
-            <h2 className="text-2xl font-bold mb-2">第一次打匹克球？🏓</h2>
+            <h2 className="text-2xl font-bold mb-2">第一次打匹克球？🥒</h2>
             <p className="text-teal-50/90 mb-6 max-w-xl">從規則、裝備到參加球敘，我們幫你把入門功課做完了。挑一個離家近的場地，這週末就開打。</p>
             <div className="flex flex-wrap gap-3">
               <Link to="/newcomer-guide" className="px-5 py-2.5 bg-white text-teal-700 rounded-xl text-sm font-bold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all">

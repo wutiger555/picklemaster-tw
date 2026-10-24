@@ -50,7 +50,7 @@ function icsFor(g: GameDetail) {
   return [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//PickleMaster//Play//ZH', 'BEGIN:VEVENT',
     `UID:${g.id}@picklemastertw.com`, `DTSTAMP:${f(Date.now())}`, `DTSTART:${f(g.startsAt)}`, `DTEND:${f(g.startsAt + g.durationMin * 60000)}`,
-    `SUMMARY:${esc(`🏓 ${g.title}`)}`, `LOCATION:${esc(g.court.name ?? '')}`, `DESCRIPTION:${esc(`${url}\n取消截止：${dayLabel(g.cancelDeadline)} ${hm(g.cancelDeadline)}`)}`, `URL:${url}`,
+    `SUMMARY:${esc(`🥒 ${g.title}`)}`, `LOCATION:${esc(g.court.name ?? '')}`, `DESCRIPTION:${esc(`${url}\n取消截止：${dayLabel(g.cancelDeadline)} ${hm(g.cancelDeadline)}`)}`, `URL:${url}`,
     'BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', `DESCRIPTION:${esc(g.title)} 兩小時後開打`, 'END:VALARM',
     'END:VEVENT', 'END:VCALENDAR',
   ].join('\r\n');

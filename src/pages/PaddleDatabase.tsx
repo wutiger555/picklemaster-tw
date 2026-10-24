@@ -738,7 +738,7 @@ const PaddleDatabasePage = () => {
           ))}
           {filtered.length === 0 && (
             <div className="col-span-full text-center py-20">
-              <div className="text-4xl mb-3">🏓</div>
+              <div className="text-4xl mb-3">🔍</div>
               <div className="text-neutral-400">找不到符合條件的球拍，試著放寬篩選條件</div>
             </div>
           )}

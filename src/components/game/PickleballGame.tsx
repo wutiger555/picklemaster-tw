@@ -13,7 +13,7 @@ import { ComicTitle, TitleSplash } from './ComicTitle';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
 import { PaddleSelect } from './PaddleSelect';
 import { CharacterSelect } from './CharacterSelect';
-import { CHARACTERS, type CharacterDef, characterById, pickOpponent, pickOpponentExcept } from './characters';
+import { CHARACTERS, type CharacterDef, characterById, pickOpponent, pickOpponentExcept, traitsOf } from './characters';
 import { TouchControls } from './TouchControls';
 import { useGameInput } from './useGameInput';
 import { GameAudio } from './audio';
@@ -881,6 +881,7 @@ const PickleballGame = () => {
     const opp2 = partner ? pickOpponentExcept([mine.id, partner.id, opp.id]) : null;
     const cast = partner && opp2 ? [mine, opp, partner, opp2] : [mine, opp];
     e.setSkills(cast.map((c) => c.skill));
+    e.setTraits(cast.map(traitsOf));
     setLevelId(level);
     setOutcome(null);
     setPops([]);

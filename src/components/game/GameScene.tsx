@@ -10,6 +10,7 @@ import { Stadium } from './scene/Stadium';
 import { RiversideParkVenue } from './scene/RiversideParkVenue';
 import { RoseGardenVenue } from './scene/RoseGardenVenue';
 import { XinyiRooftopVenue } from './scene/XinyiRooftopVenue';
+import { VENUE_SHOTS, introDuration } from './scene/venueIntro';
 import { BeachVenue } from './scene/BeachVenue';
 import { LevelProps } from './scene/LevelProps';
 import type { Venue } from './GameScreens';
@@ -54,6 +55,8 @@ interface SceneProps {
   venue: Venue;
   /** 精彩球錄影（不支援錄影的瀏覽器是 null） */
   clip: ClipRecorder | null;
+  /** 開賽前場地介紹的開始時間（performance.now()；0 = 沒有或已略過） */
+  intro?: MutableRefObject<number>;
 }
 
 type Num = MutableRefObject<number>;
@@ -68,6 +71,8 @@ const Rig = ({
   excite,
   flash,
   aberration,
+  venue,
+  intro,
 }: SceneProps & { bus: FxBus; excite: Num; flash: Num; aberration: Num }) => {
   const { camera, size } = useThree();
   const shake = useRef(0);
@@ -85,7 +90,11 @@ const Rig = ({
   const replayCut = useRef(0);
 
   useFrame((_, delta) => {
-    if (!paused) engine.update(delta, readInput());
+    // 場地介紹：照腳本走鏡頭，比賽先不開始
+    const shots = venue !== 'beach' ? VENUE_SHOTS[venue] : null;
+    const introT = intro?.current && shots ? (performance.now() - intro.current) / 1000 : -1;
+    const introOn = !!shots && introT >= 0 && introT < introDuration(venue);
+    if (!paused && !introOn) engine.update(delta, readInput());
     const events = engine.drainEvents();
     if (events.length) {
       for (const e of events) {
@@ -155,7 +164,19 @@ const Rig = ({
     let fov = portrait ? 63 : 46;
     const rv = engine.reviewView();
     const rp = engine.replay;
-    if (rp) {
+    if (introOn && shots) {
+      let t = introT;
+      let i = 0;
+      while (i < shots.length - 1 && t > shots[i].dur) t -= shots[i++].dur;
+      const sh = shots[i];
+      const u = Math.min(1, t / sh.dur);
+      const e = u * u * (3 - 2 * u);
+      base.current.set(...sh.p0).lerp(v.a.set(...sh.p1), e);
+      look.current.set(...sh.l0).lerp(v.b.set(...sh.l1), e);
+      cam.position.copy(base.current);
+      cam.lookAt(look.current);
+      fov = portrait ? 60 : 45;
+    } else if (rp) {
       // 精彩重播：換一個轉播角度，換鏡頭時直接切
       const cut = replayCut.current !== engine.replayCuts;
       replayCut.current = engine.replayCuts;

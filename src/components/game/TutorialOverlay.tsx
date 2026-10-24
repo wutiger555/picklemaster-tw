@@ -111,8 +111,9 @@ export const TutorialDone = ({ onPlay, onMenu }: { onPlay: () => void; onMenu: (
 );
 
 /** 比賽中的教練提示：第一次遇到某種狀況時跳一句 */
-export const CoachTip = ({ tip }: { tip: { id: number; text: string } | null }) => (
-  <div className="pointer-events-none absolute inset-x-0 top-[30%] z-20 flex justify-center px-4">
+export const CoachTip = ({ tip, touch = false }: { tip: { id: number; text: string } | null; touch?: boolean }) => (
+  // 手機：貼在記分板下方，不壓在球場中間
+  <div className={`pointer-events-none absolute inset-x-0 z-20 flex justify-center px-4 ${touch ? 'top-[8.75rem] landscape:top-[7.25rem]' : 'top-[30%]'}`}>
     <AnimatePresence>
       {tip && (
         <motion.div

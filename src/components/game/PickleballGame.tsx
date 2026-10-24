@@ -184,6 +184,7 @@ const PickleballGame = () => {
   const progressRef = useRef<LessonProgress>(freshProgress());
   // 比賽中的教練提示：每種只在第一次遇到時跳一次
   const [tip, setTip] = useState<{ id: number; text: string } | null>(null);
+  const pendingTip = useRef<{ id: number; text: string } | null>(null);
   const tipsSeen = useRef<string[]>(load<{ seen: string[] }>(TIPS_KEY, { seen: [] }).seen);
 
   const playing = screen === 'play';
@@ -321,6 +322,14 @@ const PickleballGame = () => {
     tipsSeen.current = [...tipsSeen.current, key];
     save(TIPS_KEY, { seen: tipsSeen.current });
     const t = { id: ++ids.current, text: touch ? touchText : keyText };
+    // 手機畫面小：來回中不跳出來擋球，等這一分打完再說
+    if (touch && engine.phase === 'rally') {
+      pendingTip.current = t;
+      return;
+    }
+    showTip(t);
+  };
+  const showTip = (t: { id: number; text: string }) => {
     setTip(t);
     later(() => setTip((x) => (x?.id === t.id ? null : x)), 5000);
   };
@@ -557,6 +566,8 @@ const PickleballGame = () => {
               setToasts([t]);
               later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900);
             } else {
+              // 手機上不顯示對手每一拍的球速，畫面留給球
+              if (touch) break;
               const t: Toast = { id: ++ids.current, text: `對手 ${e.label}`, sub: kmh, tone: 'plain' };
               setAiToast(t);
               later(() => setAiToast((x) => (x?.id === t.id ? null : x)), 1100);
@@ -963,6 +974,14 @@ const PickleballGame = () => {
     latest.current = { coach, clearLesson };
   });
 
+  // 來回中暫存的教練提示：這一分打完、還沒開始下一分時才跳
+  useEffect(() => {
+    if (hud.phase === 'rally' || hud.replay || !pendingTip.current) return;
+    const t = pendingTip.current;
+    pendingTip.current = null;
+    showTip(t);
+  });
+
   const toMenu = () => {
     lessonRef.current = null;
     setLesson(null);
@@ -1091,8 +1110,8 @@ const PickleballGame = () => {
             }
             practice={lesson !== null}
           />
-          <CoachTip tip={lesson === null ? tip : null} />
-          {touch && !paused && (
+          <CoachTip tip={lesson === null && !card ? tip : null} touch={touch} />
+          {touch && !paused && !hud.replay && (
             <TouchControls
               touch={touchRef}
               highlight={current?.highlight ?? null}
@@ -1158,7 +1177,7 @@ const PickleballGame = () => {
             touch ? 'top-[max(0.75rem,env(safe-area-inset-top))] max-md:portrait:top-[10.25rem]' : 'top-[7.75rem]'
           }`}
         >
-          <SaveClipButton clip={clip} onSave={saveClip} />
+          <SaveClipButton clip={touch && hud.phase === 'rally' && screen === 'play' ? null : clip} onSave={saveClip} compact={touch} />
         </div>
       )}
       {playing && current && !paused && (

@@ -1,3 +1,4 @@
+import { track } from '../../utils/analytics';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -207,6 +208,7 @@ export const ShareActions = ({ result }: { result: MatchResult }) => {
   };
 
   const share = () => {
+    track('share', { content: 'result_card', method: file && navigator.canShare?.({ files: [file] }) ? 'share_sheet' : 'download' });
     if (file && navigator.canShare?.({ files: [file] })) {
       // 有些 app 收到圖片會丟掉文字，先複製一份讓使用者可以直接貼上
       void copyText(text);
@@ -222,6 +224,7 @@ export const ShareActions = ({ result }: { result: MatchResult }) => {
   };
 
   const shareLink = () => {
+    track('share', { content: 'challenge_link', method: 'share' in navigator ? 'share_sheet' : 'copy' });
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
       return;

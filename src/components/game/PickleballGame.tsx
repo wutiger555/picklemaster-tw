@@ -17,6 +17,7 @@ import { CHARACTERS, type CharacterDef, characterById, pickOpponent } from './ch
 import { TouchControls } from './TouchControls';
 import { useGameInput } from './useGameInput';
 import { GameAudio } from './audio';
+import { track } from '../../utils/analytics';
 import { ChallengeIntro } from './ShareCard';
 import { type Challenge, type MatchResult, decodeChallenge, emptyHighlights, trackHit } from './share';
 import { type LevelId, createLevel } from './engine/levels';
@@ -330,6 +331,14 @@ const PickleballGame = () => {
   const finish = useCallback(
     (eng: GameEngine) => {
       const lv = eng.level;
+      track('game_end', {
+        mode: lv ? `tour_${lv.id}` : eng.mode,
+        difficulty: settings.difficulty,
+        won: lv ? lv.cleared : eng.mode === 'dink' ? eng.dinkStreak > 0 : eng.match.winner === 0,
+        my_score: eng.match.score[0],
+        opp_score: eng.match.score[1],
+        longest_rally: eng.longestRally,
+      });
       if (lv) {
         // 踢館之旅：記星數與最佳成績（颱風關記打倒時剩幾秒）
         const id = lv.id;
@@ -802,7 +811,10 @@ const PickleballGame = () => {
         if (screen === 'play') setPaused(true);
         const text = `${c.label}！來 #匹克硬邦幫 打一場 ${window.location.origin}/game/`;
         navigator.share({ files: [file], text }).then(
-          () => mark('shared'),
+          () => {
+            mark('shared');
+            track('share', { content: 'clip', method: 'share_sheet' });
+          },
           (err: unknown) => {
             if ((err as DOMException)?.name === 'AbortError') return;
             downloadFile(file);
@@ -825,6 +837,15 @@ const PickleballGame = () => {
 
   /** 開打：一般比賽，或踢館之旅的某一關（關卡用自己的規則、對手和海邊場地） */
   const start = (s: Settings = settings, level: LevelId | null = null) => {
+    track('game_start', {
+      mode: level ? `tour_${level}` : s.mode,
+      difficulty: s.difficulty,
+      character: s.character,
+      paddle: s.paddle,
+      venue: s.venue ?? 'arena',
+      specials: s.specials,
+      touch,
+    });
     audio.unlock();
     audio.ambience(true);
     audio.say('start', { priority: true, cooldown: 0, delay: 0.8 });
@@ -885,6 +906,7 @@ const PickleballGame = () => {
       setLesson(null);
       setLessonsDone(true);
       markTutorialDone();
+      track('tutorial_complete');
       setDoneBefore(true);
       audio.win(true);
       return;
@@ -920,6 +942,7 @@ const PickleballGame = () => {
   };
 
   const startTutorial = () => {
+    track('tutorial_start', { touch });
     audio.unlock();
     audio.ambience(true);
     enterImmersive(true);

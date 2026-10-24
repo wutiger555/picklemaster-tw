@@ -54,6 +54,8 @@ interface SceneProps {
   venue: Venue;
   /** 精彩球錄影（不支援錄影的瀏覽器是 null） */
   clip: ClipRecorder | null;
+  /** 主選單背景：鏡頭慢慢繞場，展示示範對打與場地 */
+  showcase?: boolean;
 }
 
 type Num = MutableRefObject<number>;
@@ -68,6 +70,7 @@ const Rig = ({
   excite,
   flash,
   aberration,
+  showcase = false,
 }: SceneProps & { bus: FxBus; excite: Num; flash: Num; aberration: Num }) => {
   const { camera, size } = useThree();
   const shake = useRef(0);
@@ -155,7 +158,21 @@ const Rig = ({
     let fov = portrait ? 63 : 46;
     const rv = engine.reviewView();
     const rp = engine.replay;
-    if (rp) {
+    if (showcase) {
+      // 主選單：低角度繞場（看得到天空和場地地標）；直拿時球場擺在畫面上半、橫拿時擺在右半，讓出選單的位置
+      clock.current += delta;
+      const a = 0.6 + clock.current * 0.06;
+      // 橢圓軌道：左右貼著場邊（體育館的看台很近，不能繞進觀眾席），前後拉遠
+      v.a.set(Math.sin(a) * 5.4, portrait ? 6 : 3.4, Math.cos(a) * (portrait ? 13 : 12));
+      const side = portrait ? 0 : -3.2;
+      v.b.set(Math.cos(a) * side, portrait ? -0.9 : 0.8, -Math.sin(a) * side);
+      const kk = 1 - Math.exp(-delta * 2);
+      base.current.lerp(v.a, kk);
+      look.current.lerp(v.b, kk);
+      cam.position.copy(base.current);
+      cam.lookAt(look.current);
+      fov = portrait ? 60 : 44;
+    } else if (rp) {
       // 精彩重播：換一個轉播角度，換鏡頭時直接切
       const cut = replayCut.current !== engine.replayCuts;
       replayCut.current = engine.replayCuts;

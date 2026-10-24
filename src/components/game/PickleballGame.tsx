@@ -9,8 +9,9 @@ import { SKILLS } from './engine/skills';
 import type { CutInInfo } from './CutIn';
 import { GameScene } from './GameScene';
 import { GameHud, type PointCard, type Toast } from './GameHud';
-import { ComicTitle, TitleSplash } from './ComicTitle';
+import { ComicTitle, GAME_NAME, TitleSplash } from './ComicTitle';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
+import { MatchSetup } from './MatchSetup';
 import { PaddleSelect } from './PaddleSelect';
 import { CharacterSelect } from './CharacterSelect';
 import { CHARACTERS, type CharacterDef, characterById, pickOpponent, pickOpponentExcept, traitsOf } from './characters';
@@ -21,7 +22,7 @@ import { track } from '../../utils/analytics';
 import { ChallengeIntro } from './ShareCard';
 import { type Challenge, type MatchResult, decodeChallenge, emptyHighlights, trackHit } from './share';
 import { type LevelId, createLevel } from './engine/levels';
-import { TOUR_KEY, type TourProgress, emptyTour, levelById } from './tour';
+import { type StoryPanel, TOUR_KEY, type TourProgress, emptyTour, levelById } from './tour';
 import { type LevelOutcome, LevelResult, StoryComic, TourMap } from './TourScreens';
 import type { LevelPop } from './LevelHud';
 import { ClipRecorder, clipMime } from './clip';
@@ -33,6 +34,19 @@ const TIPS_KEY = 'pm-game-tips';
 
 const RECORDS_KEY = 'pm-game-records';
 const SETTINGS_KEY = 'pm-game-settings';
+const WELCOME_KEY = 'pm-game-welcome';
+
+/** 第一次進遊戲的世界觀漫畫（熱血版／正規版各一套） */
+const WELCOME_STORY: StoryPanel[] = [
+  { who: null, scene: 'court', text: '台灣的匹克球場上，流傳著一群人的傳說——「匹克硬邦幫」。', sfx: '碰！' },
+  { who: 'p1', scene: 'ko', text: '我們打的是真的匹克球。只是每支拍子裡，都藏著一記必殺技。' },
+  { who: null, scene: 'court', text: '想加入？先花 1 分鐘，學會擊球、殺球和撲救！', sfx: '啪！' },
+];
+const WELCOME_STORY_PURE: StoryPanel[] = [
+  { who: null, scene: 'court', text: '台灣的匹克球場上，每天都有人在找對手。', sfx: '啪！' },
+  { who: 'p1', scene: 'court', text: '雙彈跳、廚房、換發球，規則一條都不能少。這是真的比賽。' },
+  { who: null, scene: 'court', text: '想上場？先花 1 分鐘，學會擊球、殺球和撲救！', sfx: '碰！' },
+];
 
 const emptyRecords = (): Records => ({
   wins: { rookie: 0, club: 0, pro: 0 },
@@ -101,7 +115,7 @@ const detectLowSpec = () => {
   }
 };
 
-type Screen = 'menu' | 'character' | 'partner' | 'paddle' | 'play' | 'over' | 'tour' | 'story';
+type Screen = 'menu' | 'setup' | 'character' | 'partner' | 'paddle' | 'play' | 'over' | 'tour' | 'story';
 
 /** 下載影片（不支援分享檔案的瀏覽器，例如桌機 Firefox） */
 const downloadFile = (file: File) => {
@@ -154,6 +168,10 @@ const PickleballGame = () => {
   const [dpr, setDpr] = useState(maxDpr);
   // 沉浸模式：開打後舞台蓋滿整個視窗（能全螢幕就全螢幕；iPhone 不支援元素全螢幕，就靠鋪滿視窗）
   const [immersive, setImmersive] = useState(false);
+  /** 頁面上的標題畫面按過「開始遊戲」了（桌機不全螢幕，直接在區塊裡進選單） */
+  const [started, setStarted] = useState(false);
+  /** 第一次進遊戲：3 格漫畫介紹世界觀，再帶去新手教學（只出現一次） */
+  const [welcome, setWelcome] = useState(false);
   const [rotateHint, setRotateHint] = useState(false);
   const audio = useMemo(() => new GameAudio(), []);
   const stage = useRef<HTMLDivElement>(null);
@@ -188,6 +206,11 @@ const PickleballGame = () => {
   const tipsSeen = useRef<string[]>(load<{ seen: string[] }>(TIPS_KEY, { seen: [] }).seen);
 
   const playing = screen === 'play';
+  // 對戰準備時，背景的示範對打換成你選的選手（場地本來就跟著設定走）
+  useEffect(() => {
+    if (screen !== 'setup') return;
+    setCharacters((cs) => (cs[0]?.id === settings.character ? cs : [characterById(settings.character), ...cs.slice(1)]));
+  }, [screen, settings.character]);
   const togglePause = useCallback(() => setPaused((p) => (screen === 'play' ? !p : p)), [screen]);
   const { read, touch: touchRef } = useGameInput(playing && !paused, togglePause);
 
@@ -309,6 +332,7 @@ const PickleballGame = () => {
 
   const exitImmersive = () => {
     setImmersive(false);
+    setStarted(false);
     setRotateHint(false);
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
   };
@@ -1030,7 +1054,8 @@ const PickleballGame = () => {
 
   // 手機在頁面裡只放封面＋大按鈕，點了才全螢幕進選單：小框框裡捲選單、按小按鈕太難用
   // 從挑戰連結進來時改由挑戰卡當封面（接受挑戰就直接全螢幕開打）
-  const cover = touch && !immersive && screen !== 'play' && screen !== 'over' && !(intro && challenge);
+  // 標題畫面：背景是 3D 示範對打（鏡頭繞場），一顆「開始遊戲」就進選單（手機順便全螢幕）
+  const cover = !started && !immersive && screen !== 'play' && screen !== 'over' && !(intro && challenge);
   const best = records.dinkBest[settings.difficulty];
   const levelDef = levelId ? levelById(levelId) : null;
   const nextLevel = (() => {
@@ -1087,6 +1112,7 @@ const PickleballGame = () => {
           onEvents={onEvents}
           lowSpec={lowSpec}
           venue={engine.level ? 'beach' : (settings.venue ?? 'arena')}
+          showcase={screen === 'menu' || screen === 'setup'}
           clip={recorder}
         />
       </Canvas>
@@ -1212,22 +1238,33 @@ const PickleballGame = () => {
       )}
 
       {cover && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-end bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent p-6 pb-8 text-center">
-          <ComicTitle className="text-5xl" />
-          <p className="mt-3 text-sm text-white/75">左手搖桿跑位、右手按鍵擊球，集滿能量放必殺</p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 z-30 flex flex-col items-center justify-end bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-transparent p-6 pb-8 text-center"
+        >
+          <ComicTitle className="text-5xl md:text-7xl" />
+          <p className="mt-3 text-sm font-semibold text-white/85 drop-shadow md:text-base">
+            {touch ? '左手搖桿跑位、右手按鍵擊球' : 'WASD 跑位、J／K／L 擊球'}，真實物理的 3D 匹克球
+          </p>
           <motion.button
             type="button"
+            whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.96 }}
+            animate={{ boxShadow: ['0 0 0 0 rgba(52,211,153,0.55)', '0 0 0 14px rgba(52,211,153,0)'] }}
+            transition={{ boxShadow: { duration: 1.6, repeat: Infinity } }}
             onClick={() => {
               audio.unlock();
-              enterImmersive();
+              setStarted(true);
+              if (touch) enterImmersive();
+              if (!doneBefore && !load<{ seen: boolean }>(WELCOME_KEY, { seen: false }).seen) setWelcome(true);
             }}
-            className="mt-5 w-full max-w-xs rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-4 text-xl font-black text-emerald-950 shadow-xl shadow-emerald-500/30"
+            className="mt-5 w-full max-w-xs rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-4 text-xl font-black text-emerald-950"
           >
-            ▶ 全螢幕開打
+            ▶ 開始遊戲
           </motion.button>
-          <p className="mt-2.5 text-xs text-white/50">開打後橫拿手機，畫面更大更好打</p>
-        </div>
+          <p className="mt-2.5 text-xs text-white/55">{touch ? '會進入全螢幕，橫拿手機畫面更大' : '免下載、免註冊，按下去就開打'}</p>
+        </motion.div>
       )}
 
       <AnimatePresence>{splash && <TitleSplash key="splash" onDone={endSplash} />}</AnimatePresence>
@@ -1259,10 +1296,44 @@ const PickleballGame = () => {
             onChange={setSettings}
             onNext={() => {
               audio.unlock();
-              setScreen('character');
+              setScreen('setup');
+            }}
+            onQuick={() => {
+              const s: Settings = { ...settings, mode: 'match' };
+              setSettings(s);
+              start(s);
             }}
             onTutorial={startTutorial}
             tutorialDone={doneBefore}
+          />
+        )}
+        {welcome && (
+          <StoryComic
+            key="welcome"
+            def={{ name: GAME_NAME, story: settings.specials ? WELCOME_STORY : WELCOME_STORY_PURE }}
+            cta="1 分鐘學會基本功 ▶"
+            onDone={() => {
+              save(WELCOME_KEY, { seen: true });
+              setWelcome(false);
+              startTutorial();
+            }}
+            onSkip={() => {
+              save(WELCOME_KEY, { seen: true });
+              setWelcome(false);
+            }}
+          />
+        )}
+        {screen === 'setup' && !cover && (
+          <MatchSetup
+            key="setup"
+            settings={settings}
+            onChange={setSettings}
+            onBack={() => setScreen('menu')}
+            onStart={(s) => {
+              setSettings(s);
+              start(s);
+            }}
+            onDetail={(k) => setScreen(k)}
           />
         )}
         {screen === 'character' && !cover && (
@@ -1270,8 +1341,8 @@ const PickleballGame = () => {
             key="character"
             value={settings.character}
             onChange={(id) => setSettings({ ...settings, character: id })}
-            onBack={() => setScreen('menu')}
-            onNext={() => setScreen(settings.doubles && settings.mode === 'match' ? 'partner' : 'paddle')}
+            onBack={() => setScreen('setup')}
+            onNext={() => setScreen('setup')}
           />
         )}
         {screen === 'partner' && !cover && (
@@ -1281,11 +1352,11 @@ const PickleballGame = () => {
             exclude={settings.character}
             value={settings.partner ?? ''}
             onChange={(id) => setSettings({ ...settings, partner: id })}
-            onBack={() => setScreen('character')}
+            onBack={() => setScreen('setup')}
             onNext={() => {
               // 沒點過任何人就用畫面上預設的那位
               if (!settings.partner || settings.partner === settings.character) setSettings({ ...settings, partner: CHARACTERS.find((c) => c.id !== settings.character)!.id });
-              setScreen('paddle');
+              setScreen('setup');
             }}
           />
         )}
@@ -1295,7 +1366,7 @@ const PickleballGame = () => {
             value={settings.paddle}
             specials={settings.specials}
             onChange={(id) => setSettings({ ...settings, paddle: id })}
-            onBack={() => setScreen(settings.doubles && settings.mode === 'match' ? 'partner' : 'character')}
+            onBack={() => setScreen('setup')}
             onStart={() => start()}
           />
         )}

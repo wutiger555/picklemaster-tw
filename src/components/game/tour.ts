@@ -11,7 +11,7 @@ export interface StoryPanel {
   who: string | null;
   text: string;
   /** 漫畫格的背景場景 */
-  scene: 'storm' | 'stall' | 'beach' | 'ko';
+  scene: 'storm' | 'stall' | 'beach' | 'ko' | 'court';
   /** 擬聲字 */
   sfx?: string;
 }

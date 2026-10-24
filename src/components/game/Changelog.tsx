@@ -1,98 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-
-/** 版本說明：新版本加在最前面 */
-const VERSIONS: { v: string; date: string; items: string[] }[] = [
-  {
-    v: '1.8',
-    date: '2026-10-25',
-    items: [
-      '每位角色都有自己的素質：速度、力量、控球、觸及，分成力量型、速度型、控球型等類型',
-      '選角畫面改成大亂鬥風格：方格角色表、1P 游標、素質條與打法說明',
-    ],
-  },
-  {
-    v: '1.7',
-    date: '2026-10-25',
-    items: [
-      '新模式「雙打比賽」：自己挑隊友，2 打 2 對戰電腦',
-      '照真實雙打規則：0-0-2 開局、1 號／2 號發球員、得分換區、對角接發球',
-      '電腦隊友會分工：各守半邊、中路球由正手那位接、不跟你搶球',
-    ],
-  },
-  {
-    v: '1.6',
-    date: '2026-10-25',
-    items: [
-      '新場地「信義運動中心頂樓」：防護網鋼管籠裡的屋頂球場，遠方是台北 101',
-      '新場地「新北大都會公園河濱」：全台最大的河濱匹克球中心，8 面雙色藍專用場',
-    ],
-  },
-  {
-    v: '1.5',
-    date: '2026-10-24',
-    items: [
-      '主選單改版：一頁大按鈕直接開打，細項設定收進「比賽設定」面板',
-      '熱血版／正規版分開：正規版沒有必殺、絕招、踢館之旅，純競技',
-      '球拍換成真實名拍：JOOLA、Selkirk、Franklin、Six Zero、Paddletek、Engage，尺寸重量照官方規格',
-    ],
-  },
-  {
-    v: '1.4',
-    date: '2026-10-24',
-    items: [
-      '失分重播「看清落點」：落地瞬間定格、鏡頭拉近落點，標出出界幾公分與下一球怎麼改',
-      '手機版畫面減法：提示改在分與分之間出現，打球時不再擋球場',
-      '音效變安靜：拿掉喊聲與觀眾聲，留清脆擊球聲＋小聲背景音樂',
-    ],
-  },
-  {
-    v: '1.3',
-    date: '2026-10-24',
-    items: [
-      '冒險模式「全台踢館之旅」第一站：海邊・颱風天',
-      '精彩球自動慢動作重播，可存成影片分享到 Threads',
-      '新手教學：1 分鐘學會擊球、殺球、撲救、必殺、絕招',
-      '新球拍「疾風」「鎮岳」與專屬必殺',
-      '角色絕招改成持續效果：關燈、嗆聲、淹水、分身、全民應援',
-      '更多真實匹克球細節：分腿墊步、Erne、第三拍放小球、Reset、發球擦網照打',
-    ],
-  },
-  {
-    v: '1.2',
-    date: '2026-10-23',
-    items: [
-      '飛身撲接：跑不到的球撲過去救',
-      '連擊數、無雙覺醒、得分慶祝',
-      '戰績分享卡與挑戰連結',
-      '沉浸式全螢幕、手機版重新排版',
-    ],
-  },
-  {
-    v: '1.1',
-    date: '2026-10-23',
-    items: ['真人選手模型與自動揮拍', '新場地：新生公園白天戶外場', '電視輔助判決：壓線球可以申請挑戰', '正式命名「匹克硬邦幫」'],
-  },
-  {
-    v: '1.0',
-    date: '2026-10-22',
-    items: ['全新 3D 真實物理匹克球，夜間體育館', '熱血必殺技、擊球導引與打擊回饋', '照片選手與選角畫面'],
-  },
-];
-
-const SEEN_KEY = 'pm-game-changelog-seen';
-const readSeen = () => {
-  try {
-    return localStorage.getItem(SEEN_KEY);
-  } catch {
-    return null;
-  }
-};
+import { readSeen, SEEN_KEY, VERSIONS } from './changelogData';
 
 /** 選單最下方：「v1.4 更新了什麼」，有沒看過的新版本時亮小紅點 */
-export const Changelog = () => {
+export const Changelog = ({ alwaysOpen = false }: { alwaysOpen?: boolean }) => {
   const latest = VERSIONS[0].v;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(alwaysOpen);
   const [seen, setSeen] = useState(readSeen);
   const toggle = () => {
     setOpen(!open);
@@ -105,13 +18,25 @@ export const Changelog = () => {
       }
     }
   };
+  // 直接攤開的版本（選單裡的「更新」面板）：打開就算看過
+  useEffect(() => {
+    if (!alwaysOpen) return;
+    setSeen(latest);
+    try {
+      localStorage.setItem(SEEN_KEY, latest);
+    } catch {
+      /* 存不了只影響紅點 */
+    }
+  }, [alwaysOpen, latest]);
   return (
-    <div className="mt-4 border-t border-white/10 pt-3">
+    <div className={alwaysOpen ? '' : 'mt-4 border-t border-white/10 pt-3'}>
+      {!alwaysOpen && (
       <button type="button" onClick={toggle} className="mx-auto flex items-center gap-1.5 text-xs font-semibold text-white/55 hover:text-white">
         {seen !== latest && <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />}
         v{latest} 更新了什麼
         <span className={`transition-transform ${open ? 'rotate-90' : ''}`}>›</span>
       </button>
+      )}
       <AnimatePresence initial={false}>
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">

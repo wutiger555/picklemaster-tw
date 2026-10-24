@@ -35,9 +35,9 @@ const CageFrame = () => {
       for (const s of [1, -1]) {
         posts.push({ p: [s * CX, CH / 2, z], s: [1, CH, 1] });
       }
-    // 橫跨頭頂的鋼管：中間稍微拱起
+    // 橫跨頭頂的鋼管：圓柱預設是直的，轉 90° 躺平，再往中間抬一點成拱形
     for (const z of zs) {
-      for (const s of [1, -1]) beams.push({ p: [(s * CX) / 2, CH + 0.35, z], r: [0, 0, s * 0.12], s: [1, CX * 1.01, 1] });
+      for (const s of [1, -1]) beams.push({ p: [(s * CX) / 2, CH + 0.35, z], r: [0, 0, s * (Math.PI / 2 - 0.12)], s: [1, CX * 1.01, 1] });
     }
     for (const s of [1, -1]) {
       rails.push({ p: [s * CX, CH, 0], r: [Math.PI / 2, 0, 0], s: [1, CZ * 2, 1] });

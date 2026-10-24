@@ -32,12 +32,16 @@ const outline = (spec: PaddleSpec) => {
   return { shape: s, faceLen };
 };
 
-/** 擠出幾何的正反面 UV 依外框邊界正規化，貼圖才會完整貼滿拍面 */
+/**
+ * 擠出幾何的正反面 UV 依外框邊界正規化，貼圖才會完整貼滿拍面。
+ * 背面（z < 0）左右翻過來，從背面看字才不會是反的。
+ */
 const normalizeUV = (geo: THREE.BufferGeometry, w: number, h: number) => {
   const pos = geo.attributes.position;
   const uv = geo.attributes.uv;
   for (let i = 0; i < uv.count; i++) {
-    uv.setXY(i, pos.getX(i) / w + 0.5, pos.getY(i) / h);
+    const u = pos.getX(i) / w;
+    uv.setXY(i, pos.getZ(i) < 0 ? 0.5 - u : u + 0.5, pos.getY(i) / h);
   }
   uv.needsUpdate = true;
 };

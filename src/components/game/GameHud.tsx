@@ -321,7 +321,8 @@ const ComboCounter = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
   const n = hud.rallyHits;
   const live = hud.phase === 'rally';
   const settle = hud.phase === 'dead' && !hud.review;
-  const show = hud.mode === 'match' && n >= 3 && (live || settle) && !hud.replay;
+  // 正規版不跳連擊數（記分板上的「第 N 拍」就夠了）
+  const show = hud.specials && hud.mode === 'match' && n >= 3 && (live || settle) && !hud.replay;
   const tone = comboTone(n);
   const milestone = live && n >= 10 && n % 10 === 0;
   const best = settle && n >= 5 && n >= hud.bestCombo;

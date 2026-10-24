@@ -68,6 +68,9 @@ export const LESSONS: Lesson[] = [
   },
 ];
 
+/** 正規版沒有必殺和絕招：只教前面幾招 */
+export const lessonsFor = (specials: boolean) => LESSONS.filter((l) => specials || !l.setup.specials);
+
 export interface LessonProgress {
   done: boolean;
   /** 玩家最近一拍（擊球關要等確定過網才算） */

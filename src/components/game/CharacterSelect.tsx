@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { GameEngine } from './engine/game';
 import { AthleteModel } from './scene/AthleteModel';
 import { headHeights, lookFromCharacter } from './scene/characterData';
-import { CHARACTERS, type CharacterDef } from './characters';
+import { ARCHETYPE_COLOR, CHARACTERS, type CharacterDef, type Stats } from './characters';
 import { SKILLS } from './engine/skills';
 
 /** 去背半身像的四角與底部淡出：藏掉轉正後的斜邊與去背邊緣的小瑕疵 */
@@ -84,97 +84,175 @@ interface Props {
   onNext: () => void;
 }
 
+const STAT_ROWS: { key: keyof Stats; label: string; color: string }[] = [
+  { key: 'speed', label: '速度', color: '#38bdf8' },
+  { key: 'power', label: '力量', color: '#f97316' },
+  { key: 'control', label: '控球', color: '#34d399' },
+  { key: 'reach', label: '觸及', color: '#c084fc' },
+];
+
+/** 素質條：五格，像格鬥遊戲的能力值 */
+const StatBars = ({ stats, compact = false }: { stats: Stats; compact?: boolean }) => (
+  <div className={`grid gap-x-3 ${compact ? 'grid-cols-2 gap-y-1' : 'grid-cols-1 gap-y-1.5'}`}>
+    {STAT_ROWS.map((r) => (
+      <div key={r.key} className="flex items-center gap-2">
+        <span className="w-7 shrink-0 text-[11px] font-bold text-white/70">{r.label}</span>
+        <div className="flex flex-1 gap-0.5">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <motion.span
+              key={n}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: n * 0.03 }}
+              className="h-2 flex-1 origin-left -skew-x-12 rounded-[1px]"
+              style={{ background: n <= stats[r.key] ? r.color : 'rgba(255,255,255,0.12)' }}
+            />
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+/** 一句話講這個角色的打法（由素質推出來） */
+const playstyle = (st: Stats) => {
+  const top = STAT_ROWS.reduce((a, b) => (st[b.key] > st[a.key] ? b : a));
+  const low = STAT_ROWS.reduce((a, b) => (st[b.key] < st[a.key] ? b : a));
+  if (st[top.key] === st[low.key]) return '樣樣都有，沒有明顯弱點';
+  const good: Record<keyof Stats, string> = { speed: '跑得快、救得到', power: '球速快、殺球狠', control: '失誤少、落點準', reach: '手長、網前攔得到' };
+  const bad: Record<keyof Stats, string> = { speed: '移動比較慢', power: '殺球沒那麼重', control: '容易打出界', reach: '要靠腳步補位' };
+  return `${good[top.key]}，但${bad[low.key]}`;
+};
+
+/** 下方的選手欄位（大亂鬥那種）：大名字、類型、素質條、絕招 */
+const PlayerSlot = ({ c, tag, tagColor, locked = false }: { c: CharacterDef; tag: string; tagColor: string; locked?: boolean }) => {
+  const color = ARCHETYPE_COLOR[c.archetype];
+  return (
+    <motion.div
+      key={c.id}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+      className="relative flex min-h-[10.5rem] overflow-hidden rounded-2xl border-2 bg-slate-950/80"
+      style={{ borderColor: `${color}aa`, background: `linear-gradient(115deg, ${c.shirt}55 0%, #070a12 55%)` }}
+    >
+      {/* 半身像：靠左、溢出底部，像格鬥遊戲的選手卡 */}
+      <div className="relative w-[38%] shrink-0">
+        <div className="absolute inset-x-0 -bottom-2 top-1">
+          <Portrait c={c} big />
+        </div>
+        <span className="absolute left-2 top-2 rounded-md px-1.5 py-0.5 text-[11px] font-black text-white shadow" style={{ background: tagColor }}>
+          {tag}
+        </span>
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5 py-3 pr-3">
+        <div className="flex items-center gap-1.5">
+          <span className="rounded px-1.5 py-0.5 text-[10px] font-black text-slate-950" style={{ background: color }}>
+            {c.archetype}
+          </span>
+          {locked && <span className="text-[10px] font-bold text-white/50">已選</span>}
+        </div>
+        <div className="truncate font-display text-3xl font-black italic leading-none text-white md:text-4xl" style={{ textShadow: `3px 3px 0 ${color}66` }}>
+          {c.name}
+        </div>
+        <div className="truncate text-[11px] font-semibold text-white/60">{playstyle(c.stats)}</div>
+        <StatBars stats={c.stats} />
+        {c.skill && (
+          <div className="truncate text-[11px] font-bold" style={{ color: SKILLS[c.skill].color }}>
+            絕招・{SKILLS[c.skill].name}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
 export const CharacterSelect = ({ value, partner = false, exclude, onChange, onBack, onNext }: Props) => {
   const sel = CHARACTERS.find((c) => c.id === value && c.id !== exclude) ?? CHARACTERS.find((c) => c.id !== exclude) ?? CHARACTERS[0];
+  const mine = exclude ? CHARACTERS.find((c) => c.id === exclude) : undefined;
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-30 overflow-y-auto overscroll-contain bg-gradient-to-br from-slate-950/95 via-slate-950/90 to-slate-900/95 p-4 md:p-6"
+      className="absolute inset-0 z-30 overflow-y-auto overscroll-contain bg-slate-950 p-3 md:p-6"
     >
-      <div className="mx-auto flex min-h-full max-w-4xl flex-col">
-        <div className="text-center">
-          <span className="text-[11px] font-bold tracking-[0.3em] text-emerald-300">{partner ? 'CHOOSE YOUR PARTNER' : 'CHOOSE YOUR PLAYER'}</span>
-          <h2 className="mt-1 font-display text-2xl font-black text-white md:text-4xl">{partner ? '選擇你的隊友' : '選擇你的選手'}</h2>
-          <p className="mt-1 text-xs text-white/60 md:text-sm">
-            {partner
-              ? '隊友由電腦操作，會守另一半場、跟你分工接球；對手兩位會從其他人裡隨機登場'
-              : '選好之後就是你在球場上的 3D 選手，每人一招專屬絕招；對手會從其他人裡隨機登場'}
-          </p>
+      {/* 背景：斜向光帶 */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-60"
+        style={{
+          background: `repeating-linear-gradient(115deg, transparent 0 46px, rgba(255,255,255,0.025) 46px 92px), radial-gradient(circle at 20% 110%, ${sel.shirt}55, transparent 55%), radial-gradient(circle at 90% -10%, #1e3a8a66, transparent 50%)`,
+        }}
+      />
+      <div className="relative mx-auto flex min-h-full max-w-4xl flex-col">
+        <div className="flex items-end justify-between">
+          <div>
+            <div className="text-[11px] font-black italic tracking-[0.3em] text-emerald-300">{partner ? 'CHOOSE YOUR PARTNER' : 'CHOOSE YOUR PLAYER'}</div>
+            <h2 className="font-display text-2xl font-black italic text-white md:text-4xl">{partner ? '選擇你的隊友' : '選擇你的選手'}</h2>
+          </div>
+          <div className="hidden text-right text-[11px] text-white/50 md:block">每位素質總和一樣，只是分配不同</div>
         </div>
 
-        <div className="mt-4 grid flex-1 gap-4 md:grid-cols-[0.9fr_1.1fr]">
-          {/* 選中的選手大圖 */}
-          <motion.div
-            key={sel.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative h-64 overflow-hidden rounded-3xl border border-white/10 md:h-auto md:min-h-[340px]"
-            style={{ background: `radial-gradient(circle at 50% 35%, ${sel.shirt}66, transparent 70%), #070a12` }}
-          >
-            <div className="absolute inset-x-0 bottom-0 top-6">
-              <Portrait c={sel} big />
-            </div>
-            <div className="absolute right-3 top-3 h-36 w-28 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/60 backdrop-blur md:h-44 md:w-32">
-              <Preview3D c={sel} />
-              <div className="pointer-events-none absolute inset-x-0 bottom-1 text-center text-[10px] text-white/50">3D 選手</div>
-            </div>
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent px-5 pb-4 pt-12">
-              <div className="flex items-baseline gap-3">
-                <span className="font-display text-4xl font-black text-white">{sel.name}</span>
-                {sel.number && <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-bold tabular-nums text-white/80">#{sel.number}</span>}
-              </div>
-              <div className="text-sm font-semibold text-emerald-300">{sel.title}</div>
-              {sel.skill && (
-                <div className="mt-2 max-w-sm rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 backdrop-blur">
-                  <div className="text-xs font-black" style={{ color: SKILLS[sel.skill].color }}>
-                    絕招・{SKILLS[sel.skill].name}
-                  </div>
-                  <div className="mt-0.5 text-[11px] leading-relaxed text-white/70">{SKILLS[sel.skill].desc}</div>
+        {/* 角色格子（大亂鬥風）：方格頭像、底部名字、依類型上色 */}
+        <div className="mt-3 grid grid-cols-4 gap-1.5 md:grid-cols-6 md:gap-2">
+          {CHARACTERS.map((c, i) => {
+            const on = c.id === sel.id;
+            const taken = c.id === exclude;
+            const color = ARCHETYPE_COLOR[c.archetype];
+            return (
+              <motion.button
+                key={c.id}
+                type="button"
+                disabled={taken}
+                onClick={() => onChange(c.id)}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: on ? 1.04 : 1 }}
+                transition={{ delay: i * 0.02, type: 'spring', stiffness: 500, damping: 30 }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative aspect-[4/5] overflow-hidden rounded-lg border-2 text-left disabled:cursor-not-allowed"
+                style={{
+                  borderColor: on ? '#ef4444' : taken ? '#64748b' : `${color}66`,
+                  background: `linear-gradient(160deg, ${c.shirt}66, #0b1020 70%)`,
+                  boxShadow: on ? '0 0 0 2px #fff inset, 0 0 18px rgba(239,68,68,0.6)' : undefined,
+                }}
+              >
+                <div className={`absolute inset-x-0 bottom-4 top-0 transition-transform duration-300 group-hover:scale-110 ${taken ? 'grayscale' : ''}`}>
+                  <Portrait c={c} />
                 </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* 選手卡 */}
-          <div className="grid grid-cols-3 gap-2 content-start">
-            {CHARACTERS.map((c) => {
-              const on = c.id === sel.id;
-              const taken = c.id === exclude;
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  disabled={taken}
-                  onClick={() => onChange(c.id)}
-                  className={`group relative overflow-hidden rounded-2xl border text-left transition-all disabled:cursor-not-allowed disabled:opacity-40 ${
-                    on ? 'border-emerald-300/80 bg-white/10' : 'border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10'
-                  }`}
-                  style={on ? { boxShadow: '0 0 22px rgba(52,211,153,0.45)' } : undefined}
-                >
-                  <div
-                    className="relative h-28 md:h-32"
-                    style={{ background: `radial-gradient(circle at 50% 40%, ${c.shirt}55, transparent 72%)` }}
+                <div className="absolute inset-x-0 bottom-0 flex h-5 items-center justify-center text-[11px] font-black text-white" style={{ background: `${color}cc` }}>
+                  <span className="truncate px-1 drop-shadow">{c.name}</span>
+                </div>
+                {/* 游標標記：1P（你）／CPU（隊友） */}
+                {on && (
+                  <motion.span
+                    layoutId="cursor"
+                    className="absolute right-1 top-1 rounded-full px-1.5 text-[10px] font-black text-white shadow"
+                    style={{ background: partner ? '#3b82f6' : '#ef4444' }}
                   >
-                    <div className="absolute inset-0 transition-transform duration-300 group-hover:scale-105">
-                      <Portrait c={c} />
-                    </div>
-                  </div>
-                  <div className="px-2.5 pb-2 pt-1">
-                    <div className="text-sm font-bold text-white">
-                      {c.name}
-                      {taken && <span className="ml-1 rounded bg-emerald-400/20 px-1 text-[10px] text-emerald-300">你</span>}
-                    </div>
-                    <div className="truncate text-[11px] text-white/55">{c.skill ? `絕招：${SKILLS[c.skill].name}` : c.title}</div>
-                  </div>
-                </button>
-              );
-            })}
+                    {partner ? 'CPU' : '1P'}
+                  </motion.span>
+                )}
+                {taken && <span className="absolute right-1 top-1 rounded-full bg-red-500 px-1.5 text-[10px] font-black text-white">1P</span>}
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* 選手欄位 */}
+        <div className={`mt-3 grid gap-2 ${mine ? 'md:grid-cols-2' : ''}`}>
+          {mine && <PlayerSlot c={mine} tag="1P 你" tagColor="#ef4444" locked />}
+          <div className="relative">
+            <PlayerSlot c={sel} tag={partner ? 'CPU 隊友' : '1P 你'} tagColor={partner ? '#3b82f6' : '#ef4444'} />
+            {!mine && (
+              <div className="absolute bottom-2 right-2 hidden h-28 w-24 overflow-hidden rounded-xl border border-white/15 bg-slate-950/60 md:block">
+                <Preview3D c={sel} />
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="sticky -bottom-4 z-10 -mx-4 mt-6 grid grid-cols-[auto_1fr] gap-2 border-t border-white/10 bg-slate-950/90 px-4 pb-4 pt-3 backdrop-blur-md before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-gradient-to-t before:from-slate-950/90 before:to-transparent">
+        <div className="sticky -bottom-3 z-10 -mx-3 mt-auto grid grid-cols-[auto_1fr] gap-2 border-t border-white/10 bg-slate-950/95 px-3 pb-3 pt-3 backdrop-blur-md md:-bottom-6 md:-mx-6 md:px-6">
           <button type="button" onClick={onBack} className="rounded-2xl bg-white/10 px-5 py-3.5 font-bold text-white hover:bg-white/15">
             ← 返回
           </button>
@@ -183,9 +261,9 @@ export const CharacterSelect = ({ value, partner = false, exclude, onChange, onB
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             onClick={onNext}
-            className="rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-3.5 text-lg font-black text-emerald-950 shadow-xl shadow-emerald-500/25"
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-500 via-orange-500 to-amber-400 py-3.5 text-lg font-black italic text-white shadow-xl shadow-red-500/30"
           >
-            {partner ? `和「${sel.name}」搭檔 → 挑選球拍` : `就決定是「${sel.name}」 → 挑選球拍`}
+            {partner ? `和「${sel.name}」搭檔 → 挑球拍` : `就決定是「${sel.name}」 → 挑球拍`}
           </motion.button>
         </div>
       </div>

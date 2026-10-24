@@ -124,9 +124,25 @@ export interface DiveState {
   landed: boolean;
 }
 
+/** 角色素質換算成的物理倍率（全部 1／0 = 標準選手） */
+export interface Traits {
+  /** 跑速與加速度倍率 */
+  speed: number;
+  /** 出球速度倍率 */
+  pace: number;
+  /** 擊球誤差倍率（越小越穩） */
+  error: number;
+  /** 觸及範圍加成（公尺） */
+  reach: number;
+}
+
+export const NEUTRAL_TRAITS: Traits = { speed: 1, pace: 1, error: 1, reach: 0 };
+
 export interface Athlete {
   id: number;
   team: Team;
+  /** 角色素質（選角後由畫面層設定） */
+  traits: Traits;
   pos: V3;
   vel: V3;
   swing: SwingState;
@@ -814,6 +830,7 @@ export class GameEngine {
     const athlete = (id: number, team: Team, z: number, paddle: PaddleSpec, ai: AIState | null): Athlete => ({
       id,
       team,
+      traits: NEUTRAL_TRAITS,
       pos: v3(0, 0, z),
       vel: v3(),
       swing: idleSwing(),
@@ -1134,7 +1151,7 @@ export class GameEngine {
       serveSide: this.rally.serveTargetSign,
       paddle: { pace: 1, spin: a.paddle.mods.spin },
     };
-    const skill = (a.ai ? a.ai.profile.skill * (feed ? 0.5 : 1) : 1) * a.paddle.mods.error;
+    const skill = (a.ai ? a.ai.profile.skill * (feed ? 0.5 : 1) : 1) * a.paddle.mods.error * a.traits.error;
     const err = sampleShotError(
       classifyShot(req),
       {
@@ -1426,6 +1443,13 @@ export class GameEngine {
     b.vel.z *= SKILL_FX.flood.bounceXZ;
   };
 
+  /** 設定各選手的角色素質（順序同 athletes） */
+  setTraits(list: Traits[]) {
+    this.athletes.forEach((a, i) => {
+      a.traits = list[i] ?? NEUTRAL_TRAITS;
+    });
+  }
+
   /** 設定雙方的角色絕招（選角之後由畫面層告訴引擎） */
   setSkills(skills: (SkillId | null)[]) {
     this.athletes.forEach((a, i) => {
@@ -1578,10 +1602,10 @@ export class GameEngine {
         : this.controls === 'auto' && h.swing.state === 'charging'
           ? AUTO_CHARGE_MOVE
           : 1) * this.slipFactor(h);
-    const maxV = PLAYER.maxSpeed * slow;
+    const maxV = PLAYER.maxSpeed * h.traits.speed * slow;
     const tx = wx * maxV;
     const tz = wz * maxV;
-    const rate = (m > 0.05 ? PLAYER.accel : PLAYER.decel) * this.grip(h);
+    const rate = (m > 0.05 ? PLAYER.accel * h.traits.speed : PLAYER.decel) * this.grip(h);
     const dvx = tx - h.vel.x;
     const dvz = tz - h.vel.z;
     const dv = Math.hypot(dvx, dvz);
@@ -1828,8 +1852,8 @@ export class GameEngine {
   private reachOf(a: Athlete) {
     const bonus = a.ai ? 0 : this.assist ? REACH_BONUS.assist : REACH_BONUS.manual;
     // 飛撲在空中：整個人撲平伸直，觸及遠得多
-    if (this.airborne(a)) return DIVE.reach + a.paddle.mods.reach + bonus * 0.5;
-    return PLAYER.reach + a.paddle.mods.reach + bonus + (this.effectBy('overclock', a.team) ? SKILL_FX.overclock.reach : 0);
+    if (this.airborne(a)) return DIVE.reach + a.paddle.mods.reach + a.traits.reach + bonus * 0.5;
+    return PLAYER.reach + a.paddle.mods.reach + a.traits.reach + bonus + (this.effectBy('overclock', a.team) ? SKILL_FX.overclock.reach : 0);
   }
 
   /** 撲接起跳到落地之間（只有這段時間能觸球） */
@@ -2070,7 +2094,7 @@ export class GameEngine {
       contact: clone(b.pos),
       incomingSpeed: incoming,
       opponent: this.opponentOf(a).pos,
-      paddle: { pace: a.paddle.mods.pace * (this.effectOn('sour', a.team) ? SKILL_FX.sour.pace : 1), spin: a.paddle.mods.spin },
+      paddle: { pace: a.paddle.mods.pace * a.traits.pace * (this.effectOn('sour', a.team) ? SKILL_FX.sour.pace : 1), spin: a.paddle.mods.spin },
       volley,
       slack: a.ai ? 0 : ATTACK_SLACK,
     };
@@ -2115,6 +2139,7 @@ export class GameEngine {
         skill:
           (a.ai ? a.ai.profile.skill : 1) *
           a.paddle.mods.error *
+          a.traits.error *
           spinControl *
           pressure *
           (1 + underAttack * 1.4) *
@@ -3028,20 +3053,20 @@ export class GameEngine {
     // 教學餵球：教練不回擊、往旁邊閃開，球落地就重新餵一顆，每球軌跡都一樣好練
     if (coming && this.practice && this.mode === 'dink') {
       ai.plan = null;
-      steer(a, this.ball.pos.x > 0 ? -2.6 : 2.6, a.pos.z, ai.profile.maxSpeed, dt);
+      steer(a, this.ball.pos.x > 0 ? -2.6 : 2.6, a.pos.z, ai.profile.maxSpeed * a.traits.speed, dt);
       return;
     }
     if (!coming) {
       ai.plan = null;
       const home = homePosition(this, a);
-      steer(a, home.x, home.z, ai.profile.maxSpeed * 0.85 * this.moveFactor(a), dt, this.grip(a));
+      steer(a, home.x, home.z, ai.profile.maxSpeed * a.traits.speed * 0.85 * this.moveFactor(a), dt, this.grip(a));
       return;
     }
     // 雙打：不是自己的球（接發球不是我、或這球在隊友那一側）就回自己的位置補位
     if (this.doubles && (!this.mayHit(a) || !this.takesBall(a))) {
       ai.plan = null;
       const home = homePosition(this, a);
-      steer(a, home.x, home.z, ai.profile.maxSpeed * this.moveFactor(a), dt, this.grip(a));
+      steer(a, home.x, home.z, ai.profile.maxSpeed * a.traits.speed * this.moveFactor(a), dt, this.grip(a));
       return;
     }
     if (this.time < a.knockedUntil) {
@@ -3087,7 +3112,7 @@ export class GameEngine {
         return;
       }
     }
-    steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed * this.slipFactor(a), dt, this.grip(a));
+    steer(a, p.stand.x, p.stand.z, ai.profile.maxSpeed * a.traits.speed * this.slipFactor(a), dt, this.grip(a));
     if (!p.leave && !p.swung && this.time >= p.contactT + p.timingError - PLAYER.swingWindup) {
       p.swung = true;
       this.startSwing(a, this.time + PLAYER.swingWindup, null, p);

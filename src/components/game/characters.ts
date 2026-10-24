@@ -172,6 +172,12 @@ export const CHARACTERS: CharacterDef[] = [
 export const characterById = (id: string) => CHARACTERS.find((c) => c.id === id) ?? CHARACTERS[0];
 
 /** 對手：從玩家以外的照片角色與 VRM 角色中隨機挑一位（都沒有就用預設） */
+/** 雙打第二位對手：排除已經上場的人 */
+export const pickOpponentExcept = (taken: string[], rand: () => number = Math.random) => {
+  const pool = CHARACTERS.filter((c) => !taken.includes(c.id) && (c.face || c.vrm));
+  return pool.length ? pool[Math.floor(rand() * pool.length)] : CHARACTERS.find((c) => !taken.includes(c.id)) ?? CHARACTERS[0];
+};
+
 export const pickOpponent = (mine: string, rand: () => number = Math.random) => {
   const pool = CHARACTERS.filter((c) => c.id !== mine && (c.face || c.vrm));
   return pool.length ? pool[Math.floor(rand() * pool.length)] : CHARACTERS[0];

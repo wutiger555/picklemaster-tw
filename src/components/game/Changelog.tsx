@@ -4,6 +4,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 /** 版本說明：新版本加在最前面 */
 const VERSIONS: { v: string; date: string; items: string[] }[] = [
   {
+    v: '1.7',
+    date: '2026-10-25',
+    items: [
+      '新模式「雙打比賽」：自己挑隊友，2 打 2 對戰電腦',
+      '照真實雙打規則：0-0-2 開局、1 號／2 號發球員、得分換區、對角接發球',
+      '電腦隊友會分工：各守半邊、中路球由正手那位接、不跟你搶球',
+    ],
+  },
+  {
     v: '1.6',
     date: '2026-10-25',
     items: [

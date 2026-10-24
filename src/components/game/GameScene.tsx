@@ -45,7 +45,7 @@ const K = COURT.kitchen;
 interface SceneProps {
   engine: GameEngine;
   /** [玩家, 對手] 的角色：臉與配色會套到 3D 選手上 */
-  characters: [CharacterDef, CharacterDef];
+  characters: CharacterDef[];
   readInput: () => InputState;
   paused: boolean;
   onEvents: (events: GameEvent[]) => void;
@@ -409,7 +409,7 @@ const PostFx = memo(({ aberration, lowSpec, day }: { aberration: Num; lowSpec: b
 });
 
 /** 精彩球錄影：後處理畫完這一幀之後（優先序 2），把畫面連同比分、連擊疊字合成到錄影用的畫布 */
-const ClipCapture = ({ clip, engine, characters }: { clip: ClipRecorder; engine: GameEngine; characters: [CharacterDef, CharacterDef] }) => {
+const ClipCapture = ({ clip, engine, characters }: { clip: ClipRecorder; engine: GameEngine; characters: CharacterDef[] }) => {
   const gl = useThree((s) => s.gl);
   const names = useMemo((): [string, string] => [characters[0].name, characters[1].name], [characters]);
   useFrame(() => clip.frame(gl.domElement, engine, names), 2);

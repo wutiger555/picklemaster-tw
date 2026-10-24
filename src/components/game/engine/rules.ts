@@ -77,8 +77,9 @@ export const awardRally = (m: MatchScore, rallyWinner: Team): { scored: boolean;
   return { scored: false, sideOut: true };
 };
 
-/** 單打報分：發球方分數 - 接發方分數 */
-export const scoreCall = (m: MatchScore) => `${m.score[m.serving]} - ${m.score[other(m.serving)]}`;
+/** 報分：發球方分數 - 接發方分數（雙打再加第幾位發球員，例如 5-3-1） */
+export const scoreCall = (m: MatchScore, doubles = false) =>
+  `${m.score[m.serving]} - ${m.score[other(m.serving)]}${doubles ? ` - ${m.serverNumber}` : ''}`;
 
 /** 單打發球位置：發球方分數為偶數從右區發、奇數從左區 */
 export const serveFromRight = (m: MatchScore) => m.score[m.serving] % 2 === 0;

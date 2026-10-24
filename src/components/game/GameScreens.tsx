@@ -33,6 +33,10 @@ export interface Settings {
   character: string;
   /** 比賽場地（舊存檔沒有這欄，當作夜間體育館） */
   venue?: Venue;
+  /** 雙打（你＋隊友 vs 兩個電腦） */
+  doubles?: boolean;
+  /** 雙打隊友的角色 id */
+  partner?: string;
 }
 
 const DIFFS: Difficulty[] = ['rookie', 'club', 'pro'];
@@ -238,8 +242,8 @@ interface MenuProps {
 export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onTutorial, tutorialDone }: MenuProps) => {
   // 標題畫面只放「選一個玩法就開打」；對手、場地、操作這些細項收進設定面板（像多數獨立遊戲的標題選單）
   const [sheet, setSheet] = useState(false);
-  const start = (mode: GameMode) => {
-    onChange({ ...settings, mode });
+  const start = (mode: GameMode, doubles = false) => {
+    onChange({ ...settings, mode, doubles });
     onNext();
   };
   const diff = AI_PROFILES[settings.difficulty];
@@ -285,23 +289,35 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
         {/* 橫拿手機（矮螢幕）排成左右兩欄，一頁放得下 */}
         <div className="[@media(max-height:500px)_and_(min-width:640px)]:mt-3 [@media(max-height:500px)_and_(min-width:640px)]:grid [@media(max-height:500px)_and_(min-width:640px)]:grid-cols-2 [@media(max-height:500px)_and_(min-width:640px)]:gap-3">
         <div>
-        {/* 主按鈕：直接開打 */}
-        <motion.button
-          type="button"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => start('match')}
-          className={`mt-3 flex w-full items-center gap-3 rounded-2xl [@media(max-height:500px)_and_(min-width:640px)]:mt-0 bg-gradient-to-r px-5 py-4 text-left shadow-xl ${settings.specials ? 'from-emerald-400 to-teal-500 text-emerald-950 shadow-emerald-500/25' : 'from-sky-300 to-sky-500 text-sky-950 shadow-sky-500/25'}`}
-        >
-          <span className="text-3xl">🏆</span>
-          <span className="flex-1">
-            <span className="block text-xl font-black">單打比賽</span>
-            <span className="block text-xs font-bold opacity-70">
-              對手 {diff.label} · 勝 {records.wins[settings.difficulty]} / {records.plays[settings.difficulty]}
-            </span>
-          </span>
-          <span className="text-2xl font-black">▶</span>
-        </motion.button>
+        {/* 主按鈕：單打、雙打直接開打 */}
+        <div className="mt-3 grid grid-cols-2 gap-2.5 [@media(max-height:500px)_and_(min-width:640px)]:mt-0">
+          {(
+            [
+              { doubles: false, icon: '🏆', title: '單打比賽', sub: `勝 ${records.wins[settings.difficulty]} / ${records.plays[settings.difficulty]}` },
+              { doubles: true, icon: '🤝', title: '雙打比賽', sub: '你＋隊友 2 打 2' },
+            ] as const
+          ).map((m) => (
+            <motion.button
+              key={m.title}
+              type="button"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => start('match', m.doubles)}
+              className={`flex flex-col items-start gap-1 rounded-2xl bg-gradient-to-br px-4 py-3.5 text-left shadow-xl ${
+                settings.specials ? 'from-emerald-400 to-teal-500 text-emerald-950 shadow-emerald-500/25' : 'from-sky-300 to-sky-500 text-sky-950 shadow-sky-500/25'
+              }`}
+            >
+              <span className="flex w-full items-center justify-between">
+                <span className="text-2xl">{m.icon}</span>
+                <span className="text-lg font-black">▶</span>
+              </span>
+              <span className="block text-lg font-black leading-tight">{m.title}</span>
+              <span className="block text-[11px] font-bold opacity-70">
+                對手 {diff.label} · {m.sub}
+              </span>
+            </motion.button>
+          ))}
+        </div>
 
       {/* 冒險模式入口：漫畫風大橫幅（熱血版才有） */}
       {settings.specials && (

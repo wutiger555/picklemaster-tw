@@ -17,7 +17,8 @@ const L = COURT.halfLength;
 /** 防護網籠子的半寬、半長、高度 */
 const CX = W + 3;
 const CZ = L + 4.2;
-const CH = 5.6;
+/** 籠子要比直拿手機的比賽鏡頭（約 8.6 m）還高，鏡頭才會在網內、不會被頂上的鋼管擋住 */
+const CH = 9.2;
 const ROOF_X = 22;
 const ROOF_Z = 30;
 

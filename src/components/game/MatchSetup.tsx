@@ -193,7 +193,7 @@ export const MatchSetup = ({ settings, onChange, onBack, onStart, onDetail }: Pr
                         key={v.id}
                         type="button"
                         whileTap={{ scale: 0.96 }}
-                        onClick={() => onChange({ ...settings, venue: v.id })}
+                        onClick={() => onChange({ ...settings, venue: v.id, venuePicked: true })}
                         aria-pressed={sel}
                         className={`overflow-hidden rounded-xl text-left ring-2 transition-all ${sel ? 'ring-amber-300' : 'ring-white/10 hover:ring-white/30'}`}
                       >

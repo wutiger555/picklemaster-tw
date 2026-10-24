@@ -305,6 +305,8 @@ const nearestEdge = (x: number, z: number) => {
 export interface RallyState {
   hits: number;
   lastTeam: Team | null;
+  /** 最後擊球的選手（athletes 的索引；發球機餵球時是 null） */
+  lastHitter: number | null;
   lastHitTime: number;
   bouncesSinceHit: number;
   serveTargetSign: number;
@@ -412,6 +414,9 @@ export interface HudState {
   serving: Team;
   call: string;
   fromRight: boolean;
+  /** 這一分輪到玩家發球（雙打時可能是隊友發） */
+  myServe: boolean;
+  doubles: boolean;
   servePower: number | null;
   charge: number | null;
   specials: boolean;
@@ -706,7 +711,7 @@ export class GameEngine {
   /** 這一分是精彩球：分數結算後要重播 */
   private pendingReplay: PendingReplay | null = null;
   private replayCount = 0;
-  private tape = new ReplayTape(2, this.freshRally());
+  private tape: ReplayTape;
   private tapeTick = 0;
   /** 這一分走過電視輔助判決（已經看過重播，不再播精彩重播） */
   private reviewedPoint = false;
@@ -767,6 +772,12 @@ export class GameEngine {
   private humanPathBounces0 = 0;
   private humanPathAt = -1;
   private rand: () => number;
+  /** 雙打（四人） */
+  readonly doubles: boolean = false;
+  /** 雙打：各隊現在站右區的選手（athletes 索引） */
+  rightPlayer: [number, number] = [0, 1];
+  /** 雙打：這一分的發球者（athletes 索引） */
+  serverIdx = 0;
   /** 冒險關卡規則（一般比賽是 null） */
   readonly level: Level | null;
   /** 場上的積水（踩到會打滑） */
@@ -782,8 +793,10 @@ export class GameEngine {
     assist: boolean;
     controls?: Controls;
     specials?: boolean;
-    /** [玩家, 對手] 的球拍 id；對手沒指定就隨機挑一支不同的 */
-    paddles?: [string, string?];
+    /** [玩家, 對手] 的球拍 id；對手沒指定就隨機挑一支不同的（雙打再加 [隊友, 對手 2]） */
+    paddles?: [string, string?, string?, string?];
+    /** 雙打：athletes 依序是 [玩家, 對手 1, 隊友, 對手 2] */
+    doubles?: boolean;
     rand?: () => number;
     level?: Level;
     practice?: Practice;
@@ -825,8 +838,19 @@ export class GameEngine {
       prevPos: v3(0, 0, z),
       dive: null,
     });
-    // 預留雙打：athletes 陣列可以放四人，規則與 AI 都以 team 為單位
     this.athletes = [athlete(0, 0, 6, mine, null), athlete(1, 1, -6, theirs, opts.mode === 'drill' ? null : createAI(opts.difficulty))];
+    this.doubles = !!opts.doubles && opts.mode === 'match';
+    if (this.doubles) {
+      // 隊友與第二位對手：沒指定球拍就隨機
+      const pick = (id?: string) => (id ? paddleById(id) : PADDLES[Math.floor(this.rand() * PADDLES.length)]);
+      this.athletes.push(athlete(2, 0, 6, pick(opts.paddles?.[2]), createAI(opts.difficulty)), athlete(3, 1, -6, pick(opts.paddles?.[3]), createAI(opts.difficulty)));
+      // 0-0-2 開局：先發球的一方只有一位發球員（右區那位）
+      this.rightPlayer = [0, 1];
+      this.serverIdx = 0;
+      this.match.serverNumber = 2;
+    }
+    // 錄影帶依人數預先配置（雙打四人）
+    this.tape = new ReplayTape(this.athletes.length, this.freshRally());
     this.level = opts.level ?? null;
     if (this.level) {
       // 關卡自己決定勝負：比分只用來輪發球
@@ -840,8 +864,92 @@ export class GameEngine {
     return this.athletes[0];
   }
 
+  /** 某一隊的選手（單打一人、雙打兩人） */
+  teamOf(team: Team) {
+    return this.athletes.filter((o) => o.team === team);
+  }
+
+  opponentsOf(a: Athlete) {
+    return this.athletes.filter((o) => o.team !== a.team);
+  }
+
+  /** 「那個對手」：雙打時取離球最近的那位（最可能接下一拍） */
   opponentOf(a: Athlete) {
-    return this.athletes.find((o) => o.team !== a.team)!;
+    const opps = this.opponentsOf(a);
+    if (opps.length === 1) return opps[0];
+    const b = this.ball.pos;
+    return opps.reduce((best, o) => (Math.hypot(o.pos.x - b.x, o.pos.z - b.z) < Math.hypot(best.pos.x - b.x, best.pos.z - b.z) ? o : best));
+  }
+
+  /** 這一隊有沒有真人在操作（判決申請等由真人決定） */
+  humanOn(team: Team) {
+    return this.athletes.some((o) => o.team === team && !o.ai);
+  }
+
+  /** 這一分的發球者 */
+  serverAthlete() {
+    return this.doubles ? this.athletes[this.serverIdx] : this.teamOf(this.match.serving)[0];
+  }
+
+  /** 發球者從右區發（站在網前看出去的右手邊）；雙打看他現在站哪一區，單打看分數奇偶 */
+  serveFromRightNow() {
+    return this.doubles ? this.rightPlayer[this.match.serving] === this.serverIdx : serveFromRight(this.match);
+  }
+
+  /** 接發球的人：雙打是對角那位，單打就是對手 */
+  receiverAthlete() {
+    const rt = other(this.match.serving);
+    if (!this.doubles) return this.teamOf(rt)[0];
+    const right = this.serveFromRightNow();
+    const rp = this.athletes[this.rightPlayer[rt]];
+    return right ? rp : this.partnerOf(rp);
+  }
+
+  /** 雙打隊友（單打沒有，回傳自己） */
+  partnerOf(a: Athlete) {
+    return this.athletes.find((o) => o.team === a.team && o !== a) ?? a;
+  }
+
+  /** 雙打「我的／你的」：每顆來球決定一次，之後不換人（避免兩人一起撲或一起讓） */
+  private ballOwner = new Map<number, { t: number; mine: boolean }>();
+
+  /**
+   * 這顆來球歸不歸 a 接：看球到兩人那個深度時的 x 離誰近；
+   * 中路球交給正手在中間的那位，隊友是真人時 AI 會多讓一點。
+   */
+  takesBall(a: Athlete) {
+    const p = this.partnerOf(a);
+    if (p === a) return true;
+    // 接發球一定是對角那位接
+    if (this.rally.hits === 1) return a === this.receiverAthlete();
+    const key = this.rally.lastHitTime;
+    const prev = this.ballOwner.get(a.id);
+    if (prev && prev.t === key) return prev.mine;
+    // 隊友已經決定過這一球：兩人的判斷一定要一致
+    const theirs = this.ballOwner.get(p.id);
+    if (theirs && theirs.t === key) {
+      this.ballOwner.set(a.id, { t: key, mine: !theirs.mine });
+      return !theirs.mine;
+    }
+    const s = teamSide(a.team);
+    const depth = Math.max(Math.abs(a.pos.z), Math.abs(p.pos.z)) + 0.3;
+    let x = this.ball.pos.x;
+    for (const smp of this.predict(2.4)) {
+      if (Math.sign(smp.pos.z) !== s) continue;
+      x = smp.pos.x;
+      if (Math.abs(smp.pos.z) <= depth && smp.pos.y < 2.2) break;
+    }
+    // 右手持拍：面向網子時，站在左邊那位的正手在中間
+    const fhMiddle = (o: Athlete) => (o.pos.x - this.partnerOf(o).pos.x) * s < 0;
+    const cost = (o: Athlete) => Math.abs(x - o.pos.x) - (fhMiddle(o) && Math.abs(x) < 0.9 ? 0.35 : 0) - (o.ai ? 0 : 0.25);
+    const mine = cost(a) <= cost(p);
+    this.ballOwner.set(a.id, { t: key, mine });
+    return mine;
+  }
+
+  /** 雙打的接發球只能由對角那位接，其他人碰到球也不算擊球 */
+  mayHit(a: Athlete) {
+    return !this.doubles || this.rally.hits !== 1 || a === this.receiverAthlete();
   }
 
   drainEvents() {
@@ -854,6 +962,7 @@ export class GameEngine {
     return {
       hits: 0,
       lastTeam: null,
+      lastHitter: null,
       lastHitTime: 0,
       bouncesSinceHit: 0,
       serveTargetSign: 1,
@@ -913,23 +1022,26 @@ export class GameEngine {
     if (this.mode === 'dink') {
       const df = this.practice ? PRACTICE_FEED[this.practice.feed] : null;
       this.human.pos = df ? v3(df.humanX, 0, df.humanZ) : v3(0.5, 0, COURT.kitchen + 0.35);
-      this.athletes[1].pos = v3(0, 0, -(COURT.kitchen + 0.35));
+      this.teamOf(1)[0].pos = v3(0, 0, -(COURT.kitchen + 0.35));
       this.match.serving = 1;
     } else if (this.mode === 'drill') {
       // 小遊戲：玩家留在原地，球由發球機出
       this.match.serving = 1;
     } else {
       const sp = servePositions(this.match);
-      this.rally.serveTargetSign = sp.targetSign;
-      for (const a of this.athletes) {
-        const p = a.team === this.match.serving ? sp.server : sp.receiver;
-        a.pos = v3(p.x, 0, p.z);
+      if (this.doubles) this.placeDoubles();
+      else {
+        this.rally.serveTargetSign = sp.targetSign;
+        for (const a of this.athletes) {
+          const p = a.team === this.match.serving ? sp.server : sp.receiver;
+          a.pos = v3(p.x, 0, p.z);
+        }
       }
       this.emit({
         type: 'serveReady',
         serving: this.match.serving,
-        call: scoreCall(this.match),
-        fromRight: serveFromRight(this.match),
+        call: scoreCall(this.match, this.doubles),
+        fromRight: this.serveFromRightNow(),
       });
     }
     this.level?.setup?.(this);
@@ -939,6 +1051,51 @@ export class GameEngine {
     this.guide = null;
     this.chance = null;
     this.diveHint = false;
+  }
+
+  /**
+   * 雙打計分：發球方得分就和隊友換區繼續發；失分時 1 號發球員換 2 號，2 號也失分才換發。
+   * 回傳是否換發（side out）。
+   */
+  private awardDoubles(winner: Team) {
+    const m = this.match;
+    const st = m.serving;
+    if (winner === st) {
+      m.score[st] += 1;
+      const [a, b] = m.score;
+      if (Math.max(a, b) >= m.target && Math.abs(a - b) >= 2) m.winner = a > b ? 0 : 1;
+      const rp = this.athletes[this.rightPlayer[st]];
+      this.rightPlayer[st] = this.athletes.indexOf(this.partnerOf(rp));
+      return false;
+    }
+    if (m.serverNumber === 1) {
+      m.serverNumber = 2;
+      this.serverIdx = this.athletes.indexOf(this.partnerOf(this.athletes[this.serverIdx]));
+      return false;
+    }
+    m.serving = winner;
+    m.serverNumber = 1;
+    this.serverIdx = this.rightPlayer[winner];
+    return true;
+  }
+
+  /**
+   * 雙打發球站位：發球者在自己那一區的底線後，隊友在另一區底線；
+   * 接發者在對角那一區底線，接發方的隊友先站到廚房線前。
+   */
+  private placeDoubles() {
+    const st = this.match.serving;
+    const rt = other(st);
+    const sSide = teamSide(st);
+    const rSide = teamSide(rt);
+    const right = this.serveFromRightNow() ? 1 : -1;
+    const server = this.serverAthlete();
+    const receiver = this.receiverAthlete();
+    server.pos = v3(sSide * right * 1.1, 0, sSide * (COURT.halfLength + 0.35));
+    this.partnerOf(server).pos = v3(-sSide * right * 1.7, 0, sSide * (COURT.halfLength - 0.2));
+    receiver.pos = v3(rSide * right * 1.5, 0, rSide * (COURT.halfLength - 0.1));
+    this.partnerOf(receiver).pos = v3(-rSide * right * 1.6, 0, rSide * (COURT.kitchen + 0.35));
+    this.rally.serveTargetSign = -sSide * right;
   }
 
   /** 發球前球拿在發球者手上（腰部以下） */
@@ -952,7 +1109,7 @@ export class GameEngine {
       this.ball.curve = null;
       return;
     }
-    const server = this.athletes.find((a) => a.team === this.match.serving)!;
+    const server = this.serverAthlete();
     const s = teamSide(server.team);
     this.ball.pos = v3(server.pos.x + s * 0.3, 0.55, server.pos.z - s * 0.4);
     this.ball.vel = v3();
@@ -998,6 +1155,7 @@ export class GameEngine {
     this.ball.spin = plan.spin;
     this.rally.hits = feed ? 3 : 1;
     this.rally.lastTeam = a.team;
+    this.rally.lastHitter = this.athletes.indexOf(a);
     this.rally.lastHitTime = this.time;
     this.rally.bouncesSinceHit = 0;
     this.rally.lastKindByTeam[a.team] = plan.kind;
@@ -1038,6 +1196,7 @@ export class GameEngine {
     this.prevBall = clone(from);
     r.hits = 3;
     r.lastTeam = 1;
+    r.lastHitter = null;
     r.lastHitTime = this.time;
     r.bouncesSinceHit = 0;
     r.lastKindByTeam[1] = 'drive';
@@ -1268,7 +1427,7 @@ export class GameEngine {
   };
 
   /** 設定雙方的角色絕招（選角之後由畫面層告訴引擎） */
-  setSkills(skills: [SkillId | null, SkillId | null]) {
+  setSkills(skills: (SkillId | null)[]) {
     this.athletes.forEach((a, i) => {
       a.skill = skills[i] ?? null;
       a.skillReady = !!a.skill;
@@ -1355,21 +1514,23 @@ export class GameEngine {
     if (id === 'clone') fx.untilPoint = this.pointsPlayed + SKILL_FX.clone.points;
     this.skillEffects.push(fx);
     if (id === 'cheer') this.gainEnergy(a, SKILL_FX.cheer.energyNow);
-    const opp = this.opponentOf(a);
-    if (id === 'flood') opp.knockedUntil = this.time + 0.3;
-    if (id === 'feast' && this.specials) {
-      // 一口吞掉對手的能量
-      const bite = Math.min(opp.energy, SKILL_FX.feast.steal);
-      opp.energy -= bite;
-      this.gainEnergy(a, bite, true);
-    }
-    if (id === 'roar') opp.knockedUntil = Math.max(opp.knockedUntil, this.time + SKILL_FX.roar.stun);
-    if (id === 'wave') {
-      // 浪從中間往外捲：把對手往比較近的那一側邊線推
-      const dir = Math.sign(opp.pos.x) || (this.rand() < 0.5 ? 1 : -1);
-      opp.vel.x += dir * SKILL_FX.wave.push;
-      opp.knockedUntil = Math.max(opp.knockedUntil, this.time + SKILL_FX.wave.stun);
-      opp.slipUntil = Math.max(opp.slipUntil, this.time + SKILL_FX.wave.secs);
+    // 效果作用在每一位對手身上（單打就是那一位）
+    for (const opp of this.opponentsOf(a)) {
+      if (id === 'flood') opp.knockedUntil = this.time + 0.3;
+      if (id === 'feast' && this.specials) {
+        // 一口吞掉對手的能量
+        const bite = Math.min(opp.energy, SKILL_FX.feast.steal);
+        opp.energy -= bite;
+        this.gainEnergy(a, bite, true);
+      }
+      if (id === 'roar') opp.knockedUntil = Math.max(opp.knockedUntil, this.time + SKILL_FX.roar.stun);
+      if (id === 'wave') {
+        // 浪從中間往外捲：把對手往比較近的那一側邊線推
+        const dir = Math.sign(opp.pos.x) || (this.rand() < 0.5 ? 1 : -1);
+        opp.vel.x += dir * SKILL_FX.wave.push;
+        opp.knockedUntil = Math.max(opp.knockedUntil, this.time + SKILL_FX.wave.stun);
+        opp.slipUntil = Math.max(opp.slipUntil, this.time + SKILL_FX.wave.secs);
+      }
     }
   }
 
@@ -1443,10 +1604,10 @@ export class GameEngine {
       a.pos.x += a.vel.x * dt;
       a.pos.z += a.vel.z * dt;
       const s = teamSide(a.team);
-      const serving = this.phase === 'serve' && this.mode === 'match' && a.team === this.match.serving;
+      const serving = this.phase === 'serve' && this.mode === 'match' && a === this.serverAthlete();
       if (serving) {
         // 發球時雙腳要在底線後、中線與邊線延伸線之間
-        const dir = s * (serveFromRight(this.match) ? 1 : -1);
+        const dir = s * (this.serveFromRightNow() ? 1 : -1);
         const x1 = 0.15 * dir;
         const x2 = (COURT.halfWidth - 0.2) * dir;
         a.pos.x = clamp(a.pos.x, Math.min(x1, x2), Math.max(x1, x2));
@@ -1480,7 +1641,7 @@ export class GameEngine {
     const released = this.prevHeld && held !== this.prevHeld;
     const sw = h.swing;
 
-    if (this.phase === 'serve' && this.match.serving === h.team && this.mode === 'match') {
+    if (this.phase === 'serve' && this.serverAthlete() === h && this.mode === 'match') {
       if (pressed && sw.state === 'idle') {
         h.swing = { ...idleSwing(), state: 'charging', button: 'serve', t0: this.time };
       } else if (released && sw.state === 'charging' && sw.button === 'serve') {
@@ -1593,11 +1754,15 @@ export class GameEngine {
   private autoTarget(h: Athlete): { x: number; z: number } | null {
     if (this.phase !== 'rally' || this.level?.noGuide) return null;
     if (this.guide) return this.guide.stand;
-    if (!this.assist || this.rally.lastTeam !== h.team) return null;
+    // 雙打：隊友接的球，輔助模式把你帶回自己那半邊補位
+    const covering = this.doubles && this.rally.lastTeam !== h.team;
+    if (!this.assist || (this.rally.lastTeam !== h.team && !covering)) return null;
     const s = teamSide(h.team);
     const servingBack = this.match.serving === h.team && this.rally.hits <= 2 && this.mode === 'match';
+    const p = this.partnerOf(h);
+    const lane = Math.sign(h.pos.x - p.pos.x) || -1;
     return {
-      x: clamp(this.ball.pos.x * 0.4, -2, 2),
+      x: this.doubles ? clamp(lane * 1.45 + this.ball.pos.x * 0.3, -2.8, 2.8) : clamp(this.ball.pos.x * 0.4, -2, 2),
       z: s * (servingBack ? COURT.halfLength - 0.1 : COURT.kitchen + 0.4),
     };
   }
@@ -1605,7 +1770,9 @@ export class GameEngine {
   /** 更新玩家導引：用 AI 的規劃算站位與擊球點 */
   private refreshGuide() {
     const h = this.human;
-    if (h.ai || this.phase !== 'rally' || this.rally.lastTeam === h.team || this.level?.noGuide) {
+    // 雙打：隊友接的球（或不是你接的發球）就不畫導引，免得兩人搶同一球
+    const partners = this.doubles && (!this.mayHit(h) || !this.takesBall(h));
+    if (h.ai || this.phase !== 'rally' || this.rally.lastTeam === h.team || this.level?.noGuide || partners) {
       this.guide = null;
       this.chance = null;
       this.diveHint = false;
@@ -1754,7 +1921,7 @@ export class GameEngine {
 
   private hittable(a: Athlete) {
     const b = this.ball.pos;
-    if (this.rally.lastTeam === a.team || Math.sign(b.z) !== teamSide(a.team)) return false;
+    if (this.rally.lastTeam === a.team || Math.sign(b.z) !== teamSide(a.team) || !this.mayHit(a)) return false;
     const { f, l } = this.relative(a, b);
     return Math.hypot(f, l) <= this.reachOf(a) && this.heightOk(a, b.y);
   }
@@ -1787,7 +1954,7 @@ export class GameEngine {
       const gz = s * (COURT.kitchen + 0.3);
       if (Math.abs(b.pos.z - gz) > 0.3) continue;
       if (Math.abs(b.pos.x - this.cloneX[team]) > SKILL_FX.clone.reach || b.pos.y < SKILL_FX.clone.minY || b.pos.y > SKILL_FX.clone.maxY) continue;
-      const owner = this.athletes.find((a) => a.team === team)!;
+      const owner = this.teamOf(team)[0];
       // 本人搆得到就讓本人打
       if (Math.hypot(b.pos.x - owner.pos.x, b.pos.z - owner.pos.z) < this.reachOf(owner)) continue;
       const ghost: Athlete = {
@@ -2030,6 +2197,7 @@ export class GameEngine {
     const r = this.rally;
     r.hits += 1;
     r.lastTeam = a.team;
+    r.lastHitter = this.athletes.indexOf(a);
     r.lastHitTime = this.time;
     r.bouncesSinceHit = 0;
     r.lastKindByTeam[a.team] = plan.kind;
@@ -2405,7 +2573,7 @@ export class GameEngine {
       r.bouncesSinceHit = 1;
       if (r.tryTech && r.tryTech.team === hitter && Math.abs(pos.z) <= COURT.kitchen) {
         this.emit({ type: 'technique', team: hitter, id: r.tryTech.id });
-        this.gainEnergy(this.athletes.find((x) => x.team === hitter)!, ENERGY.good);
+        this.gainEnergy(r.lastHitter !== null ? this.athletes[r.lastHitter] : this.teamOf(hitter)[0], ENERGY.good);
       }
       r.tryTech = null;
       this.specialLanding(pos);
@@ -2508,7 +2676,7 @@ export class GameEngine {
   /** 玩家申請電視輔助判決 */
   requestReview() {
     const rv = this.review;
-    if (!rv || rv.state !== 'offer' || this.athletes[rv.challenger].ai || this.challenges[rv.challenger] <= 0) return false;
+    if (!rv || rv.state !== 'offer' || !this.humanOn(rv.challenger) || this.challenges[rv.challenger] <= 0) return false;
     this.startReviewing();
     return true;
   }
@@ -2516,7 +2684,7 @@ export class GameEngine {
   /** 玩家接受原判決 */
   declineReview() {
     const rv = this.review;
-    if (!rv || rv.state !== 'offer' || this.athletes[rv.challenger].ai) return;
+    if (!rv || rv.state !== 'offer' || !this.humanOn(rv.challenger)) return;
     this.closeReview(false);
   }
 
@@ -2537,7 +2705,7 @@ export class GameEngine {
       const ch = rv.challenger;
       if (this.challenges[ch] <= 0) {
         if (u > 2.2) this.closeReview(false);
-      } else if (this.athletes[ch].ai) {
+      } else if (!this.humanOn(ch)) {
         if (u > 1.8) {
           // AI：看錯的球多半會申請；判對但很近的偶爾賭一把
           const wants = rv.overturned ? this.rand() < 0.75 : Math.abs(rv.call.margin) < 0.025 && this.rand() < 0.25;
@@ -2624,7 +2792,7 @@ export class GameEngine {
       this.stats[winner].winners += 1;
       if (reason === 'ace') this.stats[winner].aces += 1;
     }
-    const big = faultTeam === null && (r.hits >= COMBO_STEP || this.athletes[winner].awakenHits > 0 || r.lastKindByTeam[winner] === 'smash' || reason === 'ace');
+    const big = faultTeam === null && (r.hits >= COMBO_STEP || this.teamOf(winner).some((a) => a.awakenHits > 0) || r.lastKindByTeam[winner] === 'smash' || reason === 'ace');
     for (const a of this.athletes) {
       a.mood = { won: a.team === winner, at: this.time, big, error: faultTeam === a.team };
       if (a.team === winner && faultTeam === null) this.gainEnergy(a, ENERGY.winner);
@@ -2647,7 +2815,7 @@ export class GameEngine {
 
     let sideOut = false;
     if (this.mode === 'match') {
-      sideOut = awardRally(this.match, winner).sideOut;
+      sideOut = this.doubles ? this.awardDoubles(winner) : awardRally(this.match, winner).sideOut;
       this.fillAwaken(winner);
     } else if (this.mode === 'dink' && !this.practice && (faultTeam === this.human.team || winner !== this.human.team)) {
       this.match.winner = 1;
@@ -2664,7 +2832,7 @@ export class GameEngine {
       faultTeam,
       title,
       lesson,
-      call: this.mode === 'match' ? scoreCall(this.match) : String(this.dinkStreak),
+      call: this.mode === 'match' ? scoreCall(this.match, this.doubles) : String(this.dinkStreak),
       sideOut,
       rallyHits: r.hits,
       highlight: highlight && !highlight.tip ? highlight.label : null,
@@ -2842,7 +3010,7 @@ export class GameEngine {
     // 撲接中、倒地爬起來之前什麼都不能做
     if (a.dive) return;
     if (this.phase === 'serve') {
-      if (this.match.serving === a.team && this.time >= ai.serveAt) {
+      if (this.serverAthlete() === a && this.time >= ai.serveAt) {
         const prof = ai.profile;
         // 目標深發（力道約 0.66，落點離網約 5.4 m），依程度加入誤差
         const power = clamp(0.66 + gauss(this.rand) * prof.serveSigma * 1.5, 0.05, 1);
@@ -2867,6 +3035,13 @@ export class GameEngine {
       ai.plan = null;
       const home = homePosition(this, a);
       steer(a, home.x, home.z, ai.profile.maxSpeed * 0.85 * this.moveFactor(a), dt, this.grip(a));
+      return;
+    }
+    // 雙打：不是自己的球（接發球不是我、或這球在隊友那一側）就回自己的位置補位
+    if (this.doubles && (!this.mayHit(a) || !this.takesBall(a))) {
+      ai.plan = null;
+      const home = homePosition(this, a);
+      steer(a, home.x, home.z, ai.profile.maxSpeed * this.moveFactor(a), dt, this.grip(a));
       return;
     }
     if (this.time < a.knockedUntil) {
@@ -2929,21 +3104,23 @@ export class GameEngine {
       mode: this.mode,
       score: [this.match.score[0], this.match.score[1]],
       serving: this.match.serving,
-      call: this.mode === 'match' ? scoreCall(this.match) : String(this.dinkStreak),
-      fromRight: serveFromRight(this.match),
+      call: this.mode === 'match' ? scoreCall(this.match, this.doubles) : String(this.dinkStreak),
+      fromRight: this.serveFromRightNow(),
+      myServe: this.serverAthlete() === h,
+      doubles: this.doubles,
       servePower: sw.state === 'charging' && sw.button === 'serve' ? powerAt(this.time - sw.t0) : null,
       charge: sw.state === 'charging' && sw.button !== 'serve' ? sw.charge : null,
       specials: this.specials,
-      energy: [this.athletes[0].energy, this.athletes[1].energy],
+      energy: [h.energy, this.opponentOf(h).energy],
       armed: h.armed,
       special: h.paddle.special,
-      oppSpecial: this.athletes[1].paddle.special,
+      oppSpecial: this.opponentOf(h).paddle.special,
       skill: h.skill,
       skillReady: h.skillReady,
       skillArmed: h.skillArmed,
       awaken:
         this.specials && this.mode === 'match'
-          ? { gauge: h.awaken, hits: h.awakenHits, used: h.awakenUsed, opp: this.athletes[1].awakenHits }
+          ? { gauge: h.awaken, hits: h.awakenHits, used: h.awakenUsed, opp: Math.max(...this.opponentsOf(h).map((o) => o.awakenHits)) }
           : null,
       rallyHits: this.rally.hits,
       bestCombo: this.longestRally,

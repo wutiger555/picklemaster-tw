@@ -13,7 +13,7 @@ import { ComicTitle, TitleSplash } from './ComicTitle';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
 import { PaddleSelect } from './PaddleSelect';
 import { CharacterSelect } from './CharacterSelect';
-import { CHARACTERS, type CharacterDef, characterById, pickOpponent } from './characters';
+import { CHARACTERS, type CharacterDef, characterById, pickOpponent, pickOpponentExcept } from './characters';
 import { TouchControls } from './TouchControls';
 import { useGameInput } from './useGameInput';
 import { GameAudio } from './audio';
@@ -101,7 +101,7 @@ const detectLowSpec = () => {
   }
 };
 
-type Screen = 'menu' | 'character' | 'paddle' | 'play' | 'over' | 'tour' | 'story';
+type Screen = 'menu' | 'character' | 'partner' | 'paddle' | 'play' | 'over' | 'tour' | 'story';
 
 /** 下載影片（不支援分享檔案的瀏覽器，例如桌機 Firefox） */
 const downloadFile = (file: File) => {
@@ -135,7 +135,8 @@ const PickleballGame = () => {
   const [records, setRecords] = useState<Records>(() => load<Records>(RECORDS_KEY, emptyRecords()));
   const [initialDemo] = useState(newDemo);
   const [engine, setEngine] = useState<GameEngine>(initialDemo.engine);
-  const [characters, setCharacters] = useState<[CharacterDef, CharacterDef]>(initialDemo.chars);
+  /** 依 athletes 的順序：[玩家, 對手]，雙打再加 [隊友, 對手 2] */
+  const [characters, setCharacters] = useState<CharacterDef[]>(initialDemo.chars);
   const [paused, setPaused] = useState(false);
   const [hud, setHud] = useState<HudState>(() => engine.hud());
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -768,7 +769,7 @@ const PickleballGame = () => {
           case 'serveReady':
             if (recorder?.held) cutClip(true);
             else recorder?.restart();
-            if (e.serving === 0 && !engine.practice)
+            if (engine.serverAthlete() === engine.human && !engine.practice)
               latest.current.coach('serve', '輪到你發球：按住任一擊球鍵蓄力，右邊力道條到綠色區時放開', '輪到你發球：按住 J／K／L 蓄力，右邊力道條到綠色區時放開（← → 調方向）');
             break;
           case 'reviewStart':
@@ -870,11 +871,16 @@ const PickleballGame = () => {
       specials: def ? boss : s.specials,
       paddles: [s.paddle],
       level: level ? createLevel(level) : undefined,
+      doubles: !def && s.mode === 'match' && !!s.doubles,
     });
     // 關卡的對手固定：Boss 是站主，小遊戲是顧發球機的飲料攤老闆（帽哥）；自己選的角色跟站主撞了就換台灣隊
     const mine = characterById(def && s.character === def.stage.bossChar ? 'default' : s.character);
     const opp = def ? characterById(boss ? def.stage.bossChar : 'p5') : pickOpponent(mine.id);
-    e.setSkills([mine.skill, opp.skill]);
+    // 雙打：隊友是自己挑的；兩位對手從其他人裡隨機
+    const partner = e.doubles ? characterById(s.partner && s.partner !== mine.id ? s.partner : pickOpponent(mine.id).id) : null;
+    const opp2 = partner ? pickOpponentExcept([mine.id, partner.id, opp.id]) : null;
+    const cast = partner && opp2 ? [mine, opp, partner, opp2] : [mine, opp];
+    e.setSkills(cast.map((c) => c.skill));
     setLevelId(level);
     setOutcome(null);
     setPops([]);
@@ -890,7 +896,7 @@ const PickleballGame = () => {
     clipFile.current = null;
     setClip(null);
     setEngine(e);
-    setCharacters([mine, opp]);
+    setCharacters(cast);
     setHud(e.hud());
     setToasts([]);
     if (!def) setCard(null);
@@ -1096,7 +1102,8 @@ const PickleballGame = () => {
             card={card}
             cutIn={cutIn}
             touch={touch}
-            oppName={characters[1].name}
+            oppName={characters[3] ? `${characters[1].name}＆${characters[3].name}` : characters[1].name}
+            mateName={characters[2]?.name}
             onChallenge={() => engine.requestReview()}
             onAccept={() => engine.declineReview()}
             onSkipReplay={() => engine.skipReplay()}
@@ -1229,7 +1236,7 @@ const PickleballGame = () => {
             key="challenge"
             challenge={challenge}
             onAccept={() => {
-              const s: Settings = { ...settings, mode: 'match', specials: true, difficulty: challenge.difficulty, character: challenge.character, paddle: challenge.paddle };
+              const s: Settings = { ...settings, mode: 'match', doubles: false, specials: true, difficulty: challenge.difficulty, character: challenge.character, paddle: challenge.paddle };
               setSettings(s);
               setIntro(false);
               start(s);
@@ -1263,7 +1270,22 @@ const PickleballGame = () => {
             value={settings.character}
             onChange={(id) => setSettings({ ...settings, character: id })}
             onBack={() => setScreen('menu')}
-            onNext={() => setScreen('paddle')}
+            onNext={() => setScreen(settings.doubles && settings.mode === 'match' ? 'partner' : 'paddle')}
+          />
+        )}
+        {screen === 'partner' && !cover && (
+          <CharacterSelect
+            key="partner"
+            partner
+            exclude={settings.character}
+            value={settings.partner ?? ''}
+            onChange={(id) => setSettings({ ...settings, partner: id })}
+            onBack={() => setScreen('character')}
+            onNext={() => {
+              // 沒點過任何人就用畫面上預設的那位
+              if (!settings.partner || settings.partner === settings.character) setSettings({ ...settings, partner: CHARACTERS.find((c) => c.id !== settings.character)!.id });
+              setScreen('paddle');
+            }}
           />
         )}
         {screen === 'paddle' && !cover && (
@@ -1272,7 +1294,7 @@ const PickleballGame = () => {
             value={settings.paddle}
             specials={settings.specials}
             onChange={(id) => setSettings({ ...settings, paddle: id })}
-            onBack={() => setScreen('character')}
+            onBack={() => setScreen(settings.doubles && settings.mode === 'match' ? 'partner' : 'character')}
             onStart={() => start()}
           />
         )}

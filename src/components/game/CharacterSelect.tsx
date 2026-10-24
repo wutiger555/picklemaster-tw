@@ -76,13 +76,16 @@ const Preview3D = ({ c }: { c: CharacterDef }) => {
 
 interface Props {
   value: string;
+  /** 雙打挑隊友：標題與按鈕文字不同，自己選的那位不能再選 */
+  partner?: boolean;
+  exclude?: string;
   onChange: (id: string) => void;
   onBack: () => void;
   onNext: () => void;
 }
 
-export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
-  const sel = CHARACTERS.find((c) => c.id === value) ?? CHARACTERS[0];
+export const CharacterSelect = ({ value, partner = false, exclude, onChange, onBack, onNext }: Props) => {
+  const sel = CHARACTERS.find((c) => c.id === value && c.id !== exclude) ?? CHARACTERS.find((c) => c.id !== exclude) ?? CHARACTERS[0];
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -92,9 +95,13 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
     >
       <div className="mx-auto flex min-h-full max-w-4xl flex-col">
         <div className="text-center">
-          <span className="text-[11px] font-bold tracking-[0.3em] text-emerald-300">CHOOSE YOUR PLAYER</span>
-          <h2 className="mt-1 font-display text-2xl font-black text-white md:text-4xl">選擇你的選手</h2>
-          <p className="mt-1 text-xs text-white/60 md:text-sm">選好之後就是你在球場上的 3D 選手，每人一招專屬絕招；對手會從其他人裡隨機登場</p>
+          <span className="text-[11px] font-bold tracking-[0.3em] text-emerald-300">{partner ? 'CHOOSE YOUR PARTNER' : 'CHOOSE YOUR PLAYER'}</span>
+          <h2 className="mt-1 font-display text-2xl font-black text-white md:text-4xl">{partner ? '選擇你的隊友' : '選擇你的選手'}</h2>
+          <p className="mt-1 text-xs text-white/60 md:text-sm">
+            {partner
+              ? '隊友由電腦操作，會守另一半場、跟你分工接球；對手兩位會從其他人裡隨機登場'
+              : '選好之後就是你在球場上的 3D 選手，每人一招專屬絕招；對手會從其他人裡隨機登場'}
+          </p>
         </div>
 
         <div className="mt-4 grid flex-1 gap-4 md:grid-cols-[0.9fr_1.1fr]">
@@ -134,12 +141,14 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
           <div className="grid grid-cols-3 gap-2 content-start">
             {CHARACTERS.map((c) => {
               const on = c.id === sel.id;
+              const taken = c.id === exclude;
               return (
                 <button
                   key={c.id}
                   type="button"
+                  disabled={taken}
                   onClick={() => onChange(c.id)}
-                  className={`group relative overflow-hidden rounded-2xl border text-left transition-all ${
+                  className={`group relative overflow-hidden rounded-2xl border text-left transition-all disabled:cursor-not-allowed disabled:opacity-40 ${
                     on ? 'border-emerald-300/80 bg-white/10' : 'border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10'
                   }`}
                   style={on ? { boxShadow: '0 0 22px rgba(52,211,153,0.45)' } : undefined}
@@ -153,7 +162,10 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
                     </div>
                   </div>
                   <div className="px-2.5 pb-2 pt-1">
-                    <div className="text-sm font-bold text-white">{c.name}</div>
+                    <div className="text-sm font-bold text-white">
+                      {c.name}
+                      {taken && <span className="ml-1 rounded bg-emerald-400/20 px-1 text-[10px] text-emerald-300">你</span>}
+                    </div>
                     <div className="truncate text-[11px] text-white/55">{c.skill ? `絕招：${SKILLS[c.skill].name}` : c.title}</div>
                   </div>
                 </button>
@@ -173,7 +185,7 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
             onClick={onNext}
             className="rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-3.5 text-lg font-black text-emerald-950 shadow-xl shadow-emerald-500/25"
           >
-            就決定是「{sel.name}」 → 挑選球拍
+            {partner ? `和「${sel.name}」搭檔 → 挑選球拍` : `就決定是「${sel.name}」 → 挑選球拍`}
           </motion.button>
         </div>
       </div>

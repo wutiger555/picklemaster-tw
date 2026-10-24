@@ -250,7 +250,11 @@ export const chooseShot = (eng: GameEngine, a: Athlete, rand: () => number): AIS
   const ownDz = eng.ball.pos.z - a.pos.z;
   const pressure = clamp(Math.hypot(a.vel.x, a.vel.z) / prof.maxSpeed + Math.max(0, Math.hypot(ownDx, ownDz) - 0.75) * 2, 0, 1);
   const wide = (0.9 + 0.9 * prof.aggression) * (1 - 0.55 * pressure);
-  const awayFromOpp = () => aimAt(-Math.sign(opp.x || (rand() - 0.5)) * wide * (0.7 + rand() * 0.3));
+  const opps = eng.opponentsOf(a);
+  // 雙打：一半的球打兩人中間的空隙（誰接都猶豫），其餘打離最近那位遠的一側
+  const gap = opps.length > 1 ? (opps[0].pos.x + opps[1].pos.x) / 2 : null;
+  const awayFromOpp = () =>
+    gap !== null && rand() < 0.5 ? aimAt(gap + (rand() - 0.5) * 0.4) : aimAt(-Math.sign(opp.x || (rand() - 0.5)) * wide * (0.7 + rand() * 0.3));
 
   if (eng.mode === 'dink') {
     const spread = Math.min(1, 0.3 + eng.dinkStreak * 0.05);
@@ -310,6 +314,12 @@ export const homePosition = (eng: GameEngine, a: Athlete) => {
     const rush = prof.netRush;
     if (lastKind === 'drive' && ownDepth > 4.5) z = side * (4.6 - 1.4 * rush);
     else z = side * (COURT.kitchen + 0.3 + (1 - rush) * 2.5);
+  }
+  if (eng.doubles) {
+    // 雙打：各守半邊，整隊跟著球的方向稍微平移
+    const p = eng.partnerOf(a);
+    const lane = Math.sign(a.pos.x - p.pos.x) || (a.id < p.id ? -1 : 1);
+    return { x: clamp(lane * 1.45 + ballX * 0.3, -2.8, 2.8), z };
   }
   return { x: clamp(ballX * 0.45, -2, 2), z };
 };

@@ -131,7 +131,7 @@ const ServeDot = ({ on }: { on: boolean }) => (
   />
 );
 
-const Scoreboard = ({ hud, difficulty, best, oppName }: { hud: HudState; difficulty: Difficulty; best: number; oppName: string }) => {
+const Scoreboard = ({ hud, difficulty, best, oppName, mateName }: { hud: HudState; difficulty: Difficulty; best: number; oppName: string; mateName?: string }) => {
   if (hud.mode === 'dink') {
     return (
       <div className="rounded-2xl border border-white/15 bg-slate-950/70 px-5 py-2.5 text-center text-white shadow-xl backdrop-blur-md">
@@ -151,7 +151,7 @@ const Scoreboard = ({ hud, difficulty, best, oppName }: { hud: HudState; difficu
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <ServeDot on={hud.serving === 0} />
-          <span className="text-xs font-semibold text-emerald-300">你</span>
+          <span className="text-xs font-semibold text-emerald-300">{mateName ? `你＆${mateName}` : '你'}</span>
           <motion.span key={`p${hud.score[0]}`} initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-7 text-center text-3xl font-black tabular-nums">
             {hud.score[0]}
           </motion.span>
@@ -434,6 +434,8 @@ interface HudProps {
   card: PointCard | null;
   cutIn: CutInInfo | null;
   oppName: string;
+  /** 雙打隊友的名字 */
+  mateName?: string;
   touch: boolean;
   onChallenge: () => void;
   onAccept: () => void;
@@ -444,8 +446,8 @@ interface HudProps {
   practice?: boolean;
 }
 
-export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, onChallenge, onAccept, onSkipReplay, level, practice = false }: HudProps) => {
-  const humanServing = hud.phase === 'serve' && hud.serving === 0 && hud.mode === 'match';
+export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, mateName, onChallenge, onAccept, onSkipReplay, level, practice = false }: HudProps) => {
+  const humanServing = hud.phase === 'serve' && hud.myServe && hud.mode === 'match';
   // 判決重播時收起比分和能量條，畫面留給轉播
   const replay = hud.review?.state === 'reviewing' || hud.replay ? 'opacity-0' : '';
   return (
@@ -469,7 +471,7 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
           {hud.level && level ? (
             <LevelBoard level={hud.level} name={level.name} boss={level.boss} pops={level.pops} touch={touch} />
           ) : (
-            <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} />
+            <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} mateName={mateName} />
           )}
         </div>
       )}

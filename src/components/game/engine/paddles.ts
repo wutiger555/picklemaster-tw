@@ -1,6 +1,6 @@
 /**
  * 球拍與必殺技。
- * 規格依真實球拍分類（長拍／標準／寬拍／混合，14–16 mm 蜂巢芯，碳纖維或玻纖面），
+ * 規格照真實的熱門球拍（尺寸、厚度、重量、面材取自官方與大型零售商公布的數字），
  * 數值差異反映在球速、穩定度、旋轉與觸及範圍；每支拍再附一招動漫式必殺技。
  */
 
@@ -80,8 +80,8 @@ export const SPECIALS: Record<SpecialId, SpecialDef> = {
 export type PaddleShape = 'elongated' | 'standard' | 'widebody' | 'hybrid';
 
 export interface PaddleLook {
-  /** 拍面花紋 */
-  pattern: 'flame' | 'bolt' | 'holo' | 'rawcarbon' | 'wind' | 'stone';
+  /** 拍面版型（照各拍原廠配色的樣式） */
+  pattern: 'slash' | 'cap' | 'gloss' | 'diamonds' | 'wave' | 'raw';
   base: string;
   primary: string;
   accent: string;
@@ -91,7 +91,9 @@ export interface PaddleLook {
 
 export interface PaddleSpec {
   id: string;
+  /** 型號簡稱（選拍畫面的大字） */
   name: string;
+  brand: string;
   model: string;
   tagline: string;
   shape: PaddleShape;
@@ -115,63 +117,67 @@ const IN = 0.0254;
 export const PADDLES: PaddleSpec[] = [
   {
     id: 'blaze',
-    name: '赤焰',
-    model: 'BLAZE 14 Elongated',
-    tagline: '長拍身、薄芯，出球最快的進攻拍',
+    name: 'Perseus',
+    brand: 'JOOLA',
+    model: 'JOOLA Ben Johns Perseus 3S 14mm',
+    tagline: '世界球王 Ben Johns 的長拍：薄芯出球快，進攻首選',
     shape: 'elongated',
     length: 16.5 * IN,
     width: 7.5 * IN,
     thickness: 14,
-    weightOz: 8.2,
-    face: 'T700 碳纖維',
-    core: '14 mm 聚合物蜂巢',
+    weightOz: 7.8,
+    face: 'Charged Carbon 碳纖維',
+    core: '14 mm Propulsion 發泡蜂巢芯',
     rating: { power: 9.5, control: 6.5, spin: 8, reach: 9 },
     mods: { pace: 1.1, error: 0.99, spin: 1.05, reach: 0.06 },
     special: 'inferno',
-    look: { pattern: 'flame', base: '#141414', primary: '#ff4d1a', accent: '#ffc233', edge: '#2a2a2a', grip: '#1c1c1c' },
+    look: { pattern: 'slash', base: '#111214', primary: '#e11d2e', accent: '#ff8a1f', edge: '#1a1a1a', grip: '#111111' },
   },
   {
     id: 'storm',
-    name: '蒼雷',
-    model: 'STORM 16 Standard',
-    tagline: '標準拍型，攻守平衡的全能拍',
-    shape: 'standard',
-    length: 16 * IN,
-    width: 7.9 * IN,
-    thickness: 16,
-    weightOz: 8.0,
-    face: 'Toray 碳纖維',
-    core: '16 mm 聚合物蜂巢',
+    name: 'Vanguard Invikta',
+    brand: 'Selkirk',
+    model: 'Selkirk VANGUARD Power Air Invikta',
+    tagline: 'Selkirk 招牌長拍：氣動拍框揮得快，攻守都穩',
+    shape: 'elongated',
+    length: 16.5 * IN,
+    width: 7.375 * IN,
+    thickness: 13,
+    weightOz: 7.9,
+    face: '碳纖維',
+    core: '13 mm（1/2 吋）聚合物蜂巢',
     rating: { power: 8, control: 8, spin: 8, reach: 7.5 },
     mods: { pace: 1.04, error: 0.99, spin: 1.05, reach: 0.02 },
     special: 'thunder',
-    look: { pattern: 'bolt', base: '#0d1b3d', primary: '#3d7bff', accent: '#ffe14d', edge: '#0a0f1f', grip: '#f2f2f2' },
+    look: { pattern: 'cap', base: '#16181b', primary: '#7a8088', accent: '#a3e635', edge: '#202226', grip: '#1b1b1b' },
   },
   {
     id: 'mirage',
-    name: '幻月',
-    model: 'MIRAGE 16 Widebody',
-    tagline: '寬拍面、甜區大，dink 最穩的控球拍',
-    shape: 'widebody',
-    length: 15.5 * IN,
-    width: 8.25 * IN,
+    name: 'Signature',
+    brand: 'Franklin',
+    model: 'Franklin Ben Johns Signature Pro 16mm',
+    tagline: '玻纖面手感軟、好控，球館最常見的經典款',
+    shape: 'elongated',
+    length: 16.5 * IN,
+    width: 7.5 * IN,
     thickness: 16,
-    weightOz: 7.8,
+    weightOz: 8.1,
     face: '玻璃纖維',
-    core: '16 mm 聚合物蜂巢',
+    core: '16 mm 聚丙烯蜂巢',
     rating: { power: 6.5, control: 9.5, spin: 7, reach: 6.5 },
     mods: { pace: 0.97, error: 0.97, spin: 0.95, reach: -0.03 },
     special: 'phantom',
-    look: { pattern: 'holo', base: '#1b1030', primary: '#b05bff', accent: '#40e0d0', edge: '#e8e8f0', grip: '#5b2a86' },
+    look: { pattern: 'gloss', base: '#14254f', primary: '#1e3a8a', accent: '#f8fafc', edge: '#0f1d40', grip: '#0f172a' },
   },
   {
     id: 'glacier',
-    name: '霜鋒',
-    model: 'GLACIER 16 Hybrid',
-    tagline: '生碳纖維粗糙拍面，旋轉量最強',
+    name: 'Double Black Diamond',
+    brand: 'Six Zero',
+    model: 'Six Zero Double Black Diamond Control 16mm',
+    tagline: '生碳面旋轉強、控球細，網前 dink 一把好手',
     shape: 'hybrid',
-    length: 16.25 * IN,
-    width: 7.75 * IN,
+    length: 16.3 * IN,
+    width: 7.7 * IN,
     thickness: 16,
     weightOz: 8.1,
     face: '生碳纖維 Raw Carbon',
@@ -179,41 +185,43 @@ export const PADDLES: PaddleSpec[] = [
     rating: { power: 7.5, control: 8.5, spin: 10, reach: 8 },
     mods: { pace: 1.0, error: 1.0, spin: 1.3, reach: 0.04 },
     special: 'frost',
-    look: { pattern: 'rawcarbon', base: '#1a1d22', primary: '#4fd8ff', accent: '#ffffff', edge: '#cfd8e3', grip: '#e9f4ff' },
+    look: { pattern: 'diamonds', base: '#0d0e10', primary: '#d4d4d8', accent: '#f4f4f5', edge: '#18181b', grip: '#0b0b0c' },
   },
   {
     id: 'gale',
-    name: '疾風',
-    model: 'GALE 13 Featherlite',
-    tagline: '輕量薄拍，手快、截擊反應最快',
+    name: 'Tempest Wave Pro',
+    brand: 'Paddletek',
+    model: 'Paddletek Tempest Wave Pro-C 14.3mm',
+    tagline: '標準拍型、8 吋寬拍面，甜區大反應快',
     shape: 'standard',
-    length: 15.75 * IN,
+    length: 15.875 * IN,
     width: 8 * IN,
-    thickness: 13,
-    weightOz: 7.4,
-    face: '3K 碳纖維',
-    core: '13 mm 聚合物蜂巢',
+    thickness: 14.3,
+    weightOz: 8.0,
+    face: 'PT-700 生碳纖維',
+    core: '14.3 mm 聚合物蜂巢',
     rating: { power: 7, control: 8.5, spin: 8.5, reach: 7 },
     mods: { pace: 0.99, error: 0.97, spin: 1.12, reach: 0 },
     special: 'cyclone',
-    look: { pattern: 'wind', base: '#062a26', primary: '#2dd4bf', accent: '#f0fdfa', edge: '#99f6e4', grip: '#134e4a' },
+    look: { pattern: 'wave', base: '#141414', primary: '#dc2626', accent: '#f5f5f5', edge: '#991b1b', grip: '#171717' },
   },
   {
     id: 'titan',
-    name: '鎮岳',
-    model: 'TITAN 16 Heavyweight',
-    tagline: '加重拍頭、手感紮實，重球最穩的力量拍',
+    name: 'Pursuit Pro EX',
+    brand: 'Engage',
+    model: 'Engage Pursuit Pro EX 6.0',
+    tagline: '寬拍面加重款，擊球紮實沉重',
     shape: 'widebody',
     length: 16 * IN,
-    width: 8.1 * IN,
+    width: 8 * IN,
     thickness: 16,
-    weightOz: 8.8,
-    face: '玄武岩纖維',
-    core: '16 mm 高密度蜂巢',
+    weightOz: 8.25,
+    face: 'Toray T700 生碳纖維',
+    core: '16 mm（5/8 吋）聚合物蜂巢',
     rating: { power: 9, control: 7.5, spin: 6.5, reach: 7 },
     mods: { pace: 1.08, error: 0.99, spin: 1, reach: 0 },
     special: 'quake',
-    look: { pattern: 'stone', base: '#1c1917', primary: '#f59e0b', accent: '#fde68a', edge: '#44403c', grip: '#292524' },
+    look: { pattern: 'raw', base: '#121212', primary: '#facc15', accent: '#ffffff', edge: '#1c1c1c', grip: '#111111' },
   },
 ];
 

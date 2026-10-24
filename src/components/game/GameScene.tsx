@@ -16,6 +16,7 @@ import { lookFromCharacter } from './scene/characterData';
 import type { CharacterDef } from './characters';
 import { BallModel } from './scene/BallModel';
 import { Effects } from './scene/Effects';
+import { SkillFx } from './scene/SkillFx';
 import { Guide } from './scene/Guide';
 import { ReviewFx } from './scene/ReviewFx';
 import { type FxBus, createFxBus } from './scene/fxBus';
@@ -442,6 +443,7 @@ export const GameScene = (props: SceneProps) => {
       <ReviewFx engine={engine} />
       <BallModel engine={engine} />
       <Effects engine={engine} bus={bus} lowSpec={lowSpec} />
+      <SkillFx engine={engine} excite={excite} />
       <Prewarm />
       <Rig {...props} bus={bus} excite={excite} flash={flash} aberration={aberration} />
       <PostFx aberration={aberration} lowSpec={lowSpec} day={day} />

@@ -205,6 +205,41 @@ export interface Hazard {
   until: number;
 }
 
+/**
+ * 角色絕招放出後的持續效果（比必殺技久、影響的是人和場地，不只是那一顆球）：
+ * lightsOut 阿灰關燈（對手看不到提示、AI 反應變慢）、taunt 城主嗆聲（對手失誤變多）、
+ * flood 黑框淹水（對手後半場積水：跑不快、球彈很低）、clone 帽哥分身（網前分身幫忙截擊兩分）、
+ * cheer 全民應援（能量累積兩倍）。team 是放招的一方。
+ */
+export type SkillEffectId = 'lightsOut' | 'taunt' | 'flood' | 'clone' | 'cheer';
+export interface SkillEffect {
+  id: SkillEffectId;
+  team: Team;
+  start: number;
+  /** 以秒計的效果到這個時間結束（clone 以分數計，見 untilPoint） */
+  until: number;
+  untilPoint?: number;
+}
+
+/** 各效果的長度與強度 */
+export const SKILL_FX = {
+  lightsOut: { secs: 6, aiReaction: 0.08, aiTiming: 1.25 },
+  taunt: { secs: 8, error: 1.35 },
+  /** 積水範圍：對手半場從離網 front 公尺到底線外 */
+  flood: { secs: 6, front: COURT.kitchen + 1.3, bounceY: 0.5, bounceXZ: 0.85 },
+  clone: { points: 2, reach: 0.95, minY: 0.35, maxY: 1.9 },
+  cheer: { secs: 10, energyNow: 50, rate: 2 },
+} as const;
+
+/** 每招絕招對應的持續效果 */
+const SKILL_EFFECT: Record<SkillId, SkillEffectId> = {
+  squatSmash: 'lightsOut',
+  spinSmash: 'taunt',
+  splash: 'flood',
+  dualCurve: 'clone',
+  cheer: 'cheer',
+};
+
 export interface RallyState {
   hits: number;
   lastTeam: Team | null;
@@ -254,6 +289,8 @@ export type GameEvent =
     }
   | { type: 'special'; team: Team; id: SpecialId }
   | { type: 'skill'; team: Team; id: SkillId }
+  /** 帽哥分身幫忙截擊 */
+  | { type: 'cloneHit'; team: Team; pos: V3 }
   | { type: 'skillReady'; team: Team }
   | { type: 'awakenReady'; team: Team }
   | { type: 'awaken'; team: Team }
@@ -340,6 +377,8 @@ export interface HudState {
   challenges: [number, number];
   /** 精彩重播中：這一球的標籤 */
   replay: string | null;
+  /** 角色絕招的持續效果（mine＝玩家放的）；left 是剩幾秒，分身是剩幾分 */
+  effects: { id: SkillEffectId; mine: boolean; left: number; unit: 's' | 'pt' }[];
   /** 電視輔助判決進行中 */
   review: {
     state: 'offer' | 'reviewing';
@@ -592,6 +631,8 @@ export class GameEngine {
   private ballHistory: { t: number; pos: V3 }[] = [];
   /** 場上的結冰、水灘 */
   hazards: Hazard[] = [];
+  /** 角色絕招的持續效果 */
+  skillEffects: SkillEffect[] = [];
   /** 最近一顆旋風球落地竄開的時間（AI 重新判斷用） */
   private cycloneAt = -1;
   /** 被震地重砲掀翻、站不穩到什麼時候（athlete id → 時間；打滑提示用） */
@@ -1027,6 +1068,7 @@ export class GameEngine {
     } else {
       const prev = clone(this.ball.pos);
       const ev = stepBall(this.ball, dt * this.ballSlow());
+      if (ev?.type === 'bounce' && this.skillEffects.length) this.groundFx(this.ball);
       if (this.phase === 'rally') {
         const hist = this.ballHistory;
         hist.push({ t: this.time, pos: clone(this.ball.pos) });
@@ -1037,6 +1079,7 @@ export class GameEngine {
         if (ev) this.onBallEvent(ev.type, ev.pos, ev.type === 'bounce' ? ev.speed : 0);
         this.checkContacts();
         if (this.phase === 'rally') this.reflexBlock();
+        if (this.phase === 'rally' && this.skillEffects.length) this.cloneVolley(dt);
         this.checkBodyAndKitchen();
         this.checkRunaway();
       } else if (ev?.type === 'bounce' && ev.speed > 1.2) {
@@ -1123,8 +1166,17 @@ export class GameEngine {
 
   /** 預測軌跡（時間軸已換算成球的流速） */
   predict(duration: number) {
-    return predictPath(this.ball, duration, PHYSICS_DT, this.ballSlow());
+    return predictPath(this.ball, duration, PHYSICS_DT, this.ballSlow(), this.skillEffects.length ? this.groundFx : undefined);
   }
+
+  /** 落地的場地效果：落在淹水的半場，球像打水漂一樣彈得很低（實際與預測共用） */
+  private groundFx = (b: BallState) => {
+    const team: Team = Math.sign(b.pos.z) === teamSide(0) ? 0 : 1;
+    if (!this.flooded(b.pos.x, b.pos.z, team)) return;
+    b.vel.y *= SKILL_FX.flood.bounceY;
+    b.vel.x *= SKILL_FX.flood.bounceXZ;
+    b.vel.z *= SKILL_FX.flood.bounceXZ;
+  };
 
   /** 設定雙方的角色絕招（選角之後由畫面層告訴引擎） */
   setSkills(skills: [SkillId | null, SkillId | null]) {
@@ -1137,7 +1189,8 @@ export class GameEngine {
 
   private gainEnergy(a: Athlete, amount: number) {
     if (!this.specials) return;
-    const rate = (a.ai ? AI_ENERGY_RATE[this.difficulty] : 1) * (a.awakenHits > 0 ? AWAKEN.energyRate : 1);
+    const rate =
+      (a.ai ? AI_ENERGY_RATE[this.difficulty] : 1) * (a.awakenHits > 0 ? AWAKEN.energyRate : 1) * (this.effectBy('cheer', a.team) ? SKILL_FX.cheer.rate : 1);
     const before = a.energy;
     a.energy = Math.min(ENERGY.max, a.energy + amount * rate);
     if (before < ENERGY.max && a.energy >= ENERGY.max) this.emit({ type: 'energyFull', team: a.team });
@@ -1156,6 +1209,7 @@ export class GameEngine {
       if (this.time < hz.until && Math.hypot(a.pos.x - hz.x, a.pos.z - hz.z) < hz.r) return hz.kind;
     }
     if (this.puddles.length && this.inPuddle(a)) return 'water';
+    if (this.flooded(a.pos.x, a.pos.z, a.team)) return 'water';
     if (this.time < (this.shakenUntil.get(a.id) ?? 0)) return 'shaken';
     return this.time < a.slipUntil ? 'water' : null;
   }
@@ -1164,6 +1218,36 @@ export class GameEngine {
     const spec = kind === 'ice' ? ICE : PUDDLE;
     this.hazards = this.hazards.filter((hz) => this.time < hz.until).slice(-3);
     this.hazards.push({ kind, x, z, r: spec.r, born: this.time, until: this.time + spec.life });
+  }
+
+  /** team 放的某個絕招效果還在不在 */
+  effectBy(id: SkillEffectId, team: Team) {
+    return this.skillEffects.some((e) => e.id === id && e.team === team && (e.untilPoint !== undefined ? this.pointsPlayed < e.untilPoint : this.time < e.until));
+  }
+
+  /** 對 team 不利的效果（對手放的）還在不在 */
+  effectOn(id: SkillEffectId, team: Team) {
+    return this.effectBy(id, other(team));
+  }
+
+  /** 腳下是不是對手淹水的範圍 */
+  private flooded(x: number, z: number, team: Team) {
+    if (!this.effectOn('flood', team)) return false;
+    const s = teamSide(team);
+    return z * s > SKILL_FX.flood.front && Math.abs(x) < COURT.halfWidth + 1.2;
+  }
+
+  /** 絕招打出去之後：開始持續效果 */
+  private startSkillEffect(a: Athlete, skill: SkillId) {
+    const id = SKILL_EFFECT[skill];
+    // 踢館之旅的颱風黑框有自己的積水規則（關卡平衡是照那個調的），不再額外淹整個半場
+    if (id === 'flood' && this.level) return;
+    this.skillEffects = this.skillEffects.filter((e) => !(e.id === id && e.team === a.team));
+    const fx: SkillEffect = { id, team: a.team, start: this.time, until: this.time + (id === 'clone' ? 0 : SKILL_FX[id].secs) };
+    if (id === 'clone') fx.untilPoint = this.pointsPlayed + SKILL_FX.clone.points;
+    this.skillEffects.push(fx);
+    if (id === 'cheer') this.gainEnergy(a, SKILL_FX.cheer.energyNow);
+    if (id === 'flood') this.opponentOf(a).knockedUntil = this.time + 0.3;
   }
 
   /** 玩家：加速度模型，不是瞬間移動 */
@@ -1546,6 +1630,59 @@ export class GameEngine {
    * 擋回去的是軟弱的高球（容易被攻擊），只是避免「莫名其妙被打到」的挫折。
    * 出界球、雙彈跳規則要求等落地的球、站在廚房裡截擊都不會觸發。
    */
+  /** 帽哥分身站在網前的位置（跟著來球左右移動）；沒有分身時是 null */
+  clonePos(team: Team): V3 | null {
+    if (!this.effectBy('clone', team)) return null;
+    return v3(this.cloneX[team], 0, teamSide(team) * (COURT.kitchen + 0.3));
+  }
+  private cloneX: [number, number] = [0, 0];
+
+  /** 分身截擊：來球從網前經過、分身搆得到（本人搆不到）就幫忙打回去 */
+  private cloneVolley(dt: number) {
+    for (const team of [0, 1] as Team[]) {
+      if (!this.effectBy('clone', team)) continue;
+      const b = this.ball;
+      const s = teamSide(team);
+      const incoming = this.rally.lastTeam !== team;
+      // 分身跟著球左右移動（球飛過來時才追）
+      const tx = incoming ? clamp(b.pos.x, -COURT.halfWidth + 0.4, COURT.halfWidth - 0.4) : this.cloneX[team] * 0.98;
+      this.cloneX[team] += (tx - this.cloneX[team]) * Math.min(1, dt * 5);
+      if (!incoming || this.rally.bouncesSinceHit !== 0) continue;
+      if (this.mode === 'match' && this.rally.hits <= 2) continue;
+      if (Math.sign(b.pos.z) !== s || b.vel.z * s <= 0) continue;
+      const gz = s * (COURT.kitchen + 0.3);
+      if (Math.abs(b.pos.z - gz) > 0.3) continue;
+      if (Math.abs(b.pos.x - this.cloneX[team]) > SKILL_FX.clone.reach || b.pos.y < SKILL_FX.clone.minY || b.pos.y > SKILL_FX.clone.maxY) continue;
+      const owner = this.athletes.find((a) => a.team === team)!;
+      // 本人搆得到就讓本人打
+      if (Math.hypot(b.pos.x - owner.pos.x, b.pos.z - owner.pos.z) < this.reachOf(owner)) continue;
+      const ghost: Athlete = {
+        ...owner,
+        pos: v3(this.cloneX[team], 0, gz + s * 0.15),
+        vel: v3(),
+        armed: false,
+        skillArmed: false,
+        dive: null,
+        knockedUntil: 0,
+        kitchenLockUntil: 0,
+        swing: {
+          ...idleSwing(),
+          state: 'swinging',
+          button: 'soft',
+          charge: 0.4,
+          swingStart: this.time - PLAYER.swingWindup,
+          contactAt: this.time,
+          done: true,
+          assistQ: 0.8,
+          forehand: 1,
+          reflex: true,
+        },
+      };
+      this.resolveContact(ghost);
+      if (this.rally.lastTeam === team) this.emit({ type: 'cloneHit', team, pos: clone(b.pos) });
+    }
+  }
+
   private reflexBlock() {
     const h = this.human;
     if (h.ai || h.dive || this.rally.lastTeam === h.team || this.level?.noReflex) return;
@@ -1681,6 +1818,8 @@ export class GameEngine {
           pressure *
           (1 + underAttack * 1.4) *
           (this.opponentOf(a).awakenHits > 0 ? AWAKEN.pressure : 1) *
+          // 被城主嗆聲：手抖，失誤變多
+          (this.effectOn('taunt', a.team) ? SKILL_FX.taunt.error : 1) *
           // 互 dink 太久，AI 開始沉不住氣：dink 越來越不穩、容易吊高給人突擊
           (a.ai && kind0 === 'dink' ? 1 + Math.max(0, this.rally.dinkChain - 3) * 0.07 : 1),
         zone: !!fire || !!skill,
@@ -1795,12 +1934,7 @@ export class GameEngine {
       a.skillReady = false;
       a.skillUsedAt = this.pointsPlayed;
       a.skillAt = this.time;
-      if (skill === 'splash') {
-        // 水花噴到對手腳下：嚇一跳愣住一下，腳下留一灘水，踩在裡面就跑不快
-        const opp = this.opponentOf(a);
-        opp.knockedUntil = this.time + 0.3;
-        this.addHazard('water', opp.pos.x, opp.pos.z);
-      }
+      this.startSkillEffect(a, skill);
       this.freezeUntil = this.real + 0.45;
       this.slowUntil = this.real + 0.9;
       this.emit({ type: 'skill', team: a.team, id: skill });
@@ -2026,6 +2160,8 @@ export class GameEngine {
     if (a.skill === 'squatSmash') return h < 1.2;
     if (a.skill === 'spinSmash') return h > 0.7;
     if (a.skill === 'dualCurve') return Math.abs(this.ball.pos.z) > COURT.kitchen + 0.5;
+    // 全民應援：能量還不到一半時放，賺最多
+    if (a.skill === 'cheer') return a.energy < 50;
     return true;
   }
 
@@ -2506,7 +2642,9 @@ export class GameEngine {
     }
     // 幻影球看不出哪顆是真的：反應變慢；任何必殺球都比較難抓時機
     const sp = this.ball.special;
-    const reaction = ai.profile.reaction + (sp?.id === 'phantom' ? 0.42 : 0);
+    // 被阿灰關燈：看不清楚，反應慢半拍、時機也抓不準
+    const dark = this.effectOn('lightsOut', a.team);
+    const reaction = ai.profile.reaction + (sp?.id === 'phantom' ? 0.42 : 0) + (dark ? SKILL_FX.lightsOut.aiReaction : 0);
     const reacted = this.time >= this.rally.lastHitTime + reaction;
     const plan = ai.plan;
     // 旋風球落地竄開：AI 愣一下才重新判斷（落地前的規劃是被騙的）
@@ -2514,6 +2652,7 @@ export class GameEngine {
     if (reacted && (!plan || fooled || (!plan.swung && this.time >= ai.replanAt && plan.contactT - this.time > 0.25))) {
       ai.plan = planContact(this, a, this.rand);
       if (ai.plan && sp) ai.plan.timingError *= 1.8;
+      if (ai.plan && dark) ai.plan.timingError *= SKILL_FX.lightsOut.aiTiming;
       // 絕招：每一顆來球只考慮一次，提早決定（蹲下、起跳的動作才來得及）
       const p0 = ai.plan;
       if (p0 && !p0.leave && this.skillRolled.get(a.id) !== this.rally.lastHitTime) {
@@ -2582,6 +2721,13 @@ export class GameEngine {
       challenges: [this.challenges[0], this.challenges[1]],
       review: this.reviewHud(),
       replay: this.replay?.label ?? null,
+      effects: this.skillEffects
+        .filter((e) => this.effectBy(e.id, e.team))
+        .map((e) =>
+          e.untilPoint !== undefined
+            ? { id: e.id, mine: e.team === h.team, left: e.untilPoint - this.pointsPlayed, unit: 'pt' as const }
+            : { id: e.id, mine: e.team === h.team, left: Math.ceil(e.until - this.time), unit: 's' as const },
+        ),
       level: this.level ? this.level.hud() : null,
     };
   }

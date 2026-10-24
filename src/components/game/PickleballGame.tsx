@@ -573,6 +573,29 @@ const PickleballGame = () => {
             later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 900);
             break;
           }
+          case 'technique': {
+            // 高階技巧打成功：真的在打球的人會認得的招式
+            const TECH = {
+              erne: { text: 'ERNE！', sub: '繞過廚房的截擊' },
+              thirdDrop: { text: '第三拍放小球！', sub: '趁機上網' },
+              reset: { text: 'RESET！', sub: '把節奏拉回來' },
+            } as const;
+            const tt = TECH[e.id];
+            if (e.team === 0) {
+              const t: Toast = { id: ++ids.current, text: tt.text, sub: tt.sub, tone: e.id === 'erne' ? 'special' : 'perfect' };
+              setToasts([t]);
+              later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 1100);
+              if (e.id === 'thirdDrop')
+                latest.current.coach('thirdDrop', '第三拍放小球：發球方第三拍輕放進對方廚房，讓自己有時間衝到網前，是匹克球最經典的戰術', '第三拍放小球：發球方第三拍輕放進對方廚房（按 J），讓自己有時間衝到網前，是匹克球最經典的戰術');
+              if (e.id === 'reset') latest.current.coach('reset', 'Reset：被重抽時輕輕擋回對方廚房，對手就只能從低點出手，節奏回到你手上', 'Reset：被重抽時按 J 輕輕擋回對方廚房，對手就只能從低點出手，節奏回到你手上');
+            }
+            if (e.id === 'erne') {
+              audio.counter();
+              audio.cheer(true);
+              audio.say('wow', { priority: true, cooldown: 0 });
+            } else audio.highlight();
+            break;
+          }
           case 'cloneHit':
             audio.cloneHit();
             if (e.team === 0) {
@@ -656,6 +679,9 @@ const PickleballGame = () => {
           case 'cord':
             audio.cord();
             audio.say('lucky');
+            // 發球擦網：現行規則（2024 起）沒有 Let，落在發球區就照打
+            if (engine.rally.hits === 1)
+              latest.current.coach('noLet', '發球擦網照打！現行規則沒有 Let（重發），只要落在對角發球區就是好球', '發球擦網照打！現行規則沒有 Let（重發），只要落在對角發球區就是好球');
             break;
           case 'chance':
             audio.chance();

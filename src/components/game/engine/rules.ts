@@ -16,7 +16,8 @@ export type FaultReason =
   | 'kitchenVolley'
   | 'kitchenMomentum'
   | 'bodyHit'
-  | 'notReturned';
+  | 'notReturned'
+  | 'netTouch';
 
 /** 每一種失分都對應一條真實規則，結束時給玩家看「為什麼」 */
 export const FAULT_INFO: Record<FaultReason, { title: string; lesson: string }> = {
@@ -42,6 +43,7 @@ export const FAULT_INFO: Record<FaultReason, { title: string; lesson: string }> 
   },
   bodyHit: { title: '被球打到', lesson: '球在落地前打到身體就失分，就算那顆球本來會出界。看到出界球要閃開。' },
   notReturned: { title: '沒接到', lesson: '球在同一邊落地兩次，這一分就結束了。' },
+  netTouch: { title: '碰網', lesson: '比賽進行中，身體、衣服或球拍碰到球網（或網柱）就失分。衝上網截擊完要煞得住。' },
 };
 
 export interface MatchScore {
@@ -126,4 +128,5 @@ export const lineMargin = (p: V3, serveTargetSign: number | null): { margin: num
 };
 
 /** 腳是否在廚房內（含廚房線）。以身體中心往前 12 cm 當腳尖 */
-export const feetInKitchen = (pos: V3) => Math.abs(pos.z) - 0.12 <= COURT.kitchen;
+/** 腳在廚房裡：廚房只到邊線（線本身算廚房），站在邊線外、網柱旁不算——Erne 就是靠這條規則 */
+export const feetInKitchen = (pos: V3) => Math.abs(pos.z) - 0.12 <= COURT.kitchen && Math.abs(pos.x) - 0.12 <= COURT.halfWidth;

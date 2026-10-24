@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Changelog } from './Changelog';
-import { venueById } from './venues';
+import { VenueThumb } from './VenueThumb';
+import { VENUES, venueById } from './venues';
 import { readSeen, VERSIONS } from './changelogData';
 import { characterById } from './characters';
 import { paddleById } from './engine/paddles';
@@ -173,7 +174,7 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
           {(
             [
               { on: true, title: '🔥 熱血版' },
-              { on: false, title: '🎾 正規版' },
+              { on: false, title: '🏅 正規版' },
             ] as const
           ).map((m) => {
             const sel = settings.specials === m.on;
@@ -384,12 +385,39 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
             </div>
           </div>
 
-
+          {/* 場地：快速開打不經過對戰準備頁，這裡也要能換 */}
+          <div className="mt-4">
+            <div className="mb-2 text-xs font-semibold tracking-wider text-white/50">比賽場地</div>
+            <div className="grid grid-cols-2 gap-2">
+              {VENUES.map((v) => {
+                const sel = venueById(settings.venue).id === v.id;
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => onChange({ ...settings, venue: v.id })}
+                    aria-pressed={sel}
+                    className={`overflow-hidden rounded-xl border text-left transition-all ${
+                      sel ? 'border-amber-300/70 bg-amber-400/15 shadow-lg shadow-amber-500/10' : 'border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className={`h-16 transition-opacity ${sel ? 'opacity-100' : 'opacity-70'}`}>
+                      <VenueThumb venue={v.id} />
+                    </div>
+                    <div className="px-3 py-1.5">
+                      <div className="truncate text-sm font-bold text-white">{v.title}</div>
+                      <div className="truncate text-[11px] text-white/55">{v.desc}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2">
             {(
               [
-                { id: 'auto', title: '🎾 提早按・自動揮拍', desc: '對手出手就先按，球到了自動揮；越早按越飽' },
+                { id: 'auto', title: '👆 提早按・自動揮拍', desc: '對手出手就先按，球到了自動揮；越早按越飽' },
                 { id: 'timing', title: '⏱️ 抓時機放開', desc: '進階：按住蓄力，自己抓擊球瞬間放開' },
               ] as const
             ).map((m) => (

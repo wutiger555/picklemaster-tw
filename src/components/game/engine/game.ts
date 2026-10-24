@@ -253,6 +253,8 @@ export interface RallyState {
   dinkChain: number;
   /** 這一分哪一隊飛撲救回過球（拿下這分就是精彩好球） */
   diveSaved: [boolean, boolean];
+  /** 這一拍在嘗試的高階技巧（落地在對方廚房才算成功）：發球方第三拍放小球、被重抽時的 Reset */
+  tryTech: { team: Team; id: 'thirdDrop' | 'reset' } | null;
   /** 這一分雙方最近一次放必殺、飛撲救球的時間（沒有就是 -1，精彩重播對準這一刻） */
   specialAt: [number, number];
   diveAt: [number, number];
@@ -289,6 +291,8 @@ export type GameEvent =
     }
   | { type: 'special'; team: Team; id: SpecialId }
   | { type: 'skill'; team: Team; id: SkillId }
+  /** 高階技巧打成功（給畫面、音效、教練提示）：Erne、第三拍放小球、Reset */
+  | { type: 'technique'; team: Team; id: 'erne' | 'thirdDrop' | 'reset' }
   /** 帽哥分身幫忙截擊 */
   | { type: 'cloneHit'; team: Team; pos: V3 }
   | { type: 'skillReady'; team: Team }
@@ -776,6 +780,7 @@ export class GameEngine {
       atp: false,
       dinkChain: 0,
       diveSaved: [false, false],
+      tryTech: null,
       specialAt: [-1, -1],
       diveAt: [-1, -1],
       awakened: [false, false],
@@ -1333,6 +1338,10 @@ export class GameEngine {
       const zMin = 0.32;
       const zMax = COURT.halfLength + 3;
       const sz = clamp(a.pos.z * s, zMin, zMax);
+      // 碰網：比賽中衝到網前還煞不住（往網的速度還很快）就算碰到網，失分
+      if (sz !== a.pos.z * s && sz === zMin && this.phase === 'rally' && -a.vel.z * s > 2.6 && !this.practice && this.mode !== 'drill') {
+        this.endRally(other(a.team), 'netTouch', a.team);
+      }
       if (sz !== a.pos.z * s) a.vel.z = 0;
       a.pos.z = sz * s;
       const xm = COURT.halfWidth + 2.4;
@@ -1548,6 +1557,11 @@ export class GameEngine {
     return this.airborne(a) ? y >= DIVE.minHeight && y <= DIVE.maxHeight : y >= PLAYER.minContactHeight && y <= PLAYER.maxContactHeight;
   }
 
+  /** 站在 Erne 的位置：邊線外、和廚房同一段（離網不到廚房線外 0.8 m） */
+  ernePos(a: Athlete) {
+    return Math.abs(a.pos.x) > COURT.halfWidth + 0.1 && Math.abs(a.pos.z) < COURT.kitchen + 0.8;
+  }
+
   private contactCost(a: Athlete, p: V3, attack = false) {
     const { f, l } = this.relative(a, p);
     const reach = Math.hypot(f, l);
@@ -1581,7 +1595,9 @@ export class GameEngine {
       if (b0 + smp.bounces > 1) break;
       if (bounceSeg !== undefined && smp.bounces !== bounceSeg) continue;
       if (Math.sign(smp.pos.z) !== s) continue;
-      const c = this.contactCost(a, smp.pos, attack);
+      let c = this.contactCost(a, smp.pos, attack);
+      // 站在 Erne 的位置（邊線外、廚房旁）：就是要在球落地前截擊
+      if (b0 + smp.bounces === 0 && this.ernePos(a) && !(this.mode === 'match' && this.rally.hits <= 2)) c -= 0.8;
       if (c < (best?.cost ?? Infinity)) best = { t, cost: c, pos: smp.pos, volley: b0 + smp.bounces === 0 };
     }
     return best;
@@ -1898,6 +1914,15 @@ export class GameEngine {
     r.lastKindByTeam[a.team] = plan.kind;
     r.atp = false;
     r.dinkChain = plan.kind === 'dink' && !popped ? r.dinkChain + 1 : 0;
+    // 第三拍放小球：發球方第三拍輕放進廚房，趁機上網（匹克球最經典的戰術）；
+    // Reset：被殺球／突擊壓著打時，輕擋回對方廚房把節奏拉回來
+    const soft = plan.kind === 'drop' || plan.kind === 'dink' || plan.kind === 'block';
+    r.tryTech =
+      soft && !popped && this.mode === 'match' && r.hits === 3 && a.team === this.match.serving
+        ? { team: a.team, id: 'thirdDrop' }
+        : soft && !popped && underAttack > 0
+          ? { team: a.team, id: 'reset' }
+          : null;
     if (diving) {
       r.diveSaved[a.team] = true;
       r.diveAt[a.team] = this.time;
@@ -1990,8 +2015,12 @@ export class GameEngine {
       label = '被打飛';
       this.emit({ type: 'highlight', text: a.ai ? '機會球！跳起來殺' : '球被打飛了！小心對方殺球' });
     }
+    // Erne：從邊線外、廚房旁邊截擊（腳不在廚房裡就合法），高手招牌技巧：慢動作＋大量能量
     if (volley && Math.abs(a.pos.x) > COURT.halfWidth + 0.05 && Math.abs(a.pos.z) < COURT.kitchen + 0.6) {
       this.emit({ type: 'highlight', text: 'ERNE！繞過廚房的截擊' });
+      this.emit({ type: 'technique', team: a.team, id: 'erne' });
+      this.gainEnergy(a, ENERGY.counter);
+      this.slowUntil = Math.max(this.slowUntil, this.real + 0.8);
     }
     this.emit({
       type: 'hit',
@@ -2244,6 +2273,11 @@ export class GameEngine {
         }
       }
       r.bouncesSinceHit = 1;
+      if (r.tryTech && r.tryTech.team === hitter && Math.abs(pos.z) <= COURT.kitchen) {
+        this.emit({ type: 'technique', team: hitter, id: r.tryTech.id });
+        this.gainEnergy(this.athletes.find((x) => x.team === hitter)!, ENERGY.good);
+      }
+      r.tryTech = null;
       this.specialLanding(pos);
       if (r.atp) this.emit({ type: 'highlight', text: 'ATP！繞柱球' });
       if (this.mode === 'dink' && !this.practice && hitter === this.human.team) {

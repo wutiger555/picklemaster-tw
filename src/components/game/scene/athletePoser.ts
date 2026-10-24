@@ -72,18 +72,18 @@ const STROKES: Record<Kind, Stroke> = {
     contact: { tip: [-0.85, -0.1, -0.2], palm: [0, -0.1, -1], pole: [0.35, -1, 0.45], yaw: -0.1, lean: 0.2, off: [-0.45, -0.35, -0.25] },
     follow: { pos: [0.42, 0.05, 0.28], tip: [0.5, 0.65, -0.45], palm: [-0.9, 0.1, -0.3], pole: [0.7, -0.4, 0.3], yaw: -0.5, lean: 0.1, off: [-0.45, -0.3, -0.3] },
   },
-  // 吊小球（dink）：小拉拍、拍面打開、膝蓋彎低，往前上推送
+  // 吊小球（dink）：用腳不用手——膝蓋彎很低、肩膀幾乎不轉，小拉拍、拍面打開往前上推送
   fhLow: {
     rel: true,
-    crouch: 0.6,
-    back: { pos: [0.12, 0.05, -0.26], tip: [0.45, -0.75, 0.3], palm: [0, 0.35, 0.94], pole: [0.6, -0.6, -0.5], yaw: -0.3, lean: 0.25, off: [-0.25, -0.35, 0.3] },
+    crouch: 0.78,
+    back: { pos: [0.12, 0.05, -0.26], tip: [0.45, -0.75, 0.3], palm: [0, 0.35, 0.94], pole: [0.6, -0.6, -0.5], yaw: -0.12, lean: 0.25, off: [-0.25, -0.35, 0.3] },
     contact: { tip: [0.45, -0.75, 0.3], palm: [0, 0.45, 0.9], pole: [0.6, -0.7, -0.4], yaw: 0, lean: 0.25, off: [-0.3, -0.35, 0.25] },
     follow: { pos: [-0.06, 0.22, 0.3], tip: [0.35, -0.35, 0.85], palm: [0, 0.7, 0.7], pole: [0.5, -0.8, -0.1], yaw: 0.15, lean: 0.25, off: [-0.3, -0.35, 0.2] },
   },
   bhLow: {
     rel: true,
-    crouch: 0.6,
-    back: { pos: [-0.12, 0.05, -0.26], tip: [-0.45, -0.75, 0.3], palm: [0, -0.35, -0.94], pole: [0.3, -0.9, 0.3], yaw: 0.3, lean: 0.25, off: [-0.35, -0.38, 0.15] },
+    crouch: 0.78,
+    back: { pos: [-0.12, 0.05, -0.26], tip: [-0.45, -0.75, 0.3], palm: [0, -0.35, -0.94], pole: [0.3, -0.9, 0.3], yaw: 0.12, lean: 0.25, off: [-0.35, -0.38, 0.15] },
     contact: { tip: [-0.45, -0.75, 0.3], palm: [0, -0.45, -0.9], pole: [0.3, -0.9, 0.4], yaw: 0, lean: 0.25, off: [-0.4, -0.35, 0] },
     follow: { pos: [0.06, 0.22, 0.3], tip: [-0.35, -0.35, 0.85], palm: [0, -0.7, -0.7], pole: [0.4, -0.8, 0.4], yaw: -0.15, lean: 0.25, off: [-0.4, -0.35, 0] },
   },
@@ -515,7 +515,13 @@ export class AthletePoser {
     const incoming = engine.phase === 'rally' && engine.rally.lastTeam !== a.team;
     const strokeDef = st ? STROKES[st.kind] : null;
     const prep = st ? this.prepWeight(a, st, t) : 0;
-    let crouchT = incoming ? 0.42 : 0.3;
+    // 網前接球蹲得更低（真實選手在廚房線前幾乎是半蹲）
+    const atNet = Math.abs(a.pos.z) < 2.13 + 0.9;
+    let crouchT = incoming ? (atNet ? 0.6 : 0.42) : 0.3;
+    // 分腿墊步：對手出手後 0.28 秒內，落地那一下多蹲一點
+    const oppHit = t - engine.opponentOf(a).swing.contactAt;
+    const splitU = engine.phase === 'rally' && !a.dive ? oppHit / 0.28 : -1;
+    if (splitU > 0.45 && splitU < 1) crouchT = Math.max(crouchT, 0.75);
     if (strokeDef && strokeOn) crouchT = crouchT + (strokeDef.crouch - crouchT) * Math.max(prep, tau > -FWD ? 1 : 0);
     if (squat) crouchT = 1;
     // 撲出去身體伸直（腳打直）；爬起來時先蹲著再站起來
@@ -565,9 +571,8 @@ export class AthletePoser {
     }
     // 天雷的騰空改由飛膝動作本身處理
     if (t < a.jumpUntil && this.over.Mx_KneeCombo < 0.3) lift = Math.sin(clamp01(1 - (a.jumpUntil - t) / 0.55) * Math.PI) * 0.75;
-    const opp = engine.opponentOf(a);
-    const since = t - opp.swing.contactAt;
-    if (engine.phase === 'rally' && since > 0 && since < 0.22) lift += Math.sin((since / 0.22) * Math.PI) * 0.05;
+    // 分腿墊步（split step）：對手擊球瞬間雙腳小跳一下，落地蹲低蓄力再起步（crouch 在上面已經加了落地的下沉）
+    if (splitU > 0 && splitU < 1) lift += Math.sin(Math.min(1, splitU / 0.55) * Math.PI) * 0.1;
     g.position.y = lift + skillLift;
     if (dive) {
       // 繞骨盆把整個人往撲的方向放倒（頭先過去），骨盆照飛撲的弧線走

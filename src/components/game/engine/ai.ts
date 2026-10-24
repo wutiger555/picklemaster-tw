@@ -179,15 +179,17 @@ export const planContact = (
     if (volley && requireBounce) continue;
 
     // 身體站在球後方 0.3 m、側邊 0.55 m（正手或反手，取比較近的一邊）
+    const fhX = s.pos.x - side * 0.55;
+    const bhX = s.pos.x + side * 0.55;
+    const standX = Math.abs(fhX - a.pos.x) <= Math.abs(bhX - a.pos.x) ? fhX : bhX;
     let standZ = s.pos.z + side * 0.3;
-    if (volley && Math.abs(standZ) - 0.12 <= COURT.kitchen + 0.12) {
+    // 站在邊線外（Erne 的位置）不算廚房，可以貼著網截擊
+    const outside = Math.abs(standX) - 0.12 > COURT.halfWidth;
+    if (volley && !outside && Math.abs(standZ) - 0.12 <= COURT.kitchen + 0.12) {
       // 截擊：腳停在廚房線後，往前伸手最多約 0.7 m 去攔高球
       standZ = side * (COURT.kitchen + 0.25);
       if (Math.abs(standZ) - Math.abs(s.pos.z) > 0.7) continue;
     }
-    const fhX = s.pos.x - side * 0.55;
-    const bhX = s.pos.x + side * 0.55;
-    const standX = Math.abs(fhX - a.pos.x) <= Math.abs(bhX - a.pos.x) ? fhX : bhX;
     const travel = hypot2(standX - a.pos.x, standZ - a.pos.z);
     const needed = travel / prof.maxSpeed + 0.12 + reactLeft;
     const feasible = needed <= s.t;

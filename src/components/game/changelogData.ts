@@ -1,6 +1,11 @@
 /** 版本說明：新版本加在最前面 */
 export const VERSIONS: { v: string; date: string; items: string[] }[] = [
   {
+    v: '1.10',
+    date: '2026-10-25',
+    items: ['開賽前的場地介紹運鏡：信義頂樓抬頭看 101、新生公園玫瑰花圃、河濱空拍，點一下就能略過'],
+  },
+  {
     v: '1.9',
     date: '2026-10-25',
     items: [

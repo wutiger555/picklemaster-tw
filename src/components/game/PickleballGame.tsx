@@ -10,8 +10,10 @@ import type { CutInInfo } from './CutIn';
 import { GameScene } from './GameScene';
 import { GameHud, type PointCard, type Toast } from './GameHud';
 import { ComicTitle, GAME_NAME, TitleSplash } from './ComicTitle';
-import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
+import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings, type Venue } from './GameScreens';
 import { MatchSetup } from './MatchSetup';
+import { VenueIntroCard } from './VenueIntroCard';
+import { introDuration } from './scene/venueIntro';
 import { PaddleSelect } from './PaddleSelect';
 import { CharacterSelect } from './CharacterSelect';
 import { CHARACTERS, type CharacterDef, characterById, pickOpponent, pickOpponentExcept, traitsOf } from './characters';
@@ -151,6 +153,9 @@ const PickleballGame = () => {
   const [engine, setEngine] = useState<GameEngine>(initialDemo.engine);
   /** 依 athletes 的順序：[玩家, 對手]，雙打再加 [隊友, 對手 2] */
   const [characters, setCharacters] = useState<CharacterDef[]>(initialDemo.chars);
+  /** 開賽前場地介紹：開始時間（給鏡頭用）與是否正在播（給畫面層用） */
+  const introAt = useRef(0);
+  const [introOn, setIntroOn] = useState(false);
   const [paused, setPaused] = useState(false);
   const [hud, setHud] = useState<HudState>(() => engine.hud());
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -870,6 +875,19 @@ const PickleballGame = () => {
     void c.file?.then((f) => f && deliver(f));
   };
 
+  const skipIntro = () => {
+    introAt.current = 0;
+    setIntroOn(false);
+  };
+
+  // 場地介紹播放中：按任何鍵略過
+  useEffect(() => {
+    if (!introOn) return;
+    const onKey = () => skipIntro();
+    window.addEventListener('keydown', onKey, { once: true });
+    return () => window.removeEventListener('keydown', onKey);
+  }, [introOn]);
+
   /** 開打：一般比賽，或踢館之旅的某一關（關卡用自己的規則、對手和海邊場地） */
   const start = (s: Settings = settings, level: LevelId | null = null) => {
     track('game_start', {
@@ -922,6 +940,20 @@ const PickleballGame = () => {
     setClip(null);
     setEngine(e);
     setCharacters(cast);
+    // 一般比賽開打前先介紹場地（關卡有自己的故事，不播）
+    const venue = s.venue ?? 'arena';
+    const dur = def ? 0 : introDuration(venue);
+    if (dur > 0) {
+      introAt.current = performance.now();
+      setIntroOn(true);
+      later(() => {
+        introAt.current = 0;
+        setIntroOn(false);
+      }, dur * 1000);
+    } else {
+      introAt.current = 0;
+      setIntroOn(false);
+    }
     setHud(e.hud());
     setToasts([]);
     if (!def) setCard(null);
@@ -1114,10 +1146,16 @@ const PickleballGame = () => {
           venue={engine.level ? 'beach' : (settings.venue ?? 'arena')}
           showcase={screen === 'menu' || screen === 'setup'}
           clip={recorder}
+          intro={introAt}
         />
       </Canvas>
 
-      {playing && !lessonsDone && (
+      <AnimatePresence>
+        {playing && introOn && !engine.level && (
+          <VenueIntroCard key="venue-intro" venue={(settings.venue ?? 'arena') as Exclude<Venue, 'beach'>} touch={touch} onSkip={skipIntro} />
+        )}
+      </AnimatePresence>
+      {playing && !lessonsDone && !introOn && (
         <>
           <GameHud
             hud={hud}

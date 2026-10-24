@@ -382,7 +382,7 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
       </label>
 
       {/* 設定很長（桌機標題加大後也超過舞台），下一步按鈕黏在底部，不用捲到最下面找 */}
-      <div className="sticky -bottom-4 z-10 -mx-1 mt-4 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent px-1 pb-4 pt-4">
+      <div className="sticky -bottom-4 z-10 -mx-4 mt-6 border-t border-white/10 bg-slate-950/90 px-4 pb-4 pt-3 backdrop-blur-md before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-gradient-to-t before:from-slate-950/90 before:to-transparent">
       <motion.button
         type="button"
         whileHover={{ scale: 1.02 }}

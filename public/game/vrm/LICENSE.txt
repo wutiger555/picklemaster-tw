@@ -1,0 +1,10 @@
+Characters from the 100Avatars series (https://github.com/kourtincat/100Avatars),
+released under CC0 1.0 Universal (each model also states CC0 in its VRM metadata).
+Index: https://github.com/ToxSam/open-source-avatars
+
+cucumber.glb  ← 085 Cucumber  https://arweave.net/CI15ScQv7owEU6VPq9zJTRizjwxggGk0nCdz7r1uy58
+bao.glb  ← 209 BaoSamurai  https://arweave.net/wmTy-SEXxmlp847i1U1m2GziSGp-4T8qrZ77A32LlY8
+tiger.glb  ← 283 CoolTiger  https://arweave.net/2EQ5wsstsJaFOG9LXq_gVFKKgM8bnfPa3axYJ-VS1ug
+beachking.glb  ← 234 BeachKing  https://arweave.net/uKhDMselhdUyeJKjelpuVsL8s-a9v_Wqq75TQfCfnos
+mecha.glb  ← 239 SportMecha  https://arweave.net/xpx3cF_x4G4FUW-oIx7c2LiSUPigXK74fLHXgJ2w6lA
+anna.glb  ← 270 Anna  https://arweave.net/RqDioyluCcxDNHFPoXLUlbEQjhP1Fy9HtaGzLFVh0mE

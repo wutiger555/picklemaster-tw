@@ -90,7 +90,8 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
 
     // 空中擊球點與計時圈：圈從大縮到小，縮到最小（並變金色）就是揮拍時機
     const remain = g ? g.hitT - engine.time : 99;
-    const showTiming = live && !!g && !g.leave && remain > -0.05 && remain < g.span + 0.1;
+    // 狐火隱形球：計時圈是跟著球走的，球看不見時也一起藏起來
+    const showTiming = live && !!g && !g.leave && remain > -0.05 && remain < g.span + 0.1 && !engine.ballHidden();
     if (contact.current) {
       contact.current.visible = showTiming;
       if (showTiming) {

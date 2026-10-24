@@ -81,6 +81,10 @@ export const BallModel = ({ engine }: { engine: GameEngine }) => {
     const p = engine.prevBall;
     v.pos.set(p.x + (b.pos.x - p.x) * a, p.y + (b.pos.y - p.y) * a, p.z + (b.pos.z - p.z) * a);
     outer.current.position.copy(v.pos);
+    // 狐火隱形球：球和影子一起消失
+    const hidden = engine.ballHidden();
+    outer.current.visible = !hidden;
+    shadow.current.visible = !hidden;
 
     // 擊中瞬間：壓扁＋閃白（用真實時間衰減，頓幀時也看得到）
     if (engine.rally.lastHitTime !== lastHit.current) {

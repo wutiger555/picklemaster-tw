@@ -70,6 +70,12 @@ const EFFECT_CHIP: Record<HudState['effects'][number]['id'], { icon: string; nam
   flood: { icon: '🌊', name: '淹水', color: '#38bdf8' },
   clone: { icon: '👥', name: '分身', color: '#a3e635' },
   cheer: { icon: '📣', name: '全民應援', color: '#facc15' },
+  sour: { icon: '🥒', name: '酸到軟腳', color: '#4ade80' },
+  feast: { icon: '🥟', name: '能量被吃', color: '#fbbf24' },
+  roar: { icon: '🐯', name: '嚇到手軟', color: '#f97316' },
+  wave: { icon: '🌊', name: '被浪捲走', color: '#22d3ee' },
+  overclock: { icon: '⚡', name: '超頻', color: '#a855f7' },
+  foxfire: { icon: '🦊', name: '狐火隱形球', color: '#60a5fa' },
 };
 
 /** 誰放的什麼效果、還剩多久；對自己不利的標紅框 */

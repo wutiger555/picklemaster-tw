@@ -4,7 +4,7 @@ import { OrbitControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { GameEngine } from './engine/game';
 import { AthleteModel } from './scene/AthleteModel';
-import { lookFromCharacter } from './scene/characterData';
+import { headHeights, lookFromCharacter } from './scene/characterData';
 import { CHARACTERS, type CharacterDef } from './characters';
 import { SKILLS } from './engine/skills';
 
@@ -34,8 +34,15 @@ const Portrait = ({ c, big }: { c: CharacterDef; big?: boolean }) =>
   );
 
 /** 選手的頭會看球：預覽時把「球」放在鏡頭位置，選手就一直看著你 */
-const LookAtCamera = ({ engine }: { engine: GameEngine }) => {
-  useFrame(({ camera }) => {
+const LookAtCamera = ({ engine, id }: { engine: GameEngine; id: string }) => {
+  useFrame(({ camera, controls }) => {
+    // 取景跟著角色身高：鏡頭和環繞中心都以頭骨高度為準（照片角色的頭骨約 1.6 m）
+    const head = headHeights.get(id) ?? 1.6;
+    const orbit = controls as unknown as { target: { y: number } } | null;
+    if (orbit && Math.abs(orbit.target.y - (head - 0.24)) > 0.001) {
+      camera.position.y += head - 0.24 - orbit.target.y;
+      orbit.target.y = head - 0.24;
+    }
     engine.ball.pos.x = camera.position.x;
     engine.ball.pos.y = camera.position.y;
     engine.ball.pos.z = camera.position.z;
@@ -58,11 +65,11 @@ const Preview3D = ({ c }: { c: CharacterDef }) => {
       <directionalLight position={[p.x + 0.6, 2.2, p.z - 2.5]} intensity={4.2} />
       <directionalLight position={[p.x - 1.5, 2, p.z - 1]} intensity={1.4} color="#ffe6cc" />
       <directionalLight position={[p.x - 1, 2.2, p.z + 2]} intensity={1.6} color="#9ad8ff" />
-      <LookAtCamera engine={engine} />
+      <LookAtCamera engine={engine} id={c.id} />
       <Suspense fallback={null}>
         <AthleteModel key={c.id} engine={engine} index={0} look={look} trackTip={false} />
       </Suspense>
-      <OrbitControls target={[p.x, 1.36, p.z]} enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={1.2} minPolarAngle={1.1} maxPolarAngle={1.9} />
+      <OrbitControls makeDefault target={[p.x, 1.36, p.z]} enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={1.2} minPolarAngle={1.1} maxPolarAngle={1.9} />
     </Canvas>
   );
 };
@@ -87,7 +94,7 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
         <div className="text-center">
           <span className="text-[11px] font-bold tracking-[0.3em] text-emerald-300">CHOOSE YOUR PLAYER</span>
           <h2 className="mt-1 font-display text-2xl font-black text-white md:text-4xl">選擇你的選手</h2>
-          <p className="mt-1 text-xs text-white/60 md:text-sm">選好之後，臉和配色會套用到球場上的 3D 選手；對手會從其他人裡隨機登場</p>
+          <p className="mt-1 text-xs text-white/60 md:text-sm">選好之後就是你在球場上的 3D 選手，每人一招專屬絕招；對手會從其他人裡隨機登場</p>
         </div>
 
         <div className="mt-4 grid flex-1 gap-4 md:grid-cols-[0.9fr_1.1fr]">
@@ -109,7 +116,7 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent px-5 pb-4 pt-12">
               <div className="flex items-baseline gap-3">
                 <span className="font-display text-4xl font-black text-white">{sel.name}</span>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-bold tabular-nums text-white/80">#{sel.number}</span>
+                {sel.number && <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-bold tabular-nums text-white/80">#{sel.number}</span>}
               </div>
               <div className="text-sm font-semibold text-emerald-300">{sel.title}</div>
               {sel.skill && (

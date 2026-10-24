@@ -37,14 +37,22 @@ const rippleTexture = () => {
   return t;
 };
 
-/** 嗆聲的火大符號 */
-const angerTexture = () =>
+/** 頭上冒的表情符號 */
+const emojiTexture = (emoji: string) =>
   canvasTexture(128, 128, (g) => {
     g.font = '96px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.fillText('💢', 64, 70);
+    g.fillText(emoji, 64, 70);
   });
+
+/** 中招的人頭上冒的符號：被嗆聲火大、被醃到發酸、被虎嘯嚇到、能量被吃掉 */
+const MOODS = [
+  ['taunt', '💢'],
+  ['roar', '😱'],
+  ['sour', '😖'],
+  ['feast', '💸'],
+] as const;
 
 /**
  * 角色絕招的持續效果畫面：淹水的水面、被嗆聲的人頭上冒💢、帽哥的全息分身；
@@ -65,15 +73,22 @@ export const SkillFx = ({ engine, excite }: { engine: GameEngine; excite: Mutabl
       return m;
     });
   }, []);
-  const anger = useMemo(() => {
-    const mat = new THREE.SpriteMaterial({ map: angerTexture(), transparent: true, depthWrite: false });
-    return ([0, 1] as const).map(() => {
-      const sp = new THREE.Sprite(mat);
-      sp.scale.setScalar(0.5);
-      sp.visible = false;
-      return sp;
-    });
-  }, []);
+  const moods = useMemo(
+    () =>
+      MOODS.map(([id, emoji]) => {
+        const mat = new THREE.SpriteMaterial({ map: emojiTexture(emoji), transparent: true, depthWrite: false });
+        return {
+          id,
+          sprites: ([0, 1] as const).map(() => {
+            const sp = new THREE.Sprite(mat);
+            sp.scale.setScalar(0.5);
+            sp.visible = false;
+            return sp;
+          }),
+        };
+      }),
+    [],
+  );
   const clones = useMemo(() => {
     const mat = new THREE.MeshBasicMaterial({ color: '#bef264', transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
     // 全息人形：軀幹、頭、雙臂（右手舉拍）、雙腿，腳下一圈光環
@@ -114,10 +129,14 @@ export const SkillFx = ({ engine, excite }: { engine: GameEngine; excite: Mutabl
       if (m.visible && mat.map) mat.map.offset.set(t * 0.03, t * 0.05);
     }
     engine.athletes.forEach((a, i) => {
-      const sp = anger[i];
-      if (!sp) return;
-      sp.visible = engine.effectOn('taunt', a.team) && !engine.replay;
-      if (sp.visible) {
+      // 同時中好幾招時只冒第一個（清單前面的優先）
+      let shown = false;
+      for (const m of moods) {
+        const sp = m.sprites[i];
+        if (!sp) continue;
+        sp.visible = !shown && engine.effectOn(m.id, a.team) && !engine.replay;
+        if (!sp.visible) continue;
+        shown = true;
         sp.position.set(a.pos.x + 0.25, 2.15 + Math.sin(t * 6) * 0.05, a.pos.z);
         sp.scale.setScalar(0.45 + Math.max(0, Math.sin(t * 9)) * 0.08);
       }
@@ -142,9 +161,7 @@ export const SkillFx = ({ engine, excite }: { engine: GameEngine; excite: Mutabl
       {flood.map((m, i) => (
         <primitive key={`f${i}`} object={m} />
       ))}
-      {anger.map((s, i) => (
-        <primitive key={`a${i}`} object={s} />
-      ))}
+      {moods.flatMap((m) => m.sprites.map((s, i) => <primitive key={`${m.id}${i}`} object={s} />))}
       {clones.map((g, i) => (
         <primitive key={`c${i}`} object={g} />
       ))}

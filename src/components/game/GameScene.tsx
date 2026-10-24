@@ -7,7 +7,9 @@ import { COURT } from './engine/constants';
 import type { GameEngine, GameEvent, InputState } from './engine/game';
 import { teamSide } from './engine/rules';
 import { Stadium } from './scene/Stadium';
+import { RiversideParkVenue } from './scene/RiversideParkVenue';
 import { RoseGardenVenue } from './scene/RoseGardenVenue';
+import { XinyiRooftopVenue } from './scene/XinyiRooftopVenue';
 import { BeachVenue } from './scene/BeachVenue';
 import { LevelProps } from './scene/LevelProps';
 import type { Venue } from './GameScreens';
@@ -431,6 +433,18 @@ export const GameScene = (props: SceneProps) => {
           <color attach="background" args={[storm ? '#2b3744' : '#7d8f9e']} />
           <fog attach="fog" args={[storm ? '#3a4652' : '#8a9bab', storm ? 18 : 30, storm ? 85 : 120]} />
           <BeachVenue engine={engine} />
+        </>
+      ) : venue === 'xinyi' ? (
+        <>
+          <color attach="background" args={['#a9cdf0']} />
+          <fog attach="fog" args={['#c4d6e6', 60, 170]} />
+          <XinyiRooftopVenue lowSpec={lowSpec} />
+        </>
+      ) : venue === 'riverside' ? (
+        <>
+          <color attach="background" args={['#a9cdf0']} />
+          <fog attach="fog" args={['#c9dcea', 50, 160]} />
+          <RiversideParkVenue lowSpec={lowSpec} />
         </>
       ) : day ? (
         <>

@@ -161,7 +161,20 @@ const Rig = ({
       const a = engine.athletes.find((x) => x.team === rp.team)!;
       const s = teamSide(rp.team);
       const sx = Math.sign(a.pos.x) || 1;
-      if (rp.angle === 'side') {
+      const land = rp.info.landing;
+      const close = !!rp.info.review && land !== null && (rp.holdUntil > 0 || rp.t > land.at - 0.3);
+      if (close && land) {
+        // 失分重播：落地前後鏡頭從場內側斜上方拉近落點（定格時看得到球印和離線多遠）
+        const fz = land.kind === 'net' ? teamSide(engine.human.team) : -(Math.sign(land.z) || 1);
+        const fx = -(Math.sign(land.x) || 1);
+        const lx = land.edge ? (land.x + land.edge.x) / 2 : land.x;
+        const lz = land.edge ? (land.z + land.edge.z) / 2 : land.z;
+        // 壓線的球（要量幾公分）再貼近一點
+        const near = land.edge ? 0.55 : 1;
+        v.a.set(lx + fx * 0.9 * near, land.kind === 'net' ? 1.6 : 2.3 * near, lz + fz * (portrait ? 2.6 : 2.1) * near);
+        v.b.set(lx, land.kind === 'net' ? 0.6 : 0, lz);
+        fov = portrait ? 56 : 42;
+      } else if (rp.angle === 'side') {
         // 邊線外的軌道攝影機：低角度跟著球沿邊線走
         v.a.set(sx * (portrait ? 9.6 : 8.2), 1.45, THREE.MathUtils.clamp(b.z * 0.75, -L + 1, L - 1));
         v.b.set(b.x * 0.35, 0.75, b.z * 0.9);
@@ -172,13 +185,13 @@ const Rig = ({
         v.b.set(a.pos.x * 0.8 + b.x * 0.2, 1.0, a.pos.z * 0.8 + b.z * 0.2);
         fov = portrait ? 66 : 52;
       }
-      const kk = cut ? 1 : 1 - Math.exp(-delta * 5);
+      const kk = cut ? 1 : 1 - Math.exp(-delta * (close ? 3.5 : 5));
       base.current.lerp(v.a, kk);
       look.current.lerp(v.b, kk);
       cam.position.copy(base.current);
       cam.lookAt(look.current);
-      if (cut) {
-        cam.fov = fov;
+      if (cut || close) {
+        cam.fov = cut ? fov : cam.fov + (fov - cam.fov) * kk;
         cam.updateProjectionMatrix();
       }
     } else if (rv) {

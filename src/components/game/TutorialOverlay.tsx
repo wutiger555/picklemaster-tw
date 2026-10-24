@@ -1,22 +1,26 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { type Lesson, LESSONS } from './tutorial';
+import { type Lesson, lessonsFor } from './tutorial';
 
 /** 教學進行中：上方的關卡卡片（第幾招、這招有什麼用、要按什麼） */
 export const TutorialPanel = ({
   lesson,
-  index,
   touch,
   cleared,
+  specials,
   onSkip,
   onExit,
 }: {
   lesson: Lesson;
-  index: number;
+  /** 熱血版才有必殺、絕招兩招 */
+  specials: boolean;
   touch: boolean;
   cleared: boolean;
   onSkip: () => void;
   onExit: () => void;
-}) => (
+}) => {
+  const list = lessonsFor(specials);
+  const pos = list.indexOf(lesson);
+  return (
   <div className="pointer-events-none absolute inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex justify-center px-3 max-md:justify-start max-md:pr-16">
     <motion.div
       key={lesson.id}
@@ -26,14 +30,14 @@ export const TutorialPanel = ({
     >
       <div className="flex items-center gap-2">
         <span className="shrink-0 whitespace-nowrap rounded-full bg-amber-300 px-2 py-0.5 text-[11px] font-black text-amber-950">
-          第 {index + 1}/{LESSONS.length} 招
+          第 {pos + 1}/{list.length} 招
         </span>
         <h3 className="whitespace-nowrap text-lg font-black md:text-xl">{lesson.title}</h3>
         <div className="ml-auto flex gap-1">
-          {LESSONS.map((l, i) => (
+          {list.map((l, i) => (
             <span
               key={l.id}
-              className={`h-1.5 w-4 rounded-full ${i < index || (i === index && cleared) ? 'bg-emerald-400' : i === index ? 'bg-amber-300' : 'bg-white/20'}`}
+              className={`h-1.5 w-4 rounded-full ${i < pos || (i === pos && cleared) ? 'bg-emerald-400' : i === pos ? 'bg-amber-300' : 'bg-white/20'}`}
             />
           ))}
         </div>
@@ -64,10 +68,11 @@ export const TutorialPanel = ({
       )}
     </AnimatePresence>
   </div>
-);
+  );
+};
 
 /** 教學完成：還沒親手練到的功能列一下，比賽中第一次遇到時教練會再提醒 */
-export const TutorialDone = ({ onPlay, onMenu }: { onPlay: () => void; onMenu: () => void }) => (
+export const TutorialDone = ({ specials, onPlay, onMenu }: { specials: boolean; onPlay: () => void; onMenu: () => void }) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -76,18 +81,22 @@ export const TutorialDone = ({ onPlay, onMenu }: { onPlay: () => void; onMenu: (
   >
     <motion.div initial={{ scale: 0.92, y: 12 }} animate={{ scale: 1, y: 0 }} className="m-auto w-full max-w-md py-4 text-center text-white">
       <div className="text-5xl">🎓</div>
-      <h2 className="mt-2 text-3xl font-black">五招都學會了！</h2>
+      <h2 className="mt-2 text-3xl font-black">{specials ? '五招' : '三招'}都學會了！</h2>
       <p className="mt-2 text-sm text-white/70">還有這幾個，比賽中第一次遇到時教練會提醒你：</p>
       <ul className="mt-4 space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4 text-left text-sm text-white/85">
         <li>
           <b className="text-yellow-300">發球</b>：按住擊球鍵蓄力，力道條到綠色區放開
         </li>
-        <li>
-          <b className="text-rose-300">破解必殺</b>：對手放必殺時，抓準時機打出「完美」就能擋回去，還會大量回能量
-        </li>
-        <li>
-          <b className="text-amber-300">無雙覺醒</b>：落後時量表會集滿，一場一次的逆轉大招
-        </li>
+        {specials && (
+          <li>
+            <b className="text-rose-300">破解必殺</b>：對手放必殺時，抓準時機打出「完美」就能擋回去，還會大量回能量
+          </li>
+        )}
+        {specials && (
+          <li>
+            <b className="text-amber-300">無雙覺醒</b>：落後時量表會集滿，一場一次的逆轉大招
+          </li>
+        )}
         <li>
           <b className="text-sky-300">電視輔助判決</b>：壓線球判你出界時，可以申請看重播
         </li>

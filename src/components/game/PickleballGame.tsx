@@ -911,6 +911,8 @@ const PickleballGame = () => {
   const startLesson = (i: number) => {
     setCleared(false);
     progressRef.current = freshProgress();
+    // 正規版跳過必殺、絕招兩招
+    while (i < LESSONS.length && LESSONS[i].setup.specials && !settings.specials) i++;
     if (i >= LESSONS.length) {
       lessonRef.current = null;
       setLesson(null);
@@ -1182,9 +1184,9 @@ const PickleballGame = () => {
       {playing && current && !paused && (
         <TutorialPanel
           lesson={current}
-          index={lesson!}
           touch={touch}
           cleared={cleared}
+          specials={settings.specials}
           onSkip={() => startLesson(lesson! + 1)}
           onExit={toMenu}
         />
@@ -1290,6 +1292,7 @@ const PickleballGame = () => {
         {lessonsDone && (
           <TutorialDone
             key="tutorial-done"
+            specials={settings.specials}
             onPlay={() => {
               setLessonsDone(false);
               start();

@@ -1,6 +1,8 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Changelog } from './Changelog';
 import { ComicTitle } from './ComicTitle';
+import { lessonsFor } from './tutorial';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
 import type { Controls, GameMode, TeamStats } from './engine/game';
 import type { Challenge, MatchResult } from './share';
@@ -185,40 +187,82 @@ interface MenuProps {
   tutorialDone: boolean;
 }
 
-export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onTutorial, tutorialDone }: MenuProps) => (
-  <Shell>
-    <div className="w-full max-w-2xl py-4">
-      <div className="text-center">
-        <ComicTitle className="text-5xl md:text-7xl" />
-        <p className="mt-3 text-sm text-white/70">真實物理 × 熱血必殺技的匹克球對戰</p>
-      </div>
+export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onTutorial, tutorialDone }: MenuProps) => {
+  // 標題畫面只放「選一個玩法就開打」；對手、場地、操作這些細項收進設定面板（像多數獨立遊戲的標題選單）
+  const [sheet, setSheet] = useState(false);
+  const start = (mode: GameMode) => {
+    onChange({ ...settings, mode });
+    onNext();
+  };
+  const diff = AI_PROFILES[settings.difficulty];
+  const venue = (settings.venue ?? 'arena') === 'arena' ? '夜間體育館' : '新生公園';
+  return (
+    <>
+    <Shell>
+      <div className="flex w-full max-w-md flex-col py-2 [@media(max-height:500px)_and_(min-width:640px)]:max-w-3xl">
+        <div className="text-center">
+          <ComicTitle className="text-5xl md:text-7xl [@media(max-height:500px)_and_(min-width:640px)]:text-4xl" />
+          <p className="mt-2 text-sm text-white/70 [@media(max-height:500px)_and_(min-width:640px)]:mt-1 [@media(max-height:500px)_and_(min-width:640px)]:text-xs">
+            {settings.specials ? '真實物理 × 熱血必殺技的匹克球對戰' : '真實物理與正式規則的匹克球對戰'}
+          </p>
+        </div>
 
-      {tutorialDone ? (
-        <button type="button" onClick={onTutorial} className="mx-auto mt-3 block text-xs font-semibold text-emerald-300/80 underline-offset-2 hover:text-emerald-200 hover:underline">
-          🎓 重看新手教學
-        </button>
-      ) : (
-        <button
+        {/* 兩種玩法分開：想要花招的玩熱血版，想要純粹比賽的玩正規版（踢館之旅、必殺、絕招、覺醒只在熱血版） */}
+        <div role="radiogroup" aria-label="玩法" className="mt-4 grid grid-cols-2 gap-1 rounded-2xl bg-slate-950/60 p-1 ring-1 ring-white/10 [@media(max-height:500px)_and_(min-width:640px)]:mt-2">
+          {(
+            [
+              { on: true, title: '🔥 熱血版', desc: '必殺技・絕招・踢館之旅' },
+              { on: false, title: '🎾 正規版', desc: '純競技，像真的比賽' },
+            ] as const
+          ).map((m) => {
+            const sel = settings.specials === m.on;
+            return (
+              <button
+                key={m.title}
+                type="button"
+                role="radio"
+                aria-checked={sel}
+                onClick={() => onChange({ ...settings, specials: m.on })}
+                className={`rounded-xl px-3 py-2 text-center transition-colors ${
+                  sel ? (m.on ? 'bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg' : 'bg-sky-500 text-white shadow-lg') : 'text-white/60 hover:text-white'
+                }`}
+              >
+                <span className="block text-sm font-black">{m.title}</span>
+                <span className={`block text-[11px] ${sel ? 'text-white/85' : 'text-white/45'}`}>{m.desc}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 橫拿手機（矮螢幕）排成左右兩欄，一頁放得下 */}
+        <div className="[@media(max-height:500px)_and_(min-width:640px)]:mt-3 [@media(max-height:500px)_and_(min-width:640px)]:grid [@media(max-height:500px)_and_(min-width:640px)]:grid-cols-2 [@media(max-height:500px)_and_(min-width:640px)]:gap-3">
+        <div>
+        {/* 主按鈕：直接開打 */}
+        <motion.button
           type="button"
-          onClick={onTutorial}
-          className="mt-5 flex w-full items-center gap-3 rounded-2xl border border-amber-300/60 bg-gradient-to-r from-amber-400/20 to-orange-500/15 p-3.5 text-left shadow-lg shadow-amber-500/10 transition-colors hover:from-amber-400/30"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => start('match')}
+          className={`mt-3 flex w-full items-center gap-3 rounded-2xl [@media(max-height:500px)_and_(min-width:640px)]:mt-0 bg-gradient-to-r px-5 py-4 text-left shadow-xl ${settings.specials ? 'from-emerald-400 to-teal-500 text-emerald-950 shadow-emerald-500/25' : 'from-sky-300 to-sky-500 text-sky-950 shadow-sky-500/25'}`}
         >
-          <span className="text-3xl">🎓</span>
+          <span className="text-3xl">🏆</span>
           <span className="flex-1">
-            <span className="block font-black text-white">第一次玩？1 分鐘學會 5 招</span>
-            <span className="mt-0.5 block text-xs leading-relaxed text-white/70">擊球、殺球、飛身撲救、必殺技、角色絕招，每招做到一次就過</span>
+            <span className="block text-xl font-black">單打比賽</span>
+            <span className="block text-xs font-bold opacity-70">
+              對手 {diff.label} · 勝 {records.wins[settings.difficulty]} / {records.plays[settings.difficulty]}
+            </span>
           </span>
-          <span className="rounded-full bg-amber-300 px-3 py-1.5 text-sm font-black text-amber-950">新手教學 →</span>
-        </button>
-      )}
+          <span className="text-2xl font-black">▶</span>
+        </motion.button>
 
-      {/* 冒險模式入口：漫畫風大橫幅 */}
+      {/* 冒險模式入口：漫畫風大橫幅（熱血版才有） */}
+      {settings.specials && (
       <motion.button
         type="button"
         onClick={onTour}
         whileHover={{ y: -2, rotate: -0.4 }}
         whileTap={{ scale: 0.98 }}
-        className="relative mt-5 flex w-full items-center gap-3 overflow-hidden rounded-2xl border-[3px] border-slate-950 bg-gradient-to-r from-amber-300 via-orange-400 to-rose-400 px-4 py-3 text-left text-slate-950 shadow-[5px_5px_0_#0b0b14]"
+        className="relative mt-3 flex w-full items-center gap-3 overflow-hidden rounded-2xl border-[3px] border-slate-950 bg-gradient-to-r from-amber-300 via-orange-400 to-rose-400 px-4 py-3 text-left text-slate-950 shadow-[5px_5px_0_#0b0b14]"
       >
         <span
           aria-hidden
@@ -238,187 +282,208 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
           <span className="block text-xs font-black">出發 →</span>
         </span>
       </motion.button>
+      )}
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        {(
-          [
-            { id: 'match', title: '單打比賽', desc: '11 分、換發球制，雙彈跳與廚房規則全都算', icon: '🏆' },
-            { id: 'dink', title: 'Dink 挑戰', desc: '連續把球輕放進對方廚房，看你能撐幾拍', icon: '🎯' },
-          ] as const
-        ).map((m) => (
+        </div>
+        <div>
+        <div className="mt-3 grid grid-cols-2 gap-3 [@media(max-height:500px)_and_(min-width:640px)]:mt-0">
           <button
-            key={m.id}
             type="button"
-            onClick={() => onChange({ ...settings, mode: m.id })}
-            className={`rounded-2xl border p-3.5 text-left transition-all ${
-              settings.mode === m.id
-                ? 'border-emerald-300/70 bg-emerald-400/15 shadow-lg shadow-emerald-500/10'
-                : 'border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10'
+            onClick={onTutorial}
+            className={`relative rounded-2xl border p-3 text-left transition-colors ${
+              tutorialDone ? 'border-white/10 bg-white/5 hover:bg-white/10' : 'border-amber-300/60 bg-amber-400/15 hover:bg-amber-400/25'
             }`}
           >
+            {!tutorialDone && <span className="absolute -top-2 right-2 rounded-full bg-amber-300 px-2 text-[10px] font-black text-amber-950">第一次玩</span>}
             <div className="flex items-center gap-2 font-bold text-white">
-              <span className="text-xl">{m.icon}</span>
-              {m.title}
+              <span className="text-xl">🎓</span>新手教學
             </div>
-            <div className="mt-1 text-xs leading-relaxed text-white/60">{m.desc}</div>
+            <div className="mt-0.5 text-[11px] text-white/60">1 分鐘學會 {lessonsFor(settings.specials).length} 招</div>
           </button>
-        ))}
-      </div>
-
-      <div className="mt-4">
-        <div className="mb-2 text-xs font-semibold tracking-wider text-white/50">對手程度</div>
-        <div className="grid grid-cols-3 gap-2">
-          {DIFFS.map((d) => {
-            const p = AI_PROFILES[d];
-            const sel = settings.difficulty === d;
-            const rec = settings.mode === 'dink' ? `最佳 ${records.dinkBest[d]}` : `勝 ${records.wins[d]} / ${records.plays[d]}`;
-            return (
-              <button
-                key={d}
-                type="button"
-                onClick={() => onChange({ ...settings, difficulty: d })}
-                className={`rounded-xl border px-3 py-2.5 text-center transition-all ${
-                  sel ? 'border-orange-300/70 bg-orange-400/15' : 'border-white/10 bg-white/5 hover:bg-white/10'
-                }`}
-              >
-                <div className="font-bold text-white">{p.label}</div>
-                <div className="text-[11px] text-white/50">{p.rating}</div>
-                <div className="mt-1 text-[11px] tabular-nums text-white/70">{rec}</div>
-              </button>
-            );
-          })}
+          <button type="button" onClick={() => start('dink')} className="rounded-2xl border border-white/10 bg-white/5 p-3 text-left transition-colors hover:bg-white/10">
+            <div className="flex items-center gap-2 font-bold text-white">
+              <span className="text-xl">🎯</span>Dink 挑戰
+            </div>
+            <div className="mt-0.5 text-[11px] text-white/60">最佳 {records.dinkBest[settings.difficulty]} 拍</div>
+          </button>
         </div>
-      </div>
 
-      <div className="mt-4">
-        <div className="mb-2 text-xs font-semibold tracking-wider text-white/50">比賽場地</div>
-        <div className="grid grid-cols-2 gap-2">
-          {(
-            [
-              { id: 'arena', title: '夜間體育館', desc: '滿場觀眾、LED 看板與大螢幕' },
-              { id: 'rosegarden', title: '新生公園羽毛球場', desc: '台北玫瑰園旁的白天戶外硬地' },
-            ] as const
-          ).map((v) => {
-            const sel = (settings.venue ?? 'arena') === v.id;
-            return (
-              <button
-                key={v.id}
-                type="button"
-                onClick={() => onChange({ ...settings, venue: v.id })}
-                aria-pressed={sel}
-                className={`overflow-hidden rounded-xl border text-left transition-all ${
-                  sel ? 'border-amber-300/70 bg-amber-400/15 shadow-lg shadow-amber-500/10' : 'border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10'
-                }`}
-              >
-                <div className={`h-20 transition-opacity md:h-24 ${sel ? 'opacity-100' : 'opacity-70'}`}>
-                  <VenueThumb venue={v.id} />
-                </div>
-                <div className="px-3 py-2">
-                  <div className="text-sm font-bold text-white">{v.title}</div>
-                  <div className="text-[11px] text-white/55">{v.desc}</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {(
-          [
-            { on: true, title: '🔥 熱血模式', desc: '必殺技、能量條、特效全開' },
-            { on: false, title: '📏 寫實模式', desc: '純真實物理，適合學規則' },
-          ] as const
-        ).map((m) => (
-          <button
-            key={m.title}
-            type="button"
-            onClick={() => onChange({ ...settings, specials: m.on })}
-            className={`rounded-xl border px-3 py-2.5 text-left transition-all ${
-              settings.specials === m.on ? 'border-fuchsia-300/70 bg-fuchsia-400/15' : 'border-white/10 bg-white/5 hover:bg-white/10'
-            }`}
-          >
-            <div className="text-sm font-bold text-white">{m.title}</div>
-            <div className="text-[11px] text-white/55">{m.desc}</div>
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {(
-          [
-            { id: 'auto', title: '🎾 提早按・自動揮拍', desc: '對手出手就先按，球到了自動揮；越早按越飽' },
-            { id: 'timing', title: '⏱️ 抓時機放開', desc: '進階：按住蓄力，自己抓擊球瞬間放開' },
-          ] as const
-        ).map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            onClick={() => onChange({ ...settings, controls: m.id })}
-            className={`rounded-xl border px-3 py-2.5 text-left transition-all ${
-              (settings.controls ?? 'auto') === m.id ? 'border-sky-300/70 bg-sky-400/15' : 'border-white/10 bg-white/5 hover:bg-white/10'
-            }`}
-          >
-            <div className="text-sm font-bold text-white">{m.title}</div>
-            <div className="text-[11px] text-white/55">{m.desc}</div>
-          </button>
-        ))}
-      </div>
-
-      <label className="mt-3 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-        <span>
-          <span className="block text-sm font-semibold text-white">擊球輔助</span>
-          <span className="block text-xs text-white/55">
-            {(settings.controls ?? 'auto') === 'auto'
-              ? '自動跑到站位、擊球範圍更大。關掉後自己跑位，跟著地上的站位圈'
-              : '自動跑到站位、按住擊球鍵自動抓時機。關掉後自己跑位，跟著地上的站位圈和球上的計時圈，抓到「完美」更穩更強'}
+        {/* 目前設定一行摘要，點開才調 */}
+        <button
+          type="button"
+          onClick={() => setSheet(true)}
+          className="mt-3 flex w-full items-center gap-2 rounded-xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-left text-sm text-white/80 transition-colors hover:bg-slate-950/60"
+        >
+          <span>⚙️</span>
+          <span className="min-w-0 flex-1 truncate">
+            {diff.label} · {venue} · {(settings.controls ?? 'auto') === 'auto' ? '自動揮拍' : '抓時機'}
           </span>
-        </span>
-        <input
-          type="checkbox"
-          checked={settings.assist}
-          onChange={(e) => onChange({ ...settings, assist: e.target.checked })}
-          className="h-5 w-5 shrink-0 accent-emerald-400"
-        />
-      </label>
+          <span className="text-xs font-bold text-emerald-300">調整</span>
+        </button>
+        </div>
+        </div>
 
-      {/* 設定很長（桌機標題加大後也超過舞台），下一步按鈕黏在底部，不用捲到最下面找 */}
-      <div className="sticky -bottom-4 z-10 -mx-4 mt-6 border-t border-white/10 bg-slate-950/90 px-4 pb-4 pt-3 backdrop-blur-md before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-gradient-to-t before:from-slate-950/90 before:to-transparent">
-      <motion.button
-        type="button"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.97 }}
-        onClick={onNext}
-        className="w-full rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-3.5 text-lg font-black text-emerald-950 shadow-xl shadow-emerald-500/25"
-      >
-        下一步：選擇選手 →
-      </motion.button>
+        <Changelog />
       </div>
+    </Shell>
 
-      <p className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-white/60">
-        {touch ? (
-          <>
-            <span>左搖桿移動</span>
-            <span>{(settings.controls ?? 'auto') === 'auto' ? '右側提早按擊球鍵，球到自動揮拍' : '右側按住蓄力、放開擊球'}</span>
-          </>
-        ) : (
-          <>
-            <span className="flex items-center gap-1">
-              <Key>WASD</Key> 移動
+      {/* 設定面板放在 Shell 外面：Shell 的 backdrop-blur 會讓 fixed 定位跟著它走，底部按鈕被切掉 */}
+      <AnimatePresence>
+        {sheet && (
+          <motion.div
+            key="sheet"
+            className="absolute inset-0 z-40 flex items-end justify-center bg-slate-950/60 md:items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSheet(false)}
+          >
+            <motion.div
+              initial={{ y: 40 }}
+              animate={{ y: 0 }}
+              exit={{ y: 40 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+              onClick={(e) => e.stopPropagation()}
+              className="flex max-h-[88dvh] w-full max-w-2xl flex-col rounded-t-3xl border border-white/10 bg-slate-900 md:rounded-3xl"
+            >
+              <div className="flex items-center justify-between px-5 pb-2 pt-4">
+                <span className="text-base font-black text-white">比賽設定</span>
+                <span className="text-xs text-white/40">會記住，下次不用再調</span>
+              </div>
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-2">
+          <div className="mt-4">
+            <div className="mb-2 text-xs font-semibold tracking-wider text-white/50">對手程度</div>
+            <div className="grid grid-cols-3 gap-2">
+              {DIFFS.map((d) => {
+                const p = AI_PROFILES[d];
+                const sel = settings.difficulty === d;
+                const rec = settings.mode === 'dink' ? `最佳 ${records.dinkBest[d]}` : `勝 ${records.wins[d]} / ${records.plays[d]}`;
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => onChange({ ...settings, difficulty: d })}
+                    className={`rounded-xl border px-3 py-2.5 text-center transition-all ${
+                      sel ? 'border-orange-300/70 bg-orange-400/15' : 'border-white/10 bg-white/5 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="font-bold text-white">{p.label}</div>
+                    <div className="text-[11px] text-white/50">{p.rating}</div>
+                    <div className="mt-1 text-[11px] tabular-nums text-white/70">{rec}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <div className="mb-2 text-xs font-semibold tracking-wider text-white/50">比賽場地</div>
+            <div className="grid grid-cols-2 gap-2">
+              {(
+                [
+                  { id: 'arena', title: '夜間體育館', desc: '滿場觀眾、LED 看板與大螢幕' },
+                  { id: 'rosegarden', title: '新生公園羽毛球場', desc: '台北玫瑰園旁的白天戶外硬地' },
+                ] as const
+              ).map((v) => {
+                const sel = (settings.venue ?? 'arena') === v.id;
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => onChange({ ...settings, venue: v.id })}
+                    aria-pressed={sel}
+                    className={`overflow-hidden rounded-xl border text-left transition-all ${
+                      sel ? 'border-amber-300/70 bg-amber-400/15 shadow-lg shadow-amber-500/10' : 'border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className={`h-20 transition-opacity md:h-24 ${sel ? 'opacity-100' : 'opacity-70'}`}>
+                      <VenueThumb venue={v.id} />
+                    </div>
+                    <div className="px-3 py-2">
+                      <div className="text-sm font-bold text-white">{v.title}</div>
+                      <div className="text-[11px] text-white/55">{v.desc}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {(
+              [
+                { id: 'auto', title: '🎾 提早按・自動揮拍', desc: '對手出手就先按，球到了自動揮；越早按越飽' },
+                { id: 'timing', title: '⏱️ 抓時機放開', desc: '進階：按住蓄力，自己抓擊球瞬間放開' },
+              ] as const
+            ).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => onChange({ ...settings, controls: m.id })}
+                className={`rounded-xl border px-3 py-2.5 text-left transition-all ${
+                  (settings.controls ?? 'auto') === m.id ? 'border-sky-300/70 bg-sky-400/15' : 'border-white/10 bg-white/5 hover:bg-white/10'
+                }`}
+              >
+                <div className="text-sm font-bold text-white">{m.title}</div>
+                <div className="text-[11px] text-white/55">{m.desc}</div>
+              </button>
+            ))}
+          </div>
+
+          <label className="mt-3 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+            <span>
+              <span className="block text-sm font-semibold text-white">擊球輔助</span>
+              <span className="block text-xs text-white/55">
+                {(settings.controls ?? 'auto') === 'auto'
+                  ? '自動跑到站位、擊球範圍更大。關掉後自己跑位，跟著地上的站位圈'
+                  : '自動跑到站位、按住擊球鍵自動抓時機。關掉後自己跑位，跟著地上的站位圈和球上的計時圈，抓到「完美」更穩更強'}
+              </span>
             </span>
-            <span className="flex items-center gap-1">
-              <Key>J</Key> 軟 <Key>K</Key> 抽 <Key>L</Key> 挑
-            </span>
-            <span className="flex items-center gap-1">
-              <Key>空白鍵</Key> 必殺
-            </span>
-          </>
+            <input
+              type="checkbox"
+              checked={settings.assist}
+              onChange={(e) => onChange({ ...settings, assist: e.target.checked })}
+              className="h-5 w-5 shrink-0 accent-emerald-400"
+            />
+          </label>
+          <p className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-white/60">
+            {touch ? (
+              <>
+                <span>左搖桿移動</span>
+                <span>{(settings.controls ?? 'auto') === 'auto' ? '右側提早按擊球鍵，球到自動揮拍' : '右側按住蓄力、放開擊球'}</span>
+              </>
+            ) : (
+              <>
+                <span className="flex items-center gap-1">
+                  <Key>WASD</Key> 移動
+                </span>
+                <span className="flex items-center gap-1">
+                  <Key>J</Key> 軟 <Key>K</Key> 抽 <Key>L</Key> 挑
+                </span>
+                <span className="flex items-center gap-1">
+                  <Key>空白鍵</Key> 必殺
+                </span>
+              </>
+            )}
+          </p>
+              </div>
+              <div className="border-t border-white/10 p-4">
+                <button
+                  type="button"
+                  onClick={() => setSheet(false)}
+                  className="w-full rounded-2xl bg-white py-3 text-base font-black text-slate-950"
+                >
+                  完成
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
-      </p>
-      <Changelog />
-    </div>
-  </Shell>
-);
+      </AnimatePresence>
+    </>
+  );
+};
 
 export const PauseScreen = ({
   touch,

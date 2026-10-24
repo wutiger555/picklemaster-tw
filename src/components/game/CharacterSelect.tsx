@@ -155,7 +155,7 @@ export const CharacterSelect = ({ value, onChange, onBack, onNext }: Props) => {
           </div>
         </div>
 
-        <div className="sticky -bottom-4 z-10 -mx-4 mt-4 grid grid-cols-[auto_1fr] gap-2 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent px-4 pb-4 pt-6">
+        <div className="sticky -bottom-4 z-10 -mx-4 mt-6 grid grid-cols-[auto_1fr] gap-2 border-t border-white/10 bg-slate-950/90 px-4 pb-4 pt-3 backdrop-blur-md before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-gradient-to-t before:from-slate-950/90 before:to-transparent">
           <button type="button" onClick={onBack} className="rounded-2xl bg-white/10 px-5 py-3.5 font-bold text-white hover:bg-white/15">
             ← 返回
           </button>

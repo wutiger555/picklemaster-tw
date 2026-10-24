@@ -5,15 +5,16 @@ import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import type { GameEngine } from '../engine/game';
 import { PaddleModel } from './PaddleModel';
 import { sweetSpotY } from './paddleGeometry';
-import { type Look, paddleTips } from './characterData';
+import { type Look, headHeights, paddleTips } from './characterData';
 import { type AthleteAssets, type HairStyle, useAthleteAssets, useHair, useImage } from './athleteAssets';
 import { AthletePoser, paddleMount } from './athletePoser';
 import { type MixamoBody, useMixamoBody } from './mixamoBody';
+import { type VrmBody, useVrmBody } from './vrmBody';
 
 /**
  * 真人比例的選手：外觀（照片臉、球衣、鞋、帽）在這裡，動作與揮拍姿勢由 AthletePoser 解算。
- * 兩種身體：hero（Quaternius CC0，球衣用著色器畫）與真實比例的 Mixamo 身體（sporty／hoodie）。
- * 兩者骨頭都用 Unreal 名稱、綁定姿勢都是面向 +Z 的 T-pose、右手在 -X。
+ * 三種身體：hero（Quaternius CC0，球衣用著色器畫）、真實比例的 Mixamo 身體（sporty／hoodie）、
+ * 現成造型的 VRM 角色（100Avatars CC0）。骨頭都改用 Unreal 名稱、綁定姿勢都是面向 +Z 的 T-pose、右手在 -X。
  */
 
 const HAIR: Record<Look['hairStyle'], HairStyle> = {
@@ -466,6 +467,42 @@ const buildMixamoRig = (body: MixamoBody, look: Look, face: HTMLImageElement | n
 };
 
 /**
+ * VRM 角色：模型本身就是完整造型（臉、衣服、鞋子），不換色、不貼照片臉。
+ * 原本是不受光的卡通材質，換成標準材質才有場館的光影，覺醒發光也才吃得到。
+ */
+const buildVrmRig = (body: VrmBody): Rig => {
+  // 轉 180° 的根節點包在一層乾淨的群組裡：rig.scene 的位置與朝向由姿勢解算控制
+  const scene = new THREE.Group();
+  scene.add(SkeletonUtils.clone(body.root));
+  const { bones, bindQ, bone } = collectBones(scene);
+  const disposables: { dispose: () => void }[] = [];
+  const box = new THREE.Box3();
+  scene.traverse((o) => {
+    const m = o as THREE.SkinnedMesh;
+    if (!m.isSkinnedMesh) return;
+    m.castShadow = true;
+    m.frustumCulled = false;
+    const src = m.material as THREE.MeshStandardMaterial;
+    const mat = new THREE.MeshStandardMaterial({ map: src.map, roughness: 0.72, metalness: 0, side: THREE.FrontSide });
+    m.material = mat;
+    disposables.push(mat);
+    box.expandByObject(m);
+  });
+  curlFingers(bones, bindQ);
+  const headY = bone('Head').getWorldPosition(new THREE.Vector3()).y;
+  return {
+    scene,
+    bone,
+    bindQ,
+    unit: 1,
+    headTop: box.max.y - headY,
+    hasShoes: true,
+    glow: ownMaterials(disposables),
+    dispose: () => disposables.forEach((d) => d.dispose()),
+  };
+};
+
+/**
  * 頭飾（帽子／遮陽帽／頭帶）：座標以頭骨為原點、軸向和模型一致（+Z 朝前）。
  * 頭骨在模型的 (0, 1.60, -0.017)，頭頂約 1.81。
  */
@@ -529,18 +566,22 @@ interface Props {
 export const AthleteModel = ({ engine, index, look, trackTip = true }: Props) => {
   const assets = useAthleteAssets();
   const hair = useHair(look.body === 'hero' ? HAIR[look.hairStyle] : null);
-  const body = useMixamoBody(look.body === 'hero' ? null : look.body, assets);
+  const body = useMixamoBody(look.body === 'sporty' || look.body === 'hoodie' ? look.body : null, assets);
+  const vrm = useVrmBody(look.body === 'vrm' ? look.vrm : null, assets);
   const face = useImage(look.face);
-  const rig = useMemo(
-    () => (body ? buildMixamoRig(body, look, face) : buildRig(assets, hair!.scene, look, face)),
-    [assets, hair, body, look, face],
-  );
+  const rig = useMemo(() => {
+    const r = vrm ? buildVrmRig(vrm) : body ? buildMixamoRig(body, look, face) : buildRig(assets, hair!.scene, look, face);
+    // 綁定姿勢下的頭骨高度（還沒掛到場上、也還沒動），給選角預覽取景
+    r.scene.updateMatrixWorld(true);
+    headHeights.set(look.key, r.bone('Head').getWorldPosition(new THREE.Vector3()).y);
+    return r;
+  }, [assets, hair, body, vrm, look, face]);
   const spec = engine.athletes[index].paddle;
   const { group, poser } = useMemo(() => {
     const g = new THREE.Group();
     g.add(rig.scene);
-    return { group: g, poser: new AthletePoser(g, rig.scene, body ? body.clips : assets.clips, sweetSpotY(spec)) };
-  }, [rig, assets, body, spec]);
+    return { group: g, poser: new AthletePoser(g, rig.scene, (vrm ?? body ?? assets).clips, sweetSpotY(spec)) };
+  }, [rig, assets, body, vrm, spec]);
   useEffect(
     () => () => {
       poser.dispose();

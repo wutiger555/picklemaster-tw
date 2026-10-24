@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { PerformanceMonitor } from '@react-three/drei';
 import { AnimatePresence, motion } from 'framer-motion';
-import { GameEngine, type GameEvent, type HudState } from './engine/game';
+import { GameEngine, type GameEvent, type HudState, SKILL_EFFECT } from './engine/game';
 import { createAI } from './engine/ai';
 import { PADDLES, SPECIALS } from './engine/paddles';
 import { SKILLS } from './engine/skills';
@@ -82,7 +82,6 @@ const newDemo = () => {
 
 /** 絕招音效借用必殺技的音色 */
 /** 角色絕招 → 放出後的持續效果（音效與球評台詞用） */
-const SKILL_FX_OF = { squatSmash: 'lightsOut', spinSmash: 'taunt', splash: 'flood', dualCurve: 'clone', cheer: 'cheer' } as const;
 
 /** 手機震動回饋（不支援的瀏覽器直接略過） */
 const buzz = (pattern: number | number[]) => {
@@ -584,8 +583,8 @@ const PickleballGame = () => {
             break;
           }
           case 'skill': {
-            audio.skillFx(SKILL_FX_OF[e.id]);
-            if (!audio.say(SKILL_FX_OF[e.id], { priority: true, cooldown: 0 })) audio.say('wow', { priority: true, cooldown: 2 });
+            audio.skillFx(SKILL_EFFECT[e.id]);
+            if (!audio.say(SKILL_EFFECT[e.id], { priority: true, cooldown: 0 })) audio.say('wow', { priority: true, cooldown: 2 });
             if (e.team === 0) buzz([20, 30, 50]);
             const who = characters[e.team];
             const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, skill: e.id, mine: e.team === 0, portrait: who.portrait, name: who.name };

@@ -15,8 +15,10 @@ export interface CharacterDef {
   portrait: string | null;
   /** 貼在 3D 頭部正面的臉（方形、柔邊橢圓遮罩） */
   face: string | null;
-  /** 3D 身體：hero = 原創動畫風身材；sporty = 運動球衣；hoodie = 帽 T 休閒 */
-  body: 'hero' | 'sporty' | 'hoodie';
+  /** 3D 身體：hero = 原創動畫風身材；sporty = 運動球衣；hoodie = 帽 T 休閒；vrm = 現成的 VRM 角色 */
+  body: 'hero' | 'sporty' | 'hoodie' | 'vrm';
+  /** VRM 角色的模型 id（body 為 vrm 時） */
+  vrm?: string;
   /** 角色絕招（和球拍的必殺技分開） */
   skill: SkillId | null;
   skin: string;
@@ -34,6 +36,26 @@ export interface CharacterDef {
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const img = (file: string) => `${base}/game/characters/${file}`;
+
+/** VRM 角色：模型本身就是完整造型，配色欄位用不到給預設值；半身像由 scripts/render-vrm-portraits.mjs 算繪 */
+function vrmChar(c: { id: string; name: string; title: string; skill: SkillId; shirt: string; accent: string }): CharacterDef {
+  return {
+    ...c,
+    body: 'vrm',
+    vrm: c.id,
+    portrait: img(`${c.id}-portrait.webp`),
+    face: null,
+    skin: '#e2b48c',
+    hair: '#1c1612',
+    hairStyle: 'short',
+    shorts: '#0f172a',
+    shoes: '#f8fafc',
+    headwear: 'none',
+    headwearColor: '#ffffff',
+    number: '',
+    jersey: c.id.toUpperCase(),
+  };
+}
 
 export const CHARACTERS: CharacterDef[] = [
   {
@@ -136,12 +158,21 @@ export const CHARACTERS: CharacterDef[] = [
     number: '9',
     jersey: 'CAP',
   },
+  ...[
+    // VRM 角色（100Avatars 系列，CC0）：造型都在模型裡，顏色欄位只給選角卡與畫面點綴用
+    vrmChar({ id: 'cucumber', name: '酸黃瓜', title: '匹克球吉祥物', skill: 'pickle', shirt: '#4ade80', accent: '#bbf7d0' }),
+    vrmChar({ id: 'bao', name: '包子武士', title: '一口一個', skill: 'feast', shirt: '#f5e6c8', accent: '#dc2626' }),
+    vrmChar({ id: 'tiger', name: '虎爺', title: '廟口守護神', skill: 'roar', shirt: '#f97316', accent: '#fde68a' }),
+    vrmChar({ id: 'beachking', name: '海灘王', title: '颱風天照打', skill: 'wave', shirt: '#38bdf8', accent: '#f472b6' }),
+    vrmChar({ id: 'mecha', name: '運動機甲', title: '全自動揮拍', skill: 'overclock', shirt: '#f59e0b', accent: '#7c3aed' }),
+    vrmChar({ id: 'anna', name: '狐面', title: '月下狐影', skill: 'foxfire', shirt: '#1f1f2e', accent: '#f9a8d4' }),
+  ],
 ];
 
 export const characterById = (id: string) => CHARACTERS.find((c) => c.id === id) ?? CHARACTERS[0];
 
-/** 對手：從玩家以外的照片角色中隨機挑一位（沒有照片角色就用預設） */
+/** 對手：從玩家以外的照片角色與 VRM 角色中隨機挑一位（都沒有就用預設） */
 export const pickOpponent = (mine: string, rand: () => number = Math.random) => {
-  const pool = CHARACTERS.filter((c) => c.id !== mine && c.face);
+  const pool = CHARACTERS.filter((c) => c.id !== mine && (c.face || c.vrm));
   return pool.length ? pool[Math.floor(rand() * pool.length)] : CHARACTERS[0];
 };

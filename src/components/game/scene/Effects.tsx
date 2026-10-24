@@ -560,6 +560,54 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
         // 左右逢源：兩側各一圈綠色光環
         ring(new THREE.Vector3(p.x + 0.6, p.y, p.z), sk.color, 1.6, false, 0.45);
         ring(new THREE.Vector3(p.x - 0.6, p.y, p.z), sk.color, 1.6, false, 0.45);
+      } else if (e.id === 'pickle') {
+        // 醃漬大法：一股綠色酸汁潑向對手，對手頭上冒酸泡泡
+        const o = engine.opponentOf(a);
+        const to = new THREE.Vector3(o.pos.x - p.x, 0, o.pos.z - p.z);
+        const d = to.length() || 1;
+        dirTmp.set(to.x / d, 0.3, to.z / d).normalize();
+        pool.emit({ pos: p, count: 110, speed: 13, dir: dirTmp, spread: 0.3, life: 1, size: 0.13, color: COLOR('#dcfce7'), color2: COLOR('#16a34a'), gravity: -6 });
+        const head = new THREE.Vector3(o.pos.x, 1.9, o.pos.z);
+        pool.emit({ pos: head, count: 40, speed: 1.2, up: 1.2, life: 1.2, size: 0.16, color: COLOR('#bbf7d0'), color2: COLOR('#15803d'), drag: 1.5 });
+        ring(new THREE.Vector3(o.pos.x, 0.03, o.pos.z), sk.color, 1.6, true, 0.6);
+      } else if (e.id === 'feast') {
+        // 大胃王：對手身上的能量化成光點，一路被吸回包子武士
+        const o = engine.opponentOf(a);
+        const from = new THREE.Vector3(o.pos.x, 1.2, o.pos.z);
+        const to = new THREE.Vector3(a.pos.x - o.pos.x, 0, a.pos.z - o.pos.z);
+        const d = to.length() || 1;
+        dirTmp.set(to.x / d, 0.15, to.z / d).normalize();
+        pool.emit({ pos: from, count: 90, speed: Math.min(16, d * 1.6), dir: dirTmp, spread: 0.25, life: 0.9, size: 0.12, drag: 0.4, color: COLOR('#fef3c7'), color2: COLOR('#f59e0b') });
+        ring(from, '#fbbf24', 1.8, false, 0.5);
+        ring(new THREE.Vector3(a.pos.x, 1.1, a.pos.z), sk.color, 2.2, false, 0.7);
+      } else if (e.id === 'roar') {
+        // 虎嘯：從老虎往前推出好幾圈震波，對手那邊塵土飛揚
+        for (let i = 0; i < 3; i++) ring(new THREE.Vector3(a.pos.x, 1.4, a.pos.z), i === 1 ? '#ffffff' : sk.color, 2.5 + i * 1.6, false, 0.45 + i * 0.12);
+        const o = engine.opponentOf(a);
+        pool.emit({ pos: new THREE.Vector3(o.pos.x, 0.1, o.pos.z), count: 50, speed: 3.5, up: 1, life: 0.7, size: 0.18, grow: 1.4, color: COLOR('#fed7aa'), color2: COLOR('#9a3412'), gravity: 2, drag: 2.5 });
+      } else if (e.id === 'wave') {
+        // 大浪：對手半場中央掀起一道水牆，往兩側邊線捲過去
+        const o = engine.opponentOf(a);
+        const sz = o.pos.z;
+        for (let i = 0; i < 14; i++) {
+          const z = sz + (i / 13 - 0.5) * 4.5;
+          for (const side of [-1, 1]) {
+            dirTmp.set(side, 0.55, 0).normalize();
+            pool.emit({ pos: new THREE.Vector3(0, 0.15, z), count: 6, speed: 7, up: 2.5, dir: dirTmp, spread: 0.4, life: 1, size: 0.16, color: COLOR('#ecfeff'), color2: COLOR('#0891b2'), gravity: -8 });
+          }
+        }
+        ring(new THREE.Vector3(o.pos.x, 0.03, o.pos.z), '#67e8f9', 3, true, 0.8);
+      } else if (e.id === 'overclock') {
+        // 超頻：全身迸出紫色電光
+        const mid = new THREE.Vector3(a.pos.x, 1.1, a.pos.z);
+        pool.emit({ pos: mid, count: 120, speed: 6, life: 0.5, size: 0.08, color: COLOR('#ffffff'), color2: COLOR('#9333ea'), jitter: 0.05 });
+        ring(new THREE.Vector3(a.pos.x, 0.03, a.pos.z), sk.color, 2.4, true, 0.5);
+      } else if (e.id === 'foxfire') {
+        // 狐火：藍白色的鬼火繞著球打轉
+        for (let i = 0; i < 8; i++) {
+          const ang = (i / 8) * Math.PI * 2;
+          pool.emit({ pos: new THREE.Vector3(p.x + Math.cos(ang) * 0.4, p.y + Math.sin(ang) * 0.25, p.z), count: 6, speed: 0.6, up: 0.8, life: 0.9, size: 0.2, grow: 0.6, color: COLOR('#e0f2fe'), color2: COLOR('#2563eb') });
+        }
       }
       ballTrail.clear();
     } else if (e.type === 'counter') {
@@ -754,6 +802,16 @@ export const Effects = ({ engine, bus, lowSpec }: { engine: GameEngine; bus: FxB
         aura.rotation.y = teamSide(a.team) > 0 ? 0 : Math.PI;
       }
     });
+
+    // 狐火隱形球：球看不見，只偶爾閃一點藍色火光
+    if (engine.ballHidden() && Math.random() < (lowSpec ? 0.15 : 0.3)) {
+      pool.emit({ pos: bp, count: 1, speed: 0.2, up: 0.4, life: 0.35, size: 0.14, color: COLOR('#bfdbfe'), color2: COLOR('#1d4ed8') });
+    }
+    // 超頻中：腳下拖著電光
+    for (const a of engine.athletes) {
+      if (!engine.effectBy('overclock', a.team) || Math.random() > (lowSpec ? 0.3 : 0.6)) continue;
+      pool.emit({ pos: new THREE.Vector3(a.pos.x, 0.08, a.pos.z), count: 1, speed: 1.2, up: 0.6, life: 0.35, size: 0.07, color: COLOR('#f5f3ff'), color2: COLOR('#7e22ce'), jitter: 0.04 });
+    }
 
     // 落點預警：讓每招都有看得見的破解線索
     const wsp = b.special && !b.special.spent && engine.phase === 'rally' ? b.special : null;

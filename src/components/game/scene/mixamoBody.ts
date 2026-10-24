@@ -42,17 +42,20 @@ for (const [m, u] of [
 }
 
 /** 動作要搬的骨頭（手指不搬：握拍姿勢另外設） */
-const ANIMATED = Object.values(BONES).filter((n) => !/^(thumb|index|middle|ring|pinky|ball)_/.test(n));
+export const ANIMATED = Object.values(BONES).filter((n) => !/^(thumb|index|middle|ring|pinky|ball)_/.test(n));
 
 export interface MixamoBody {
   gltf: GLTF;
   clips: Map<string, THREE.AnimationClip>;
 }
 
-/** 動作重定向：在世界座標裡把「相對 T-pose 的旋轉」照搬過去（兩邊綁定姿勢都是面向 +Z 的 T-pose） */
-const retarget = (src: THREE.Object3D, clips: Map<string, THREE.AnimationClip>, dstScene: THREE.Object3D) => {
+/**
+ * 動作重定向：在世界座標裡把「相對 T-pose 的旋轉」照搬過去（兩邊綁定姿勢都是面向 +Z 的 T-pose）。
+ * unit：目標模型的單位換算（Mixamo 是公分 = 0.01）。
+ */
+export const retarget = (src: THREE.Object3D, clips: Map<string, THREE.AnimationClip>, dstScene: THREE.Object3D, unit = 0.01) => {
   const dst = new THREE.Group();
-  dst.scale.setScalar(0.01);
+  dst.scale.setScalar(unit);
   dst.add(dstScene);
   src.updateMatrixWorld(true);
   dst.updateMatrixWorld(true);

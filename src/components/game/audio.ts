@@ -51,6 +51,13 @@ export const VOICE_VARIANTS: Record<VoiceKey, number> = {
   flood: 1,
   clone: 1,
   cheer: 1,
+  // VRM 角色的絕招還沒有人聲（0 = 不載入、不講）
+  sour: 0,
+  feast: 0,
+  roar: 0,
+  wave: 0,
+  overclock: 0,
+  foxfire: 0,
   title: 1,
   hard: 2,
   nice: 2,
@@ -638,6 +645,37 @@ export class GameAudio {
       // 分身：亮晶晶的和弦往上飄＋一道風切
       [659.3, 830.6, 987.8, 1318.5].forEach((f, i) => this.tone(f, 'sine', 0.1, 0.8, { delay: i * 0.05, wet: 0.8 }));
       this.sweep(300, 3000, 0.25, 0.5, { wet: 0.4 }, 0.8);
+    } else if (id === 'sour') {
+      // 酸黃瓜：罐子「啵」一聲打開，接一串往下滑的酸音
+      this.tone(900, 'sine', 0.3, 0.12, { wet: 0.3 }, 300);
+      this.burst(2200, 3, 0.3, 0.05, { wet: 0.2 });
+      [740, 698, 659, 622].forEach((f, i) => this.tone(f, 'triangle', 0.12, 0.25, { delay: 0.15 + i * 0.09, wet: 0.5 }, f * 0.94));
+    } else if (id === 'feast') {
+      // 大胃王：三口大口咬下去，最後滿足地打個嗝
+      for (let i = 0; i < 3; i++) this.thump(220, 90, 0.5, 0.12, { delay: i * 0.16 }, true);
+      this.tone(160, 'sawtooth', 0.12, 0.35, { delay: 0.55, wet: 0.3 }, 90);
+      [523.3, 659.3, 784].forEach((f, i) => this.tone(f, 'sine', 0.1, 0.4, { delay: 0.6 + i * 0.07, wet: 0.6 }));
+    } else if (id === 'roar') {
+      // 虎嘯：低吼加大鼓
+      this.sweep(90, 420, 0.8, 1.1, { wet: 0.5 }, 0.7);
+      this.tone(70, 'sawtooth', 0.35, 1, { wet: 0.4 }, 45);
+      this.drum(0.9, 0.05);
+      this.gong(0.35, 0.2, 180);
+    } else if (id === 'wave') {
+      // 大浪：由遠而近的浪聲，拍上岸的一大片水花
+      this.sweep(120, 1400, 0.8, 1.2, { wet: 0.6 }, 0.4);
+      this.burst(500, 0.5, 0.7, 0.9, { delay: 0.5, wet: 0.6 }, 'lowpass');
+      for (let i = 0; i < 18; i++) this.burst(2500 + Math.random() * 3500, 2, 0.12, 0.05, { delay: 0.55 + Math.random() * 0.7, wet: 0.4 });
+    } else if (id === 'overclock') {
+      // 超頻：電子音一路往上升，最後機械「喀嚓」
+      this.tone(220, 'square', 0.1, 0.7, { wet: 0.3 }, 1760);
+      this.sweep(400, 5000, 0.2, 0.7, { wet: 0.3 }, 2);
+      this.burst(3000, 4, 0.4, 0.04, { delay: 0.72, wet: 0.2 });
+      this.thump(160, 60, 0.4, 0.15, { delay: 0.72 }, true);
+    } else if (id === 'foxfire') {
+      // 狐火：鈴鐺聲加一陣幽幽的風
+      [1568, 1976, 2349].forEach((f, i) => this.tone(f, 'sine', 0.1, 0.9, { delay: i * 0.12, wet: 0.9 }));
+      this.sweep(2600, 600, 0.2, 1.2, { delay: 0.2, wet: 0.8 }, 3);
     } else {
       // 全民應援：鑼鼓點＋觀眾大歡呼＋鞭炮
       this.luogu(1);

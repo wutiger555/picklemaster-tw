@@ -211,7 +211,7 @@ export interface Hazard {
  * flood 黑框淹水（對手後半場積水：跑不快、球彈很低）、clone 帽哥分身（網前分身幫忙截擊兩分）、
  * cheer 全民應援（能量累積兩倍）。team 是放招的一方。
  */
-export type SkillEffectId = 'lightsOut' | 'taunt' | 'flood' | 'clone' | 'cheer';
+export type SkillEffectId = 'lightsOut' | 'taunt' | 'flood' | 'clone' | 'cheer' | 'sour' | 'feast' | 'roar' | 'wave' | 'overclock' | 'foxfire';
 export interface SkillEffect {
   id: SkillEffectId;
   team: Team;
@@ -229,15 +229,33 @@ export const SKILL_FX = {
   flood: { secs: 6, front: COURT.kitchen + 1.3, bounceY: 0.5, bounceXZ: 0.85 },
   clone: { points: 2, reach: 0.95, minY: 0.35, maxY: 1.9 },
   cheer: { secs: 10, energyNow: 50, rate: 2 },
+  /** 酸黃瓜：對手出球與跑速變慢 */
+  sour: { secs: 9, pace: 0.78, move: 0.85 },
+  /** 包子武士：當下偷走的能量；之後對手賺的能量都歸放招方 */
+  feast: { secs: 8, steal: 25 },
+  /** 虎爺：對手愣住的時間；效果持續期間對手的下一拍必定撈高（用掉就結束） */
+  roar: { secs: 6, stun: 0.45 },
+  /** 海灘王：把對手往邊線推的速度、打滑時間 */
+  wave: { secs: 1.5, push: 3.8, stun: 0.35 },
+  /** 運動機甲：自己的跑速倍率與多出來的觸及 */
+  overclock: { secs: 8, move: 1.35, reach: 0.3 },
+  /** 狐面：自己的球在飛行中段隱形；AI 反應與時機都受影響 */
+  foxfire: { secs: 8, after: 0.12, past: 1.5, aiReaction: 0.12, aiTiming: 1.5 },
 } as const;
 
 /** 每招絕招對應的持續效果 */
-const SKILL_EFFECT: Record<SkillId, SkillEffectId> = {
+export const SKILL_EFFECT: Record<SkillId, SkillEffectId> = {
   squatSmash: 'lightsOut',
   spinSmash: 'taunt',
   splash: 'flood',
   dualCurve: 'clone',
   cheer: 'cheer',
+  pickle: 'sour',
+  feast: 'feast',
+  roar: 'roar',
+  wave: 'wave',
+  overclock: 'overclock',
+  foxfire: 'foxfire',
 };
 
 /** 落點：in 界內、out 出界、net 掛網；cm 是離最近的線多遠（界內＝離線還有多少，出界＝出去多少） */
@@ -1258,8 +1276,13 @@ export class GameEngine {
     });
   }
 
-  private gainEnergy(a: Athlete, amount: number) {
+  private gainEnergy(a: Athlete, amount: number, stolen = false) {
     if (!this.specials) return;
+    // 被包子武士吃光光：賺到的能量都進對手的肚子
+    if (!stolen && this.effectOn('feast', a.team)) {
+      this.gainEnergy(this.opponentOf(a), amount, true);
+      return;
+    }
     const rate =
       (a.ai ? AI_ENERGY_RATE[this.difficulty] : 1) * (a.awakenHits > 0 ? AWAKEN.energyRate : 1) * (this.effectBy('cheer', a.team) ? SKILL_FX.cheer.rate : 1);
     const before = a.energy;
@@ -1271,7 +1294,21 @@ export class GameEngine {
 
   /** 打滑（踩到冰或水灘、被震波掀翻）時的跑速倍率 */
   private slipFactor(a: Athlete) {
-    return this.slipCause(a) ? SLIP_MOVE : 1;
+    return (this.slipCause(a) ? SLIP_MOVE : 1) * this.moveFactor(a);
+  }
+
+  /** 絕招對跑速的影響：被酸黃瓜醃到變慢、機甲超頻變快 */
+  private moveFactor(a: Athlete) {
+    return (this.effectOn('sour', a.team) ? SKILL_FX.sour.move : 1) * (this.effectBy('overclock', a.team) ? SKILL_FX.overclock.move : 1);
+  }
+
+  /** 狐火：放招方的球在飛行中段看不見（畫面與 AI 都用） */
+  ballHidden() {
+    const r = this.rally;
+    if (this.phase !== 'rally' || r.lastTeam === null || r.bouncesSinceHit > 0 || !this.effectBy('foxfire', r.lastTeam)) return false;
+    // 出手後一下子才消失，進到對手半場一段距離後現身
+    const into = -this.ball.pos.z * teamSide(r.lastTeam);
+    return this.time - r.lastHitTime > SKILL_FX.foxfire.after && into < SKILL_FX.foxfire.past;
   }
 
   private slipCause(a: Athlete): HudState['slipping'] {
@@ -1318,7 +1355,22 @@ export class GameEngine {
     if (id === 'clone') fx.untilPoint = this.pointsPlayed + SKILL_FX.clone.points;
     this.skillEffects.push(fx);
     if (id === 'cheer') this.gainEnergy(a, SKILL_FX.cheer.energyNow);
-    if (id === 'flood') this.opponentOf(a).knockedUntil = this.time + 0.3;
+    const opp = this.opponentOf(a);
+    if (id === 'flood') opp.knockedUntil = this.time + 0.3;
+    if (id === 'feast' && this.specials) {
+      // 一口吞掉對手的能量
+      const bite = Math.min(opp.energy, SKILL_FX.feast.steal);
+      opp.energy -= bite;
+      this.gainEnergy(a, bite, true);
+    }
+    if (id === 'roar') opp.knockedUntil = Math.max(opp.knockedUntil, this.time + SKILL_FX.roar.stun);
+    if (id === 'wave') {
+      // 浪從中間往外捲：把對手往比較近的那一側邊線推
+      const dir = Math.sign(opp.pos.x) || (this.rand() < 0.5 ? 1 : -1);
+      opp.vel.x += dir * SKILL_FX.wave.push;
+      opp.knockedUntil = Math.max(opp.knockedUntil, this.time + SKILL_FX.wave.stun);
+      opp.slipUntil = Math.max(opp.slipUntil, this.time + SKILL_FX.wave.secs);
+    }
   }
 
   /** 玩家：加速度模型，不是瞬間移動 */
@@ -1610,7 +1662,7 @@ export class GameEngine {
     const bonus = a.ai ? 0 : this.assist ? REACH_BONUS.assist : REACH_BONUS.manual;
     // 飛撲在空中：整個人撲平伸直，觸及遠得多
     if (this.airborne(a)) return DIVE.reach + a.paddle.mods.reach + bonus * 0.5;
-    return PLAYER.reach + a.paddle.mods.reach + bonus;
+    return PLAYER.reach + a.paddle.mods.reach + bonus + (this.effectBy('overclock', a.team) ? SKILL_FX.overclock.reach : 0);
   }
 
   /** 撲接起跳到落地之間（只有這段時間能觸球） */
@@ -1851,7 +1903,7 @@ export class GameEngine {
       contact: clone(b.pos),
       incomingSpeed: incoming,
       opponent: this.opponentOf(a).pos,
-      paddle: { pace: a.paddle.mods.pace, spin: a.paddle.mods.spin },
+      paddle: { pace: a.paddle.mods.pace * (this.effectOn('sour', a.team) ? SKILL_FX.sour.pace : 1), spin: a.paddle.mods.spin },
       volley,
       slack: a.ai ? 0 : ATTACK_SLACK,
     };
@@ -1914,14 +1966,17 @@ export class GameEngine {
     let plan: ShotPlan = fire ? planSpecial(fire, req, err) : ((skill && planSkill(skill, req, err)) ?? this.windAware(req, err));
     // 被逼急的軟球／截擊會被打飛：時機差、伸長手勉強碰到、硬接重球時，球軟軟地飄高到中場 → 對方的殺球機會
     let popped = false;
+    // 被虎嘯嚇到：下一拍手軟，一定撈成高球（用掉就結束）
+    const roared = !diving && !fire && !skill && !incomingSpecial && this.effectOn('roar', a.team);
+    if (roared) this.skillEffects = this.skillEffects.filter((e) => !(e.id === 'roar' && e.team !== a.team));
     if (diving) plan = this.diveReturn(a, dist);
-    else if (!fire && !incomingSpecial && (kind0 === 'dink' || kind0 === 'drop' || kind0 === 'block' || kind0 === 'punch' || underAttack > 0)) {
+    else if (roared || (!fire && !incomingSpecial && (kind0 === 'dink' || kind0 === 'drop' || kind0 === 'block' || kind0 === 'punch' || underAttack > 0))) {
       const stretch = dist / this.reachOf(a);
       let p = Math.max(0, 0.6 - quality) * 0.9 + Math.max(0, stretch - 0.85) * 1.5 + underAttack * 0.25;
       if (kind0 !== 'block') p += Math.max(0, incoming - 13) * 0.03;
       if (a.ai && kind0 === 'dink') p += Math.max(0, this.rally.dinkChain - 4) * 0.015;
       p *= a.ai ? a.ai.profile.skill / 1.4 : 0.8;
-      if (this.rand() < Math.min(0.45, p)) {
+      if (roared || this.rand() < Math.min(0.45, p)) {
         popped = true;
         const target = v3(b.pos.x + (this.rand() - 0.5) * 2, 0, -s * (2.4 + this.rand() * 1.8));
         const sol = solveByApex(b.pos, target, Math.max(2.3, b.pos.y + 0.9) + this.rand() * 0.7, 0);
@@ -2257,6 +2312,10 @@ export class GameEngine {
     if (a.skill === 'dualCurve') return Math.abs(this.ball.pos.z) > COURT.kitchen + 0.5;
     // 全民應援：能量還不到一半時放，賺最多
     if (a.skill === 'cheer') return a.energy < 50;
+    // 大胃王：對手肚子裡有東西才吃
+    if (a.skill === 'feast') return this.opponentOf(a).energy >= 30;
+    // 大浪：對手站在場中間附近才捲得出空檔
+    if (a.skill === 'wave') return Math.abs(this.opponentOf(a).pos.x) < 1.6;
     return true;
   }
 
@@ -2807,7 +2866,7 @@ export class GameEngine {
     if (!coming) {
       ai.plan = null;
       const home = homePosition(this, a);
-      steer(a, home.x, home.z, ai.profile.maxSpeed * 0.85, dt, this.grip(a));
+      steer(a, home.x, home.z, ai.profile.maxSpeed * 0.85 * this.moveFactor(a), dt, this.grip(a));
       return;
     }
     if (this.time < a.knockedUntil) {
@@ -2819,7 +2878,10 @@ export class GameEngine {
     const sp = this.ball.special;
     // 被阿灰關燈：看不清楚，反應慢半拍、時機也抓不準
     const dark = this.effectOn('lightsOut', a.team);
-    const reaction = ai.profile.reaction + (sp?.id === 'phantom' ? 0.42 : 0) + (dark ? SKILL_FX.lightsOut.aiReaction : 0);
+    // 狐火球看不見：反應慢、時機也抓不準
+    const fox = this.effectOn('foxfire', a.team) && this.rally.lastTeam !== a.team;
+    const reaction =
+      ai.profile.reaction + (sp?.id === 'phantom' ? 0.42 : 0) + (dark ? SKILL_FX.lightsOut.aiReaction : 0) + (fox ? SKILL_FX.foxfire.aiReaction : 0);
     const reacted = this.time >= this.rally.lastHitTime + reaction;
     const plan = ai.plan;
     // 旋風球落地竄開：AI 愣一下才重新判斷（落地前的規劃是被騙的）
@@ -2828,6 +2890,7 @@ export class GameEngine {
       ai.plan = planContact(this, a, this.rand);
       if (ai.plan && sp) ai.plan.timingError *= 1.8;
       if (ai.plan && dark) ai.plan.timingError *= SKILL_FX.lightsOut.aiTiming;
+      if (ai.plan && fox) ai.plan.timingError *= SKILL_FX.foxfire.aiTiming;
       // 絕招：每一顆來球只考慮一次，提早決定（蹲下、起跳的動作才來得及）
       const p0 = ai.plan;
       if (p0 && !p0.leave && this.skillRolled.get(a.id) !== this.rally.lastHitTime) {

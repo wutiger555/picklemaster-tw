@@ -79,7 +79,6 @@ export const VOICE_VARIANTS: Record<VoiceKey, number> = {
   quake: 1,
 };
 
-const voiceBase = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/game/voice`;
 
 /** 五聲音階（D 宮）：嗩吶的旋律只用這幾個音，一聽就是廟會味 */
 const PENTA = { D5: 587.3, E5: 659.3, Fs5: 740, A5: 880, B5: 987.8, D6: 1174.7, E6: 1318.5, A4: 440, B4: 493.9 };
@@ -90,6 +89,38 @@ interface Opt {
   wet?: number;
 }
 
+/** 背景音樂：D 大調 I–vi–IV–V，每和弦兩小節，低音＋撥弦琶音（96 BPM，約 20 秒一輪） */
+const renderMusic = (rate: number) => {
+  const beat = 60 / 96;
+  const chords = [
+    [146.8, 293.7, 370, 440],
+    [123.5, 246.9, 293.7, 370],
+    [98, 196, 246.9, 293.7],
+    [110, 220, 277.2, 329.6],
+  ];
+  const len = chords.length * 8 * beat;
+  const ctx = new OfflineAudioContext(1, Math.ceil(len * rate), rate);
+  const note = (freq: number, t: number, dur: number, gain: number, type: OscillatorType) => {
+    const o = ctx.createOscillator();
+    o.type = type;
+    o.frequency.value = freq;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(ctx.destination);
+    o.start(t);
+    o.stop(t + dur + 0.05);
+  };
+  const arp = [1, 2, 3, 2, 1, 3, 2, 3];
+  chords.forEach((c, i) => {
+    const t0 = i * 8 * beat;
+    for (let b = 0; b < 8; b += 2) note(c[0], t0 + b * beat, beat * 1.9, 0.35, 'triangle');
+    for (let s = 0; s < 16; s++) note(c[arp[s % 8]] * 2, t0 + s * beat * 0.5, beat * 0.9, 0.08, 'sine');
+  });
+  return ctx.startRendering();
+};
+
 export class GameAudio {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
@@ -99,12 +130,11 @@ export class GameAudio {
   private sfx: GainNode | null = null;
   private verb: GainNode | null = null;
   private voiceBus: GainNode | null = null;
+  /** 裝飾音效（鑼鼓、嗩吶、必殺）走這條，整體壓小聲；擊球聲走 sfx 原音量 */
+  private decor: GainNode | null = null;
+  private core = false;
   private noise: AudioBuffer | null = null;
   private drive: WaveShaperNode | null = null;
-  private voices = new Map<string, AudioBuffer>();
-  /** 正在講的那句什麼時候講完（ctx 時間），講話中不疊另一句 */
-  private talkingUntil = 0;
-  private lastLine = new Map<VoiceKey, number>();
   muted = readMuted();
 
   /** 必須在使用者手勢（點擊、按鍵）裡呼叫，瀏覽器才允許出聲 */
@@ -128,6 +158,9 @@ export class GameAudio {
       this.master.connect(comp);
       this.sfx = ctx.createGain();
       this.sfx.connect(this.master);
+      this.decor = ctx.createGain();
+      this.decor.gain.value = 0.3;
+      this.decor.connect(this.sfx);
       this.voiceBus = ctx.createGain();
       this.voiceBus.gain.value = 1.15;
       this.voiceBus.connect(this.master);
@@ -150,8 +183,6 @@ export class GameAudio {
       this.drive.curve = curve;
       this.drive.connect(this.sfx);
       this.drive.connect(this.verb);
-      // 第一次點進遊戲：台詞載完就大喊遊戲名稱
-      void this.loadVoices().then(() => void this.say('title', { priority: true, cooldown: 0 }));
     }
     if (this.ctx.state === 'suspended') void this.ctx.resume();
   }
@@ -181,7 +212,7 @@ export class GameAudio {
   }
 
   dispose() {
-    this.murmur = null;
+    this.music = null;
     this.tap = null;
     this.rainNode = null;
     void this.ctx?.close();
@@ -205,7 +236,7 @@ export class GameAudio {
 
   /** 接到 sfx 匯流排，並依 wet 送一份進殘響 */
   private out(node: AudioNode, wet = 0) {
-    node.connect(this.sfx!);
+    node.connect(this.core ? this.sfx! : this.decor!);
     if (wet > 0 && this.ctx && this.verb) {
       const s = this.ctx.createGain();
       s.gain.value = wet;
@@ -422,6 +453,7 @@ export class GameAudio {
    * 每次音高隨機微調 ±4%，避免聽起來像同一個音檔重播。
    */
   hit(speed: number, perfect: boolean) {
+    this.core = true;
     const k = Math.min(1, speed / 24);
     const pitch = 1 + (Math.random() - 0.5) * 0.08;
     this.burst(5200 * pitch, 1.2, 0.55 + 0.45 * k, 0.012, { wet: 0.05 });
@@ -433,11 +465,14 @@ export class GameAudio {
       this.tone(3951, 'sine', 0.06, 0.38, { delay: 0.03, wet: 0.4 });
       this.cymbal(0.12, 0.3, 0.01);
     }
+    this.core = false;
   }
 
   /** 揮拍風切聲：先聽到「咻」再聽到「啵」，打擊才有預期感 */
   swing(strong: boolean) {
+    this.core = true;
     this.sweep(450, strong ? 2400 : 1500, strong ? 0.18 : 0.09, strong ? 0.16 : 0.12, { wet: 0.05 }, 0.8);
+    this.core = false;
   }
 
   /** 連續完美：梆子音高隨連擊數往上爬 */
@@ -447,49 +482,59 @@ export class GameAudio {
     this.tone(1046.5 * p, 'triangle', 0.08, 0.22, { delay: 0.08, wet: 0.3 });
   }
 
-  private murmur: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
+  private music: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
+  private musicBuf: Promise<AudioBuffer> | null = null;
 
-  /** 觀眾背景低語：持續的低通雜訊，讓球場有空間感 */
+  /** 比賽背景音樂：輕柔的四和弦循環（事先離線算好一段，循環播放），音量壓很小 */
   ambience(on: boolean) {
     const ctx = this.ctx;
     if (!on || this.muted) {
-      if (this.murmur && ctx) {
-        this.murmur.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
-        const m = this.murmur;
+      if (this.music && ctx) {
+        this.music.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+        const m = this.music;
         window.setTimeout(() => m.src.stop(), 1500);
-        this.murmur = null;
+        this.music = null;
       }
       return;
     }
-    if (!ctx || !this.sfx || !this.noise || this.murmur) return;
-    const src = ctx.createBufferSource();
-    src.buffer = this.noise;
-    src.loop = true;
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 420;
+    if (!ctx || !this.master || this.music) return;
     const gain = ctx.createGain();
     gain.gain.value = 0;
-    gain.gain.setTargetAtTime(0.05, ctx.currentTime, 0.8);
-    src.connect(lp).connect(gain).connect(this.sfx);
-    src.start();
-    this.murmur = { src, gain };
+    gain.connect(this.master);
+    const src = ctx.createBufferSource();
+    src.loop = true;
+    src.connect(gain);
+    this.music = { src, gain };
+    this.musicBuf ??= renderMusic(ctx.sampleRate);
+    void this.musicBuf.then((buf) => {
+      if (this.music?.src !== src) return;
+      src.buffer = buf;
+      src.start();
+      gain.gain.setTargetAtTime(0.16, ctx.currentTime, 1.2);
+    });
   }
 
+
   bounce(speed: number) {
+    this.core = true;
     const k = Math.min(1, speed / 15);
     this.burst(900, 3, 0.18 + 0.35 * k, 0.05, { wet: 0.1 });
     this.thump(130, 80, 0.12 + 0.2 * k, 0.07, { wet: 0.05 });
+    this.core = false;
   }
 
   net() {
+    this.core = true;
     this.burst(260, 0.8, 0.5, 0.18, { wet: 0.2 });
     this.burst(1800, 2, 0.15, 0.25, { delay: 0.03, wet: 0.1 });
+    this.core = false;
   }
 
   cord() {
+    this.core = true;
     this.burst(600, 1.5, 0.35, 0.09, { wet: 0.2 });
     this.tone(420, 'sine', 0.12, 0.2, { wet: 0.2 });
+    this.core = false;
   }
 
   whoosh() {
@@ -639,16 +684,14 @@ export class GameAudio {
 
   /** 觀眾歡呼：寬頻聲浪＋零星拍手 */
   cheer(big: boolean) {
-    this.sweep(600, 1400, big ? 0.35 : 0.18, big ? 1.8 : 1.1, { wet: 0.3 }, 0.5);
-    this.sweep(1200, 2600, big ? 0.2 : 0.1, big ? 1.6 : 1, { delay: 0.1, wet: 0.3 }, 0.7);
-    const claps = big ? 26 : 10;
-    for (let i = 0; i < claps; i++) this.burst(1500 + Math.random() * 900, 1.4, 0.08 + Math.random() * 0.08, 0.025, { delay: 0.1 + Math.random() * (big ? 1.4 : 0.8), wet: 0.3 });
+    // 回饋說太吵：觀眾歡呼拿掉（保留介面給呼叫端）
+    void big;
   }
 
   /** 連續來回里程碑（10、20、30 拍）：鑼鼓點，30 拍以上加鞭炮 */
   milestone(n: number) {
-    this.luogu(n >= 20 ? 1 : 0.7);
-    if (n >= 30) this.firecrackers(18, 0.9, 0.3, 0.4);
+    // 鑼鼓鞭炮太吵，改成一聲輕的梆子
+    if (n >= 10) this.woodblock(0.25);
   }
 
   /** 機會球出現：梆子「叩叩」兩聲，提示該進攻了 */
@@ -781,54 +824,10 @@ export class GameAudio {
 
   // ───────── 球評與喊聲 ─────────
 
-  /** 解鎖音效時順便把台詞音檔載進來（全部加起來幾百 KB）；缺檔就安靜略過 */
-  private async loadVoices() {
-    const ctx = this.ctx;
-    if (!ctx) return;
-    const jobs: Promise<void>[] = [];
-    for (const [key, n] of Object.entries(VOICE_VARIANTS)) {
-      for (let i = 1; i <= n; i++) {
-        const name = `${key}-${i}`;
-        jobs.push(
-          fetch(`${voiceBase}/${name}.mp3`)
-            .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
-            .then((b) => ctx.decodeAudioData(b))
-            .then((buf) => void this.voices.set(name, buf))
-            .catch(() => {}),
-        );
-      }
-    }
-    await Promise.all(jobs);
+  /** 球評台詞：回饋說太吵已拿掉，保留介面讓呼叫端不用改 */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  say(_key: VoiceKey, _opts?: { priority?: boolean; cooldown?: number; delay?: number }) {
+    return false;
   }
 
-  /**
-   * 球評講一句。正在講話時不疊（priority 高的可以插話），同一句至少隔 cooldown 秒才重講；
-   * 講話期間把其他音效壓低，台詞才聽得清楚。回傳有沒有真的講出來。
-   */
-  say(key: VoiceKey, { priority = false, cooldown = 4, delay = 0 }: { priority?: boolean; cooldown?: number; delay?: number } = {}) {
-    const ctx = this.ready();
-    if (!ctx || !this.voiceBus) return false;
-    const now = ctx.currentTime;
-    if (!priority && now < this.talkingUntil) return false;
-    if (now - (this.lastLine.get(key) ?? -99) < cooldown) return false;
-    const n = VOICE_VARIANTS[key];
-    const buf = this.voices.get(`${key}-${1 + Math.floor(Math.random() * n)}`) ?? this.voices.get(`${key}-1`);
-    if (!buf) return false;
-    this.lastLine.set(key, now);
-    const t = now + delay;
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    // 一點點殘響，像場館廣播
-    src.connect(this.voiceBus);
-    const send = ctx.createGain();
-    send.gain.value = 0.18;
-    src.connect(send).connect(this.verb!);
-    src.start(t);
-    this.talkingUntil = t + buf.duration;
-    const duck = this.sfx!.gain;
-    duck.cancelScheduledValues(t);
-    duck.setTargetAtTime(0.55, t, 0.03);
-    duck.setTargetAtTime(1, t + buf.duration, 0.12);
-    return true;
-  }
 }

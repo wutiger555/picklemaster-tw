@@ -80,7 +80,8 @@ const newDemo = () => {
 };
 
 /** 絕招音效借用必殺技的音色 */
-const SKILL_SOUND = { squatSmash: 'inferno', spinSmash: 'thunder', splash: 'frost', dualCurve: 'phantom' } as const;
+/** 角色絕招 → 放出後的持續效果（音效與球評台詞用） */
+const SKILL_FX_OF = { squatSmash: 'lightsOut', spinSmash: 'taunt', splash: 'flood', dualCurve: 'clone', cheer: 'cheer' } as const;
 
 /** 手機震動回饋（不支援的瀏覽器直接略過） */
 const buzz = (pattern: number | number[]) => {
@@ -563,8 +564,8 @@ const PickleballGame = () => {
             break;
           }
           case 'skill': {
-            audio.special(SKILL_SOUND[e.id]);
-            audio.say('wow', { priority: true, cooldown: 2 });
+            audio.skillFx(SKILL_FX_OF[e.id]);
+            if (!audio.say(SKILL_FX_OF[e.id], { priority: true, cooldown: 0 })) audio.say('wow', { priority: true, cooldown: 2 });
             if (e.team === 0) buzz([20, 30, 50]);
             const who = characters[e.team];
             const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, skill: e.id, mine: e.team === 0, portrait: who.portrait, name: who.name };
@@ -572,6 +573,14 @@ const PickleballGame = () => {
             later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 900);
             break;
           }
+          case 'cloneHit':
+            audio.cloneHit();
+            if (e.team === 0) {
+              const t: Toast = { id: ++ids.current, text: '分身截擊！', tone: 'special' };
+              setToasts([t]);
+              later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900);
+            }
+            break;
           case 'counter':
             if (e.team === 0) buzz(40);
             audio.counter();

@@ -308,7 +308,8 @@ export interface PathSample {
  * 往前預測軌跡（含掛網、落地），AI 跑位、擊球時機與新手落點提示都靠它。
  * 每 2 個物理子步取一次樣（120 Hz）。slow < 1：球的時間流速變慢（覺醒），取樣時間照比例拉長。
  */
-export const predictPath = (b: BallState, duration: number, dt: number, slow = 1): PathSample[] => {
+/** onBounce：落地後改球速的場地效果（例如積水讓球彈很低），預測和實際要用同一個函式 */
+export const predictPath = (b: BallState, duration: number, dt: number, slow = 1, onBounce?: (sim: BallState) => void): PathSample[] => {
   const sim = cloneBall(b);
   const out: PathSample[] = [];
   let bounces = 0;
@@ -316,6 +317,7 @@ export const predictPath = (b: BallState, duration: number, dt: number, slow = 1
   for (let i = 1; i <= steps; i++) {
     const ev = stepBall(sim, dt);
     if (ev?.type === 'bounce') {
+      onBounce?.(sim);
       bounces++;
       if (bounces > 2) break;
     }

@@ -68,7 +68,8 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
     const t = clock.current;
     const g = engine.guide;
     const h = engine.human;
-    const live = engine.phase === 'rally' && !h.ai && !engine.replay;
+    // 被阿灰關燈：站位圈、計時圈、落點提示全部看不到
+    const live = engine.phase === 'rally' && !h.ai && !engine.replay && !engine.effectOn('lightsOut', h.team);
 
     // 站位圈：輔助模式時是「自動跑過去的目標」，手動模式是「建議站這裡」
     if (stand.current) {
@@ -157,7 +158,7 @@ export const Guide = ({ engine }: { engine: GameEngine }) => {
     }
 
     // 蓄力時的瞄準落點
-    const preview = engine.aimPreview();
+    const preview = engine.effectOn('lightsOut', h.team) ? null : engine.aimPreview();
     if (aim.current) {
       aim.current.visible = !!preview;
       if (preview) {

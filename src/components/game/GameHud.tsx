@@ -63,6 +63,44 @@ const DiveCue = ({ touch }: { touch: boolean }) => (
   </motion.div>
 );
 
+/** 角色絕招持續效果的小標籤 */
+const EFFECT_CHIP: Record<HudState['effects'][number]['id'], { icon: string; name: string; color: string }> = {
+  lightsOut: { icon: '🌑', name: '關燈', color: '#f97316' },
+  taunt: { icon: '💢', name: '嗆聲', color: '#ef4444' },
+  flood: { icon: '🌊', name: '淹水', color: '#38bdf8' },
+  clone: { icon: '👥', name: '分身', color: '#a3e635' },
+  cheer: { icon: '📣', name: '全民應援', color: '#facc15' },
+};
+
+/** 誰放的什麼效果、還剩多久；對自己不利的標紅框 */
+const EffectChips = ({ hud }: { hud: HudState }) => (
+  <div className="flex flex-wrap justify-center gap-1.5 max-md:justify-start">
+    <AnimatePresence>
+      {hud.effects.map((e) => {
+        const c = EFFECT_CHIP[e.id];
+        return (
+          <motion.span
+            key={`${e.id}-${e.mine}`}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold text-white backdrop-blur-md ${
+              e.mine ? 'border-white/20 bg-slate-950/70' : 'border-red-400/70 bg-red-950/70'
+            }`}
+          >
+            <span>{c.icon}</span>
+            <span style={{ color: c.color }}>{e.mine ? '我方' : '對手'}{c.name}</span>
+            <span className="tabular-nums text-white/70">
+              {e.left}
+              {e.unit === 's' ? 's' : '分'}
+            </span>
+          </motion.span>
+        );
+      })}
+    </AnimatePresence>
+  </div>
+);
+
 export interface PointCard {
   id: number;
   won: boolean;
@@ -406,6 +444,19 @@ export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, 
   return (
     <div className="pointer-events-none absolute inset-0 z-10 select-none">
       <AwakenTint hud={hud} />
+      {/* 阿灰關燈：整個球場暗下來（四周更暗） */}
+      <div
+        className="absolute inset-0 transition-opacity duration-500"
+        style={{
+          opacity: hud.effects.some((e) => e.id === 'lightsOut') ? 1 : 0,
+          background: 'radial-gradient(ellipse at 50% 55%, rgba(2,6,23,0.45) 20%, rgba(2,6,23,0.88) 75%)',
+        }}
+      />
+      {hud.effects.length > 0 && !practice && (
+        <div className={`absolute inset-x-0 px-3 ${touch ? 'top-[6.75rem] landscape:top-[5.75rem]' : 'top-[6.5rem]'}`}>
+          <EffectChips hud={hud} />
+        </div>
+      )}
       {!practice && (
         <div className={`absolute inset-x-0 top-3 flex justify-center transition-opacity max-md:justify-start max-md:pl-3 ${replay}`}>
           {hud.level && level ? (

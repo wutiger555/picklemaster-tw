@@ -7,6 +7,7 @@
  */
 
 import type { SpecialId } from './engine/paddles';
+import type { SkillEffectId } from './engine/game';
 
 const MUTE_KEY = 'pm-game-muted';
 
@@ -39,10 +40,17 @@ export type VoiceKey =
   | 'unstoppable'
   | 'review'
   | 'overturned'
-  | SpecialId;
+  | SpecialId
+  | SkillEffectId;
 
 /** 每句有幾個版本（檔名 -1、-2…），由 scripts/voice/ 的產生腳本決定 */
 export const VOICE_VARIANTS: Record<VoiceKey, number> = {
+  // 角色絕招的持續效果：關燈囉／就這樣喔／淹水啦／分身出來／台灣隊加油
+  lightsOut: 1,
+  taunt: 1,
+  flood: 1,
+  clone: 1,
+  cheer: 1,
   title: 1,
   hard: 2,
   nice: 2,
@@ -562,6 +570,43 @@ export class GameAudio {
   }
 
   /** 破解必殺：亮鑼一響 */
+  /** 角色絕招的持續效果開始：每招一種聲音 */
+  skillFx(id: SkillEffectId) {
+    if (id === 'lightsOut') {
+      // 斷電：電流嗡一聲往下掉，最後「喀」一聲燈滅
+      this.tone(180, 'sawtooth', 0.12, 0.7, { wet: 0.4 }, 40);
+      this.sweep(2400, 200, 0.25, 0.6, { wet: 0.4 }, 1.2);
+      this.thump(90, 40, 0.6, 0.3, { delay: 0.55 }, true);
+      this.burst(1800, 3, 0.4, 0.04, { delay: 0.55, wet: 0.3 });
+    } else if (id === 'taunt') {
+      // 嗆聲：大鼓兩下＋鑼，觀眾「喔～」
+      this.drum(0.8);
+      this.drum(0.8, 0.16);
+      this.gong(0.45, 0.32, 220);
+      this.sweep(500, 900, 0.22, 1.2, { delay: 0.3, wet: 0.4 }, 0.6);
+    } else if (id === 'flood') {
+      // 大水：低頻沖刷＋一陣水花
+      this.sweep(150, 900, 0.7, 1.4, { wet: 0.5 }, 0.5);
+      this.burst(400, 0.5, 0.5, 0.9, { delay: 0.1, wet: 0.5 }, 'lowpass');
+      for (let i = 0; i < 14; i++) this.burst(2500 + Math.random() * 3000, 2, 0.12, 0.05, { delay: 0.2 + Math.random() * 0.8, wet: 0.4 });
+    } else if (id === 'clone') {
+      // 分身：亮晶晶的和弦往上飄＋一道風切
+      [659.3, 830.6, 987.8, 1318.5].forEach((f, i) => this.tone(f, 'sine', 0.1, 0.8, { delay: i * 0.05, wet: 0.8 }));
+      this.sweep(300, 3000, 0.25, 0.5, { wet: 0.4 }, 0.8);
+    } else {
+      // 全民應援：鑼鼓點＋觀眾大歡呼＋鞭炮
+      this.luogu(1);
+      this.cheer(true);
+      this.firecrackers(24, 1.2, 0.3, 0.4);
+    }
+  }
+
+  /** 分身截擊：輕脆的一聲 */
+  cloneHit() {
+    this.tone(1318.5, 'sine', 0.14, 0.3, { wet: 0.6 });
+    this.burst(4200, 4, 0.2, 0.05, { wet: 0.3 });
+  }
+
   counter() {
     this.smallGong(0.45);
     this.cymbal(0.4, 0.8);

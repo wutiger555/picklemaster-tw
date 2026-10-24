@@ -38,7 +38,7 @@ const img = (file: string) => `${base}/game/characters/${file}`;
 export const CHARACTERS: CharacterDef[] = [
   {
     id: 'default',
-    skill: null,
+    skill: 'cheer',
     body: 'hero',
     name: '台灣隊',
     title: '原創選手',

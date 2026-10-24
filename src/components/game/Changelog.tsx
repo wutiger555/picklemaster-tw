@@ -4,6 +4,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 /** 版本說明：新版本加在最前面 */
 const VERSIONS: { v: string; date: string; items: string[] }[] = [
   {
+    v: '1.6',
+    date: '2026-10-25',
+    items: [
+      '新場地「信義運動中心頂樓」：防護網鋼管籠裡的屋頂球場，遠方是台北 101',
+      '新場地「新北大都會公園河濱」：全台最大的河濱匹克球中心，8 面雙色藍專用場',
+    ],
+  },
+  {
     v: '1.5',
     date: '2026-10-24',
     items: [

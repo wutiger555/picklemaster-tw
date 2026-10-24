@@ -18,7 +18,7 @@ export interface Records {
 }
 
 /** 比賽場地（beach 是踢館之旅颱風站專用，不在選單裡） */
-export type Venue = 'arena' | 'rosegarden' | 'beach';
+export type Venue = 'arena' | 'rosegarden' | 'xinyi' | 'riverside' | 'beach';
 
 export interface Settings {
   mode: GameMode;
@@ -37,9 +37,57 @@ export interface Settings {
 
 const DIFFS: Difficulty[] = ['rookie', 'club', 'pro'];
 
+const VENUE_SHORT: Record<Exclude<Venue, 'beach'>, string> = { arena: '夜間體育館', rosegarden: '新生公園', xinyi: '信義頂樓', riverside: '大都會河濱' };
+
 /** 場地縮圖：用 SVG 畫，不必另外下載圖 */
+/** 新場地的縮圖 */
 const VenueThumb = ({ venue }: { venue: Exclude<Venue, 'beach'> }) =>
-  venue === 'arena' ? (
+  venue === 'xinyi' ? (
+    <svg viewBox="0 0 160 64" preserveAspectRatio="xMidYMid slice" className="h-full w-full" aria-hidden>
+      <rect width="160" height="64" fill="#9cc6ea" />
+      {/* 台北 101 */}
+      <g fill="#5d8c87">
+        <rect x="96" y="44" width="16" height="12" />
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <polygon key={i} points={`${98},${44 - i * 6} ${110},${44 - i * 6} ${112},${38 - i * 6} ${96},${38 - i * 6}`} />
+        ))}
+        <rect x="101" y="4" width="6" height="4" />
+        <rect x="103.4" y="0" width="1.2" height="4" />
+      </g>
+      <rect x="20" y="30" width="18" height="26" fill="#cfd5d9" />
+      <rect x="122" y="26" width="22" height="30" fill="#dfe3e2" />
+      <rect y="46" width="160" height="18" fill="#3b6550" />
+      <polygon points="40,64 120,64 106,48 54,48" fill="#3f6b56" stroke="#f4f6f8" strokeWidth="1" />
+      <line x1="80" y1="48" x2="80" y2="64" stroke="#f4f6f8" strokeWidth="0.8" />
+      {/* 防護網鋼管 */}
+      <g stroke="#2a2d31" strokeWidth="1.2" fill="none">
+        <path d="M4 64 L18 8 L142 8 L156 64" />
+        <path d="M18 8 L4 0 M142 8 L156 0 M60 8 L58 0 M100 8 L102 0" />
+      </g>
+    </svg>
+  ) : venue === 'riverside' ? (
+    <svg viewBox="0 0 160 64" preserveAspectRatio="xMidYMid slice" className="h-full w-full" aria-hidden>
+      <rect width="160" height="64" fill="#a9cdf0" />
+      <g fill="#b7c3cc">
+        <rect x="8" y="14" width="10" height="16" />
+        <rect x="22" y="10" width="8" height="20" />
+        <rect x="120" y="12" width="12" height="18" />
+        <rect x="138" y="16" width="9" height="14" />
+      </g>
+      <rect y="26" width="160" height="8" fill="#4b7a3b" />
+      <rect y="32" width="160" height="32" fill="#3d7a4e" />
+      {[0, 1, 2, 3].map((i) => (
+        <g key={i}>
+          <polygon points={`${8 + i * 38},64 ${40 + i * 38},64 ${36 + i * 38},40 ${14 + i * 38},40`} fill="#2f5fae" stroke="#f4f6f8" strokeWidth="0.8" />
+          <polygon points={`${11 + i * 38},55 ${38 + i * 38},55 ${37 + i * 38},49 ${12 + i * 38},49`} fill="#4d9be0" />
+        </g>
+      ))}
+      <g stroke="#c7cbcd" strokeWidth="1.2">
+        <line x1="4" y1="64" x2="6" y2="14" />
+        <line x1="156" y1="64" x2="154" y2="14" />
+      </g>
+    </svg>
+  ) : venue === 'arena' ? (
     <svg viewBox="0 0 160 64" preserveAspectRatio="xMidYMid slice" className="h-full w-full" aria-hidden>
       <defs>
         <linearGradient id="vt-night" x1="0" y1="0" x2="0" y2="1">
@@ -195,7 +243,7 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
     onNext();
   };
   const diff = AI_PROFILES[settings.difficulty];
-  const venue = (settings.venue ?? 'arena') === 'arena' ? '夜間體育館' : '新生公園';
+  const venue = VENUE_SHORT[(settings.venue ?? 'arena') as Exclude<Venue, 'beach'>];
   return (
     <>
     <Shell>
@@ -383,6 +431,8 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
                 [
                   { id: 'arena', title: '夜間體育館', desc: '滿場觀眾、LED 看板與大螢幕' },
                   { id: 'rosegarden', title: '新生公園羽毛球場', desc: '台北玫瑰園旁的白天戶外硬地' },
+                  { id: 'xinyi', title: '信義運動中心頂樓', desc: '防護網籠裡的屋頂球場，正對台北 101' },
+                  { id: 'riverside', title: '新北大都會公園河濱', desc: '全台最大的河濱匹克球中心，8 面專用場' },
                 ] as const
               ).map((v) => {
                 const sel = (settings.venue ?? 'arena') === v.id;

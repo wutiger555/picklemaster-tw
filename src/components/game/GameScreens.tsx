@@ -218,7 +218,14 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
             }`}
           >
             <span className="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-slate-950/20 ring-2 ring-white/60">
-              {me.portrait ? <img src={me.portrait} alt="" className="h-full w-full object-cover object-top" /> : <span className="text-2xl">🏓</span>}
+              {me.portrait ? (
+                <img src={me.portrait} alt="" className="h-full w-full object-cover object-top" />
+              ) : (
+                // 沒有照片的選手：球衣色塊＋背號（不要用 🏓，那是桌球拍）
+                <span className="grid h-full w-full place-items-center font-display text-2xl font-black text-white" style={{ background: me.shirt }}>
+                  {me.number}
+                </span>
+              )}
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-xl font-black leading-tight">快速開打</span>

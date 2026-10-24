@@ -9,7 +9,7 @@ import { SKILLS } from './engine/skills';
 import type { CutInInfo } from './CutIn';
 import { GameScene } from './GameScene';
 import { GameHud, type PointCard, type Toast } from './GameHud';
-import { ComicTitle, TitleSplash } from './ComicTitle';
+import { ComicTitle, GAME_NAME, TitleSplash } from './ComicTitle';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings } from './GameScreens';
 import { MatchSetup } from './MatchSetup';
 import { PaddleSelect } from './PaddleSelect';
@@ -22,7 +22,7 @@ import { track } from '../../utils/analytics';
 import { ChallengeIntro } from './ShareCard';
 import { type Challenge, type MatchResult, decodeChallenge, emptyHighlights, trackHit } from './share';
 import { type LevelId, createLevel } from './engine/levels';
-import { TOUR_KEY, type TourProgress, emptyTour, levelById } from './tour';
+import { type StoryPanel, TOUR_KEY, type TourProgress, emptyTour, levelById } from './tour';
 import { type LevelOutcome, LevelResult, StoryComic, TourMap } from './TourScreens';
 import type { LevelPop } from './LevelHud';
 import { ClipRecorder, clipMime } from './clip';
@@ -34,6 +34,19 @@ const TIPS_KEY = 'pm-game-tips';
 
 const RECORDS_KEY = 'pm-game-records';
 const SETTINGS_KEY = 'pm-game-settings';
+const WELCOME_KEY = 'pm-game-welcome';
+
+/** 第一次進遊戲的世界觀漫畫（熱血版／正規版各一套） */
+const WELCOME_STORY: StoryPanel[] = [
+  { who: null, scene: 'court', text: '台灣的匹克球場上，流傳著一群人的傳說——「匹克硬邦幫」。', sfx: '碰！' },
+  { who: 'p1', scene: 'ko', text: '我們打的是真的匹克球。只是每支拍子裡，都藏著一記必殺技。' },
+  { who: null, scene: 'court', text: '想加入？先花 1 分鐘，學會擊球、殺球和撲救！', sfx: '啪！' },
+];
+const WELCOME_STORY_PURE: StoryPanel[] = [
+  { who: null, scene: 'court', text: '台灣的匹克球場上，每天都有人在找對手。', sfx: '啪！' },
+  { who: 'p1', scene: 'court', text: '雙彈跳、廚房、換發球，規則一條都不能少。這是真的比賽。' },
+  { who: null, scene: 'court', text: '想上場？先花 1 分鐘，學會擊球、殺球和撲救！', sfx: '碰！' },
+];
 
 const emptyRecords = (): Records => ({
   wins: { rookie: 0, club: 0, pro: 0 },
@@ -157,6 +170,8 @@ const PickleballGame = () => {
   const [immersive, setImmersive] = useState(false);
   /** 頁面上的標題畫面按過「開始遊戲」了（桌機不全螢幕，直接在區塊裡進選單） */
   const [started, setStarted] = useState(false);
+  /** 第一次進遊戲：3 格漫畫介紹世界觀，再帶去新手教學（只出現一次） */
+  const [welcome, setWelcome] = useState(false);
   const [rotateHint, setRotateHint] = useState(false);
   const audio = useMemo(() => new GameAudio(), []);
   const stage = useRef<HTMLDivElement>(null);
@@ -1242,6 +1257,7 @@ const PickleballGame = () => {
               audio.unlock();
               setStarted(true);
               if (touch) enterImmersive();
+              if (!doneBefore && !load<{ seen: boolean }>(WELCOME_KEY, { seen: false }).seen) setWelcome(true);
             }}
             className="mt-5 w-full max-w-xs rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-4 text-xl font-black text-emerald-950"
           >
@@ -1289,6 +1305,22 @@ const PickleballGame = () => {
             }}
             onTutorial={startTutorial}
             tutorialDone={doneBefore}
+          />
+        )}
+        {welcome && (
+          <StoryComic
+            key="welcome"
+            def={{ name: GAME_NAME, story: settings.specials ? WELCOME_STORY : WELCOME_STORY_PURE }}
+            cta="1 分鐘學會基本功 ▶"
+            onDone={() => {
+              save(WELCOME_KEY, { seen: true });
+              setWelcome(false);
+              startTutorial();
+            }}
+            onSkip={() => {
+              save(WELCOME_KEY, { seen: true });
+              setWelcome(false);
+            }}
           />
         )}
         {screen === 'setup' && !cover && (

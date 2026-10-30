@@ -20,7 +20,8 @@
   "vars": {
     "SITE_ORIGIN": "https://picklemastertw.com",
     "ALLOWED_ORIGINS": "https://picklemastertw.com,https://www.picklemastertw.com,http://localhost:5173",
-    "TURNSTILE_MODE": "enforce"
+    "TURNSTILE_MODE": "enforce",
+    "ARCADE_MODE": "on"
   },
   // 密鑰（wrangler secret put）：TOKEN_SECRET、TURNSTILE_SECRET
   "observability": { "enabled": true }

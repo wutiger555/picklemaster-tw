@@ -139,12 +139,17 @@ interface MenuProps {
   onNext: () => void;
   /** 快速開打：沿用上次的選手、球拍、場地直接比賽 */
   onQuick: () => void;
+  /** 每週排行榜、球友身分（雲端存檔） */
+  onBoard: () => void;
+  onAccount: () => void;
+  /** 已有球友身分時顯示暱稱 */
+  accountName: string | null;
   onTutorial: () => void;
   /** 教學做完過了：入口縮成一行小字 */
   tutorialDone: boolean;
 }
 
-export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onQuick, onTutorial, tutorialDone }: MenuProps) => {
+export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onQuick, onBoard, onAccount, accountName, onTutorial, tutorialDone }: MenuProps) => {
   // 標題畫面只放「選一個玩法就開打」；對手、場地、操作這些細項收進設定面板（像多數獨立遊戲的標題選單）
   const [sheet, setSheet] = useState(false);
   const [news, setNews] = useState(false);
@@ -339,7 +344,22 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
 
         </motion.div>
         {/* 底部小圖示列：設定、更新 */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-3 flex items-center justify-center gap-2 landscape:justify-start">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-3 flex flex-wrap items-center justify-center gap-2 landscape:justify-start">
+            <button
+              type="button"
+              onClick={onBoard}
+              className="flex items-center gap-1.5 rounded-full bg-amber-300 px-3.5 py-2 text-xs font-black text-amber-950 shadow-lg shadow-amber-500/20"
+            >
+              🏆 排行榜
+            </button>
+            <button
+              type="button"
+              onClick={onAccount}
+              className="flex max-w-[9rem] items-center gap-1.5 rounded-full bg-slate-900/70 px-3.5 py-2 text-xs font-bold text-white/80 ring-1 ring-white/10 backdrop-blur-md hover:text-white"
+            >
+              <span>{accountName ? '☁️' : '👤'}</span>
+              <span className="truncate">{accountName ?? '存檔／登入'}</span>
+            </button>
             <button
               type="button"
               onClick={() => setSheet(true)}

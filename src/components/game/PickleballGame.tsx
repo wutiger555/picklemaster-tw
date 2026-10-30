@@ -12,6 +12,9 @@ import { GameHud, type PointCard, type Toast } from './GameHud';
 import { ComicTitle, GAME_NAME, TitleSplash } from './ComicTitle';
 import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings, type Venue } from './GameScreens';
 import { MatchSetup } from './MatchSetup';
+import * as cloud from './cloud';
+import { AccountSheet, LeaderboardSheet } from './ArcadeSocial';
+import { getCachedMe } from '../../utils/playApi';
 import { NEWEST_VENUES } from './venues';
 import { VenueIntroCard } from './VenueIntroCard';
 import { introDuration } from './scene/venueIntro';
@@ -206,6 +209,21 @@ const PickleballGame = () => {
   const [cleared, setCleared] = useState(false);
   const [lessonsDone, setLessonsDone] = useState(false);
   const [doneBefore, setDoneBefore] = useState(tutorialDone);
+  // 雲端存檔與排行榜（和揪團共用球友身分）
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [boardOpen, setBoardOpen] = useState(false);
+  const [accountName, setAccountName] = useState<string | null>(() => (cloud.signedIn() ? (getCachedMe()?.nickname ?? null) : null));
+  const matchStart = useRef(0);
+  /** 雲端存檔合併回本機之後，重新讀進畫面 */
+  const reloadSaved = useCallback(() => {
+    setRecords(load<Records>(RECORDS_KEY, emptyRecords()));
+    setTour(load<TourProgress>(TOUR_KEY, emptyTour()));
+    setDoneBefore(tutorialDone());
+    setAccountName(cloud.signedIn() ? (getCachedMe()?.nickname ?? null) : null);
+  }, []);
+  useEffect(() => {
+    void cloud.pull().then((snap) => snap && reloadSaved());
+  }, [reloadSaved]);
   const lessonRef = useRef<number | null>(null);
   const progressRef = useRef<LessonProgress>(freshProgress());
   // 比賽中的教練提示：每種只在第一次遇到時跳一次
@@ -394,6 +412,7 @@ const PickleballGame = () => {
         };
         setTour(next);
         save(TOUR_KEY, next);
+        cloud.schedulePush();
         setOutcome({
           id,
           stars,
@@ -428,6 +447,21 @@ const PickleballGame = () => {
       }
       setRecords(next);
       save(RECORDS_KEY, next);
+      cloud.schedulePush();
+      // 每週排行榜：只記一般比賽與 Dink 挑戰（踢館之旅另外算）
+      void cloud
+        .submitResult({
+          mode: eng.mode === 'dink' ? 'dink' : 'match',
+          difficulty: d,
+          venue: settings.venue ?? 'arena',
+          doubles: eng.doubles,
+          specials: settings.specials,
+          scoreMe: eng.match.score[0],
+          scoreOpp: eng.match.score[1],
+          rallies: eng.dinkStreak,
+          durationMs: Date.now() - matchStart.current,
+        })
+        .then((pts) => pts !== null && cloud.invalidateBoards());
       setNewRecord(record);
       audio.ambience(false);
       const won = eng.mode === 'dink' ? record : eng.match.winner === 0;
@@ -435,7 +469,7 @@ const PickleballGame = () => {
       audio.say(won ? 'win' : 'lose', { priority: true, cooldown: 0, delay: 0.5 });
       setScreen('over');
     },
-    [records, settings.difficulty, audio, tour],
+    [records, settings.difficulty, settings.venue, settings.specials, audio, tour],
   );
 
   /** 關卡中的得分彈出字 */
@@ -893,6 +927,7 @@ const PickleballGame = () => {
 
   /** 開打：一般比賽，或踢館之旅的某一關（關卡用自己的規則、對手和海邊場地） */
   const start = (s: Settings = settings, level: LevelId | null = null) => {
+    matchStart.current = Date.now();
     track('game_start', {
       mode: level ? `tour_${level}` : s.mode,
       difficulty: s.difficulty,
@@ -1346,6 +1381,9 @@ const PickleballGame = () => {
             }}
             onTutorial={startTutorial}
             tutorialDone={doneBefore}
+            onBoard={() => setBoardOpen(true)}
+            onAccount={() => setAccountOpen(true)}
+            accountName={accountName}
           />
         )}
         {welcome && (
@@ -1489,6 +1527,15 @@ const PickleballGame = () => {
           />
         )}
       </AnimatePresence>
+      <AccountSheet open={accountOpen} onClose={() => setAccountOpen(false)} onChanged={reloadSaved} />
+      <LeaderboardSheet
+        open={boardOpen}
+        onClose={() => setBoardOpen(false)}
+        onSignIn={() => {
+          setBoardOpen(false);
+          setAccountOpen(true);
+        }}
+      />
     </div>
   );
 };

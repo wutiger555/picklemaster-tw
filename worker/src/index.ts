@@ -11,6 +11,7 @@ import { runDaily, runMaintenance } from './cron';
 import { shareHtml } from './share';
 import { listInterests, setInterest } from './interests';
 import { deleteReview, getReviews, putReview } from './reviews';
+import * as arcade from './arcade';
 
 const app = new Hono<AppEnv>();
 
@@ -71,6 +72,37 @@ app.post('/api/claim', async (c) => {
   await rateLimit(c, 'claim', Date.now());
   await verifyTurnstile(c, body.turnstileToken);
   return c.json(await players.claimCode(c.env, body));
+});
+
+// ---------- 小遊戲（匹克硬邦幫）：雲端存檔與每週排行榜 ----------
+
+// 緊急開關：關掉時直接回 503，不碰資料庫；手機端看到 arcade_off 會停 24 小時
+app.use('/api/arcade/*', async (c, next) => {
+  if (c.env.ARCADE_MODE === 'off') throw new ApiError(503, 'arcade_off', '遊戲雲端功能暫停中，進度先存在這支手機上');
+  await next();
+});
+
+app.get('/api/arcade/profile', async (c) => c.json(await arcade.getProfile(c.env, requirePlayer(c))));
+
+app.put('/api/arcade/profile', async (c) => {
+  const now = Date.now();
+  const pid = requirePlayer(c);
+  await rateLimit(c, 'arcadeProfile', now);
+  return c.json(await arcade.putProfile(c.env, pid, await readJson(c.req.raw), now));
+});
+
+app.post('/api/arcade/results', async (c) => {
+  const now = Date.now();
+  const pid = requirePlayer(c);
+  await rateLimit(c, 'arcadeResult', now);
+  return c.json(await arcade.postResult(c.env, pid, await readJson(c.req.raw), now), 201);
+});
+
+app.get('/api/arcade/leaderboard/:board', async (c) => {
+  const pid = c.get('playerId');
+  // 沒帶身分的公開排行可以快取；帶身分的要算自己的名次，不快取
+  c.header('Cache-Control', pid ? 'private, no-store' : 'public, max-age=60');
+  return c.json(await arcade.leaderboard(c.env, c.req.param('board'), pid, Date.now()));
 });
 
 // ---------- 約打團 ----------

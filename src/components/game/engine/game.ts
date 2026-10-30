@@ -42,6 +42,7 @@ import { type AIProfile, type AIState, type Difficulty, AI_PROFILES, chooseShot,
 import { type V3, v3, clamp, clone, gauss, len } from './vec';
 import { REPLAY_STRIDE, ReplayTape } from './replay';
 import type { Level, LevelFx, LevelHud, Puddle } from './levels';
+import { type Backhand, type Grip, backhandReach, techniqueLabel, techniqueMods } from './technique';
 
 /** drill = 冒險模式的小遊戲（發球機餵球，計分交給關卡） */
 export type GameMode = 'match' | 'dink' | 'drill';
@@ -134,6 +135,9 @@ export interface Traits {
   error: number;
   /** 觸及範圍加成（公尺） */
   reach: number;
+  /** 握拍與反手（沒設定＝不影響，和以前一樣） */
+  grip?: Grip;
+  backhand?: Backhand;
 }
 
 export const NEUTRAL_TRAITS: Traits = { speed: 1, pace: 1, error: 1, reach: 0 };
@@ -727,6 +731,8 @@ export class GameEngine {
   /** 這一分是精彩球：分數結算後要重播 */
   private pendingReplay: PendingReplay | null = null;
   private replayCount = 0;
+  /** 每位選手上一拍是正手還是反手、什麼時候打的（判斷網前快速換邊） */
+  private lastStroke = new Map<number, { forehand: boolean; t: number }>();
   private tape: ReplayTape;
   private tapeTick = 0;
   /** 這一分走過電視輔助判決（已經看過重播，不再播精彩重播） */
@@ -2046,7 +2052,8 @@ export class GameEngine {
     }
     const { f, l } = this.relative(a, b.pos);
     const dist = Math.hypot(f, l);
-    if (dist > this.reachOf(a) || !this.heightOk(a, b.pos.y)) {
+    // 單手反拍：反手那側一隻手伸得比較遠
+    if (dist > this.reachOf(a) + (l < 0 ? backhandReach(a.traits.backhand) : 0) || !this.heightOk(a, b.pos.y)) {
       this.emit({ type: 'whiff', team: a.team });
       return;
     }
@@ -2125,8 +2132,21 @@ export class GameEngine {
     }
 
     const errKind = fire ? (fire === 'phantom' ? 'dink' : 'drive') : skill === 'squatSmash' || skill === 'spinSmash' ? 'drive' : classifyShot(req);
+    // 握拍與反手：正反手、球路、網前快速換邊都會影響這一拍的力量、旋轉與穩定度
+    const prev = this.lastStroke.get(a.id);
+    const tech = techniqueMods(a.traits.grip, a.traits.backhand, {
+      forehand: l >= 0,
+      kind: errKind,
+      volley,
+      contactHeight: b.pos.y,
+      stretch: dist / this.reachOf(a),
+      quickSwitch: !!prev && prev.forehand !== l >= 0 && this.time - prev.t < 0.9,
+    });
+    this.lastStroke.set(a.id, { forehand: l >= 0, t: this.time });
+    const basePaddle = req.paddle ?? { pace: 1, spin: 1 };
+    req.paddle = { pace: basePaddle.pace * tech.pace, spin: basePaddle.spin * tech.spin };
     // 旋轉強的拍子打抽球、高吊、殺球時更容易把球壓進場內（上旋的作用）
-    const spinControl = errKind === 'drive' || errKind === 'smash' || errKind === 'lob' ? 1 / (1 + (a.paddle.mods.spin - 1) * 0.6) : 1;
+    const spinControl = errKind === 'drive' || errKind === 'smash' || errKind === 'lob' ? 1 / (1 + (req.paddle.spin - 1) * 0.6) : 1;
     const err: Perturb = sampleShotError(
       errKind,
       {
@@ -2140,6 +2160,7 @@ export class GameEngine {
           (a.ai ? a.ai.profile.skill : 1) *
           a.paddle.mods.error *
           a.traits.error *
+          tech.error *
           spinControl *
           pressure *
           (1 + underAttack * 1.4) *
@@ -2315,7 +2336,11 @@ export class GameEngine {
       } else this.perfectStreak = 0;
     }
 
-    let label: string = fire ? SPECIALS[fire].name : skill ? SKILLS[skill].name : SHOT_LABEL[plan.kind];
+    let label: string = fire
+      ? SPECIALS[fire].name
+      : skill
+        ? SKILLS[skill].name
+        : (techniqueLabel(a.traits.grip, a.traits.backhand, l >= 0, plan.kind) ?? SHOT_LABEL[plan.kind]);
     if (sw.reflex) label = '反射擋球';
     else if (diving) label = '飛身救球';
     else if (!a.ai && !fire && !skill) {

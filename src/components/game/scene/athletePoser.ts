@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { Athlete, GameEngine } from '../engine/game';
+import type { Grip } from '../engine/technique';
 import { teamSide } from '../engine/rules';
 import { NET_ZONE, SMASH_HEIGHT } from '../engine/shots';
 
@@ -138,7 +139,7 @@ const STROKES: Record<Kind, Stroke> = {
 /** 前揮時間、收拍時間、回到準備姿勢的時間 */
 const FWD = 0.16;
 const FOL = 0.2;
-const REC = 0.32;
+const REC = 0.4;
 /** 關節限制 */
 const MAX_TWIST = 0.9;
 const MAX_PRONATION = 1.6;
@@ -332,6 +333,12 @@ export class AthletePoser {
   private spinFrom = -99;
   /** 絕招動作額外的前傾 */
   private extraLean = 0;
+  /** 動力鏈：前揮時髖部比肩膀先轉（0＝平均分配，1＝下背帶頭） */
+  private chainLead = 0;
+  /** 重心轉移：抽球時從後腳移到前腳（沿面向球網的方向，公尺） */
+  private weight = 0;
+  /** 這位選手的握拍（每幀從引擎讀）：決定抽球時拍面開合 */
+  private grip: Grip | undefined;
   private celebration: Celebration = CELEBRATIONS[0];
   /** 失分的反應：true = 先被打到踉蹌再搖頭，false = 直接搖頭 */
   private stagger = false;
@@ -454,6 +461,7 @@ export class AthletePoser {
     this.trackStroke(engine, a, up);
     const st = this.cur;
     const tau = st ? t - st.tC : 99;
+    this.grip = a.traits.grip;
     const strokeOn = st !== null && tau < FOL + REC;
     // 飛身撲接：放倒的角度、骨盆高度、爬起來的進度（0 = 還趴著，1 = 站好）
     const dive = a.dive ? this.divePose(a.dive, t) : null;
@@ -475,13 +483,34 @@ export class AthletePoser {
     this.reach.lerp(reachT, 1 - Math.exp(-18 * rdt));
     g.position.add(this.reach);
 
+    // 重心轉移與動力鏈：大揮拍（抽球、殺球、發球）拉拍時重心落在後腳，前揮時往前腳壓過去，
+    // 髖部先轉、肩膀跟上；dink、截擊這種小動作只用手腳，不做
+    const big = st !== null && (st.kind === 'fh' || st.kind === 'bh' || st.kind === 'smash' || st.kind === 'serve');
+    let weightT = 0;
+    let leadT = 0;
+    if (big && st && !dive) {
+      const prepK = this.prepWeight(a, st, t);
+      if (tau < 0 && st.swung && t >= st.fwdStart) {
+        const u = clamp01((t - st.fwdStart) / Math.max(0.04, st.tC - st.fwdStart));
+        weightT = -0.07 + 0.16 * smoothstep(0, 1, u);
+        leadT = Math.sin(Math.PI * Math.min(1, u * 1.15));
+      } else if (tau < 0) weightT = -0.07 * prepK;
+      else weightT = 0.09 * (1 - smoothstep(0, FOL + REC, tau));
+    }
+    this.weight = approach(this.weight, weightT, 16, dt);
+    this.chainLead = approach(this.chainLead, leadT, 20, dt);
+    g.position.x += Math.sin(baseYaw) * this.weight;
+    g.position.z += Math.cos(baseYaw) * this.weight;
+
     // ── 移動：模型座標的速度（+Z 朝網）
     // 飛撲時腳不跑步：照撲出去的姿勢
     const vx = dive ? 0 : -s * a.vel.x;
     const vz = dive ? 0 : -s * a.vel.z;
     const speed = Math.hypot(vx, vz);
     // 主要往左右移動：用側併步，身體一直面向球網（不再整個人轉過去跑）
-    const side = smoothstep(0.3, 0.8, speed) * smoothstep(0.6, 0.85, speed > 0.01 ? Math.abs(vx) / speed : 0);
+    // 跑得很快的大角度球改用交叉步：髖部轉向跑動方向、跨步過去（側併步跟不上速度時腳會像在滑）
+    const cross = smoothstep(2.3, 3.3, speed);
+    const side = smoothstep(0.3, 0.8, speed) * smoothstep(0.6, 0.85, speed > 0.01 ? Math.abs(vx) / speed : 0) * (1 - cross);
     let back = false;
     let yawT = 0;
     if (speed > 0.5) {
@@ -605,6 +634,15 @@ export class AthletePoser {
     // 跑步時非持拍手跟著擺動（動作檔），揮拍時才用 IK
     const offW = w * (strokeOn ? 1 : 1 - run * 0.75);
     this.solveRight(sm, w);
+    // 雙手反拍：反手拉拍到擊球、收拍前段，非持拍手握到拍柄上（疊在持拍手下方）
+    const bhStroke = st !== null && (st.kind === 'bh' || st.kind === 'bhLow' || st.kind === 'bhHigh' || st.kind === 'lobB');
+    if (a.traits.backhand === 'two' && bhStroke && strokeOn && !dive) {
+      const k = Math.max(prep, tau > -FWD ? 1 : 0) * (1 - smoothstep(FOL * 0.6, FOL + 0.12, tau));
+      if (k > 0.02) {
+        const handle = this.arms.r.hand.getWorldPosition(_v[0]).addScaledVector(_v[1].set(0, 1, 0).applyQuaternion(sm.paddle), -0.08);
+        sm = { ...sm, off: sm.off.clone().lerp(handle, k) };
+      }
+    }
     if (offW > 0.02) this.solveLeft(sm, offW);
     this.lookAt(engine.ball.pos, w * 0.85);
 
@@ -732,7 +770,8 @@ export class AthletePoser {
   /** 拉拍準備的程度：玩家按住（蓄力）就拉到底；否則球越近拉越多 */
   private prepWeight(a: Athlete, st: NonNullable<AthletePoser['cur']>, t: number) {
     if (a.swing.state !== 'idle') return 1;
-    return smoothstep(0.85, 0.3, st.tC - t);
+    // 提早轉肩（unit turn）：對手一出手、判斷得出正反手就先側身拉拍，不等球到才拉
+    return smoothstep(1.05, 0.32, st.tC - t);
   }
 
   // ───────────────────────────── 飛身撲接 ─────────────────────────────
@@ -834,6 +873,15 @@ export class AthletePoser {
     // 擊球點太低：上半身多彎一點
     contact.lean += clamp((shoulder - 0.5 - st.c.y) * 0.25, 0, 0.15);
     const follow = pose(S.follow, st.c, S.rel);
+    // 握拍決定抽球的拍面：半西方式拍面關很多（刷上旋）、東方式稍關、大陸式略開（平擊、切削）
+    if (st.kind === 'fh' || st.kind === 'bh') {
+      const close = this.grip === 'semiwestern' ? 0.32 : this.grip === 'eastern' ? 0.16 : this.grip === 'continental' ? -0.08 : 0;
+      if (close !== 0) {
+        const tilt = _q[6].setFromAxisAngle(R, close * (st.kind === 'fh' ? 1 : 0.6));
+        back.paddle.premultiply(tilt);
+        contact.paddle.premultiply(tilt);
+      }
+    }
 
     const t = engine.time;
     if (tau < 0 && (t < st.fwdStart || !st.swung)) return this.blend(ready, back, prep, chest, R, F);
@@ -901,7 +949,9 @@ export class AthletePoser {
   private applyTorso(m: Target, baseYaw: number, w: number) {
     const twist = clamp(m.yaw - this.yaw, -MAX_TWIST, MAX_TWIST) * w;
     const R = _v[1].set(-Math.cos(baseYaw), 0, Math.sin(baseYaw));
-    const share = [0.3, 0.35, 0.35];
+    // 平常三節脊椎平均分；前揮時下背先轉（髖部帶動肩膀），收拍時再平均回來
+    const k = this.chainLead;
+    const share = [0.3 + 0.25 * k, 0.35 - 0.05 * k, 0.35 - 0.2 * k];
     ['spine_01', 'spine_02', 'spine_03'].forEach((n, i) => {
       _q[0].setFromAxisAngle(_v[3].set(0, 1, 0), twist * share[i]);
       _q[1].setFromAxisAngle(R, -(m.lean + this.extraLean) * w * share[i]);

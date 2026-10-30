@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AI_PROFILES, type Difficulty } from './engine/ai';
 import { PADDLES, SPECIALS } from './engine/paddles';
 import { SKILLS } from './engine/skills';
+import { BACKHAND_LABEL, GRIP_LABEL } from './engine/technique';
 import { CHARACTERS, type CharacterDef, characterById } from './characters';
 import type { Settings } from './GameScreens';
 import { VenueThumb } from './VenueThumb';
@@ -78,6 +79,9 @@ export const MatchSetup = ({ settings, onChange, onBack, onStart, onDetail }: Pr
         <div className="flex items-baseline gap-2">
           <span className="text-lg font-black text-white">{c.name}</span>
           <span className="truncate text-xs font-semibold text-emerald-300">{c.title}</span>
+        </div>
+        <div className="truncate text-[11px] text-white/55">
+          {GRIP_LABEL[c.grip]}握拍・{BACKHAND_LABEL[c.backhand]}
         </div>
         {settings.specials && c.skill && (
           <div className="truncate text-[11px] text-white/60">

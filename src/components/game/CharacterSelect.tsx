@@ -6,6 +6,7 @@ import { GameEngine } from './engine/game';
 import { AthleteModel } from './scene/AthleteModel';
 import { headHeights, lookFromCharacter } from './scene/characterData';
 import { ARCHETYPE_COLOR, CHARACTERS, type CharacterDef, type Stats } from './characters';
+import { BACKHAND_HINT, BACKHAND_LABEL, GRIP_HINT, GRIP_LABEL } from './engine/technique';
 import { SKILLS } from './engine/skills';
 
 /** 去背半身像的四角與底部淡出：藏掉轉正後的斜邊與去背邊緣的小瑕疵 */
@@ -150,12 +151,22 @@ const PlayerSlot = ({ c, tag, tagColor, locked = false }: { c: CharacterDef; tag
           <span className="rounded px-1.5 py-0.5 text-[10px] font-black text-slate-950" style={{ background: color }}>
             {c.archetype}
           </span>
+          {/* 技術風格：握拍與反手 */}
+          <span className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-bold text-white" title={GRIP_HINT[c.grip]}>
+            {GRIP_LABEL[c.grip]}握拍
+          </span>
+          <span className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-bold text-white" title={BACKHAND_HINT[c.backhand]}>
+            {BACKHAND_LABEL[c.backhand]}
+          </span>
           {locked && <span className="text-[10px] font-bold text-white/50">已選</span>}
         </div>
         <div className="truncate font-display text-3xl font-black italic leading-none text-white md:text-4xl" style={{ textShadow: `3px 3px 0 ${color}66` }}>
           {c.name}
         </div>
         <div className="truncate text-[11px] font-semibold text-white/60">{playstyle(c.stats)}</div>
+        <div className="truncate text-[10px] text-white/50">
+          {GRIP_HINT[c.grip]}；{BACKHAND_HINT[c.backhand]}
+        </div>
         <StatBars stats={c.stats} />
         {c.skill && (
           <div className="truncate text-[11px] font-bold" style={{ color: SKILLS[c.skill].color }}>

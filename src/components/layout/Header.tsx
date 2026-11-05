@@ -245,7 +245,7 @@ const Header = () => {
                             className="ml-2 shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold text-emerald-700 bg-emerald-50/80 ring-1 ring-emerald-200/70 hover:bg-emerald-100 hover:ring-emerald-300 transition-colors whitespace-nowrap"
                         >
                             <GameIcon className="w-4 h-4" />
-                            互動遊戲
+                            匹克球遊戲
                         </Link>
                     </div>
 
@@ -277,7 +277,7 @@ const Header = () => {
                             className="flex items-center gap-2 px-5 py-3 mb-3 rounded-xl font-semibold text-emerald-700 bg-emerald-50/80 ring-1 ring-emerald-200/60"
                         >
                             <GameIcon className="w-4 h-4" />
-                            互動遊戲
+                            匹克球遊戲
                         </Link>
 
                         {navigation.map((item, index) => (

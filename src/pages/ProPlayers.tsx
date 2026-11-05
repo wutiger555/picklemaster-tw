@@ -67,7 +67,7 @@ const PlayerCard = ({ player, index }: { player: Player; index: number }) => {
                 <div className="text-[10px] opacity-70 uppercase">速度</div>
               </div>
             </div>
-            <div className="text-xs opacity-80 truncate">🏓 {player.paddle}</div>
+            <div className="text-xs opacity-80 truncate">🎒 {player.paddle}</div>
           </div>
 
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />

@@ -16,6 +16,7 @@ const Footer = () => {
     { path: ROUTES.LEARNING, label: '互動課程' },
     { path: ROUTES.LEARNING_PATHS, label: '學習路徑' },
     { path: ROUTES.SCORER, label: '計分工具' },
+    { path: ROUTES.GAME, label: '匹克球遊戲' },
   ];
 
   const companyLinks = [

@@ -319,7 +319,7 @@ const CourtViewer3D = () => {
     {
       id: 'serve-position',
       name: '發球站位',
-      icon: '🎾',
+      icon: '📍',
       highlightZone: 'service-bottom-right',
       positions: [
         { pos: [1.1, 0, -4.0] as [number, number, number], label: '發球方（偶數區）', color: '#3b82f6' },
@@ -342,7 +342,7 @@ const CourtViewer3D = () => {
         {
           title: '下手發球規則（Underhand Serve）',
           items: [
-            '🏓 擊球點必須低於腰部（肚臍位置）',
+            '🎯 擊球點必須低於腰部（肚臍位置）',
             '📐 球拍頭部不能高於手腕',
             '✋ 球拍面必須由下往上揮動（upward arc）',
             '⚖️ 擊球時手腕不能高於肘部',
@@ -390,7 +390,7 @@ const CourtViewer3D = () => {
           items: [
             '📍 站在廚房線外，盡量靠近廚房線（約1-2英寸）',
             '⚖️ 保持身體重心略微下降，膝蓋微彎',
-            '🏓 球拍舉至胸前，隨時準備截擊',
+            '💪 球拍舉至胸前，隨時準備截擊',
             '👀 注視對方和來球，保持警覺',
             '🤝 雙打：與搭檔橫向間距約6-8英尺',
             '⚠️ 避免站位過於靠近中線或邊線',
@@ -403,7 +403,7 @@ const CourtViewer3D = () => {
             '💪 掌控球場，給對方施加壓力',
             '🎯 有更多的角度選擇（cross-court, down-the-line）',
             '✅ 縮短對方反應時間，更容易得分',
-            '🎾 可以打出有效的截擊球（put-away）',
+            '💥 可以打出有效的截擊球（put-away）',
           ],
         },
         {
@@ -507,7 +507,7 @@ const CourtViewer3D = () => {
               <h4 className="font-bold text-gray-800 mb-3 text-lg">球場尺寸記憶口訣</h4>
               <div className="space-y-2 text-sm text-gray-700">
                 <p className="flex items-start">
-                  <span className="mr-2 font-bold">🏓</span>
+                  <span className="mr-2 font-bold">📏</span>
                   <span><strong>44-20-7</strong>：球場長 44 英尺、寬 20 英尺、廚房區 7 英尺</span>
                 </p>
                 <p className="flex items-start">

@@ -178,7 +178,7 @@ const getBreadcrumbItems = (page: string): Array<{ name: string, url: string }> 
     'equipment': '裝備推薦',
     'learning-paths': '學習路徑',
     'learning': '技巧教學',
-    'game': '互動遊戲',
+    'game': '匹克球遊戲',
     'scorer': '計分器',
     'resources': '學習資源',
     'about': '關於我們',

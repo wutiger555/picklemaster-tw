@@ -31,6 +31,9 @@ export const LIMITS = {
   join: { max: 60, windowMs: 3600_000 },
   claim: { max: 10, windowMs: 3600_000 },
   report: { max: 20, windowMs: 86400_000 },
+  // 小遊戲：一場最快約 1 分鐘，一小時 60 場已經很多
+  arcadeResult: { max: 60, windowMs: 3600_000 },
+  arcadeProfile: { max: 120, windowMs: 3600_000 },
 } as const;
 
 export async function rateLimit(c: Context<AppEnv>, action: keyof typeof LIMITS, now: number): Promise<void> {

@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { PageViewTracker } from './utils/analytics';
 import { Suspense, lazy } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
@@ -85,6 +86,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <PageViewTracker />
       <div className="flex flex-col min-h-screen">
         <DomainNotice />
         <Header />

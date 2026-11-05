@@ -331,7 +331,7 @@ const About = () => {
               <div className="absolute -bottom-10 -left-10 text-9xl opacity-5 pointer-events-none">🇹🇼</div>
 
               <h2 className="font-display text-display-xl font-black text-neutral-900 mb-8 text-center">
-                🏓 推廣台灣匹克球運動
+                🥒 推廣台灣匹克球運動
               </h2>
 
               <div className="max-w-4xl mx-auto">

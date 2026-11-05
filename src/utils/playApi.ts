@@ -318,3 +318,40 @@ export const putCourtReview = (courtId: number, tags: string[]) =>
   request<CourtReviews>(`/api/courts/${courtId}/reviews`, { method: 'PUT', body: { tags } });
 export const deleteCourtReview = (courtId: number) =>
   request<CourtReviews>(`/api/courts/${courtId}/reviews`, { method: 'DELETE' });
+
+// ---------- 小遊戲（匹克硬邦幫）：雲端存檔與每週排行榜 ----------
+
+export type ArcadeBoard = 'points' | 'pro' | 'dink';
+
+export interface ArcadeResult {
+  mode: 'match' | 'dink';
+  difficulty: 'rookie' | 'club' | 'pro';
+  venue: string;
+  doubles: boolean;
+  specials: boolean;
+  scoreMe?: number;
+  scoreOpp?: number;
+  rallies?: number;
+  durationMs: number;
+}
+
+export interface ArcadeBoardRow {
+  rank: number;
+  nickname: string;
+  avatarSeed: number;
+  value: number;
+  isMe: boolean;
+}
+
+export interface ArcadeLeaderboard {
+  board: ArcadeBoard;
+  week: number;
+  resetsAt: number;
+  rows: ArcadeBoardRow[];
+  me: { rank: number | null; value: number } | null;
+}
+
+export const getArcadeProfile = () => request<{ data: Record<string, unknown> | null; updatedAt: number | null }>('/api/arcade/profile');
+export const putArcadeProfile = (data: Record<string, unknown>) => request<{ updatedAt: number }>('/api/arcade/profile', { method: 'PUT', body: { data } });
+export const postArcadeResult = (r: ArcadeResult) => request<{ points: number; week: number }>('/api/arcade/results', { body: r });
+export const getArcadeLeaderboard = (board: ArcadeBoard) => request<ArcadeLeaderboard>(`/api/arcade/leaderboard/${board}`);

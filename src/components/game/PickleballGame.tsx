@@ -1,1049 +1,1541 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useGameSounds } from '../../hooks/useGameSounds';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { PerformanceMonitor } from '@react-three/drei';
+import { AnimatePresence, motion } from 'framer-motion';
+import { GameEngine, type GameEvent, type HudState, SKILL_EFFECT } from './engine/game';
+import { createAI } from './engine/ai';
+import { PADDLES, SPECIALS } from './engine/paddles';
+import { SKILLS } from './engine/skills';
+import type { CutInInfo } from './CutIn';
+import { GameScene } from './GameScene';
+import { GameHud, type PointCard, type Toast } from './GameHud';
+import { ComicTitle, GAME_NAME, TitleSplash } from './ComicTitle';
+import { GameOverScreen, MenuScreen, PauseScreen, type Records, type Settings, type Venue } from './GameScreens';
+import { MatchSetup } from './MatchSetup';
+import * as cloud from './cloud';
+import { AccountSheet, LeaderboardSheet } from './ArcadeSocial';
+import { getCachedMe } from '../../utils/playApi';
+import { NEWEST_VENUES } from './venues';
+import { VenueIntroCard } from './VenueIntroCard';
+import { introDuration } from './scene/venueIntro';
+import { PaddleSelect } from './PaddleSelect';
+import { CharacterSelect } from './CharacterSelect';
+import { CHARACTERS, type CharacterDef, characterById, pickOpponent, pickOpponentExcept, traitsOf } from './characters';
+import { TouchControls } from './TouchControls';
+import { useGameInput } from './useGameInput';
+import { GameAudio } from './audio';
+import { track } from '../../utils/analytics';
+import { ChallengeIntro } from './ShareCard';
+import { type Challenge, type MatchResult, decodeChallenge, emptyHighlights, trackHit } from './share';
+import { type LevelId, createLevel } from './engine/levels';
+import { type StoryPanel, TOUR_KEY, type TourProgress, emptyTour, levelById } from './tour';
+import { type LevelOutcome, LevelResult, StoryComic, TourMap } from './TourScreens';
+import type { LevelPop } from './LevelHud';
+import { ClipRecorder, clipMime } from './clip';
+import { type ClipStatus, SaveClipButton } from './HighlightClip';
+import { type LessonProgress, LESSONS, applyEvents, freshProgress, markTutorialDone, tutorialDone } from './tutorial';
+import { CoachTip, TutorialDone, TutorialPanel } from './TutorialOverlay';
 
-// --- 3D Engine Constants ---
-const CANVAS_WIDTH = 1200;
-const CANVAS_HEIGHT = 800;
-const BASE_FOV = 360;
-const CAMERA_HEIGHT = 140;
-const COURT_LENGTH = 880;
-const COURT_WIDTH = 400;
+const TIPS_KEY = 'pm-game-tips';
 
-// --- Physics Constants ---
-const PHYSICS = {
-  GRAVITY: 0.25,
-  DRAG: 0.995,
-  BOUNCE_DAMPING: 0.85,
-  NET_HEIGHT: 34,
-  PADDLE_REACH: 140,
-  PADDLE_WIDTH: 60,
-  PLAYER_SPEED: 16,
+const RECORDS_KEY = 'pm-game-records';
+const SETTINGS_KEY = 'pm-game-settings';
+const WELCOME_KEY = 'pm-game-welcome';
+
+/** 第一次進遊戲的世界觀漫畫（熱血版／正規版各一套） */
+const WELCOME_STORY: StoryPanel[] = [
+  { who: null, scene: 'court', text: '台灣的匹克球場上，流傳著一群人的傳說——「匹克硬邦幫」。', sfx: '碰！' },
+  { who: 'p1', scene: 'ko', text: '我們打的是真的匹克球。只是每支拍子裡，都藏著一記必殺技。' },
+  { who: null, scene: 'court', text: '想加入？先花 1 分鐘，學會擊球、殺球和撲救！', sfx: '啪！' },
+];
+const WELCOME_STORY_PURE: StoryPanel[] = [
+  { who: null, scene: 'court', text: '台灣的匹克球場上，每天都有人在找對手。', sfx: '啪！' },
+  { who: 'p1', scene: 'court', text: '雙彈跳、廚房、換發球，規則一條都不能少。這是真的比賽。' },
+  { who: null, scene: 'court', text: '想上場？先花 1 分鐘，學會擊球、殺球和撲救！', sfx: '碰！' },
+];
+
+const emptyRecords = (): Records => ({
+  wins: { rookie: 0, club: 0, pro: 0 },
+  plays: { rookie: 0, club: 0, pro: 0 },
+  dinkBest: { rookie: 0, club: 0, pro: 0 },
+  comboBest: { rookie: 0, club: 0, pro: 0 },
+});
+
+/** 讀寫 localStorage 都包 try/catch：無痕模式或封鎖儲存時遊戲照樣能玩 */
+const load = <T,>(key: string, fallback: T): T => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
+  } catch {
+    return fallback;
+  }
+};
+const save = (key: string, value: unknown) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* 存不了就算了 */
+  }
 };
 
-// --- Types ---
-interface Vector3 { x: number; y: number; z: number; }
-interface Point2D { x: number; y: number; scale: number; }
-interface Particle {
-  id: number; pos: Vector3; vel: Vector3;
-  life: number; color: string; size: number;
-  type: 'spark' | 'text' | 'ring' | 'trail'; text?: string;
-}
+/** 示範賽：隨機兩位照片角色 */
+const demoCharacters = (): [CharacterDef, CharacterDef] => {
+  const a = pickOpponent('default');
+  return [a, pickOpponent(a.id)];
+};
 
-type GameState = 'MENU' | 'SERVING' | 'PLAYING' | 'POINT_AWARDED' | 'GAME_OVER';
-type ShotType = '平擊' | '高吊' | '小球' | '殺球' | '火焰球' | '幸運球';
+/** 主選單背後播放的 AI 對打示範（熱血模式，會看到必殺技與角色絕招） */
+const createDemo = (chars: [CharacterDef, CharacterDef]) => {
+  const ids = PADDLES.map((p) => p.id);
+  const a = ids[Math.floor(Math.random() * ids.length)];
+  const e = new GameEngine({ mode: 'match', difficulty: 'pro', assist: false, specials: true, paddles: [a] });
+  e.athletes[0].ai = createAI('pro');
+  e.setSkills([chars[0].skill, chars[1].skill]);
+  return e;
+};
 
-// --- Helper Classes ---
-class Ball {
-  pos: Vector3 = { x: 0, y: 100, z: 200 };
-  vel: Vector3 = { x: 0, y: 0, z: 0 };
-  radius: number = 10;
-  bounces: number = 0;
-  lastHitter: 'player' | 'opponent' | null = null;
-  maxHeight: number = 0;
-  isFireball: boolean = false;
+/** 示範賽的角色與引擎一起建立（引擎要知道雙方的絕招） */
+const newDemo = () => {
+  const chars = demoCharacters();
+  return { chars, engine: createDemo(chars) };
+};
 
-  update() {
-    this.vel.y -= PHYSICS.GRAVITY;
-    this.vel.x *= PHYSICS.DRAG;
-    this.vel.z *= PHYSICS.DRAG;
+/** 絕招音效借用必殺技的音色 */
+/** 角色絕招 → 放出後的持續效果（音效與球評台詞用） */
 
-    this.pos.x += this.vel.x;
-    this.pos.y += this.vel.y;
-    this.pos.z += this.vel.z;
-
-    if (this.pos.y > this.maxHeight) this.maxHeight = this.pos.y;
-
-    // Ground
-    if (this.pos.y <= 0) {
-      this.pos.y = 0;
-      this.isFireball = false; // Fireball extinguishes on bounce
-      if (Math.abs(this.vel.y) > 1) {
-        this.vel.y = -this.vel.y * PHYSICS.BOUNCE_DAMPING;
-        this.bounces++;
-        return 'bounce';
-      } else {
-        this.vel.y = 0;
-        this.vel.x *= 0.9;
-        this.vel.z *= 0.9;
-      }
-    }
-
-    // Net
-    if (Math.abs(this.pos.z) < 10 && this.pos.y < PHYSICS.NET_HEIGHT && Math.abs(this.pos.x) < COURT_WIDTH / 2 + 40) {
-      this.vel.z *= -0.5;
-      this.vel.x *= 0.5;
-      this.pos.z = this.pos.z < 0 ? -15 : 15;
-      this.isFireball = false;
-      return 'net';
-    }
-
-    return null;
+/** 手機震動回饋（不支援的瀏覽器直接略過） */
+const buzz = (pattern: number | number[]) => {
+  try {
+    navigator.vibrate?.(pattern);
+  } catch {
+    /* 不支援就算了 */
   }
+};
 
-  reset(z: number) {
-    this.pos = { x: 0, y: 100, z };
-    this.vel = { x: 0, y: 0, z: 0 };
-    this.bounces = 0;
-    this.lastHitter = null;
-    this.maxHeight = 0;
-    this.isFireball = false;
+/** 手機或核心數少的裝置：減少粒子、關掉色差與 MSAA */
+const detectLowSpec = () => {
+  try {
+    return window.matchMedia('(pointer: coarse)').matches || (navigator.hardwareConcurrency ?? 8) <= 4;
+  } catch {
+    return false;
   }
-}
+};
 
-// --- Main Component ---
+type Screen = 'menu' | 'setup' | 'character' | 'partner' | 'paddle' | 'play' | 'over' | 'tour' | 'story';
+
+/** 下載影片（不支援分享檔案的瀏覽器，例如桌機 Firefox） */
+const downloadFile = (file: File) => {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = file.name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+};
+
 const PickleballGame = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const [gameState, setGameState] = useState<GameState>('MENU');
-  const [score, setScore] = useState({ player: 0, opponent: 0 });
-  const [server, setServer] = useState<'player' | 'opponent'>('player');
-  const [winner, setWinner] = useState<'player' | 'opponent' | null>(null);
-
-  const [focus, setFocus] = useState(0); // 0-100
-  const [charge, setCharge] = useState(0);
-  const [shotType, setShotType] = useState<ShotType>('平擊');
-  const [ruleHint, setRuleHint] = useState<string>('');
-
-  const ball = useRef(new Ball());
-  const player = useRef({ x: 0, z: -450 });
-  const opponent = useRef({ x: 0, z: 450 });
-  const particles = useRef<Particle[]>([]);
-  const cameraShake = useRef(0);
-  const currentFOV = useRef(BASE_FOV);
-
-  // Swing State
-  const swingState = useRef({
-    active: false,
-    timer: 0,
-    charge: 0,
-    hasHit: false
+  const [screen, setScreen] = useState<Screen>('menu');
+  // 開場標題：每次進遊戲頁播一次
+  const [splash, setSplash] = useState(true);
+  const endSplash = useCallback(() => setSplash(false), []);
+  const [settings, setSettings] = useState<Settings>(() => {
+    const s = load<Settings>(SETTINGS_KEY, {
+      mode: 'match',
+      difficulty: 'rookie',
+      assist: true,
+      controls: 'auto',
+      specials: true,
+      paddle: PADDLES[0].id,
+      character: CHARACTERS[1]?.id ?? 'default',
+      venue: 'arena',
+    });
+    // 沒自己選過場地：輪流用最新的場地（大家才會看到新球場），點過就照自己選的
+    return s.venuePicked ? s : { ...s, venue: NEWEST_VENUES[Math.floor(Math.random() * NEWEST_VENUES.length)] };
   });
+  const [records, setRecords] = useState<Records>(() => load<Records>(RECORDS_KEY, emptyRecords()));
+  const [initialDemo] = useState(newDemo);
+  const [engine, setEngine] = useState<GameEngine>(initialDemo.engine);
+  /** 依 athletes 的順序：[玩家, 對手]，雙打再加 [隊友, 對手 2] */
+  const [characters, setCharacters] = useState<CharacterDef[]>(initialDemo.chars);
+  /** 開賽前場地介紹：開始時間（給鏡頭用）與是否正在播（給畫面層用） */
+  const introAt = useRef(0);
+  const [introOn, setIntroOn] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [hud, setHud] = useState<HudState>(() => engine.hud());
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [aiToast, setAiToast] = useState<Toast | null>(null);
+  const [banner, setBanner] = useState<{ id: number; text: string } | null>(null);
+  const [card, setCard] = useState<PointCard | null>(null);
+  const [cutIn, setCutIn] = useState<CutInInfo | null>(null);
+  const [newRecord, setNewRecord] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [touch, setTouch] = useState(false);
+  // 畫質等級開場就定好，不在比賽中切換（切換會重建後處理、重編著色器，反而當場卡一下）；
+  // 掉幀時 PerformanceMonitor 只往下調解析度
+  const [lowSpec] = useState(detectLowSpec);
+  const maxDpr = lowSpec ? 1.25 : 1.5;
+  const [dpr, setDpr] = useState(maxDpr);
+  // 沉浸模式：開打後舞台蓋滿整個視窗（能全螢幕就全螢幕；iPhone 不支援元素全螢幕，就靠鋪滿視窗）
+  const [immersive, setImmersive] = useState(false);
+  /** 頁面上的標題畫面按過「開始遊戲」了（桌機不全螢幕，直接在區塊裡進選單） */
+  const [started, setStarted] = useState(false);
+  /** 第一次進遊戲：3 格漫畫介紹世界觀，再帶去新手教學（只出現一次） */
+  const [welcome, setWelcome] = useState(false);
+  const [rotateHint, setRotateHint] = useState(false);
+  const audio = useMemo(() => new GameAudio(), []);
+  const stage = useRef<HTMLDivElement>(null);
+  const ids = useRef(0);
+  const timers = useRef<number[]>([]);
+  // 挑戰連結（?vs=）與本場亮點數據，給分享卡用
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [intro, setIntro] = useState(false);
+  const highlights = useRef(emptyHighlights());
+  // 精彩球錄影：瀏覽器不支援錄影（mime 是 null）就整個不出現
+  const [recMime] = useState(clipMime);
+  const [recorder, setRecorder] = useState<ClipRecorder | null>(null);
+  const [clip, setClip] = useState<{ id: number; label: string; status: ClipStatus } | null>(null);
+  /** 這一球的影片：收尾中是 promise，好了另外放一份，點按鈕時可以同步呼叫分享（Safari 要求在點擊當下） */
+  const clipFile = useRef<{ id: number; label: string; file: Promise<File | null> | null; ready: File | null } | null>(null);
+  // 踢館之旅：進度、選到的關卡、結算、關卡中的得分彈出字
+  const [tour, setTour] = useState<TourProgress>(() => load<TourProgress>(TOUR_KEY, emptyTour()));
+  const [levelId, setLevelId] = useState<LevelId | null>(null);
+  const [outcome, setOutcome] = useState<LevelOutcome | null>(null);
+  const [pops, setPops] = useState<LevelPop[]>([]);
+  const pearls = useRef(0);
+  // 新手教學：目前第幾關（null＝不在教學中）與進度；事件回呼裡用 ref 讀，避免拿到舊值
+  const [lesson, setLesson] = useState<number | null>(null);
+  const [cleared, setCleared] = useState(false);
+  const [lessonsDone, setLessonsDone] = useState(false);
+  const [doneBefore, setDoneBefore] = useState(tutorialDone);
+  // 雲端存檔與排行榜（和揪團共用球友身分）
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [boardOpen, setBoardOpen] = useState(false);
+  const [accountName, setAccountName] = useState<string | null>(() => (cloud.signedIn() ? (getCachedMe()?.nickname ?? null) : null));
+  const matchStart = useRef(0);
+  /** 雲端存檔合併回本機之後，重新讀進畫面 */
+  const reloadSaved = useCallback(() => {
+    setRecords(load<Records>(RECORDS_KEY, emptyRecords()));
+    setTour(load<TourProgress>(TOUR_KEY, emptyTour()));
+    setDoneBefore(tutorialDone());
+    setAccountName(cloud.signedIn() ? (getCachedMe()?.nickname ?? null) : null);
+  }, []);
+  useEffect(() => {
+    void cloud.pull().then((snap) => snap && reloadSaved());
+  }, [reloadSaved]);
+  const lessonRef = useRef<number | null>(null);
+  const progressRef = useRef<LessonProgress>(freshProgress());
+  // 比賽中的教練提示：每種只在第一次遇到時跳一次
+  const [tip, setTip] = useState<{ id: number; text: string } | null>(null);
+  const pendingTip = useRef<{ id: number; text: string } | null>(null);
+  const tipsSeen = useRef<string[]>(load<{ seen: string[] }>(TIPS_KEY, { seen: [] }).seen);
 
-  // Game Rules State
-  const rallyState = useRef({
-    serveBounceCount: 0,
-    rallyCount: 0
-  });
-
-  const mouse = useRef({ x: 0, y: 0, leftDown: false, rightDown: false, downTime: 0 });
-
-  const { playPaddleHitSound, playBounceSound, playScoreSound, playWinSound, playNetSound } = useGameSounds();
-
-  // True FPS Projection
-  const project = (p: Vector3): Point2D => {
-    const camX = player.current.x;
-    const camY = CAMERA_HEIGHT;
-    const camZ = player.current.z;
-
-    const rx = p.x - camX;
-    const ry = p.y - camY;
-    const rz = p.z - camZ;
-
-    if (rz <= 10) return { x: -9999, y: -9999, scale: 0 };
-
-    const scale = currentFOV.current / rz;
-    const x2d = rx * scale + CANVAS_WIDTH / 2;
-    const y2d = -ry * scale + CANVAS_HEIGHT / 2;
-
-    return { x: x2d, y: y2d, scale };
-  };
-
-  const projectClamped = (p: Vector3): Point2D => {
-    const camZ = player.current.z;
-    const z = Math.max(p.z, camZ + 20);
-    return project({ ...p, z });
-  };
+  const playing = screen === 'play';
+  // 對戰準備時，背景的示範對打換成你選的選手（場地本來就跟著設定走）
+  useEffect(() => {
+    if (screen !== 'setup') return;
+    setCharacters((cs) => (cs[0]?.id === settings.character ? cs : [characterById(settings.character), ...cs.slice(1)]));
+  }, [screen, settings.character]);
+  const togglePause = useCallback(() => setPaused((p) => (screen === 'play' ? !p : p)), [screen]);
+  const { read, touch: touchRef } = useGameInput(playing && !paused, togglePause);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let lastTime = performance.now();
-
-    const loop = (time: number) => {
-      const dt = Math.min((time - lastTime) / 16.67, 2);
-      lastTime = time;
-
-      update(dt);
-      draw(ctx);
-      animationFrameId = requestAnimationFrame(loop);
-    };
-
-    animationFrameId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [gameState]);
-
-  const update = (dt: number) => {
-    if (gameState === 'MENU' || gameState === 'GAME_OVER') return;
-
-    const p = player.current;
-    const b = ball.current;
-
-    // --- DYNAMIC FOV ---
-    // Zoom in slightly when hitting or when ball is close
-    let targetFOV = BASE_FOV;
-    if (swingState.current.active) targetFOV = BASE_FOV + 20;
-    currentFOV.current += (targetFOV - currentFOV.current) * 0.1 * dt;
-
-    // --- AUTO MOVEMENT SYSTEM (Smart Positioning) ---
-    let targetX = p.x;
-    let targetZ = -450;
-
-    if (gameState === 'PLAYING') {
-      // X Positioning
-      if (b.vel.z < 0 || b.pos.z < 0) {
-        targetX = b.pos.x;
-        targetX = Math.max(-COURT_WIDTH / 2 + 20, Math.min(COURT_WIDTH / 2 - 20, targetX));
-      } else {
-        targetX = 0;
-      }
-
-      // Z Positioning
-      const isDropShot = b.pos.z < -50 && b.vel.z < 0 && b.bounces > 0;
-
-      if (isDropShot) {
-        targetZ = b.pos.z - 70;
-      } else {
-        targetZ = -480;
-        if (b.pos.z < -350 && b.vel.z < 0) targetZ = -550;
-      }
-    } else if (gameState === 'SERVING') {
-      targetZ = -480;
-      targetX = 0;
-    }
-
-    // Smooth Move
-    p.x += (targetX - p.x) * 0.15 * dt;
-    p.z += (targetZ - p.z) * 0.15 * dt;
-
-    // Clamp Player
-    p.x = Math.max(-COURT_WIDTH / 2 - 80, Math.min(COURT_WIDTH / 2 + 80, p.x));
-    p.z = Math.min(-20, p.z);
-
-
-    // --- BALL LOGIC ---
-    if (gameState === 'SERVING') {
-      if (server === 'player') {
-        ball.current.pos.x = p.x + 30;
-        ball.current.pos.y = 100;
-        ball.current.pos.z = p.z + 50;
-        ball.current.vel = { x: 0, y: 0, z: 0 };
-
-        if (mouse.current.leftDown) {
-          const duration = Date.now() - mouse.current.downTime;
-          const c = Math.min(duration / 1000, 1); // 1 second to max charge
-          setCharge(c);
-        } else {
-          setCharge(0);
-        }
-      } else {
-        // Opponent Serving
-        if (Math.random() < 0.02) {
-          setGameState('PLAYING');
-          performHit('opponent', 0.5, '平擊');
-          rallyState.current.serveBounceCount = 0;
-          rallyState.current.rallyCount = 0;
-        }
-      }
-    } else {
-      const event = ball.current.update();
-      if (event === 'bounce') {
-        playBounceSound();
-        spawnParticles(ball.current.pos, 5, '#fbbf24');
-        cameraShake.current = 2;
-
-        if (rallyState.current.serveBounceCount < 2) {
-          rallyState.current.serveBounceCount++;
-        }
-      } else if (event === 'net') {
-        playNetSound();
-        cameraShake.current = 5;
-      }
-
-      // Fireball Trail
-      if (ball.current.isFireball) {
-        spawnParticles(ball.current.pos, 2, '#ef4444');
-      }
-    }
-
-    // --- SWING & HIT LOGIC ---
-    if (swingState.current.active) {
-      swingState.current.timer -= 0.08 * dt;
-
-      if (!swingState.current.hasHit && swingState.current.timer < 0.8 && swingState.current.timer > 0.2) {
-        const dx = b.pos.x - p.x;
-        const dz = b.pos.z - p.z;
-        const dist = Math.sqrt(dx * dx + dz * dz);
-        const inFront = b.pos.z > p.z - 20;
-
-        if (dist < PHYSICS.PADDLE_REACH && inFront) {
-          performHit('player', swingState.current.charge, shotType);
-          swingState.current.hasHit = true;
-        }
-      }
-
-      if (swingState.current.timer <= 0) {
-        swingState.current.active = false;
-      }
-    }
-
-    // Charge Logic
-    if (gameState === 'PLAYING' && mouse.current.leftDown && !swingState.current.active) {
-      const duration = Date.now() - mouse.current.downTime;
-      const c = Math.min(duration / 800, 1);
-      setCharge(c);
-    }
-
-    updateAI(dt);
-    checkAIHit();
-    checkRules();
-    updateParticles();
-    if (cameraShake.current > 0) cameraShake.current *= 0.9;
-  };
-
-  const handleMouseUp = () => {
-    if (gameState === 'SERVING') {
-      if (server === 'player') {
-        mouse.current.leftDown = false;
-        setGameState('PLAYING');
-        // Serve power based on charge
-        performHit('player', charge, '平擊');
-        rallyState.current.serveBounceCount = 0;
-        rallyState.current.rallyCount = 0;
-      }
-      return;
-    }
-
-    if (gameState !== 'PLAYING') return;
-
-    if (!swingState.current.active) {
-      swingState.current.active = true;
-      swingState.current.timer = 1.0;
-      swingState.current.charge = charge;
-      swingState.current.hasHit = false;
-      mouse.current.leftDown = false;
-      setCharge(0);
-    }
-  };
-
-  const performHit = (side: 'player' | 'opponent', power: number, type: ShotType) => {
-    const b = ball.current;
-    const isPlayer = side === 'player';
-    const p = player.current;
-
-    if (isPlayer) {
-      const inKitchen = p.z > -70;
-      if (inKitchen && b.bounces === 0) {
-        handlePoint('opponent', '廚房違規 (Kitchen)');
-        return;
-      }
-
-      if (rallyState.current.serveBounceCount < 2 && b.bounces === 0) {
-        handlePoint('opponent', '二跳規則 (Two-Bounce)');
-        return;
-      }
-
-      // --- FOCUS & LUCK SYSTEM ---
-      let finalType = type;
-      let isFireball = false;
-
-      // 1. Max Focus = Guaranteed Fireball
-      if (focus >= 100) {
-        finalType = '火焰球';
-        isFireball = true;
-        setFocus(0); // Reset
-        spawnFloatingText("FIREBALL!", 80);
-      }
-      // 2. Luck = Random Critical Hit (15%)
-      else if (Math.random() < 0.15) {
-        finalType = '幸運球';
-        spawnFloatingText("LUCKY HIT!", 60);
-        setFocus(prev => Math.min(prev + 20, 100)); // Bonus focus
-      }
-      // 3. Normal Hit
-      else {
-        setFocus(prev => Math.min(prev + 10, 100));
-      }
-
-      setShotType(finalType);
-      b.isFireball = isFireball;
-
-      playPaddleHitSound();
-      cameraShake.current = isFireball ? 20 : (finalType === '幸運球' ? 10 : 5 + power * 10);
-      spawnParticles(b.pos, isFireball ? 40 : 20, isFireball ? '#ef4444' : (isPlayer ? '#3b82f6' : '#ef4444'));
-      spawnRing(b.pos, isFireball ? '#ef4444' : (isPlayer ? '#3b82f6' : '#ef4444'));
-
-      // Target Logic
-      let targetX = 0;
-      let targetZ = 380;
-
-      const mouseRatio = (mouse.current.x - CANVAS_WIDTH / 2) / (CANVAS_WIDTH / 2);
-      targetX = mouseRatio * (COURT_WIDTH / 2 - 40);
-      targetX = Math.max(-COURT_WIDTH / 2 + 30, Math.min(COURT_WIDTH / 2 - 30, targetX));
-
-      // Contextual Shot Types if not special
-      if (finalType !== '火焰球' && finalType !== '幸運球') {
-        if (b.pos.y > 80 && b.pos.z < p.z + 250) finalType = '殺球';
-        else if (power < 0.2) finalType = '小球';
-        else if (Math.random() < 0.1) finalType = '高吊'; // Add random lob chance for variety
-        else finalType = '平擊';
-      }
-
-      if (finalType === '小球') targetZ = 60 + Math.random() * 40;
-      else if (finalType === '高吊') targetZ = COURT_LENGTH / 2 - 60;
-      else targetZ = COURT_LENGTH / 2 - 80 - Math.random() * 50;
-
-      const dx = targetX - b.pos.x;
-      const dz = targetZ - b.pos.z;
-      const dist = Math.sqrt(dx * dx + dz * dz);
-
-      let speed = 12;
-      let vy = 5;
-
-      switch (finalType) {
-        case '平擊': speed = 18 + power * 6; vy = 4 + power * 3; break;
-        case '高吊': speed = 12 + power * 3; vy = 22 + power * 4; break;
-        case '小球': speed = 9; vy = 9; break;
-        case '殺球': speed = 26 + power * 6; vy = -6; break;
-        case '火焰球': speed = 32; vy = 2; break; // Laser beam
-        case '幸運球': speed = 24; vy = 5; break; // Fast drive
-      }
-
-      b.vel.x = (dx / dist) * speed;
-      b.vel.z = (dz / dist) * speed;
-      b.vel.y = vy;
-
-    } else {
-      // Opponent Hit
-      playPaddleHitSound();
-      spawnParticles(b.pos, 20, '#ef4444');
-
-      let targetX = player.current.x + (Math.random() - 0.5) * 120;
-      let targetZ = -COURT_LENGTH / 2 + 80 + Math.random() * 60;
-
-      const dx = targetX - b.pos.x;
-      const dz = targetZ - b.pos.z;
-      const dist = Math.sqrt(dx * dx + dz * dz);
-
-      let speed = 16;
-      let vy = 4;
-
-      // AI Logic
-      if (type === '殺球') { speed = 22; vy = -5; }
-      else if (type === '高吊') { speed = 10; vy = 18; }
-      else if (type === '小球') { speed = 8; vy = 8; }
-
-      b.vel.x = (dx / dist) * speed;
-      b.vel.z = (dz / dist) * speed;
-      b.vel.y = vy;
-    }
-
-    b.lastHitter = side;
-    b.bounces = 0;
-    rallyState.current.rallyCount++;
-  };
-
-  const updateAI = (dt: number) => {
-    const ai = opponent.current;
-    const b = ball.current;
-
-    let tx = b.pos.x;
-    let tz = 400;
-
-    if (b.vel.z > 0) {
-      tx = b.pos.x;
-      if (b.pos.z > 50 && b.bounces > 0) {
-        tz = b.pos.z;
-      } else {
-        tz = 400;
-      }
-    }
-
-    ai.x += (tx - ai.x) * 0.05 * dt;
-    ai.z += (tz - ai.z) * 0.05 * dt;
-  };
-
-  const checkAIHit = () => {
-    const ai = opponent.current;
-    const b = ball.current;
-
-    if (b.lastHitter !== 'opponent' && b.pos.z > 0 && b.vel.z > 0) {
-      const dist = Math.sqrt(Math.pow(b.pos.x - ai.x, 2) + Math.pow(b.pos.z - ai.z, 2));
-      if (dist < PHYSICS.PADDLE_REACH && b.pos.y < 120) {
-        if (rallyState.current.serveBounceCount < 2 && b.bounces === 0) return;
-
-        let type: ShotType = '平擊';
-        if (b.pos.y > 80 && Math.random() < 0.5) type = '殺球';
-        else if (Math.random() < 0.1) type = '高吊';
-        else if (Math.random() < 0.2) type = '小球';
-
-        performHit('opponent', 0.4, type);
-      }
-    }
-  };
-
-  const checkRules = () => {
-    const b = ball.current;
-    if (Math.abs(b.pos.z) > COURT_LENGTH / 2 + 50 || Math.abs(b.pos.x) > COURT_WIDTH / 2 + 50) {
-      if (b.bounces === 0) {
-        handlePoint(b.lastHitter === 'player' ? 'opponent' : 'player', '出界!');
-      }
-    }
-    if (b.bounces >= 2) {
-      handlePoint(b.lastHitter === 'player' ? 'player' : 'opponent', '二跳得分');
-    }
-  };
-
-  const handlePoint = (winner: 'player' | 'opponent', reason: string) => {
-    if (gameState === 'POINT_AWARDED') return;
-    setGameState('POINT_AWARDED');
-    playScoreSound();
-    spawnFloatingText(reason, 60);
-
-    if (reason.includes('Kitchen')) setRuleHint('規則提示: 不可在廚房區(橘色)內截擊(Volley)');
-    else if (reason.includes('Two-Bounce')) setRuleHint('規則提示: 發球與接發球後必須各落地一次才能截擊');
-    else setRuleHint('');
-
-    let nextServer = server;
-    let pointScored = false;
-
-    if (winner === server) {
-      pointScored = true;
-    } else {
-      nextServer = server === 'player' ? 'opponent' : 'player';
-      spawnFloatingText("換發球 (Side Out)", 50);
-    }
-
-    setScore(s => {
-      const ns = { ...s };
-      if (pointScored) {
-        ns[winner] = s[winner] + 1;
-      }
-
-      if (ns.player >= 11 || ns.opponent >= 11) {
-        setTimeout(() => {
-          setWinner(ns.player > ns.opponent ? 'player' : 'opponent');
-          setGameState('GAME_OVER');
-          playWinSound();
-        }, 1000);
-      } else {
-        setTimeout(() => resetRound(nextServer), 2000);
-      }
-      return ns;
-    });
-  };
-
-  const resetRound = (nextServer: 'player' | 'opponent') => {
-    setServer(nextServer);
-    if (nextServer === 'player') {
-      ball.current.reset(-380);
-    } else {
-      ball.current.reset(380);
-    }
-    setGameState('SERVING');
-    setRuleHint('');
-  };
-
-  const spawnParticles = (pos: Vector3, count: number, color: string) => {
-    for (let i = 0; i < count; i++) {
-      particles.current.push({
-        id: Math.random(),
-        pos: { ...pos },
-        vel: { x: (Math.random() - 0.5) * 15, y: Math.random() * 15, z: (Math.random() - 0.5) * 15 },
-        life: 1, color, size: Math.random() * 8 + 4,
-        type: 'spark'
-      });
-    }
-  };
-
-  const spawnRing = (pos: Vector3, color: string) => {
-    particles.current.push({
-      id: Math.random(), pos: { ...pos }, vel: { x: 0, y: 0, z: 0 },
-      life: 1, color, size: 10, type: 'ring'
-    });
-  };
-
-  const spawnFloatingText = (text: string, size: number) => {
-    particles.current.push({
-      id: Math.random(),
-      pos: { x: 0, y: 150, z: 0 },
-      vel: { x: 0, y: 2, z: 0 },
-      life: 2, color: '#fff', size,
-      type: 'text', text
-    });
-  };
-
-  const updateParticles = () => {
-    particles.current = particles.current.filter(p => p.life > 0);
-    particles.current.forEach(p => {
-      if (p.type === 'spark') {
-        p.pos.x += p.vel.x;
-        p.pos.y += p.vel.y;
-        p.pos.z += p.vel.z;
-        p.vel.y -= 0.5;
-      } else if (p.type === 'ring') {
-        p.size += 5;
-      } else if (p.type === 'text') {
-        p.pos.y += p.vel.y;
-      }
-      p.life -= 0.04;
-    });
-  };
-
-  // --- Draw Functions ---
-
-  const drawEnvironment = (ctx: CanvasRenderingContext2D) => {
-    // Sky
-    const skyGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT / 2);
-    skyGrad.addColorStop(0, '#0ea5e9');
-    skyGrad.addColorStop(1, '#bae6fd');
-    ctx.fillStyle = skyGrad;
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-    // Ground (Grass)
-    const groundGrad = ctx.createLinearGradient(0, CANVAS_HEIGHT / 2, 0, CANVAS_HEIGHT);
-    groundGrad.addColorStop(0, '#166534');
-    groundGrad.addColorStop(1, '#14532d');
-    ctx.fillStyle = groundGrad;
-    ctx.fillRect(0, CANVAS_HEIGHT / 2 - 50, CANVAS_WIDTH, CANVAS_HEIGHT / 2 + 50);
-
-    // Trees
-    ctx.fillStyle = '#064e3b';
-    [-800, -600, 600, 800].forEach(x => {
-      const p = project({ x, y: 0, z: 800 });
-      if (p.scale > 0) {
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x - 60 * p.scale, p.y);
-        ctx.lineTo(p.x, p.y - 300 * p.scale);
-        ctx.lineTo(p.x + 60 * p.scale, p.y);
-        ctx.fill();
-      }
-    });
-  };
-
-  const drawCourt = (ctx: CanvasRenderingContext2D) => {
-    // Use projectClamped for floor points to prevent clipping
-    const c1 = projectClamped({ x: -COURT_WIDTH / 2, y: 0, z: -COURT_LENGTH / 2 });
-    const c2 = projectClamped({ x: COURT_WIDTH / 2, y: 0, z: -COURT_LENGTH / 2 });
-    const c3 = projectClamped({ x: COURT_WIDTH / 2, y: 0, z: COURT_LENGTH / 2 });
-    const c4 = projectClamped({ x: -COURT_WIDTH / 2, y: 0, z: COURT_LENGTH / 2 });
-
-    // Main Court Area (Blue)
-    ctx.fillStyle = '#3b82f6';
-    ctx.beginPath();
-    ctx.moveTo(c1.x, c1.y);
-    ctx.lineTo(c2.x, c2.y);
-    ctx.lineTo(c3.x, c3.y);
-    ctx.lineTo(c4.x, c4.y);
-    ctx.closePath();
-    ctx.fill();
-
-    // Kitchen (Orange)
-    const k1 = projectClamped({ x: -COURT_WIDTH / 2, y: 0, z: -70 });
-    const k2 = projectClamped({ x: COURT_WIDTH / 2, y: 0, z: -70 });
-    const k3 = projectClamped({ x: COURT_WIDTH / 2, y: 0, z: 70 });
-    const k4 = projectClamped({ x: -COURT_WIDTH / 2, y: 0, z: 70 });
-
-    ctx.fillStyle = '#f97316';
-    ctx.beginPath();
-    ctx.moveTo(k1.x, k1.y);
-    ctx.lineTo(k2.x, k2.y);
-    ctx.lineTo(k3.x, k3.y);
-    ctx.lineTo(k4.x, k4.y);
-    ctx.fill();
-
-    // Lines
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 3;
-
-    ctx.beginPath();
-    ctx.moveTo(c1.x, c1.y);
-    ctx.lineTo(c2.x, c2.y);
-    ctx.lineTo(c3.x, c3.y);
-    ctx.lineTo(c4.x, c4.y);
-    ctx.lineTo(c1.x, c1.y);
-    ctx.stroke();
-
-    // Kitchen Lines
-    ctx.beginPath();
-    ctx.moveTo(k1.x, k1.y);
-    ctx.lineTo(k2.x, k2.y);
-    ctx.moveTo(k3.x, k3.y);
-    ctx.lineTo(k4.x, k4.y);
-    ctx.stroke();
-
-    // Center Line
-    const m1 = projectClamped({ x: 0, y: 0, z: -COURT_LENGTH / 2 });
-    const m2 = projectClamped({ x: 0, y: 0, z: -70 });
-    const m3 = projectClamped({ x: 0, y: 0, z: 70 });
-    const m4 = projectClamped({ x: 0, y: 0, z: COURT_LENGTH / 2 });
-
-    ctx.beginPath();
-    ctx.moveTo(m1.x, m1.y); ctx.lineTo(m2.x, m2.y);
-    ctx.moveTo(m3.x, m3.y); ctx.lineTo(m4.x, m4.y);
-    ctx.stroke();
-  };
-
-  const drawNet = (ctx: CanvasRenderingContext2D) => {
-    const p1 = project({ x: -COURT_WIDTH / 2 - 40, y: 0, z: 0 });
-    const p2 = project({ x: COURT_WIDTH / 2 + 40, y: 0, z: 0 });
-    const p3 = project({ x: COURT_WIDTH / 2 + 40, y: PHYSICS.NET_HEIGHT, z: 0 });
-    const p4 = project({ x: -COURT_WIDTH / 2 - 40, y: PHYSICS.NET_HEIGHT, z: 0 });
-
-    if (p1.scale <= 0) return;
-
-    // Net Mesh
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.beginPath();
-    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
-    ctx.lineTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y);
-    ctx.fill();
-
-    // Top Tape
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y);
-    ctx.stroke();
-
-    // Posts
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p4.x, p4.y);
-    ctx.moveTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y);
-    ctx.stroke();
-  };
-
-  const drawShadow = (ctx: CanvasRenderingContext2D, pos: Vector3, radius: number) => {
-    const proj = project({ x: pos.x, y: 0, z: pos.z });
-    if (proj.scale <= 0) return;
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath();
-    ctx.ellipse(proj.x, proj.y, radius * proj.scale * 2, radius * proj.scale * 0.8, 0, 0, Math.PI * 2);
-    ctx.fill();
-  };
-
-  const drawOpponent = (ctx: CanvasRenderingContext2D) => {
-    const pos = opponent.current;
-    const proj = project({ x: pos.x, y: 0, z: pos.z });
-    if (proj.scale <= 0) return;
-    const scale = proj.scale;
-
-    // Body
-    ctx.fillStyle = '#ef4444';
-    ctx.beginPath();
-    ctx.arc(proj.x, proj.y - 70 * scale, 20 * scale, 0, Math.PI * 2); // Head
-    ctx.fill();
-    ctx.fillRect(proj.x - 20 * scale, proj.y - 50 * scale, 40 * scale, 50 * scale); // Torso
-
-    // Paddle
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(proj.x - 35 * scale, proj.y - 35 * scale, 18 * scale, 30 * scale);
-  };
-
-  const drawBall = (ctx: CanvasRenderingContext2D) => {
-    const b = ball.current;
-    const proj = project(b.pos);
-    if (proj.scale <= 0) return;
-
-    ctx.fillStyle = b.isFireball ? '#ef4444' : '#fbbf24';
-    ctx.beginPath();
-    ctx.arc(proj.x, proj.y, b.radius * proj.scale, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Shine
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.beginPath();
-    ctx.arc(proj.x - b.radius * 0.3 * proj.scale, proj.y - b.radius * 0.3 * proj.scale, b.radius * 0.3 * proj.scale, 0, Math.PI * 2);
-    ctx.fill();
-  };
-
-  const drawFirstPersonPaddle = (ctx: CanvasRenderingContext2D) => {
-    // Position based on mouse sway
-    const swayX = (mouse.current.x - CANVAS_WIDTH / 2) * 0.15;
-    const swayY = (mouse.current.y - CANVAS_HEIGHT / 2) * 0.15;
-
-    const baseX = CANVAS_WIDTH * 0.75;
-    const baseY = CANVAS_HEIGHT * 0.85;
-
-    // Swing Animation
-    let rotation = -0.2; // Resting angle
-    let x = baseX + swayX;
-    let y = baseY + swayY;
-
-    if (swingState.current.active) {
-      // Swing motion: Rotate forward and move slightly
-      const t = swingState.current.timer; // 1.0 -> 0.0
-      // Ease out
-      const ease = 1 - Math.pow(1 - t, 3);
-
-      rotation = -0.2 - Math.sin(ease * Math.PI) * 1.8; // Swing arc
-      x -= Math.sin(ease * Math.PI) * 150;
-      y -= Math.sin(ease * Math.PI) * 80;
-    } else if (charge > 0) {
-      // Charge back
-      x += charge * 60;
-      y += charge * 20;
-      rotation += charge * 0.6;
-    }
-
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(rotation);
-
-    // Paddle Handle
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(-15, 0, 30, 120);
-
-    // Paddle Face
-    ctx.fillStyle = focus >= 100 ? '#fbbf24' : '#3b82f6'; // Gold if charged
-    ctx.beginPath();
-    ctx.roundRect(-65, -150, 130, 160, 24);
-    ctx.fill();
-
-    // Paddle Rim
-    ctx.strokeStyle = focus >= 100 ? '#f59e0b' : '#1d4ed8';
-    ctx.lineWidth = 6;
-    ctx.stroke();
-
-    // Charge Glow
-    if (charge > 0 || focus >= 100) {
-      ctx.shadowColor = focus >= 100 ? '#fbbf24' : 'white';
-      ctx.shadowBlur = (charge * 40) + (focus >= 100 ? 20 : 0);
-      ctx.strokeStyle = `rgba(255,255,255,${Math.max(charge, focus >= 100 ? 0.5 : 0)})`;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-    }
-
-    ctx.restore();
-  };
-
-  const handleMouseDown = () => {
-    if (gameState === 'MENU' || gameState === 'GAME_OVER') {
-      setGameState('SERVING');
-      setScore({ player: 0, opponent: 0 });
-      setServer('player');
-      setFocus(0);
-      ball.current.reset(-380);
-      return;
-    }
-    mouse.current.leftDown = true;
-    mouse.current.downTime = Date.now();
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (rect) {
-      mouse.current.x = (e.clientX - rect.left) * (CANVAS_WIDTH / rect.width);
-      mouse.current.y = (e.clientY - rect.top) * (CANVAS_HEIGHT / rect.height);
-    }
-  };
-
-  const draw = (ctx: CanvasRenderingContext2D) => {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-    ctx.save();
-    const shakeX = (Math.random() - 0.5) * cameraShake.current;
-    const shakeY = (Math.random() - 0.5) * cameraShake.current;
-    ctx.translate(shakeX, shakeY);
-
-    drawEnvironment(ctx);
-    drawCourt(ctx);
-
-    // Shadows
-    drawShadow(ctx, ball.current.pos, 15);
-    drawShadow(ctx, { x: opponent.current.x, y: 0, z: opponent.current.z }, 25);
-
-    // Entities (Sorted by Z)
-    const entities = [
-      { type: 'opponent', pos: { x: opponent.current.x, y: 0, z: opponent.current.z } },
-      { type: 'ball', pos: ball.current.pos },
-      { type: 'net', pos: { x: 0, y: 0, z: 0 } }
-    ];
-    entities.sort((a, b) => a.pos.z - b.pos.z);
-
-    entities.forEach(e => {
-      if (e.type === 'net') drawNet(ctx);
-      else if (e.type === 'opponent') drawOpponent(ctx);
-      else if (e.type === 'ball') drawBall(ctx);
-    });
-
-    particles.current.forEach(p => {
-      const proj = project(p.pos);
-      if (proj.scale <= 0) return;
-
-      ctx.globalAlpha = p.life;
-
-      if (p.type === 'text' && p.text) {
-        ctx.font = `900 ${p.size}px "Noto Sans TC", sans-serif`;
-        ctx.fillStyle = 'white';
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 4;
-        ctx.strokeText(p.text, proj.x, proj.y);
-        ctx.fillText(p.text, proj.x, proj.y);
-      } else if (p.type === 'ring') {
-        ctx.strokeStyle = p.color;
-        ctx.lineWidth = 5 * p.life;
-        ctx.beginPath();
-        ctx.arc(proj.x, proj.y, p.size * proj.scale, 0, Math.PI * 2);
-        ctx.stroke();
-      } else {
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(proj.x, proj.y, p.size * proj.scale, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    });
-    ctx.globalAlpha = 1;
-
-    ctx.restore(); // End camera shake
-
-    // UI & First Person Elements (No Shake)
-    drawFirstPersonPaddle(ctx);
-
-  };
-
-  useEffect(() => {
-    const contextMenu = (e: MouseEvent) => e.preventDefault();
-    window.addEventListener('contextmenu', contextMenu);
+    const pending = timers.current;
+    setMuted(audio.muted);
+    const mq = window.matchMedia('(pointer: coarse)');
+    setTouch(mq.matches);
+    const on = (e: MediaQueryListEvent) => setTouch(e.matches);
+    mq.addEventListener('change', on);
     return () => {
-      window.removeEventListener('contextmenu', contextMenu);
+      mq.removeEventListener('change', on);
+      audio.dispose();
+      pending.forEach(clearTimeout);
     };
+  }, [audio]);
+
+  // 從挑戰連結進來：先秀挑戰卡，並把遊戲舞台捲進畫面；踢館之旅的分享連結直接開地圖
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.has('tour')) {
+      setScreen('tour');
+      stage.current?.scrollIntoView({ block: 'center' });
+      return;
+    }
+    const c = decodeChallenge(q.get('vs'));
+    if (!c) return;
+    setChallenge(c);
+    setIntro(true);
+    stage.current?.scrollIntoView({ block: 'center' });
   }, []);
 
+  // DEV 模式下暴露引擎給瀏覽器測試用（同 __courtMap 的做法）
+  useEffect(() => {
+    if (import.meta.env.DEV) (window as unknown as { __pmGame?: GameEngine }).__pmGame = engine;
+  }, [engine]);
+
+  // 開打就開始錄（保留最近幾秒），離開比賽畫面就停
+  useEffect(() => {
+    if (!playing || !recMime) return;
+    const r = new ClipRecorder(recMime, { lowSpec, audio: audio.captureTrack() });
+    setRecorder(r);
+    if (import.meta.env.DEV) (window as unknown as { __pmClip?: ClipRecorder }).__pmClip = r;
+    return () => {
+      r.dispose();
+      setRecorder(null);
+    };
+  }, [playing, engine, recMime, lowSpec, audio]);
+
+  useEffect(() => recorder?.setPaused(paused), [recorder, paused]);
+
+  // 精彩重播時按任意鍵跳過（暫停鍵除外）
+  const replaying = !!hud.replay;
+  useEffect(() => {
+    if (!replaying || paused) return;
+    const down = (e: KeyboardEvent) => {
+      if (e.code !== 'Escape' && e.code !== 'KeyP' && !e.repeat) engine.skipReplay();
+    };
+    window.addEventListener('keydown', down);
+    return () => window.removeEventListener('keydown', down);
+  }, [replaying, paused, engine]);
+
+  // HUD 不需要每幀重繪：約 15 Hz 讀一次引擎狀態，有變才更新
+  useEffect(() => {
+    let last = '';
+    const t = window.setInterval(() => {
+      const h = engine.hud();
+      const key = JSON.stringify(h);
+      if (key !== last) {
+        last = key;
+        setHud(h);
+      }
+    }, 66);
+    return () => clearInterval(t);
+  }, [engine]);
+
+  // 電視輔助判決：詢問時按 C 申請、Enter 接受
+  const offering = hud.review?.state === 'offer' && hud.review.mine && hud.review.left > 0;
+  useEffect(() => {
+    if (!offering || paused) return;
+    const down = (e: KeyboardEvent) => {
+      if (e.code === 'KeyC') engine.requestReview();
+      else if (e.code === 'Enter' || e.code === 'NumpadEnter') engine.declineReview();
+    };
+    window.addEventListener('keydown', down);
+    return () => window.removeEventListener('keydown', down);
+  }, [offering, paused, engine]);
+
+  // 分頁切到背景時自動暫停
+  useEffect(() => {
+    const vis = () => document.hidden && screen === 'play' && setPaused(true);
+    document.addEventListener('visibilitychange', vis);
+    return () => document.removeEventListener('visibilitychange', vis);
+  }, [screen]);
+
+  // 沉浸模式時鎖住頁面捲動，免得手機上滑動搖桿時整頁跟著跑
+  useEffect(() => {
+    if (!immersive) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, [immersive]);
+
+  // 開打時才鎖橫向（選單、選角在直向比較好點）；鎖方向只在全螢幕中有效，iPhone 不支援就算了
+  const lockLandscape = () =>
+    void (window.screen.orientation as unknown as { lock?: (o: string) => Promise<void> } | undefined)?.lock?.('landscape')?.catch(() => {});
+
+  const enterImmersive = (landscape = false) => {
+    setImmersive(true);
+    const el = stage.current;
+    if (el && !document.fullscreenElement && el.requestFullscreen) {
+      el.requestFullscreen({ navigationUI: 'hide' })
+        .then(() => landscape && lockLandscape())
+        .catch(() => {});
+    } else if (landscape && document.fullscreenElement) lockLandscape();
+  };
+
+  const exitImmersive = () => {
+    setImmersive(false);
+    setStarted(false);
+    setRotateHint(false);
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+  };
+
+  const later = (fn: () => void, ms: number) => {
+    timers.current.push(window.setTimeout(fn, ms));
+  };
+
+  const coach = (key: string, touchText: string, keyText: string) => {
+    if (tipsSeen.current.includes(key)) return;
+    tipsSeen.current = [...tipsSeen.current, key];
+    save(TIPS_KEY, { seen: tipsSeen.current });
+    const t = { id: ++ids.current, text: touch ? touchText : keyText };
+    // 手機畫面小：來回中不跳出來擋球，等這一分打完再說
+    if (touch && engine.phase === 'rally') {
+      pendingTip.current = t;
+      return;
+    }
+    showTip(t);
+  };
+  const showTip = (t: { id: number; text: string }) => {
+    setTip(t);
+    later(() => setTip((x) => (x?.id === t.id ? null : x)), 5000);
+  };
+
+  // 事件回呼要呼叫這兩個函式，但它們每次 render 都是新的：放進 ref，回呼就不用跟著重建
+  const latest = useRef({ coach, clearLesson: (() => {}) as (i: number) => void });
+
+  const finish = useCallback(
+    (eng: GameEngine) => {
+      const lv = eng.level;
+      track('game_end', {
+        mode: lv ? `tour_${lv.id}` : eng.mode,
+        difficulty: settings.difficulty,
+        won: lv ? lv.cleared : eng.mode === 'dink' ? eng.dinkStreak > 0 : eng.match.winner === 0,
+        my_score: eng.match.score[0],
+        opp_score: eng.match.score[1],
+        longest_rally: eng.longestRally,
+      });
+      if (lv) {
+        // 踢館之旅：記星數與最佳成績（颱風關記打倒時剩幾秒）
+        const id = lv.id;
+        const stars = lv.stars();
+        const prevStars = tour.stars[id] ?? 0;
+        const prevBest = tour.best[id] ?? 0;
+        const score = lv.cleared || id !== 'typhoon' ? lv.score : 0;
+        const next: TourProgress = {
+          ...tour,
+          stars: { ...tour.stars, [id]: Math.max(prevStars, stars) },
+          best: { ...tour.best, [id]: Math.max(prevBest, lv.cleared ? score : 0) },
+        };
+        setTour(next);
+        save(TOUR_KEY, next);
+        cloud.schedulePush();
+        setOutcome({
+          id,
+          stars,
+          score,
+          best: prevBest,
+          newBest: lv.cleared && score > prevBest,
+          cleared: lv.cleared,
+          firstClear: prevStars === 0 && stars > 0,
+          hp: 'hp' in lv ? Math.ceil(lv.hp as number) : undefined,
+        });
+        audio.ambience(false);
+        audio.rain(false);
+        audio.win(lv.cleared);
+        audio.say(lv.cleared ? 'win' : 'lose', { priority: true, cooldown: 0, delay: 0.5 });
+        setScreen('over');
+        return;
+      }
+      const d = settings.difficulty;
+      const next = structuredClone(records);
+      let record = false;
+      if (eng.mode === 'dink') {
+        if (eng.dinkStreak > next.dinkBest[d]) {
+          next.dinkBest[d] = eng.dinkStreak;
+          record = eng.dinkStreak > 0;
+        }
+      } else {
+        next.plays[d] += 1;
+        if (eng.match.winner === 0) next.wins[d] += 1;
+        const prev = next.comboBest?.[d] ?? 0;
+        record = eng.longestRally > prev && eng.longestRally >= 5;
+        next.comboBest = { ...emptyRecords().comboBest, ...next.comboBest, [d]: Math.max(prev, eng.longestRally) };
+      }
+      setRecords(next);
+      save(RECORDS_KEY, next);
+      cloud.schedulePush();
+      // 每週排行榜：只記一般比賽與 Dink 挑戰（踢館之旅另外算）
+      void cloud
+        .submitResult({
+          mode: eng.mode === 'dink' ? 'dink' : 'match',
+          difficulty: d,
+          venue: settings.venue ?? 'arena',
+          doubles: eng.doubles,
+          specials: settings.specials,
+          scoreMe: eng.match.score[0],
+          scoreOpp: eng.match.score[1],
+          rallies: eng.dinkStreak,
+          durationMs: Date.now() - matchStart.current,
+        })
+        .then((pts) => pts !== null && cloud.invalidateBoards());
+      setNewRecord(record);
+      audio.ambience(false);
+      const won = eng.mode === 'dink' ? record : eng.match.winner === 0;
+      audio.win(won);
+      audio.say(won ? 'win' : 'lose', { priority: true, cooldown: 0, delay: 0.5 });
+      setScreen('over');
+    },
+    [records, settings.difficulty, settings.venue, settings.specials, audio, tour],
+  );
+
+  /** 關卡中的得分彈出字 */
+  const pop = useCallback((text: string, tone: LevelPop['tone']) => {
+    const p = { id: ++ids.current, text, tone };
+    setPops((ps) => [...ps.slice(-2), p]);
+    timers.current.push(window.setTimeout(() => setPops((ps) => ps.filter((x) => x.id !== p.id)), 1100));
+  }, []);
+
+  /** 關卡事件：音效、震動、彈出字與橫幅 */
+  const levelFx = useCallback(
+    (e: Extract<GameEvent, { type: 'level' }>) => {
+      const n = e.n ?? 0;
+      const flash = (text: string, ms = 1400) => {
+        const b = { id: ++ids.current, text };
+        setBanner(b);
+        timers.current.push(window.setTimeout(() => setBanner((x) => (x?.id === b.id ? null : x)), ms));
+      };
+      switch (e.fx) {
+        case 'feed':
+          audio.feed();
+          break;
+        case 'cup':
+          audio.cup(n >= 300);
+          pop(n >= 300 ? `+${n} 大杯！` : `+${n}`, n >= 300 ? 'gold' : 'good');
+          buzz(12);
+          break;
+        case 'row':
+          audio.highlight();
+          audio.cheer(true);
+          flash(`整排倒光！+${n}`);
+          break;
+        case 'combo':
+          audio.cheer(false);
+          flash(`${n} 杯連鎖！`);
+          break;
+        case 'dunk':
+          audio.counter();
+          audio.cheer(true);
+          audio.say('wow', { priority: true, cooldown: 0 });
+          buzz([30, 40, 60]);
+          flash(`灌籃！霸王杯 +${n}`, 1800);
+          break;
+        case 'pearl':
+          audio.pearl(++pearls.current);
+          break;
+        case 'gold':
+          audio.energyFull();
+          pop(`+${n} 金珍珠！`, 'gold');
+          buzz(25);
+          break;
+        case 'goldSpawn': {
+          audio.chance();
+          const t: Toast = { id: ++ids.current, text: touch ? '金珍珠！點「撲」飛過去' : '金珍珠！按 Shift 撲過去', tone: 'special' };
+          setToasts([t]);
+          timers.current.push(window.setTimeout(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900));
+          break;
+        }
+        case 'drop':
+          audio.spill();
+          pearls.current = 0;
+          pop(n > 0 ? `-${n} 被砲彈打中！` : '被砲彈打中！', 'bad');
+          buzz([30, 40, 30]);
+          break;
+        case 'returned':
+          audio.highlight();
+          pop(`+${n} 打回去！`, 'good');
+          break;
+        case 'damage':
+          audio.attack(n >= 15);
+          pop(`-${n}`, 'hit');
+          break;
+        case 'tired':
+          flash('黑框喘了！來回越長扣越多');
+          break;
+        case 'windWarn':
+          audio.gust();
+          flash('風向要變了！');
+          break;
+        case 'wind':
+          audio.gust();
+          break;
+        case 'thunder':
+          audio.thunder();
+          break;
+        case 'ko':
+          audio.awaken();
+          audio.cheer(true);
+          buzz([40, 30, 40, 30, 80]);
+          flash('K.O.！！', 2200);
+          break;
+        case 'timeUp':
+          audio.highlight();
+          flash('時間到！');
+          break;
+        case 'hurry':
+          audio.highlight();
+          flash('最後 10 秒！');
+          break;
+        default:
+      }
+    },
+    [audio, pop, touch],
+  );
+
+  const onEvents = useCallback(
+    (events: GameEvent[]) => {
+      if (screen !== 'play') {
+        // 示範對打不出聲、不顯示；打完一場就換一場新的
+        if (screen === 'menu' && events.some((e) => e.type === 'gameOver')) {
+          const d = newDemo();
+          setEngine(d.engine);
+          setCharacters(d.chars);
+        }
+        return;
+      }
+      const li = lessonRef.current;
+      if (li !== null) {
+        const L = LESSONS[li];
+        progressRef.current = applyEvents(L, progressRef.current, events);
+        if (progressRef.current.done) latest.current.clearLesson(li);
+        // 必殺、絕招關：每一球都補滿，沒放成功也能馬上再試
+        if (events.some((e) => e.type === 'point')) {
+          if (L.id === 'special') engine.human.energy = 100;
+          if (L.id === 'skill') engine.human.skillReady = true;
+        }
+      }
+      for (const e of events) {
+        switch (e.type) {
+          case 'swing':
+            if (e.team === 0) audio.swing(e.button === 'drive');
+            break;
+          case 'hit': {
+            trackHit(highlights.current, e);
+            const perfect = e.team === 0 && e.quality !== null && e.quality >= 0.9;
+            const attack = e.team === 0 && !e.special && !e.skill && (e.kind === 'smash' || e.kind === 'punch' || e.kind === 'speedup');
+            audio.hit(e.speed, perfect);
+            if (attack) audio.attack(e.kind === 'smash');
+            // 自己打出大力球（殺球、截擊、突擊、重抽）時喊「硬啦！」或「幹！」，輕打的 dink 不喊
+            // 喊聲還在冷卻時，殺球／截擊改由球評講
+            const shouted = e.team === 0 && !e.special && (attack || e.speed > 17) && audio.say('hard', { priority: true, cooldown: 2.5 });
+            if (attack && !shouted) audio.say(e.kind === 'smash' ? 'smash' : 'block', { cooldown: 3 });
+            if (e.team === 0) buzz(e.special ? [30, 40, 60] : attack ? [20, 30, 45] : perfect ? 25 : 12);
+            if (perfect && e.streak >= 2) {
+              audio.streak(e.streak);
+              audio.say(e.streak >= 4 ? 'great' : 'nice', { cooldown: 6 });
+            }
+            const kmh = `${Math.round(e.speed * 3.6)} km/h`;
+            if (e.team === 0) {
+              const tone: Toast['tone'] = e.special || e.skill
+                ? 'special'
+                : e.quality === null
+                  ? 'plain'
+                  : e.quality >= 0.9
+                    ? 'perfect'
+                    : e.quality >= 0.65
+                      ? 'good'
+                      : 'off';
+              const t: Toast = { id: ++ids.current, text: e.label, sub: kmh, tone, streak: perfect ? e.streak : 0, kind: attack ? e.kind : undefined, dive: e.dive };
+              setToasts([t]);
+              later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900);
+            } else {
+              // 手機上不顯示對手每一拍的球速，畫面留給球
+              if (touch) break;
+              const t: Toast = { id: ++ids.current, text: `對手 ${e.label}`, sub: kmh, tone: 'plain' };
+              setAiToast(t);
+              later(() => setAiToast((x) => (x?.id === t.id ? null : x)), 1100);
+            }
+            break;
+          }
+          case 'special': {
+            audio.special(e.id);
+            if (!audio.say(e.id, { priority: true, cooldown: 0 })) audio.say('wow', { priority: true, cooldown: 0 });
+            const who = characters[e.team];
+            const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, mine: e.team === 0, portrait: who.portrait, name: who.name };
+            setCutIn(c);
+            later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 1150);
+            break;
+          }
+          case 'skill': {
+            audio.skillFx(SKILL_EFFECT[e.id]);
+            if (!audio.say(SKILL_EFFECT[e.id], { priority: true, cooldown: 0 })) audio.say('wow', { priority: true, cooldown: 2 });
+            if (e.team === 0) buzz([20, 30, 50]);
+            const who = characters[e.team];
+            const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, skill: e.id, mine: e.team === 0, portrait: who.portrait, name: who.name };
+            setCutIn(c);
+            later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 900);
+            break;
+          }
+          case 'technique': {
+            // 高階技巧打成功：真的在打球的人會認得的招式
+            const TECH = {
+              erne: { text: 'ERNE！', sub: '繞過廚房的截擊' },
+              thirdDrop: { text: '第三拍放小球！', sub: '趁機上網' },
+              reset: { text: 'RESET！', sub: '把節奏拉回來' },
+            } as const;
+            const tt = TECH[e.id];
+            if (e.team === 0) {
+              const t: Toast = { id: ++ids.current, text: tt.text, sub: tt.sub, tone: e.id === 'erne' ? 'special' : 'perfect' };
+              setToasts([t]);
+              later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 1100);
+              if (e.id === 'thirdDrop')
+                latest.current.coach('thirdDrop', '第三拍放小球：發球方第三拍輕放進對方廚房，讓自己有時間衝到網前，是匹克球最經典的戰術', '第三拍放小球：發球方第三拍輕放進對方廚房（按 J），讓自己有時間衝到網前，是匹克球最經典的戰術');
+              if (e.id === 'reset') latest.current.coach('reset', 'Reset：被重抽時輕輕擋回對方廚房，對手就只能從低點出手，節奏回到你手上', 'Reset：被重抽時按 J 輕輕擋回對方廚房，對手就只能從低點出手，節奏回到你手上');
+            }
+            if (e.id === 'erne') {
+              audio.counter();
+              audio.cheer(true);
+              audio.say('wow', { priority: true, cooldown: 0 });
+            } else audio.highlight();
+            break;
+          }
+          case 'cloneHit':
+            audio.cloneHit();
+            if (e.team === 0) {
+              const t: Toast = { id: ++ids.current, text: '分身截擊！', tone: 'special' };
+              setToasts([t]);
+              later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 900);
+            }
+            break;
+          case 'counter':
+            if (e.team === 0) buzz(40);
+            audio.counter();
+            audio.cheer(true);
+            audio.say('wow', { priority: true, cooldown: 2 });
+            break;
+          case 'blown': {
+            const t: Toast = { id: ++ids.current, text: e.team === 0 ? '拍子被震飛！' : '對手被震飛！', tone: 'off' };
+            if (e.team === 0) setToasts([t]);
+            else setAiToast(t);
+            later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 1000);
+            break;
+          }
+          case 'energyFull':
+            if (e.team === 0) {
+              audio.energyFull();
+              if (!engine.practice) latest.current.coach('energy', '能量滿了！先點「必殺」蓄勢，下一拍就會放出必殺技', '能量滿了！先按空白鍵蓄勢，下一拍就會放出必殺技');
+            }
+            break;
+          case 'skillReady':
+            if (e.team === 0 && !engine.practice) latest.current.coach('skill', '絕招充好了！點「絕招」放出你的招牌打法', '絕招充好了！按 U 放出你的招牌打法');
+            break;
+          case 'awakenReady':
+            if (e.team === 0) {
+              audio.energyFull();
+              const b = { id: ++ids.current, text: touch ? '覺醒量表集滿！點「覺醒」逆轉' : '覺醒量表集滿！按 Q 逆轉' };
+              setBanner(b);
+              later(() => setBanner((x) => (x?.id === b.id ? null : x)), 1800);
+            }
+            break;
+          case 'awaken': {
+            audio.awaken();
+            audio.cheer(true);
+            audio.say('awaken', { priority: true, cooldown: 0 });
+            if (e.team === 0) buzz([40, 30, 40, 30, 80]);
+            const who = characters[e.team];
+            const c = { id: ++ids.current, spec: engine.athletes[e.team].paddle, awaken: true, mine: e.team === 0, portrait: who.portrait, name: who.name };
+            setCutIn(c);
+            later(() => setCutIn((x) => (x?.id === c.id ? null : x)), 1100);
+            break;
+          }
+          case 'comboMilestone':
+            audio.cheer(true);
+            audio.milestone(e.n);
+            audio.say('unstoppable', { cooldown: 8 });
+            buzz(20);
+            break;
+          case 'dive':
+            audio.whoosh();
+            if (e.team === 0) buzz(15);
+            break;
+          case 'diveLand':
+            audio.bounce(6);
+            if (e.team === 0) buzz([10, 20, 30]);
+            break;
+          case 'whiff':
+            audio.whoosh();
+            if (e.team === 0) {
+              audio.say('oops', { cooldown: 5 });
+              if (!engine.practice) latest.current.coach('whiff', '球飛來之前就先按擊球鍵，球到身邊會自動揮拍；球上的圈變金色＝蓄滿', '球飛來之前就先按 J／K／L，球到身邊會自動揮拍；球上的圈變金色＝蓄滿');
+              const t: Toast = { id: ++ids.current, text: '揮空了', tone: 'off' };
+              setToasts([t]);
+              later(() => setToasts((ts) => ts.filter((x) => x.id !== t.id)), 700);
+            }
+            break;
+          case 'bounce':
+            if (e.special) audio.specialImpact(e.special);
+            else audio.bounce(e.speed);
+            break;
+          case 'net':
+            audio.net();
+            break;
+          case 'cord':
+            audio.cord();
+            audio.say('lucky');
+            // 發球擦網：現行規則（2024 起）沒有 Let，落在發球區就照打
+            if (engine.rally.hits === 1)
+              latest.current.coach('noLet', '發球擦網照打！現行規則沒有 Let（重發），只要落在對角發球區就是好球', '發球擦網照打！現行規則沒有 Let（重發），只要落在對角發球區就是好球');
+            break;
+          case 'chance':
+            audio.chance();
+            buzz(10);
+            if (!engine.practice) {
+              if (e.kind === 'smash') latest.current.coach('smash', '地上的圈變金色＝殺球機會！按「抽」用力殺下去', '地上的圈變金色＝殺球機會！按 K 用力殺下去');
+              else latest.current.coach('attack', '圈變紅色＝網前進攻機會！按「抽」把球推過去', '圈變紅色＝網前進攻機會！按 K 把球推過去');
+            }
+            break;
+          case 'highlight': {
+            audio.highlight();
+            const b = { id: ++ids.current, text: e.text };
+            setBanner(b);
+            later(() => setBanner((x) => (x?.id === b.id ? null : x)), 1400);
+            break;
+          }
+          case 'point': {
+            // 教學練習：每一球都會結束，不用報分、歡呼和說明卡
+            if (engine.practice) break;
+            const won = e.winner === 0;
+            if (recorder && e.highlight) {
+              // 漂亮的一分：留住這段錄影，重播播完（下一分發球）再收尾
+              recorder.hold();
+              const c = { id: ++ids.current, label: e.highlight, status: 'cutting' as const };
+              clipFile.current = { id: c.id, label: c.label, file: null, ready: null };
+              setClip(c);
+            }
+            audio.point(won);
+            if (e.faultTeam === null) audio.cheer(e.rallyHits > 8);
+            // 球評：出界、掛網直接講；長來回贏球大讚；自己失誤就打氣
+            if (e.reason === 'out') audio.say('out', { delay: 0.15 });
+            else if (e.reason === 'net') audio.say('net', { delay: 0.15 });
+            else if (won && e.rallyHits > 8) audio.say('great', { delay: 0.15 });
+            else if (won) audio.say('nice', { delay: 0.15, cooldown: 6 });
+            else if (e.faultTeam === 0) audio.say('again', { delay: 0.3, cooldown: 10 });
+            const dink = engine.mode === 'dink';
+            const headline = dink
+              ? won
+                ? '對手失誤，繼續'
+                : '挑戰結束'
+              : won
+                ? '你得分'
+                : e.sideOut
+                  ? '換對手發球'
+                  : '對手得分';
+            const c: PointCard = {
+              id: ++ids.current,
+              won,
+              title: e.title,
+              // 只有自己失誤時才講規則；對手失誤時簡短帶過
+              lesson: e.faultTeam === 0 || (e.reason === 'notInKitchen' && !won) ? e.lesson : null,
+              headline: !dink && won && e.sideOut ? '換你發球' : headline,
+              call: dink ? '' : e.call,
+            };
+            setCard(c);
+            later(() => setCard((x) => (x?.id === c.id ? null : x)), 1900);
+            break;
+          }
+          case 'closeCall':
+            audio.whoosh();
+            break;
+          case 'replay':
+            audio.whoosh();
+            break;
+          case 'serveReady':
+            if (recorder?.held) cutClip(true);
+            else recorder?.restart();
+            if (engine.serverAthlete() === engine.human && !engine.practice)
+              latest.current.coach('serve', '輪到你發球：按住任一擊球鍵蓄力，右邊力道條到綠色區時放開', '輪到你發球：按住 J／K／L 蓄力，右邊力道條到綠色區時放開（← → 調方向）');
+            break;
+          case 'reviewStart':
+            audio.highlight();
+            audio.say('review', { priority: true, cooldown: 0 });
+            break;
+          case 'reviewVerdict':
+            if (e.overturned) {
+              audio.counter();
+              audio.say('overturned', { priority: true, cooldown: 0 });
+            }
+            audio.cheer(e.overturned);
+            break;
+          case 'level':
+            levelFx(e);
+            break;
+          case 'gameOver':
+            if (recorder?.held) cutClip(false);
+            finish(engine);
+            break;
+          default:
+        }
+      }
+    },
+    // cutClip 只讀 ref 和 recorder
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [screen, audio, engine, finish, characters, touch, recorder, levelFx],
+  );
+
+  /** 收尾這一球的影片；比賽中的按鈕留 12 秒（結算畫面上一直留著） */
+  function cutClip(expire: boolean) {
+    const c = clipFile.current;
+    if (!recorder || !c || c.file) return;
+    c.file = recorder.finalize(`匹克硬邦幫-${c.label.replace(/\s+/g, '')}`);
+    void c.file.then((f) => {
+      c.ready = f;
+      setClip((x) => (x?.id === c.id ? (f ? { ...x, status: 'ready' } : null) : x));
+      if (expire) later(() => setClip((x) => (x?.id === c.id ? null : x)), 12_000);
+    });
+  }
+
+  /** 存下這球：能分享檔案就叫出分享選單（Threads、IG），不行就下載 */
+  const saveClip = () => {
+    const c = clipFile.current;
+    if (!c) return;
+    const mark = (status: ClipStatus) => setClip((x) => (x?.id === c.id ? { ...x, status } : x));
+    const deliver = (file: File) => {
+      if (navigator.canShare?.({ files: [file] })) {
+        // 分享選單會蓋住畫面：比賽先暫停
+        if (screen === 'play') setPaused(true);
+        const text = `${c.label}！來 #匹克硬邦幫 打一場 ${window.location.origin}/game/`;
+        navigator.share({ files: [file], text }).then(
+          () => {
+            mark('shared');
+            track('share', { content: 'clip', method: 'share_sheet' });
+          },
+          (err: unknown) => {
+            if ((err as DOMException)?.name === 'AbortError') return;
+            downloadFile(file);
+            mark('saved');
+          },
+        );
+        return;
+      }
+      downloadFile(file);
+      mark('saved');
+    };
+    if (c.ready) {
+      deliver(c.ready);
+      return;
+    }
+    // 重播還沒播完就按：現在就收尾
+    if (!c.file) cutClip(screen === 'play');
+    void c.file?.then((f) => f && deliver(f));
+  };
+
+  const skipIntro = () => {
+    introAt.current = 0;
+    setIntroOn(false);
+  };
+
+  // 場地介紹播放中：按任何鍵略過
+  useEffect(() => {
+    if (!introOn) return;
+    const onKey = () => skipIntro();
+    window.addEventListener('keydown', onKey, { once: true });
+    return () => window.removeEventListener('keydown', onKey);
+  }, [introOn]);
+
+  /** 開打：一般比賽，或踢館之旅的某一關（關卡用自己的規則、對手和海邊場地） */
+  const start = (s: Settings = settings, level: LevelId | null = null) => {
+    matchStart.current = Date.now();
+    track('game_start', {
+      mode: level ? `tour_${level}` : s.mode,
+      difficulty: s.difficulty,
+      character: s.character,
+      paddle: s.paddle,
+      venue: s.venue ?? 'arena',
+      specials: s.specials,
+      touch,
+    });
+    audio.unlock();
+    audio.ambience(true);
+    audio.say('start', { priority: true, cooldown: 0, delay: 0.8 });
+    save(SETTINGS_KEY, s);
+    const def = level ? levelById(level) : null;
+    const boss = def?.level.kind === 'boss';
+    const e = new GameEngine({
+      mode: def ? (boss ? 'match' : 'drill') : s.mode,
+      difficulty: def ? 'club' : s.difficulty,
+      assist: s.assist,
+      controls: s.controls ?? 'auto',
+      specials: def ? boss : s.specials,
+      paddles: [s.paddle],
+      level: level ? createLevel(level) : undefined,
+      doubles: !def && s.mode === 'match' && !!s.doubles,
+    });
+    // 關卡的對手固定：Boss 是站主，小遊戲是顧發球機的飲料攤老闆（帽哥）；自己選的角色跟站主撞了就換台灣隊
+    const mine = characterById(def && s.character === def.stage.bossChar ? 'default' : s.character);
+    const opp = def ? characterById(boss ? def.stage.bossChar : 'p5') : pickOpponent(mine.id);
+    // 雙打：隊友是自己挑的；兩位對手從其他人裡隨機
+    const partner = e.doubles ? characterById(s.partner && s.partner !== mine.id ? s.partner : pickOpponent(mine.id).id) : null;
+    const opp2 = partner ? pickOpponentExcept([mine.id, partner.id, opp.id]) : null;
+    const cast = partner && opp2 ? [mine, opp, partner, opp2] : [mine, opp];
+    e.setSkills(cast.map((c) => c.skill));
+    e.setTraits(cast.map(traitsOf));
+    setLevelId(level);
+    setOutcome(null);
+    setPops([]);
+    pearls.current = 0;
+    audio.rain(level === 'typhoon');
+    if (def) {
+      // 開場先講這關的目標
+      const c: PointCard = { id: ++ids.current, won: true, headline: def.level.name, title: `教你：${def.level.teaches}`, lesson: def.level.goal, call: '' };
+      later(() => setCard(c), 300);
+      later(() => setCard((x) => (x?.id === c.id ? null : x)), 2800);
+    }
+    highlights.current = emptyHighlights();
+    clipFile.current = null;
+    setClip(null);
+    setEngine(e);
+    setCharacters(cast);
+    // 一般比賽開打前先介紹場地（關卡有自己的故事，不播）
+    const venue = s.venue ?? 'arena';
+    const dur = def ? 0 : introDuration(venue);
+    if (dur > 0) {
+      introAt.current = performance.now();
+      setIntroOn(true);
+      later(() => {
+        introAt.current = 0;
+        setIntroOn(false);
+      }, dur * 1000);
+    } else {
+      introAt.current = 0;
+      setIntroOn(false);
+    }
+    setHud(e.hud());
+    setToasts([]);
+    if (!def) setCard(null);
+    setBanner(null);
+    setCutIn(null);
+    setPaused(false);
+    setScreen('play');
+    stage.current?.focus({ preventScroll: true });
+    enterImmersive(true);
+    // 手機直拿時提示可以轉橫向（直向也能玩，只是畫面比較窄）
+    if (window.matchMedia('(pointer: coarse) and (orientation: portrait)').matches) {
+      setRotateHint(true);
+      later(() => setRotateHint(false), 3500);
+    }
+  };
+
+  /** 開始第 i 關（超過最後一關就是教學完成） */
+  const startLesson = (i: number) => {
+    setCleared(false);
+    progressRef.current = freshProgress();
+    // 正規版跳過必殺、絕招兩招
+    while (i < LESSONS.length && LESSONS[i].setup.specials && !settings.specials) i++;
+    if (i >= LESSONS.length) {
+      lessonRef.current = null;
+      setLesson(null);
+      setLessonsDone(true);
+      markTutorialDone();
+      track('tutorial_complete');
+      setDoneBefore(true);
+      audio.win(true);
+      return;
+    }
+    const L = LESSONS[i];
+    const e = new GameEngine({
+      mode: 'dink',
+      difficulty: 'rookie',
+      assist: L.setup.assist,
+      controls: settings.controls ?? 'auto',
+      specials: L.setup.specials,
+      paddles: [settings.paddle],
+      practice: L.setup.practice,
+    });
+    const mine = characterById(settings.character);
+    const coachChar = pickOpponent(mine.id);
+    // 絕招關：沒有絕招的選手借「秒蹲大力一揮」來練
+    e.setSkills([L.id === 'skill' ? (mine.skill ?? 'squatSmash') : null, null]);
+    if (L.id === 'special') e.human.energy = 100;
+    lessonRef.current = i;
+    setLesson(i);
+    setLessonsDone(false);
+    setEngine(e);
+    setCharacters([mine, coachChar]);
+    setHud(e.hud());
+    setToasts([]);
+    setCard(null);
+    setBanner(null);
+    setCutIn(null);
+    setPaused(false);
+    setScreen('play');
+    stage.current?.focus({ preventScroll: true });
+  };
+
+  const startTutorial = () => {
+    track('tutorial_start', { touch });
+    audio.unlock();
+    audio.ambience(true);
+    enterImmersive(true);
+    startLesson(0);
+  };
+
+  /** 過關：大字「過關！」停一下再進下一關 */
+  const clearLesson = (i: number) => {
+    if (lessonRef.current !== i) return;
+    lessonRef.current = null;
+    setCleared(true);
+    audio.highlight();
+    audio.say('nice', { priority: true, cooldown: 0 });
+    later(() => startLesson(i + 1), 1400);
+  };
+
+  useEffect(() => {
+    latest.current = { coach, clearLesson };
+  });
+
+  // 來回中暫存的教練提示：這一分打完、還沒開始下一分時才跳
+  useEffect(() => {
+    if (hud.phase === 'rally' || hud.replay || !pendingTip.current) return;
+    const t = pendingTip.current;
+    pendingTip.current = null;
+    showTip(t);
+  });
+
+  const toMenu = () => {
+    lessonRef.current = null;
+    setLesson(null);
+    setLessonsDone(false);
+    audio.ambience(false);
+    audio.rain(false);
+    const d = newDemo();
+    setEngine(d.engine);
+    setCharacters(d.chars);
+    setPaused(false);
+    setCard(null);
+    setCutIn(null);
+    setLevelId(null);
+    setScreen('menu');
+    exitImmersive();
+  };
+
+  /** 回踢館之旅的地圖（留在全螢幕裡） */
+  const toTour = () => {
+    audio.ambience(false);
+    audio.rain(false);
+    const d = newDemo();
+    setEngine(d.engine);
+    setCharacters(d.chars);
+    setPaused(false);
+    setCard(null);
+    setCutIn(null);
+    setScreen('tour');
+  };
+
+  /** 選關：第一次玩先看劇情 */
+  const playLevel = (id: LevelId) => {
+    audio.unlock();
+    setLevelId(id);
+    if (tour.seen[id]) start(settings, id);
+    else setScreen('story');
+  };
+
+  // 手機在頁面裡只放封面＋大按鈕，點了才全螢幕進選單：小框框裡捲選單、按小按鈕太難用
+  // 從挑戰連結進來時改由挑戰卡當封面（接受挑戰就直接全螢幕開打）
+  // 標題畫面：背景是 3D 示範對打（鏡頭繞場），一顆「開始遊戲」就進選單（手機順便全螢幕）
+  const cover = !started && !immersive && screen !== 'play' && screen !== 'over' && !(intro && challenge);
+  const best = records.dinkBest[settings.difficulty];
+  const levelDef = levelId ? levelById(levelId) : null;
+  const nextLevel = (() => {
+    if (!levelDef) return null;
+    const ls = levelDef.stage.levels;
+    return ls[ls.findIndex((l) => l.id === levelDef.level.id) + 1] ?? null;
+  })();
+  // 打倒 Boss 才產生戰績卡
+  const tourShare: MatchResult | null =
+    outcome && outcome.cleared && levelDef?.level.kind === 'boss'
+      ? {
+          won: true,
+          score: [engine.match.score[0], engine.match.score[1]],
+          difficulty: 'club',
+          stats: engine.stats[0],
+          longestRally: engine.longestRally,
+          highlights: highlights.current,
+          character: characters[0],
+          paddle: settings.paddle,
+          tour: { stage: levelDef.stage.name, boss: levelDef.stage.boss, stars: outcome.stars, timeLeft: outcome.score },
+        }
+      : null;
+  const current = lesson !== null ? LESSONS[lesson] : null;
+  const mySpecial = SPECIALS[engine.human.paddle.special];
+
   return (
-    <div className="w-full max-w-6xl mx-auto relative select-none">
-      <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-neutral-800 bg-neutral-900 aspect-[16/9]">
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          className="w-full h-full cursor-none block"
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseUp}
+    <div
+      ref={stage}
+      tabIndex={-1}
+      className={`overflow-hidden bg-slate-950 outline-none ${
+        immersive
+          ? 'fixed inset-0 z-[200] h-[100dvh] w-screen'
+          : 'relative w-full rounded-3xl shadow-2xl shadow-emerald-900/20 ring-1 ring-black/5 aspect-[16/10] md:max-h-[calc(100svh-6.5rem)] max-md:aspect-[4/5]'
+      }`}
+      onPointerDown={() => audio.unlock()}
+    >
+      <Canvas
+        shadows
+        dpr={dpr}
+        camera={{ fov: 46, position: [0, 5.2, 11], near: 0.1, far: 160 }}
+        className="touch-none"
+        gl={{ antialias: false, powerPreference: 'high-performance', stencil: false }}
+      >
+        <PerformanceMonitor
+          onDecline={() => setDpr((d) => Math.max(lowSpec ? 0.75 : 1, d - 0.25))}
+          onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
+          flipflops={3}
         />
+        <GameScene
+          engine={engine}
+          characters={characters}
+          readInput={read}
+          paused={paused || screen === 'over' || lessonsDone}
+          onEvents={onEvents}
+          lowSpec={lowSpec}
+          venue={engine.level ? 'beach' : (settings.venue ?? 'arena')}
+          showcase={screen === 'menu' || screen === 'setup'}
+          clip={recorder}
+          intro={introAt}
+        />
+      </Canvas>
 
-        {/* Minimal HUD */}
-        <div className="absolute inset-0 pointer-events-none p-8 flex flex-col justify-between">
-          {/* Score */}
-          <div className="flex justify-center items-start space-x-12">
-            <div className="text-center">
-              <div className={`text-6xl font-black drop-shadow-lg ${server === 'player' ? 'text-yellow-400 scale-110' : 'text-blue-400'}`}>
-                {score.player}
-                {server === 'player' && <div className="text-sm text-yellow-400 mt-1">Serving</div>}
-              </div>
-            </div>
-            <div className="text-white/50 font-black text-4xl pt-2">-</div>
-            <div className="text-center">
-              <div className={`text-6xl font-black drop-shadow-lg ${server === 'opponent' ? 'text-yellow-400 scale-110' : 'text-red-400'}`}>
-                {score.opponent}
-                {server === 'opponent' && <div className="text-sm text-yellow-400 mt-1">Serving</div>}
-              </div>
-            </div>
-          </div>
-
-          {/* Shot Type Indicator */}
-          <div className="absolute top-24 left-1/2 -translate-x-1/2 flex flex-col items-center space-y-2">
-            {gameState === 'PLAYING' && (
-              <div className={`px-6 py-2 rounded-full font-bold text-xl shadow-xl backdrop-blur-md border border-white/20 ${shotType === '殺球' ? 'bg-red-600/80 text-white animate-pulse' :
-                shotType === '高吊' ? 'bg-purple-600/80 text-white' :
-                  shotType === '火焰球' ? 'bg-red-500 text-white animate-bounce' :
-                    shotType === '幸運球' ? 'bg-yellow-500 text-black animate-bounce' :
-                      'bg-blue-600/80 text-white'
-                }`}>
-                {shotType}
-              </div>
-            )}
-            {ruleHint && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className="px-4 py-2 bg-black/70 text-yellow-400 rounded text-sm font-bold"
-              >
-                {ruleHint}
-              </motion.div>
-            )}
-          </div>
-
-          {/* Serve Guide */}
-          {gameState === 'SERVING' && server === 'player' && (
-            <div className="absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col items-center space-y-2">
-              <div className="text-white font-bold text-lg drop-shadow-md animate-pulse">
-                {charge > 0 ? "放開擊球!" : "按住蓄力，放開擊球"}
-              </div>
-              <div className="w-64 h-4 bg-black/50 rounded-full overflow-hidden border border-white/30">
-                <div
-                  className={`h-full transition-all duration-75 ${charge > 0.8 ? 'bg-red-500' : 'bg-yellow-400'}`}
-                  style={{ width: `${charge * 100}%` }}
-                />
+      <AnimatePresence>
+        {playing && introOn && !engine.level && (
+          <VenueIntroCard key="venue-intro" venue={(settings.venue ?? 'arena') as Exclude<Venue, 'beach'>} touch={touch} onSkip={skipIntro} />
+        )}
+      </AnimatePresence>
+      {playing && !lessonsDone && !introOn && (
+        <>
+          <GameHud
+            hud={hud}
+            difficulty={settings.difficulty}
+            best={best}
+            toasts={toasts}
+            aiToast={aiToast}
+            banner={banner}
+            card={card}
+            cutIn={cutIn}
+            touch={touch}
+            oppName={characters[3] ? `${characters[1].name}＆${characters[3].name}` : characters[1].name}
+            mateName={characters[2]?.name}
+            onChallenge={() => engine.requestReview()}
+            onAccept={() => engine.declineReview()}
+            onSkipReplay={() => engine.skipReplay()}
+            level={
+              levelDef
+                ? {
+                    name: levelDef.level.name,
+                    boss: levelDef.level.kind === 'boss' ? { name: levelDef.stage.boss, portrait: characters[1].portrait } : undefined,
+                    pops,
+                  }
+                : undefined
+            }
+            practice={lesson !== null}
+          />
+          <CoachTip tip={lesson === null && !card ? tip : null} touch={touch} />
+          {touch && !paused && !hud.replay && (
+            <TouchControls
+              touch={touchRef}
+              highlight={current?.highlight ?? null}
+              hideDive={current !== null && current.id !== 'dive'}
+              chance={hud.phase === 'rally' ? hud.chance : null}
+              dive={{ hint: hud.dive, busy: hud.diving }}
+              special={hud.specials ? { ready: hud.energy[0] >= 100, armed: hud.armed, color: mySpecial.color, name: mySpecial.name, energy: hud.energy[0] } : null}
+              skill={
+                hud.specials && hud.skill
+                  ? { ready: hud.skillReady, armed: hud.skillArmed, color: SKILLS[hud.skill].color, name: SKILLS[hud.skill].name }
+                  : null
+              }
+              awaken={
+                hud.awaken && !hud.awaken.used && hud.awaken.gauge > 0
+                  ? { ready: hud.awaken.gauge >= 100, armed: false, color: '#f59e0b', name: '無雙覺醒', energy: hud.awaken.gauge }
+                  : null
+              }
+            />
+          )}
+          {rotateHint && (
+            <div className="pointer-events-none absolute inset-x-0 top-1/3 z-20 flex justify-center">
+              <div className="rounded-2xl bg-slate-950/70 px-4 py-3 text-center text-sm font-semibold text-white backdrop-blur-md">
+                <div className="mb-1 text-2xl">📱↻</div>
+                轉成橫向，畫面更大更好打
               </div>
             </div>
           )}
-
-          {/* Focus Meter */}
-          <div className="flex justify-start items-end">
-            <div className="w-64">
-              <div className="flex justify-between text-xs text-white mb-1 font-bold tracking-widest shadow-black drop-shadow-md">
-                <span>專注 (FOCUS)</span>
-                {focus >= 100 && <span className="text-yellow-400 animate-pulse">FIREBALL READY!</span>}
-              </div>
-              <div className={`h-4 rounded-full overflow-hidden border border-white/20 backdrop-blur ${focus >= 100 ? 'bg-red-900/50' : 'bg-black/50'}`}>
-                <div
-                  className={`h-full transition-all duration-200 ${focus >= 100 ? 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]' : 'bg-blue-500'}`}
-                  style={{ width: `${focus}%` }}
-                />
-              </div>
-              <div className="mt-2 text-xs text-white/60 font-mono">
-                集滿專注值可擊出火焰球!
-              </div>
-            </div>
+          <div className="absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex gap-2 max-md:portrait:flex-col">
+            <button
+              type="button"
+              onClick={() => {
+                audio.setMuted(!muted);
+                setMuted(!muted);
+              }}
+              className="rounded-xl bg-slate-950/60 px-2.5 py-2 text-sm text-white backdrop-blur-md hover:bg-slate-950/80"
+              aria-label={muted ? '開啟音效' : '關閉音效'}
+            >
+              {muted ? '🔇' : '🔊'}
+            </button>
+            <button
+              type="button"
+              onClick={() => (immersive ? exitImmersive() : enterImmersive(true))}
+              className="rounded-xl bg-slate-950/60 px-2.5 py-2 text-sm text-white backdrop-blur-md hover:bg-slate-950/80"
+              aria-label={immersive ? '離開全螢幕' : '全螢幕'}
+            >
+              {immersive ? '✕' : '⛶'}
+            </button>
+            <button
+              type="button"
+              onClick={togglePause}
+              className="rounded-xl bg-slate-950/60 px-3 py-2 text-sm font-bold text-white backdrop-blur-md hover:bg-slate-950/80"
+              aria-label="暫停"
+            >
+              ❚❚
+            </button>
           </div>
+        </>
+      )}
+
+      {(playing || screen === 'over') && (
+        <div
+          className={`pointer-events-none absolute inset-x-0 z-[60] flex justify-center px-3 ${
+            touch ? 'top-[max(0.75rem,env(safe-area-inset-top))] max-md:portrait:top-[10.25rem]' : 'top-[7.75rem]'
+          }`}
+        >
+          <SaveClipButton clip={touch && hud.phase === 'rally' && screen === 'play' ? null : clip} onSave={saveClip} compact={touch} />
         </div>
+      )}
+      {playing && current && !paused && (
+        <TutorialPanel
+          lesson={current}
+          touch={touch}
+          cleared={cleared}
+          specials={settings.specials}
+          onSkip={() => startLesson(lesson! + 1)}
+          onExit={toMenu}
+        />
+      )}
 
-        <AnimatePresence>
-          {gameState === 'MENU' && (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center text-white z-10"
-            >
-              <h1 className="text-8xl font-black mb-4 italic tracking-tighter text-white drop-shadow-2xl">
-                PICKLE MASTER
-              </h1>
-              <p className="text-2xl text-white/90 mb-12 font-bold tracking-widest">第一人稱擬真體驗</p>
-              <button
-                className="px-16 py-6 bg-blue-600 text-white font-black text-3xl rounded-lg hover:bg-blue-500 transition-all pointer-events-auto shadow-xl hover:scale-105"
-                onClick={handleMouseDown}
-              >
-                開始比賽
-              </button>
-            </motion.div>
-          )}
-          {gameState === 'GAME_OVER' && (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center text-white z-10"
-            >
-              <h2 className="text-8xl font-black mb-8 tracking-tighter">
-                {winner === 'player' ? <span className="text-blue-400">獲勝!</span> : <span className="text-red-400">落敗...</span>}
-              </h2>
-              <button
-                className="px-12 py-4 bg-white text-black font-black text-2xl rounded hover:bg-neutral-200 pointer-events-auto"
-                onClick={handleMouseDown}
-              >
-                再玩一次
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      {immersive && !playing && (
+        <button
+          type="button"
+          onClick={exitImmersive}
+          className="absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-40 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
+          aria-label="離開全螢幕"
+        >
+          ✕
+        </button>
+      )}
+
+      {cover && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 z-30 flex flex-col items-center justify-end bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-transparent p-6 pb-8 text-center"
+        >
+          <ComicTitle className="text-5xl md:text-7xl" />
+          <p className="mt-3 text-sm font-semibold text-white/85 drop-shadow md:text-base">
+            {touch ? '左手搖桿跑位、右手按鍵擊球' : 'WASD 跑位、J／K／L 擊球'}，真實物理的 3D 匹克球
+          </p>
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
+            animate={{ boxShadow: ['0 0 0 0 rgba(52,211,153,0.55)', '0 0 0 14px rgba(52,211,153,0)'] }}
+            transition={{ boxShadow: { duration: 1.6, repeat: Infinity } }}
+            onClick={() => {
+              audio.unlock();
+              setStarted(true);
+              if (touch) enterImmersive();
+              if (!doneBefore && !load<{ seen: boolean }>(WELCOME_KEY, { seen: false }).seen) setWelcome(true);
+            }}
+            className="mt-5 w-full max-w-xs rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 py-4 text-xl font-black text-emerald-950"
+          >
+            ▶ 開始遊戲
+          </motion.button>
+          <p className="mt-2.5 text-xs text-white/55">{touch ? '會進入全螢幕，橫拿手機畫面更大' : '免下載、免註冊，按下去就開打'}</p>
+        </motion.div>
+      )}
+
+      <AnimatePresence>{splash && <TitleSplash key="splash" onDone={endSplash} />}</AnimatePresence>
+      <AnimatePresence>
+        {screen === 'menu' && intro && challenge && (
+          <ChallengeIntro
+            key="challenge"
+            challenge={challenge}
+            onAccept={() => {
+              const s: Settings = { ...settings, mode: 'match', doubles: false, specials: true, difficulty: challenge.difficulty, character: challenge.character, paddle: challenge.paddle };
+              setSettings(s);
+              setIntro(false);
+              start(s);
+            }}
+            onSkip={() => setIntro(false)}
+          />
+        )}
+        {screen === 'menu' && !intro && !cover && (
+          <MenuScreen
+            key="menu"
+            settings={settings}
+            records={records}
+            touch={touch}
+            tourStars={Object.values(tour.stars).reduce((a, b) => a + (b ?? 0), 0)}
+            onTour={() => {
+              audio.unlock();
+              setScreen('tour');
+            }}
+            onChange={setSettings}
+            onNext={() => {
+              audio.unlock();
+              setScreen('setup');
+            }}
+            onQuick={() => {
+              const s: Settings = { ...settings, mode: 'match' };
+              setSettings(s);
+              start(s);
+            }}
+            onTutorial={startTutorial}
+            tutorialDone={doneBefore}
+            onBoard={() => setBoardOpen(true)}
+            onAccount={() => setAccountOpen(true)}
+            accountName={accountName}
+          />
+        )}
+        {welcome && (
+          <StoryComic
+            key="welcome"
+            def={{ name: GAME_NAME, story: settings.specials ? WELCOME_STORY : WELCOME_STORY_PURE }}
+            cta="1 分鐘學會基本功 ▶"
+            onDone={() => {
+              save(WELCOME_KEY, { seen: true });
+              setWelcome(false);
+              startTutorial();
+            }}
+            onSkip={() => {
+              save(WELCOME_KEY, { seen: true });
+              setWelcome(false);
+            }}
+          />
+        )}
+        {screen === 'setup' && !cover && (
+          <MatchSetup
+            key="setup"
+            settings={settings}
+            onChange={setSettings}
+            onBack={() => setScreen('menu')}
+            onStart={(s) => {
+              setSettings(s);
+              start(s);
+            }}
+            onDetail={(k) => setScreen(k)}
+          />
+        )}
+        {screen === 'character' && !cover && (
+          <CharacterSelect
+            key="character"
+            value={settings.character}
+            onChange={(id) => setSettings({ ...settings, character: id })}
+            onBack={() => setScreen('setup')}
+            onNext={() => setScreen('setup')}
+          />
+        )}
+        {screen === 'partner' && !cover && (
+          <CharacterSelect
+            key="partner"
+            partner
+            exclude={settings.character}
+            value={settings.partner ?? ''}
+            onChange={(id) => setSettings({ ...settings, partner: id })}
+            onBack={() => setScreen('setup')}
+            onNext={() => {
+              // 沒點過任何人就用畫面上預設的那位
+              if (!settings.partner || settings.partner === settings.character) setSettings({ ...settings, partner: CHARACTERS.find((c) => c.id !== settings.character)!.id });
+              setScreen('setup');
+            }}
+          />
+        )}
+        {screen === 'paddle' && !cover && (
+          <PaddleSelect
+            key="paddle"
+            value={settings.paddle}
+            specials={settings.specials}
+            onChange={(id) => setSettings({ ...settings, paddle: id })}
+            onBack={() => setScreen('setup')}
+            onStart={() => start()}
+          />
+        )}
+        {screen === 'tour' && !cover && <TourMap key="tour" progress={tour} onPlay={playLevel} onBack={toMenu} />}
+        {screen === 'story' && levelDef && !cover && (
+          <StoryComic
+            key="story"
+            def={levelDef.level}
+            onDone={() => {
+              const next = { ...tour, seen: { ...tour.seen, [levelDef.level.id]: true } };
+              setTour(next);
+              save(TOUR_KEY, next);
+              start(settings, levelDef.level.id);
+            }}
+          />
+        )}
+        {lessonsDone && (
+          <TutorialDone
+            key="tutorial-done"
+            specials={settings.specials}
+            onPlay={() => {
+              setLessonsDone(false);
+              start();
+            }}
+            onMenu={toMenu}
+          />
+        )}
+        {playing && paused && !lessonsDone && (
+          <PauseScreen
+            key="pause"
+            touch={touch}
+            controls={engine.controls}
+            onResume={() => setPaused(false)}
+            onRestart={() => (lesson !== null ? startLesson(lesson) : start(settings, levelId))}
+            onMenu={levelId ? toTour : toMenu}
+          />
+        )}
+        {screen === 'over' && outcome && levelDef && (
+          <LevelResult
+            key="level-over"
+            def={levelDef.level}
+            outcome={outcome}
+            next={nextLevel}
+            share={tourShare}
+            onRetry={() => start(settings, outcome.id)}
+            onNext={() => nextLevel && playLevel(nextLevel.id)}
+            onMap={toTour}
+          />
+        )}
+        {screen === 'over' && !outcome && (
+          <GameOverScreen
+            key="over"
+            mode={engine.mode}
+            won={engine.match.winner === 0}
+            score={[engine.match.score[0], engine.match.score[1]]}
+            dinkStreak={engine.dinkStreak}
+            newRecord={newRecord}
+            stats={engine.stats}
+            longestRally={engine.longestRally}
+            comboBest={records.comboBest?.[settings.difficulty] ?? 0}
+            difficulty={settings.difficulty}
+            result={
+              engine.mode === 'match'
+                ? {
+                    won: engine.match.winner === 0,
+                    score: [engine.match.score[0], engine.match.score[1]],
+                    difficulty: settings.difficulty,
+                    stats: engine.stats[0],
+                    longestRally: engine.longestRally,
+                    highlights: highlights.current,
+                    character: characters[0],
+                    paddle: settings.paddle,
+                  }
+                : null
+            }
+            challenge={engine.mode === 'match' && challenge?.difficulty === settings.difficulty ? challenge : null}
+            onAgain={() => start()}
+            onMenu={toMenu}
+          />
+        )}
+      </AnimatePresence>
+      <AccountSheet open={accountOpen} onClose={() => setAccountOpen(false)} onChanged={reloadSaved} />
+      <LeaderboardSheet
+        open={boardOpen}
+        onClose={() => setBoardOpen(false)}
+        onSignIn={() => {
+          setBoardOpen(false);
+          setAccountOpen(true);
+        }}
+      />
     </div>
   );
 };

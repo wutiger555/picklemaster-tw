@@ -6,6 +6,8 @@ export interface Env {
   TURNSTILE_SECRET?: string;
   /** enforce：一定驗證（缺密鑰直接拒絕）；off：只給本機與測試用 */
   TURNSTILE_MODE: 'enforce' | 'off';
+  /** 小遊戲雲端功能的緊急開關：off 時遊戲的 API 一律回 503，手機端 24 小時內不再送請求（保護同帳號其他專案的免費額度） */
+  ARCADE_MODE?: 'on' | 'off';
   /** 主站網址，分享頁轉址用 */
   SITE_ORIGIN: string;
   /** 允許呼叫 API 的來源，逗號分隔 */

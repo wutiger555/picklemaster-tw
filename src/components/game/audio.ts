@@ -1,0 +1,871 @@
+/**
+ * 遊戲音效：Web Audio 即時合成（擊球、招式、廟口鑼鼓、嗩吶、鞭炮），
+ * 只有球評的人聲是預先合成好的小音檔（public/game/voice/）。
+ *
+ * 訊號流：各種聲音 → sfx 匯流排（講話時會被壓低）→ 主音量 → 壓縮器 → 喇叭；
+ * 另外有一條殘響送出（體育館的空間感），重擊、鑼聲送得多，擊球聲只送一點。
+ */
+
+import type { SpecialId } from './engine/paddles';
+import type { SkillEffectId } from './engine/game';
+
+const MUTE_KEY = 'pm-game-muted';
+
+const readMuted = () => {
+  try {
+    return localStorage.getItem(MUTE_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+/** 球評與喊聲的台詞，每個 key 對應 public/game/voice/<key>-<n>.mp3（可以有好幾個版本隨機挑） */
+export type VoiceKey =
+  | 'title'
+  | 'hard'
+  | 'nice'
+  | 'great'
+  | 'wow'
+  | 'smash'
+  | 'block'
+  | 'out'
+  | 'net'
+  | 'lucky'
+  | 'oops'
+  | 'again'
+  | 'win'
+  | 'lose'
+  | 'start'
+  | 'awaken'
+  | 'unstoppable'
+  | 'review'
+  | 'overturned'
+  | SpecialId
+  | SkillEffectId;
+
+/** 每句有幾個版本（檔名 -1、-2…），由 scripts/voice/ 的產生腳本決定 */
+export const VOICE_VARIANTS: Record<VoiceKey, number> = {
+  // 角色絕招的持續效果：關燈囉／就這樣喔／淹水啦／分身出來／台灣隊加油
+  lightsOut: 1,
+  taunt: 1,
+  flood: 1,
+  clone: 1,
+  cheer: 1,
+  // VRM 角色的絕招還沒有人聲（0 = 不載入、不講）
+  sour: 0,
+  feast: 0,
+  roar: 0,
+  wave: 0,
+  overclock: 0,
+  foxfire: 0,
+  title: 1,
+  hard: 2,
+  nice: 2,
+  great: 2,
+  wow: 1,
+  smash: 2,
+  block: 1,
+  out: 1,
+  net: 1,
+  lucky: 1,
+  oops: 2,
+  again: 1,
+  win: 1,
+  lose: 1,
+  start: 1,
+  awaken: 1,
+  unstoppable: 1,
+  review: 1,
+  overturned: 1,
+  inferno: 1,
+  thunder: 1,
+  phantom: 1,
+  frost: 1,
+  // 龍捲旋風「颳颱風啦！」、震地重砲「地震啦！」
+  cyclone: 1,
+  quake: 1,
+};
+
+
+/** 五聲音階（D 宮）：嗩吶的旋律只用這幾個音，一聽就是廟會味 */
+const PENTA = { D5: 587.3, E5: 659.3, Fs5: 740, A5: 880, B5: 987.8, D6: 1174.7, E6: 1318.5, A4: 440, B4: 493.9 };
+
+interface Opt {
+  delay?: number;
+  /** 送進殘響的比例 */
+  wet?: number;
+}
+
+/** 背景音樂：D 大調 I–vi–IV–V，每和弦兩小節，低音＋撥弦琶音（96 BPM，約 20 秒一輪） */
+const renderMusic = (rate: number) => {
+  const beat = 60 / 96;
+  const chords = [
+    [146.8, 293.7, 370, 440],
+    [123.5, 246.9, 293.7, 370],
+    [98, 196, 246.9, 293.7],
+    [110, 220, 277.2, 329.6],
+  ];
+  const len = chords.length * 8 * beat;
+  const ctx = new OfflineAudioContext(1, Math.ceil(len * rate), rate);
+  const note = (freq: number, t: number, dur: number, gain: number, type: OscillatorType) => {
+    const o = ctx.createOscillator();
+    o.type = type;
+    o.frequency.value = freq;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(ctx.destination);
+    o.start(t);
+    o.stop(t + dur + 0.05);
+  };
+  const arp = [1, 2, 3, 2, 1, 3, 2, 3];
+  chords.forEach((c, i) => {
+    const t0 = i * 8 * beat;
+    for (let b = 0; b < 8; b += 2) note(c[0], t0 + b * beat, beat * 1.9, 0.35, 'triangle');
+    for (let s = 0; s < 16; s++) note(c[arp[s % 8]] * 2, t0 + s * beat * 0.5, beat * 0.9, 0.08, 'sine');
+  });
+  return ctx.startRendering();
+};
+
+export class GameAudio {
+  private ctx: AudioContext | null = null;
+  private master: GainNode | null = null;
+  /** 最後一級（壓縮器）：錄影時從這裡分一路出去 */
+  private outNode: AudioNode | null = null;
+  private tap: MediaStreamAudioDestinationNode | null = null;
+  private sfx: GainNode | null = null;
+  private verb: GainNode | null = null;
+  private voiceBus: GainNode | null = null;
+  /** 裝飾音效（鑼鼓、嗩吶、必殺）走這條，整體壓小聲；擊球聲走 sfx 原音量 */
+  private decor: GainNode | null = null;
+  private core = false;
+  private noise: AudioBuffer | null = null;
+  private drive: WaveShaperNode | null = null;
+  muted = readMuted();
+
+  /** 必須在使用者手勢（點擊、按鍵）裡呼叫，瀏覽器才允許出聲 */
+  unlock() {
+    if (!this.ctx) {
+      const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!Ctor) return;
+      const ctx = new Ctor();
+      this.ctx = ctx;
+      // 壓縮器把各層疊起來的瞬間峰值收住，重擊聽起來更「實」，也不會爆音
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -16;
+      comp.knee.value = 8;
+      comp.ratio.value = 5;
+      comp.attack.value = 0.003;
+      comp.release.value = 0.18;
+      comp.connect(ctx.destination);
+      this.outNode = comp;
+      this.master = ctx.createGain();
+      this.master.gain.value = 0.85;
+      this.master.connect(comp);
+      this.sfx = ctx.createGain();
+      this.sfx.connect(this.master);
+      this.decor = ctx.createGain();
+      this.decor.gain.value = 0.3;
+      this.decor.connect(this.sfx);
+      this.voiceBus = ctx.createGain();
+      this.voiceBus.gain.value = 1.15;
+      this.voiceBus.connect(this.master);
+      const conv = ctx.createConvolver();
+      conv.buffer = this.impulse(ctx, 1.9, 2.6);
+      this.verb = ctx.createGain();
+      this.verb.gain.value = 0.55;
+      this.verb.connect(conv).connect(this.master);
+      const len = ctx.sampleRate;
+      this.noise = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = this.noise.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+      // 柔性削波：重擊的低頻加一點破音，聽起來比較「重」
+      this.drive = ctx.createWaveShaper();
+      const curve = new Float32Array(1024);
+      for (let i = 0; i < curve.length; i++) {
+        const x = (i / (curve.length - 1)) * 2 - 1;
+        curve[i] = Math.tanh(x * 3.2) / Math.tanh(3.2);
+      }
+      this.drive.curve = curve;
+      this.drive.connect(this.sfx);
+      this.drive.connect(this.verb);
+    }
+    if (this.ctx.state === 'suspended') void this.ctx.resume();
+  }
+
+  setMuted(m: boolean) {
+    this.muted = m;
+    if (m) this.ambience(false);
+    try {
+      localStorage.setItem(MUTE_KEY, m ? '1' : '0');
+    } catch {
+      /* 無痕模式等情況存不了，只影響下次開啟 */
+    }
+  }
+
+  /** 精彩球錄影用的音軌（音效、球評、觀眾聲）；還沒解鎖或不支援時是 null */
+  captureTrack(): MediaStreamTrack | null {
+    if (!this.ctx || !this.outNode) return null;
+    try {
+      if (!this.tap) {
+        this.tap = this.ctx.createMediaStreamDestination();
+        this.outNode.connect(this.tap);
+      }
+      return this.tap.stream.getAudioTracks()[0] ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  dispose() {
+    this.music = null;
+    this.tap = null;
+    this.rainNode = null;
+    void this.ctx?.close();
+    this.ctx = null;
+  }
+
+  /** 人工殘響：兩聲道各自衰減的雜訊，模擬室內球場的回音 */
+  private impulse(ctx: AudioContext, seconds: number, decay: number) {
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) {
+      const d = buf.getChannelData(c);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+    }
+    return buf;
+  }
+
+  private ready() {
+    return !this.muted && this.ctx && this.sfx && this.noise ? this.ctx : null;
+  }
+
+  /** 接到 sfx 匯流排，並依 wet 送一份進殘響 */
+  private out(node: AudioNode, wet = 0) {
+    node.connect(this.core ? this.sfx! : this.decor!);
+    if (wet > 0 && this.ctx && this.verb) {
+      const s = this.ctx.createGain();
+      s.gain.value = wet;
+      node.connect(s).connect(this.verb);
+    }
+  }
+
+  /** 一段濾波後的雜訊：擊球的「啵」、落地的「嗒」、鞭炮的「啪」都由它組成 */
+  private burst(freq: number, q: number, gain: number, dur: number, { delay = 0, wet = 0 }: Opt = {}, type: BiquadFilterType = 'bandpass') {
+    const ctx = this.ready();
+    if (!ctx) return;
+    const t = ctx.currentTime + delay;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noise;
+    const f = ctx.createBiquadFilter();
+    f.type = type;
+    f.frequency.value = freq;
+    f.Q.value = q;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(gain, t);
+    g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+    src.connect(f).connect(g);
+    this.out(g, wet);
+    src.start(t, Math.random() * 0.6, dur + 0.02);
+  }
+
+  private tone(freq: number, type: OscillatorType, gain: number, dur: number, { delay = 0, wet = 0 }: Opt = {}, slideTo?: number) {
+    const ctx = this.ready();
+    if (!ctx) return;
+    const t = ctx.currentTime + delay;
+    const o = ctx.createOscillator();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t);
+    if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g);
+    this.out(g, wet);
+    o.start(t);
+    o.stop(t + dur + 0.02);
+  }
+
+  /** 低頻重擊（像大鼓的鼓皮）：音高快速往下掉，可加破音 */
+  private thump(from: number, to: number, gain: number, dur: number, { delay = 0, wet = 0.2 }: Opt = {}, driven = false) {
+    const ctx = this.ready();
+    if (!ctx) return;
+    const t = ctx.currentTime + delay;
+    const o = ctx.createOscillator();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(from, t);
+    o.frequency.exponentialRampToValueAtTime(to, t + dur * 0.6);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g);
+    if (driven && this.drive) g.connect(this.drive);
+    else this.out(g, wet);
+    o.start(t);
+    o.stop(t + dur + 0.02);
+  }
+
+  /** 低通雜訊的掃頻：轟鳴、風切聲 */
+  private sweep(from: number, to: number, gain: number, dur: number, { delay = 0, wet = 0.15 }: Opt = {}, q = 1) {
+    const ctx = this.ready();
+    if (!ctx) return;
+    const t = ctx.currentTime + delay;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noise;
+    src.loop = true;
+    const f = ctx.createBiquadFilter();
+    f.type = 'bandpass';
+    f.Q.value = q;
+    f.frequency.setValueAtTime(from, t);
+    f.frequency.exponentialRampToValueAtTime(to, t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + dur * 0.25);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f).connect(g);
+    this.out(g, wet);
+    src.start(t);
+    src.stop(t + dur + 0.05);
+  }
+
+  /** 金屬敲擊：一組不成整數倍的泛音，兩兩微微走音產生「嗡嗡」的拍頻（鑼、鈸、鐘都靠它） */
+  private metal(base: number, ratios: number[], gain: number, dur: number, { delay = 0, wet = 0.5 }: Opt = {}, bend = 1) {
+    const ctx = this.ready();
+    if (!ctx) return;
+    const t = ctx.currentTime + delay;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(gain * 0.35, t + dur * 0.15);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    this.out(g, wet);
+    ratios.forEach((r, i) => {
+      for (const detune of [0, 1.006]) {
+        const o = ctx.createOscillator();
+        o.type = 'sine';
+        const f = base * r * (detune || 1);
+        o.frequency.setValueAtTime(f, t);
+        if (bend !== 1) o.frequency.exponentialRampToValueAtTime(f * bend, t + dur * 0.7);
+        const og = ctx.createGain();
+        og.gain.value = 1 / (i + 1.6) / 2;
+        o.connect(og).connect(g);
+        o.start(t);
+        o.stop(t + dur + 0.05);
+      }
+    });
+  }
+
+  // ───────── 廟口樂器 ─────────
+
+  /** 大鼓「咚」 */
+  private drum(gain = 0.7, delay = 0) {
+    this.thump(150, 62, gain, 0.42, { delay, wet: 0.35 });
+    this.burst(190, 1.2, gain * 0.5, 0.12, { delay, wet: 0.2 });
+  }
+
+  /** 大鑼「鏘──嗡」：音高慢慢往下沉 */
+  private gong(gain = 0.5, delay = 0, base = 196) {
+    this.metal(base, [1, 1.52, 2.01, 2.64, 3.31, 4.18], gain, 2.6, { delay, wet: 0.8 }, 0.94);
+    this.burst(900, 0.7, gain * 0.6, 0.08, { delay, wet: 0.3 });
+  }
+
+  /** 小鑼「匡」：短而亮 */
+  private smallGong(gain = 0.35, delay = 0) {
+    this.metal(620, [1, 1.47, 2.09, 2.9], gain, 0.6, { delay, wet: 0.4 }, 1.06);
+  }
+
+  /** 鈸「七」 */
+  private cymbal(gain = 0.4, dur = 0.9, delay = 0) {
+    this.burst(7200, 0.6, gain, dur, { delay, wet: 0.5 }, 'highpass');
+    this.metal(3100, [1, 1.38, 1.83, 2.41], gain * 0.35, dur * 0.7, { delay, wet: 0.4 });
+  }
+
+  /** 梆子（木魚）「叩」：廟口最熟悉的木頭聲 */
+  private woodblock(gain = 0.35, delay = 0, pitch = 1) {
+    this.tone(1180 * pitch, 'sine', gain, 0.07, { delay, wet: 0.15 });
+    this.burst(2400 * pitch, 9, gain * 0.9, 0.05, { delay, wet: 0.1 });
+  }
+
+  /** 鑼鼓點：「咚 咚 鏘」，招式要放之前先來一段 */
+  private luogu(gain = 1, delay = 0) {
+    this.drum(0.6 * gain, delay);
+    this.drum(0.6 * gain, delay + 0.13);
+    this.gong(0.42 * gain, delay + 0.27);
+    this.cymbal(0.35 * gain, 0.8, delay + 0.27);
+  }
+
+  /** 鞭炮：一串隨機間隔的「啪」，偶爾夾一聲大的 */
+  private firecrackers(count: number, span: number, delay = 0, gain = 0.5) {
+    for (let i = 0; i < count; i++) {
+      const d = delay + Math.random() * span;
+      const big = Math.random() < 0.12;
+      const g = gain * (0.45 + Math.random() * 0.55) * (big ? 1.5 : 1);
+      this.burst(big ? 900 : 2200 + Math.random() * 2600, big ? 0.6 : 1.1, g, big ? 0.08 : 0.018 + Math.random() * 0.02, { delay: d, wet: 0.35 }, big ? 'bandpass' : 'highpass');
+      if (big) this.thump(120, 50, g * 0.6, 0.16, { delay: d, wet: 0.4 });
+    }
+  }
+
+  /**
+   * 嗩吶：鋸齒波過兩個共振峰，加顫音與每個音開頭往上滑（嗩吶吹奏的「抹音」）。
+   * notes 是 [頻率, 長度秒] 的序列。
+   */
+  private suona(notes: [number, number][], gain = 0.16, delay = 0) {
+    const ctx = this.ready();
+    if (!ctx) return;
+    let t = ctx.currentTime + delay;
+    const total = notes.reduce((s, [, d]) => s + d, 0);
+    const o = ctx.createOscillator();
+    o.type = 'sawtooth';
+    const vib = ctx.createOscillator();
+    vib.frequency.value = 6.2;
+    const vibAmt = ctx.createGain();
+    vibAmt.gain.setValueAtTime(0, t);
+    vibAmt.gain.linearRampToValueAtTime(14, t + total);
+    vib.connect(vibAmt).connect(o.frequency);
+    const f1 = ctx.createBiquadFilter();
+    f1.type = 'bandpass';
+    f1.frequency.value = 1150;
+    f1.Q.value = 2.2;
+    const f2 = ctx.createBiquadFilter();
+    f2.type = 'peaking';
+    f2.frequency.value = 2900;
+    f2.Q.value = 3;
+    f2.gain.value = 9;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    const start = t;
+    for (const [f, d] of notes) {
+      o.frequency.setValueAtTime(f * 0.94, t);
+      o.frequency.exponentialRampToValueAtTime(f, t + Math.min(0.06, d * 0.4));
+      g.gain.setTargetAtTime(gain, t, 0.015);
+      g.gain.setTargetAtTime(gain * 0.72, t + d * 0.6, 0.05);
+      t += d;
+    }
+    g.gain.setTargetAtTime(0.0001, t - 0.04, 0.06);
+    o.connect(f1).connect(f2).connect(g);
+    this.out(g, 0.45);
+    o.start(start);
+    vib.start(start);
+    o.stop(t + 0.4);
+    vib.stop(t + 0.4);
+  }
+
+  // ───────── 球場聲音 ─────────
+
+  /**
+   * 擊球聲（四層）：高頻接觸「喀」＋塑膠球中頻「啵」＋拍面的短鳴＋強力球的低頻重擊。
+   * 每次音高隨機微調 ±4%，避免聽起來像同一個音檔重播。
+   */
+  hit(speed: number, perfect: boolean) {
+    this.core = true;
+    const k = Math.min(1, speed / 24);
+    const pitch = 1 + (Math.random() - 0.5) * 0.08;
+    this.burst(5200 * pitch, 1.2, 0.55 + 0.45 * k, 0.012, { wet: 0.05 });
+    this.burst((1250 + 450 * k) * pitch, 7, 1.05 + 0.6 * k, 0.06, { wet: 0.12 });
+    this.tone((1150 + 300 * k) * pitch, 'sine', 0.35 + 0.25 * k, 0.07, { wet: 0.08 }, 650 * pitch);
+    if (k > 0.4) this.thump(160, 48, 0.25 + 0.5 * (k - 0.4), 0.16, {}, true);
+    if (perfect) {
+      this.tone(2637, 'sine', 0.1, 0.3, { delay: 0.015, wet: 0.4 });
+      this.tone(3951, 'sine', 0.06, 0.38, { delay: 0.03, wet: 0.4 });
+      this.cymbal(0.12, 0.3, 0.01);
+    }
+    this.core = false;
+  }
+
+  /** 揮拍風切聲：先聽到「咻」再聽到「啵」，打擊才有預期感 */
+  swing(strong: boolean) {
+    this.core = true;
+    this.sweep(450, strong ? 2400 : 1500, strong ? 0.18 : 0.09, strong ? 0.16 : 0.12, { wet: 0.05 }, 0.8);
+    this.core = false;
+  }
+
+  /** 連續完美：梆子音高隨連擊數往上爬 */
+  streak(n: number) {
+    const p = Math.pow(2, Math.min(n, 8) / 12);
+    this.woodblock(0.3, 0.04, p);
+    this.tone(1046.5 * p, 'triangle', 0.08, 0.22, { delay: 0.08, wet: 0.3 });
+  }
+
+  private music: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
+  private musicBuf: Promise<AudioBuffer> | null = null;
+
+  /** 比賽背景音樂：輕柔的四和弦循環（事先離線算好一段，循環播放），音量壓很小 */
+  ambience(on: boolean) {
+    const ctx = this.ctx;
+    if (!on || this.muted) {
+      if (this.music && ctx) {
+        this.music.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+        const m = this.music;
+        window.setTimeout(() => m.src.stop(), 1500);
+        this.music = null;
+      }
+      return;
+    }
+    if (!ctx || !this.master || this.music) return;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.connect(this.master);
+    const src = ctx.createBufferSource();
+    src.loop = true;
+    src.connect(gain);
+    this.music = { src, gain };
+    this.musicBuf ??= renderMusic(ctx.sampleRate);
+    void this.musicBuf.then((buf) => {
+      if (this.music?.src !== src) return;
+      src.buffer = buf;
+      src.start();
+      gain.gain.setTargetAtTime(0.16, ctx.currentTime, 1.2);
+    });
+  }
+
+
+  bounce(speed: number) {
+    this.core = true;
+    const k = Math.min(1, speed / 15);
+    this.burst(900, 3, 0.18 + 0.35 * k, 0.05, { wet: 0.1 });
+    this.thump(130, 80, 0.12 + 0.2 * k, 0.07, { wet: 0.05 });
+    this.core = false;
+  }
+
+  net() {
+    this.core = true;
+    this.burst(260, 0.8, 0.5, 0.18, { wet: 0.2 });
+    this.burst(1800, 2, 0.15, 0.25, { delay: 0.03, wet: 0.1 });
+    this.core = false;
+  }
+
+  cord() {
+    this.core = true;
+    this.burst(600, 1.5, 0.35, 0.09, { wet: 0.2 });
+    this.tone(420, 'sine', 0.12, 0.2, { wet: 0.2 });
+    this.core = false;
+  }
+
+  whoosh() {
+    this.sweep(400, 1200, 0.14, 0.2, { wet: 0.1 }, 0.6);
+  }
+
+  /** 得分：嗩吶兩音往上揚＋小鈸；失分：低沉的悶鑼 */
+  point(won: boolean) {
+    if (won) {
+      this.suona(
+        [
+          [PENTA.A5, 0.12],
+          [PENTA.D6, 0.32],
+        ],
+        0.14,
+      );
+      this.cymbal(0.18, 0.5, 0.12);
+    } else {
+      this.metal(150, [1, 1.5, 2.02], 0.22, 1.1, { wet: 0.5 }, 0.9);
+    }
+  }
+
+  /** 必殺發動：鼓點越打越快集氣，「鏘」一聲爆開，再接各招的元素聲 */
+  special(id: SpecialId) {
+    for (let i = 0; i < 6; i++) this.drum(0.35 + i * 0.06, 0.62 * (1 - Math.pow(0.78, i)) * 1.25);
+    this.sweep(180, 2600, 0.45, 0.75, { wet: 0.3 }, 0.8);
+    const hitAt = 0.8;
+    this.gong(0.55, hitAt);
+    this.cymbal(0.45, 1.2, hitAt);
+    this.thump(110, 32, 0.9, 0.9, { delay: hitAt }, true);
+    if (id === 'inferno') {
+      this.sweep(90, 700, 0.9, 1.1, { delay: hitAt, wet: 0.4 }, 0.6);
+      this.firecrackers(16, 0.7, hitAt + 0.05, 0.45);
+    } else if (id === 'thunder') {
+      this.burst(2600, 0.4, 1.1, 0.22, { delay: hitAt, wet: 0.6 });
+      this.thump(60, 22, 0.8, 1.4, { delay: hitAt + 0.02, wet: 0.6 });
+      this.burst(140, 0.5, 0.7, 1.2, { delay: hitAt + 0.1, wet: 0.5 }, 'lowpass');
+    } else if (id === 'phantom') {
+      [880, 1108, 1320, 1760].forEach((f, i) => this.tone(f, 'sine', 0.12, 0.9, { delay: hitAt + i * 0.06, wet: 0.9 }));
+      this.metal(330, [1, 1.41, 2.13], 0.2, 1.6, { delay: hitAt, wet: 0.9 }, 1.12);
+    } else if (id === 'cyclone') {
+      // 旋風：一上一下來回掃的風聲，最後一道往上捲
+      this.sweep(400, 3200, 0.45, 0.5, { delay: hitAt, wet: 0.5 }, 2);
+      this.sweep(3200, 500, 0.4, 0.6, { delay: hitAt + 0.3, wet: 0.5 }, 2);
+      this.sweep(500, 2800, 0.35, 0.55, { delay: hitAt + 0.7, wet: 0.6 }, 2);
+    } else if (id === 'quake') {
+      // 震地：超低頻重擊加碎石聲
+      this.thump(70, 22, 1, 1.4, { delay: hitAt, wet: 0.5 }, true);
+      this.burst(160, 0.6, 1, 0.8, { delay: hitAt, wet: 0.5 }, 'lowpass');
+      for (let i = 0; i < 8; i++) this.burst(700 + Math.random() * 900, 3, 0.25, 0.05, { delay: hitAt + 0.1 + Math.random() * 0.5, wet: 0.3 });
+    } else {
+      [2093, 2637, 3136, 4186, 5274].forEach((f, i) => this.tone(f, 'triangle', 0.1, 0.7, { delay: hitAt + i * 0.04, wet: 0.7 }));
+      for (let i = 0; i < 10; i++) this.burst(6000 + Math.random() * 5000, 4, 0.12, 0.03, { delay: hitAt + 0.05 + Math.random() * 0.4, wet: 0.5 });
+    }
+  }
+
+  /** 必殺球落地 */
+  specialImpact(id: SpecialId) {
+    this.thump(140, 30, 0.95, 0.7, {}, true);
+    this.burst(220, 0.5, 0.6, 0.4, { wet: 0.6 }, 'lowpass');
+    if (id === 'thunder') {
+      this.burst(1800, 0.3, 1.1, 0.2, { wet: 0.6 });
+      this.thump(45, 22, 0.7, 1.2, { wet: 0.6 });
+    } else if (id === 'inferno') {
+      this.firecrackers(10, 0.45, 0.02, 0.4);
+    } else if (id === 'frost') {
+      [3136, 2637, 2093].forEach((f, i) => this.tone(f, 'triangle', 0.12, 0.5, { delay: i * 0.05, wet: 0.6 }));
+      for (let i = 0; i < 12; i++) this.burst(7000 + Math.random() * 4000, 5, 0.14, 0.025, { delay: Math.random() * 0.3, wet: 0.4 });
+    } else if (id === 'cyclone') {
+      this.sweep(600, 3600, 0.5, 0.45, { wet: 0.5 }, 1.5);
+    } else if (id === 'quake') {
+      this.thump(60, 20, 1, 1.4, { wet: 0.5 }, true);
+      this.burst(120, 0.4, 1, 0.9, { wet: 0.5 }, 'lowpass');
+      for (let i = 0; i < 6; i++) this.burst(800 + Math.random() * 1200, 3, 0.2, 0.04, { delay: 0.05 + Math.random() * 0.35, wet: 0.3 });
+    } else {
+      this.tone(1320, 'sine', 0.14, 0.6, { wet: 0.8 });
+    }
+  }
+
+  /** 破解必殺：亮鑼一響 */
+  /** 角色絕招的持續效果開始：每招一種聲音 */
+  skillFx(id: SkillEffectId) {
+    if (id === 'lightsOut') {
+      // 斷電：電流嗡一聲往下掉，最後「喀」一聲燈滅
+      this.tone(180, 'sawtooth', 0.12, 0.7, { wet: 0.4 }, 40);
+      this.sweep(2400, 200, 0.25, 0.6, { wet: 0.4 }, 1.2);
+      this.thump(90, 40, 0.6, 0.3, { delay: 0.55 }, true);
+      this.burst(1800, 3, 0.4, 0.04, { delay: 0.55, wet: 0.3 });
+    } else if (id === 'taunt') {
+      // 嗆聲：大鼓兩下＋鑼，觀眾「喔～」
+      this.drum(0.8);
+      this.drum(0.8, 0.16);
+      this.gong(0.45, 0.32, 220);
+      this.sweep(500, 900, 0.22, 1.2, { delay: 0.3, wet: 0.4 }, 0.6);
+    } else if (id === 'flood') {
+      // 大水：低頻沖刷＋一陣水花
+      this.sweep(150, 900, 0.7, 1.4, { wet: 0.5 }, 0.5);
+      this.burst(400, 0.5, 0.5, 0.9, { delay: 0.1, wet: 0.5 }, 'lowpass');
+      for (let i = 0; i < 14; i++) this.burst(2500 + Math.random() * 3000, 2, 0.12, 0.05, { delay: 0.2 + Math.random() * 0.8, wet: 0.4 });
+    } else if (id === 'clone') {
+      // 分身：亮晶晶的和弦往上飄＋一道風切
+      [659.3, 830.6, 987.8, 1318.5].forEach((f, i) => this.tone(f, 'sine', 0.1, 0.8, { delay: i * 0.05, wet: 0.8 }));
+      this.sweep(300, 3000, 0.25, 0.5, { wet: 0.4 }, 0.8);
+    } else if (id === 'sour') {
+      // 酸黃瓜：罐子「啵」一聲打開，接一串往下滑的酸音
+      this.tone(900, 'sine', 0.3, 0.12, { wet: 0.3 }, 300);
+      this.burst(2200, 3, 0.3, 0.05, { wet: 0.2 });
+      [740, 698, 659, 622].forEach((f, i) => this.tone(f, 'triangle', 0.12, 0.25, { delay: 0.15 + i * 0.09, wet: 0.5 }, f * 0.94));
+    } else if (id === 'feast') {
+      // 大胃王：三口大口咬下去，最後滿足地打個嗝
+      for (let i = 0; i < 3; i++) this.thump(220, 90, 0.5, 0.12, { delay: i * 0.16 }, true);
+      this.tone(160, 'sawtooth', 0.12, 0.35, { delay: 0.55, wet: 0.3 }, 90);
+      [523.3, 659.3, 784].forEach((f, i) => this.tone(f, 'sine', 0.1, 0.4, { delay: 0.6 + i * 0.07, wet: 0.6 }));
+    } else if (id === 'roar') {
+      // 虎嘯：低吼加大鼓
+      this.sweep(90, 420, 0.8, 1.1, { wet: 0.5 }, 0.7);
+      this.tone(70, 'sawtooth', 0.35, 1, { wet: 0.4 }, 45);
+      this.drum(0.9, 0.05);
+      this.gong(0.35, 0.2, 180);
+    } else if (id === 'wave') {
+      // 大浪：由遠而近的浪聲，拍上岸的一大片水花
+      this.sweep(120, 1400, 0.8, 1.2, { wet: 0.6 }, 0.4);
+      this.burst(500, 0.5, 0.7, 0.9, { delay: 0.5, wet: 0.6 }, 'lowpass');
+      for (let i = 0; i < 18; i++) this.burst(2500 + Math.random() * 3500, 2, 0.12, 0.05, { delay: 0.55 + Math.random() * 0.7, wet: 0.4 });
+    } else if (id === 'overclock') {
+      // 超頻：電子音一路往上升，最後機械「喀嚓」
+      this.tone(220, 'square', 0.1, 0.7, { wet: 0.3 }, 1760);
+      this.sweep(400, 5000, 0.2, 0.7, { wet: 0.3 }, 2);
+      this.burst(3000, 4, 0.4, 0.04, { delay: 0.72, wet: 0.2 });
+      this.thump(160, 60, 0.4, 0.15, { delay: 0.72 }, true);
+    } else if (id === 'foxfire') {
+      // 狐火：鈴鐺聲加一陣幽幽的風
+      [1568, 1976, 2349].forEach((f, i) => this.tone(f, 'sine', 0.1, 0.9, { delay: i * 0.12, wet: 0.9 }));
+      this.sweep(2600, 600, 0.2, 1.2, { delay: 0.2, wet: 0.8 }, 3);
+    } else {
+      // 全民應援：鑼鼓點＋觀眾大歡呼＋鞭炮
+      this.luogu(1);
+      this.cheer(true);
+      this.firecrackers(24, 1.2, 0.3, 0.4);
+    }
+  }
+
+  /** 分身截擊：輕脆的一聲 */
+  cloneHit() {
+    this.tone(1318.5, 'sine', 0.14, 0.3, { wet: 0.6 });
+    this.burst(4200, 4, 0.2, 0.05, { wet: 0.3 });
+  }
+
+  counter() {
+    this.smallGong(0.45);
+    this.cymbal(0.4, 0.8);
+    this.thump(120, 45, 0.5, 0.3, {}, true);
+  }
+
+  /** 無雙覺醒：鑼鼓大段＋嗩吶往上衝＋鞭炮 */
+  awaken() {
+    [0, 0.12, 0.24, 0.36].forEach((d) => this.drum(0.7, d));
+    this.gong(0.6, 0.5, 174.6);
+    this.cymbal(0.5, 1.4, 0.5);
+    this.suona(
+      [
+        [PENTA.D5, 0.14],
+        [PENTA.E5, 0.14],
+        [PENTA.Fs5, 0.14],
+        [PENTA.A5, 0.14],
+        [PENTA.D6, 0.6],
+      ],
+      0.17,
+      0.5,
+    );
+    this.firecrackers(30, 1.4, 0.7, 0.45);
+  }
+
+  energyFull() {
+    this.smallGong(0.3);
+    this.tone(1568, 'sine', 0.1, 0.4, { delay: 0.06, wet: 0.5 });
+  }
+
+  /** 觀眾歡呼：寬頻聲浪＋零星拍手 */
+  cheer(big: boolean) {
+    // 回饋說太吵：觀眾歡呼拿掉（保留介面給呼叫端）
+    void big;
+  }
+
+  /** 連續來回里程碑（10、20、30 拍）：鑼鼓點，30 拍以上加鞭炮 */
+  milestone(n: number) {
+    // 鑼鼓鞭炮太吵，改成一聲輕的梆子
+    if (n >= 10) this.woodblock(0.25);
+  }
+
+  /** 機會球出現：梆子「叩叩」兩聲，提示該進攻了 */
+  chance() {
+    this.woodblock(0.32);
+    this.woodblock(0.32, 0.09, 1.19);
+  }
+
+  /** 打出殺球／推擋／突擊：殺球是破音重砲＋鈸，推擋是乾脆的悶擊 */
+  attack(smash: boolean) {
+    if (smash) {
+      this.thump(190, 36, 0.95, 0.42, {}, true);
+      this.burst(1900, 0.7, 0.55, 0.09, { wet: 0.4 });
+      this.cymbal(0.3, 0.7, 0.01);
+      this.sweep(800, 3800, 0.22, 0.18, { wet: 0.2 }, 0.9);
+    } else {
+      this.thump(150, 70, 0.5, 0.16, {}, true);
+      this.woodblock(0.22, 0, 0.8);
+      this.sweep(800, 2600, 0.14, 0.16, { wet: 0.1 }, 0.9);
+    }
+  }
+
+  highlight() {
+    this.smallGong(0.3);
+    this.smallGong(0.3, 0.16);
+  }
+
+  // ───────── 踢館之旅（關卡） ─────────
+
+  /** 發球機出球：氣壓砲「噗」 */
+  feed() {
+    this.thump(220, 90, 0.35, 0.12, { wet: 0.1 });
+    this.burst(700, 1, 0.2, 0.08, { wet: 0.1 }, 'lowpass');
+  }
+
+  /** 打倒手搖杯：塑膠杯「喀啦」＋飲料潑出來；大杯更響 */
+  cup(big: boolean) {
+    const p = big ? 0.8 : 1 + Math.random() * 0.15;
+    this.burst(2600 * p, 2.5, 0.45, 0.05, { wet: 0.1 });
+    this.burst(1400 * p, 4, 0.35, 0.08, { delay: 0.04, wet: 0.1 });
+    this.sweep(2200, 500, big ? 0.3 : 0.18, 0.28, { delay: 0.05, wet: 0.2 }, 0.8);
+  }
+
+  /** 撿到珍珠：「啵」一聲，連續撿音高往上爬 */
+  pearl(n: number) {
+    const p = Math.pow(2, Math.min(n % 8, 7) / 12);
+    this.tone(880 * p, 'sine', 0.22, 0.09, { wet: 0.2 }, 1320 * p);
+  }
+
+  /** 被砲彈打中、珍珠掉滿地 */
+  spill() {
+    this.thump(180, 60, 0.6, 0.2, {}, true);
+    for (let i = 0; i < 6; i++) this.tone(700 + Math.random() * 700, 'sine', 0.08, 0.06, { delay: 0.08 + i * 0.05, wet: 0.2 });
+  }
+
+  /** 換風向：一陣呼嘯 */
+  gust() {
+    this.sweep(300, 900, 0.22, 1.2, { wet: 0.3 }, 0.5);
+    this.sweep(500, 1600, 0.12, 1.0, { delay: 0.3, wet: 0.3 }, 0.7);
+  }
+
+  /** 雷聲（颱風關的閃電） */
+  thunder() {
+    this.thump(90, 30, 0.7, 1.2, { wet: 0.6 }, true);
+    this.burst(200, 0.5, 0.35, 1.4, { delay: 0.05, wet: 0.6 }, 'lowpass');
+  }
+
+  private rainNode: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
+
+  /** 雨聲：持續的高通雜訊（颱風關才開） */
+  rain(on: boolean) {
+    const ctx = this.ctx;
+    if (!on || this.muted) {
+      if (this.rainNode && ctx) {
+        this.rainNode.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+        const m = this.rainNode;
+        window.setTimeout(() => m.src.stop(), 1500);
+        this.rainNode = null;
+      }
+      return;
+    }
+    if (!ctx || !this.sfx || !this.noise || this.rainNode) return;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noise;
+    src.loop = true;
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'bandpass';
+    hp.frequency.value = 2600;
+    hp.Q.value = 0.4;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.gain.setTargetAtTime(0.07, ctx.currentTime, 0.8);
+    src.connect(hp).connect(gain).connect(this.sfx);
+    src.start();
+    this.rainNode = { src, gain };
+  }
+
+  /** 終場：贏了鑼鼓＋嗩吶＋一長串鞭炮；輸了一聲沉鑼配往下滑的嗩吶 */
+  win(won: boolean) {
+    if (won) {
+      this.luogu(1);
+      this.suona(
+        [
+          [PENTA.A5, 0.16],
+          [PENTA.B5, 0.16],
+          [PENTA.D6, 0.3],
+          [PENTA.B5, 0.14],
+          [PENTA.A5, 0.14],
+          [PENTA.Fs5, 0.16],
+          [PENTA.A5, 0.7],
+        ],
+        0.16,
+        0.35,
+      );
+      this.firecrackers(60, 2.2, 0.4, 0.42);
+    } else {
+      this.gong(0.45, 0, 146.8);
+      this.suona(
+        [
+          [PENTA.A4 * 2, 0.3],
+          [PENTA.Fs5, 0.3],
+          [PENTA.E5, 0.3],
+          [PENTA.B4, 0.8],
+        ],
+        0.11,
+        0.25,
+      );
+    }
+  }
+
+  // ───────── 球評與喊聲 ─────────
+
+  /** 球評台詞：回饋說太吵已拿掉，保留介面讓呼叫端不用改 */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  say(_key: VoiceKey, _opts?: { priority?: boolean; cooldown?: number; delay?: number }) {
+    return false;
+  }
+
+}

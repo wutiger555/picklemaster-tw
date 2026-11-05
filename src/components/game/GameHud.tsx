@@ -1,0 +1,698 @@
+import { AnimatePresence, motion } from 'framer-motion';
+import { GameEngine, type HudState } from './engine/game';
+import { type Difficulty, AI_PROFILES } from './engine/ai';
+import { type AttackKind, type ShotKind, SHOT_LABEL } from './engine/shots';
+import { SPECIALS } from './engine/paddles';
+import { SKILLS } from './engine/skills';
+import { CutIn, type CutInInfo } from './CutIn';
+import { ReviewOverlay } from './ReviewOverlay';
+import { ReplayOverlay } from './HighlightClip';
+import { LevelBoard, type LevelPop } from './LevelHud';
+
+export interface Toast {
+  id: number;
+  text: string;
+  sub?: string;
+  tone: 'perfect' | 'good' | 'off' | 'plain' | 'special';
+  /** 連續完美擊球數 */
+  streak?: number;
+  /** 打出進攻球（殺球／推擋截擊／突擊）時才有，顯示大字戳章 */
+  kind?: ShotKind;
+  /** 飛身撲接救回來的 */
+  dive?: boolean;
+}
+
+/** 機會球提示與進攻戳章的文字與配色 */
+const ATTACK: Record<AttackKind, { cue: string; stamp: string; glow: string; text: string; chip: string }> = {
+  smash: { cue: '殺球機會', stamp: 'SMASH!', glow: 'rgba(239,68,68,0.85)', text: 'text-amber-300', chip: 'from-amber-300 to-red-500' },
+  punch: { cue: '截擊機會', stamp: '攔截！', glow: 'rgba(251,146,60,0.85)', text: 'text-orange-300', chip: 'from-orange-300 to-orange-500' },
+  speedup: { cue: '突擊機會', stamp: '突擊！', glow: 'rgba(244,63,94,0.85)', text: 'text-rose-300', chip: 'from-rose-300 to-rose-500' },
+};
+
+const isAttack = (k: ShotKind | null | undefined): k is AttackKind => k === 'smash' || k === 'punch' || k === 'speedup';
+
+/** 機會球提示：告訴玩家「現在按抽球鍵就是殺球／截擊／突擊」；已經按著就顯示就緒 */
+const ChanceCue = ({ kind, ready, touch }: { kind: AttackKind; ready: boolean; touch: boolean }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 1.5 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.9 }}
+    transition={{ type: 'spring', stiffness: 520, damping: 20 }}
+    className={`flex items-center gap-1.5 rounded-full bg-gradient-to-r px-3 py-1.5 font-black text-slate-950 shadow-lg md:px-4 ${ATTACK[kind].chip} ${ready ? '' : 'animate-pulse'}`}
+    style={{ boxShadow: `0 0 22px ${ATTACK[kind].glow}` }}
+  >
+    <span className="text-sm italic md:text-lg">{ATTACK[kind].cue}！</span>
+    <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-xs text-white">
+      {ready ? '就緒 · 自動出手' : touch ? '按「抽」' : '按 K'}
+    </span>
+  </motion.div>
+);
+
+/** 撲接提示：跑不到了，但撲得到 */
+const DiveCue = ({ touch }: { touch: boolean }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 1.5, x: -12 }}
+    animate={{ opacity: 1, scale: 1, x: 0 }}
+    exit={{ opacity: 0, scale: 0.9 }}
+    transition={{ type: 'spring', stiffness: 560, damping: 20 }}
+    className="flex animate-pulse items-center gap-1.5 rounded-full bg-gradient-to-r from-cyan-200 to-sky-500 px-3 py-1.5 font-black text-slate-950 shadow-lg md:px-4"
+    style={{ boxShadow: '0 0 22px rgba(34,211,238,0.85)' }}
+  >
+    <span className="text-sm italic md:text-lg">跑不到！撲過去</span>
+    <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-xs text-white">{touch ? '點「撲」' : '按 Shift'}</span>
+  </motion.div>
+);
+
+/** 角色絕招持續效果的小標籤 */
+const EFFECT_CHIP: Record<HudState['effects'][number]['id'], { icon: string; name: string; color: string }> = {
+  lightsOut: { icon: '🌑', name: '關燈', color: '#f97316' },
+  taunt: { icon: '💢', name: '嗆聲', color: '#ef4444' },
+  flood: { icon: '🌊', name: '淹水', color: '#38bdf8' },
+  clone: { icon: '👥', name: '分身', color: '#a3e635' },
+  cheer: { icon: '📣', name: '全民應援', color: '#facc15' },
+  sour: { icon: '🥒', name: '酸到軟腳', color: '#4ade80' },
+  feast: { icon: '🥟', name: '能量被吃', color: '#fbbf24' },
+  roar: { icon: '🐯', name: '嚇到手軟', color: '#f97316' },
+  wave: { icon: '🌊', name: '被浪捲走', color: '#22d3ee' },
+  overclock: { icon: '⚡', name: '超頻', color: '#a855f7' },
+  foxfire: { icon: '🦊', name: '狐火隱形球', color: '#60a5fa' },
+};
+
+/** 誰放的什麼效果、還剩多久；對自己不利的標紅框 */
+const EffectChips = ({ hud }: { hud: HudState }) => (
+  <div className="flex flex-wrap justify-center gap-1.5 max-md:justify-start">
+    <AnimatePresence>
+      {hud.effects.map((e) => {
+        const c = EFFECT_CHIP[e.id];
+        return (
+          <motion.span
+            key={`${e.id}-${e.mine}`}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold text-white backdrop-blur-md ${
+              e.mine ? 'border-white/20 bg-slate-950/70' : 'border-red-400/70 bg-red-950/70'
+            }`}
+          >
+            <span>{c.icon}</span>
+            <span style={{ color: c.color }}>{e.mine ? '我方' : '對手'}{c.name}</span>
+            <span className="tabular-nums text-white/70">
+              {e.left}
+              {e.unit === 's' ? 's' : '分'}
+            </span>
+          </motion.span>
+        );
+      })}
+    </AnimatePresence>
+  </div>
+);
+
+export interface PointCard {
+  id: number;
+  won: boolean;
+  title: string;
+  lesson: string | null;
+  headline: string;
+  call: string;
+}
+
+const TONE: Record<Toast['tone'], string> = {
+  perfect: 'from-amber-300 to-yellow-500 text-amber-950',
+  good: 'from-emerald-300 to-teal-500 text-emerald-950',
+  off: 'from-orange-300 to-orange-500 text-orange-950',
+  plain: 'from-white to-slate-200 text-slate-800',
+  special: 'from-fuchsia-400 via-rose-500 to-orange-400 text-white',
+};
+
+const ServeDot = ({ on }: { on: boolean }) => (
+  <span
+    className={`inline-block h-2.5 w-2.5 rounded-full transition-colors ${on ? 'bg-lime-300 shadow-[0_0_10px_rgba(190,242,100,0.9)]' : 'bg-white/15'}`}
+    aria-hidden
+  />
+);
+
+const Scoreboard = ({ hud, difficulty, best, oppName, mateName }: { hud: HudState; difficulty: Difficulty; best: number; oppName: string; mateName?: string }) => {
+  if (hud.mode === 'dink') {
+    return (
+      <div className="rounded-2xl border border-white/15 bg-slate-950/70 px-5 py-2.5 text-center text-white shadow-xl backdrop-blur-md">
+        <div className="text-[11px] font-semibold tracking-[0.2em] text-emerald-300">DINK 挑戰</div>
+        <div className="flex items-baseline justify-center gap-3">
+          <motion.span key={hud.dinkStreak} initial={{ scale: 1.5 }} animate={{ scale: 1 }} className="text-3xl font-black tabular-nums">
+            {hud.dinkStreak}
+          </motion.span>
+          <span className="text-xs text-white/60">最佳 {best}</span>
+        </div>
+      </div>
+    );
+  }
+  const opp = hud.energy[1];
+  return (
+    <div className="rounded-2xl border border-white/15 bg-slate-950/70 px-4 py-2 text-white shadow-xl backdrop-blur-md">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ServeDot on={hud.serving === 0} />
+          <span className="text-xs font-semibold text-emerald-300">{mateName ? `你＆${mateName}` : '你'}</span>
+          <motion.span key={`p${hud.score[0]}`} initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-7 text-center text-3xl font-black tabular-nums">
+            {hud.score[0]}
+          </motion.span>
+        </div>
+        <span className="text-white/30">:</span>
+        <div className="flex items-center gap-2">
+          <motion.span key={`o${hud.score[1]}`} initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-7 text-center text-3xl font-black tabular-nums">
+            {hud.score[1]}
+          </motion.span>
+          <span className="text-xs font-semibold text-orange-300">
+            {oppName}
+            <span className="ml-1 text-[10px] font-normal text-white/50">{AI_PROFILES[difficulty].label}</span>
+          </span>
+          <ServeDot on={hud.serving === 1} />
+        </div>
+      </div>
+      {hud.awaken && hud.awaken.opp > 0 && (
+        <div className="mt-1 flex justify-center">
+          <span className="animate-pulse rounded-full bg-gradient-to-r from-red-500 to-amber-500 px-2.5 py-0.5 text-[11px] font-black text-white shadow-[0_0_14px_rgba(239,68,68,0.8)]">
+            對手無雙覺醒中 · 剩 {hud.awaken.opp} 拍
+          </span>
+        </div>
+      )}
+      <div className="mt-0.5 text-center text-[11px] text-white/60">
+        報分 <span className="font-bold text-white tabular-nums">{hud.call}</span> · {hud.fromRight ? '右區' : '左區'}發球
+        {hud.phase === 'rally' && hud.rallyHits > 2 && <span className="ml-1.5 text-lime-300">· 第 {hud.rallyHits} 拍</span>}
+      </div>
+      {hud.specials && (
+        <div className="mt-1.5 flex items-center gap-2" title="對手的必殺能量">
+          <span className="text-[10px] font-bold" style={{ color: SPECIALS[hud.oppSpecial].color }}>
+            對手必殺
+          </span>
+          <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
+            <div
+              className={`h-full rounded-full transition-[width] duration-300 ${opp >= 100 ? 'animate-pulse' : ''}`}
+              style={{ width: `${opp}%`, background: SPECIALS[hud.oppSpecial].color }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/** 必殺能量條：滿了發光提示，蓄勢後整條燃燒 */
+const EnergyBar = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
+  const sp = SPECIALS[hud.special];
+  const e = hud.energy[0];
+  const full = e >= 100;
+  return (
+    <div
+      className={`w-56 rounded-2xl border px-3 py-2 backdrop-blur-md transition-shadow ${
+        hud.armed ? 'border-white/60 bg-slate-950/80' : full ? 'border-white/30 bg-slate-950/70' : 'border-white/10 bg-slate-950/60'
+      }`}
+      style={full ? { boxShadow: `0 0 ${hud.armed ? 34 : 18}px ${sp.color}` } : undefined}
+    >
+      <div className="mb-1 flex items-center justify-between text-[11px] font-bold">
+        <span style={{ color: full ? sp.glow : 'rgba(255,255,255,0.7)' }}>{hud.armed ? `蓄勢！${sp.name}` : `必殺・${sp.name}`}</span>
+        <span className="tabular-nums text-white/60">{Math.floor(e)}%</span>
+      </div>
+      <div className="relative h-2.5 overflow-hidden rounded-full bg-white/10">
+        <div
+          className={`absolute inset-y-0 left-0 rounded-full transition-[width] duration-300 ${full ? 'animate-pulse' : ''}`}
+          style={{ width: `${e}%`, background: `linear-gradient(90deg, ${sp.glow}, ${sp.color})` }}
+        />
+        {[25, 50, 75].map((x) => (
+          <div key={x} className="absolute inset-y-0 w-px bg-slate-950/70" style={{ left: `${x}%` }} />
+        ))}
+      </div>
+      {full && (
+        <div className="mt-1 text-[11px] font-semibold text-white/85">
+          {hud.armed ? '下一拍放出必殺！' : touch ? '點「必殺」蓄勢' : '按 空白鍵 蓄勢'}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/** 角色絕招：可用／就緒／充能中（打完 4 分再充好） */
+const SkillChip = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
+  if (!hud.skill) return null;
+  const sk = SKILLS[hud.skill];
+  const on = hud.skillReady;
+  return (
+    <div
+      className={`mt-2 w-56 rounded-2xl border px-3 py-1.5 text-[11px] font-bold backdrop-blur-md transition-shadow ${
+        hud.skillArmed ? 'border-white/60 bg-slate-950/80' : on ? 'border-white/25 bg-slate-950/65' : 'border-white/10 bg-slate-950/50'
+      }`}
+      style={on ? { boxShadow: `0 0 ${hud.skillArmed ? 30 : 12}px ${sk.color}` } : undefined}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="truncate" style={{ color: on ? sk.glow : 'rgba(255,255,255,0.45)' }}>
+          絕招・{sk.name}
+        </span>
+        <span className="shrink-0 text-white/60">{hud.skillArmed ? '就緒！' : on ? (touch ? '點「絕招」' : '按 U') : '充能中'}</span>
+      </div>
+    </div>
+  );
+};
+
+/** 無雙覺醒量表（桌機）：累積中、集滿可發動、覺醒中剩幾拍；用過就收起來 */
+const AwakenChip = ({ hud }: { hud: HudState }) => {
+  const aw = hud.awaken;
+  if (!aw || (aw.used && aw.hits === 0)) return null;
+  const ready = aw.gauge >= 100;
+  const on = aw.hits > 0;
+  return (
+    <div
+      className={`mt-2 w-56 rounded-2xl border px-3 py-1.5 text-[11px] font-bold backdrop-blur-md transition-shadow ${
+        on || ready ? 'border-amber-200/70 bg-slate-950/80' : 'border-white/10 bg-slate-950/55'
+      } ${ready && !on ? 'animate-pulse' : ''}`}
+      style={on || ready ? { boxShadow: `0 0 ${on ? 34 : 20}px rgba(245,158,11,0.85)` } : undefined}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className={on || ready ? 'text-amber-200' : 'text-white/55'}>{on ? '無雙覺醒中！' : '無雙覺醒'}</span>
+        <span className="shrink-0 tabular-nums text-white/70">{on ? `剩 ${aw.hits} 拍` : ready ? '按 Q 發動' : `${Math.floor(aw.gauge)}%`}</span>
+      </div>
+      {!on && (
+        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/10">
+          <div className="h-full rounded-full bg-gradient-to-r from-amber-200 via-amber-400 to-red-500 transition-[width] duration-500" style={{ width: `${aw.gauge}%` }} />
+        </div>
+      )}
+      {!on && !ready && <div className="mt-0.5 text-[10px] font-semibold text-white/40">落後或連丟分時累積，每局一次</div>}
+    </div>
+  );
+};
+
+/** 覺醒中的畫面色調：自己覺醒是金色，對手覺醒是血紅（CSS 疊在畫布上，不動 WebGL） */
+const AwakenTint = ({ hud }: { hud: HudState }) => {
+  const aw = hud.awaken;
+  const mine = !!aw && aw.hits > 0;
+  const theirs = !!aw && aw.opp > 0;
+  return (
+    <AnimatePresence>
+      {(mine || theirs) && (
+        <motion.div
+          key={mine ? 'mine' : 'theirs'}
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div
+            className="absolute inset-0 mix-blend-soft-light"
+            style={{ background: mine ? 'linear-gradient(180deg, rgba(251,191,36,0.4), rgba(234,88,12,0.35))' : 'linear-gradient(180deg, rgba(220,38,38,0.4), rgba(76,5,25,0.45))' }}
+          />
+          <div
+            className="absolute inset-0 animate-pulse"
+            style={{ boxShadow: mine ? 'inset 0 0 120px 10px rgba(245,158,11,0.5)' : 'inset 0 0 120px 10px rgba(185,28,28,0.5)' }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+/** 連擊數字的顏色：越長越熱 */
+const comboTone = (n: number) =>
+  n >= 30
+    ? { text: 'text-fuchsia-300', glow: 'rgba(217,70,239,0.9)' }
+    : n >= 20
+      ? { text: 'text-orange-400', glow: 'rgba(249,115,22,0.9)' }
+      : n >= 10
+        ? { text: 'text-amber-300', glow: 'rgba(251,191,36,0.9)' }
+        : { text: 'text-white', glow: 'rgba(255,255,255,0.45)' };
+
+/**
+ * 連擊數（無雙的「1000 K.O.」）：來回中在畫面左側跳大字，每 10 拍爆一次；
+ * 這一分結束後停在畫面上結算，破本局紀錄就標出來。
+ */
+const ComboCounter = ({ hud, touch }: { hud: HudState; touch: boolean }) => {
+  const n = hud.rallyHits;
+  const live = hud.phase === 'rally';
+  const settle = hud.phase === 'dead' && !hud.review;
+  // 正規版不跳連擊數（記分板上的「第 N 拍」就夠了）
+  const show = hud.specials && hud.mode === 'match' && n >= 3 && (live || settle) && !hud.replay;
+  const tone = comboTone(n);
+  const milestone = live && n >= 10 && n % 10 === 0;
+  const best = settle && n >= 5 && n >= hud.bestCombo;
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          key="combo"
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -30, transition: { duration: 0.25 } }}
+          className="relative flex flex-col items-start"
+        >
+          {settle && (
+            <span className="mb-0.5 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-black tracking-[0.2em] text-white/80">
+              {best ? '本局最長連擊！' : '連擊結算'}
+            </span>
+          )}
+          <div className="flex items-baseline gap-1.5">
+            <motion.span
+              key={n}
+              initial={milestone ? { scale: 3.2, rotate: -14, opacity: 0 } : { scale: 1.45 }}
+              animate={{ scale: 1, rotate: -6, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: milestone ? 380 : 700, damping: milestone ? 12 : 22 }}
+              className={`font-display font-black italic leading-none tabular-nums ${tone.text} ${touch ? 'text-4xl' : 'text-7xl'}`}
+              style={{ textShadow: `0 0 18px ${tone.glow}, 3px 3px 0 #000` }}
+            >
+              {n}
+            </motion.span>
+            <span className={`font-display font-black italic text-white ${touch ? 'text-base' : 'text-3xl'}`} style={{ textShadow: '2px 2px 0 #000' }}>
+              HIT
+            </span>
+          </div>
+          {/* 每 10 拍：字體爆開＋放射光＋能量加成 */}
+          <AnimatePresence>
+            {milestone && (
+              <motion.div
+                key={`m${n}`}
+                className="pointer-events-none absolute -left-6 -top-8 h-36 w-36"
+                initial={{ opacity: 1, scale: 0.3 }}
+                animate={{ opacity: 0, scale: 1.8 }}
+                transition={{ duration: 0.9, ease: 'easeOut' }}
+                style={{ background: `repeating-conic-gradient(${tone.glow} 0deg 6deg, transparent 6deg 24deg)`, borderRadius: '50%', WebkitMaskImage: 'radial-gradient(circle, #000 20%, transparent 70%)', maskImage: 'radial-gradient(circle, #000 20%, transparent 70%)' }}
+              />
+            )}
+          </AnimatePresence>
+          {milestone && !touch && (
+            <motion.span
+              key={`b${n}`}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-1 rounded-full bg-gradient-to-r from-amber-300 to-orange-500 px-2 py-0.5 text-[11px] font-black text-amber-950"
+            >
+              觀眾沸騰！雙方能量 UP
+            </motion.span>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+/** 覺醒中的狀態（手機）：桌機看左下角的量表 */
+const AwakenStatus = ({ hud }: { hud: HudState }) =>
+  hud.awaken && hud.awaken.hits > 0 ? (
+    <div className="mb-1.5 animate-pulse rounded-full bg-gradient-to-r from-amber-300 to-red-500 px-2.5 py-0.5 text-[11px] font-black text-slate-950 shadow-[0_0_16px_rgba(245,158,11,0.9)]">
+      無雙覺醒 · 剩 {hud.awaken.hits} 拍
+    </div>
+  ) : null;
+
+/** 發球力道條：綠色區間內才會進，越接近上緣越深 */
+const ServeMeter = ({ power }: { power: number }) => {
+  const win = GameEngine.serveWindow();
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <span className="text-[11px] font-bold tracking-wider text-white/80">力道</span>
+      <div className="relative h-44 w-5 overflow-hidden rounded-full border border-white/25 bg-slate-950/70">
+        <div className="absolute inset-x-0 bg-emerald-400/45" style={{ bottom: `${win.lo * 100}%`, top: `${(1 - win.hi) * 100}%` }} />
+        <div className="absolute inset-x-0 bg-lime-300/70" style={{ bottom: `${(win.hi - 0.14) * 100}%`, top: `${(1 - win.hi) * 100}%` }} />
+        <div className="absolute inset-x-0 h-1.5 -translate-y-1/2 bg-white shadow-[0_0_8px_white]" style={{ bottom: `${power * 100}%` }} />
+      </div>
+      <span className="text-[10px] text-white/60">深＝好</span>
+    </div>
+  );
+};
+
+const ChargeBar = ({ charge, kind }: { charge: number; kind: HudState['aimKind'] }) => (
+  <div className="flex items-center gap-2 rounded-full border border-white/15 bg-slate-950/70 px-3 py-1.5 backdrop-blur-md">
+    <span className="text-xs font-bold text-white">{kind ? SHOT_LABEL[kind] : '蓄力'}</span>
+    <div className="h-1.5 w-24 overflow-hidden rounded-full bg-white/15">
+      <div className="h-full rounded-full bg-gradient-to-r from-sky-300 via-amber-300 to-red-500" style={{ width: `${charge * 100}%` }} />
+    </div>
+  </div>
+);
+
+interface HudProps {
+  hud: HudState;
+  difficulty: Difficulty;
+  best: number;
+  toasts: Toast[];
+  aiToast: Toast | null;
+  banner: { id: number; text: string } | null;
+  card: PointCard | null;
+  cutIn: CutInInfo | null;
+  oppName: string;
+  /** 雙打隊友的名字 */
+  mateName?: string;
+  touch: boolean;
+  onChallenge: () => void;
+  onAccept: () => void;
+  onSkipReplay: () => void;
+  /** 踢館之旅的關卡：名稱、Boss、得分彈出字 */
+  level?: { name: string; boss?: { name: string; portrait: string | null }; pops: LevelPop[] };
+  /** 新手教學：不顯示比分（上方換成教學卡），提示往下移 */
+  practice?: boolean;
+}
+
+export const GameHud = ({ hud, difficulty, best, toasts, aiToast, banner, card, cutIn, touch, oppName, mateName, onChallenge, onAccept, onSkipReplay, level, practice = false }: HudProps) => {
+  const humanServing = hud.phase === 'serve' && hud.myServe && hud.mode === 'match';
+  // 判決重播時收起比分和能量條，畫面留給轉播
+  const replay = hud.review?.state === 'reviewing' || hud.replay ? 'opacity-0' : '';
+  return (
+    <div className="pointer-events-none absolute inset-0 z-10 select-none">
+      <AwakenTint hud={hud} />
+      {/* 阿灰關燈：整個球場暗下來（四周更暗） */}
+      <div
+        className="absolute inset-0 transition-opacity duration-500"
+        style={{
+          opacity: hud.effects.some((e) => e.id === 'lightsOut') ? 1 : 0,
+          background: 'radial-gradient(ellipse at 50% 55%, rgba(2,6,23,0.45) 20%, rgba(2,6,23,0.88) 75%)',
+        }}
+      />
+      {hud.effects.length > 0 && !practice && (
+        <div className={`absolute inset-x-0 px-3 ${touch ? 'top-[6.75rem] landscape:top-[5.75rem]' : 'top-[6.5rem]'}`}>
+          <EffectChips hud={hud} />
+        </div>
+      )}
+      {!practice && (
+        <div className={`absolute inset-x-0 top-3 flex justify-center transition-opacity max-md:justify-start max-md:pl-3 ${replay}`}>
+          {hud.level && level ? (
+            <LevelBoard level={hud.level} name={level.name} boss={level.boss} pops={level.pops} touch={touch} />
+          ) : (
+            <Scoreboard hud={hud} difficulty={difficulty} best={best} oppName={oppName} mateName={mateName} />
+          )}
+        </div>
+      )}
+
+      {/* 手機上能量改顯示在招式鍵的外圈，不再佔左上角；判決剩餘次數在申請時的提示裡也看得到 */}
+      {hud.specials && !touch && (
+        <div className={`absolute bottom-4 left-3 transition-opacity ${replay}`}>
+          <EnergyBar hud={hud} touch={touch} />
+          <SkillChip hud={hud} touch={touch} />
+          <AwakenChip hud={hud} />
+          {hud.mode === 'match' && (
+            <div className="mt-1.5 flex w-56 items-center justify-between rounded-xl bg-slate-950/50 px-3 py-1 text-[11px] font-bold text-white/70 backdrop-blur-md">
+              <span>電視輔助判決</span>
+              <span className="tracking-widest text-amber-300">
+                {'●'.repeat(hud.challenges[0])}
+                <span className="text-white/25">{'●'.repeat(Math.max(0, 2 - hud.challenges[0]))}</span>
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
+      <AnimatePresence>
+        {aiToast && (
+          <motion.div
+            key={aiToast.id}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute right-3 top-20 rounded-lg bg-slate-950/60 px-2.5 py-1 text-xs text-orange-200 backdrop-blur-md max-md:top-44"
+          >
+            {aiToast.text}
+            {aiToast.sub && <span className="ml-1.5 text-white/50">{aiToast.sub}</span>}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 連擊數：畫面左側（桌機在能量條上方的空位；手機在記分板下方、搖桿與機會球提示上方） */}
+      <div className={`absolute transition-opacity ${touch ? 'left-3 top-[34%] landscape:top-[6.5rem]' : 'left-4 top-[30%]'} ${replay}`}>
+        {touch && <AwakenStatus hud={hud} />}
+        <ComboCounter hud={hud} touch={touch} />
+      </div>
+
+      {/* 玩家擊球回饋 */}
+      <div className="absolute inset-x-0 top-[38%] flex justify-center">
+        <AnimatePresence>
+          {/* 手機上一般擊球（沒有評分）不跳球速，只留戳章類的回饋 */}
+          {toasts.slice(-1).filter((t) => !(touch && t.tone === 'plain' && !t.dive && !isAttack(t.kind))).map((t) =>
+            t.dive ? (
+              // 飛身撲接救回來：漫畫風大字
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, scale: 2.8, rotate: 10 }}
+                animate={{ opacity: 1, scale: 1, rotate: 4 }}
+                exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                transition={{ type: 'spring', stiffness: 540, damping: 15 }}
+                className="flex flex-col items-center"
+              >
+                <span
+                  className="font-display text-5xl font-black italic tracking-tight text-cyan-200 md:text-6xl"
+                  style={{ textShadow: '0 0 22px rgba(34,211,238,0.9), 3px 3px 0 #000, -1px -1px 0 #000' }}
+                >
+                  神救球！
+                </span>
+                <span className="mt-0.5 rounded-full bg-black/55 px-3 py-0.5 text-xs font-bold text-cyan-50">
+                  {t.text}
+                  <span className="ml-2 opacity-70">快爬起來！</span>
+                </span>
+              </motion.div>
+            ) : isAttack(t.kind) ? (
+              // 進攻球：大字戳章（殺球最大）
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, scale: 2.6, rotate: -10 }}
+                animate={{ opacity: 1, scale: 1, rotate: -5 }}
+                exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                transition={{ type: 'spring', stiffness: 560, damping: 16 }}
+                className="flex flex-col items-center"
+              >
+                <span
+                  className={`font-display font-black italic tracking-tight ${ATTACK[t.kind].text} ${t.kind === 'smash' ? 'text-5xl md:text-6xl' : 'text-4xl md:text-5xl'}`}
+                  style={{ textShadow: `0 0 20px ${ATTACK[t.kind].glow}, 3px 3px 0 #000` }}
+                >
+                  {ATTACK[t.kind].stamp}
+                </span>
+                <span className="mt-0.5 rounded-full bg-black/55 px-3 py-0.5 text-xs font-bold text-white">
+                  {t.text}
+                  {t.sub && <span className="ml-2 opacity-70">{t.sub}</span>}
+                </span>
+              </motion.div>
+            ) : t.tone === 'perfect' ? (
+              // 完美擊球：金色大字戳章，帶連擊數
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, scale: 2.2, rotate: -8 }}
+                animate={{ opacity: 1, scale: 1, rotate: -4 }}
+                exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                transition={{ type: 'spring', stiffness: 520, damping: 18 }}
+                className="flex flex-col items-center"
+              >
+                <span
+                  className="font-display text-3xl font-black italic tracking-tight text-amber-300 md:text-4xl"
+                  style={{ textShadow: '0 0 18px rgba(251,191,36,0.85), 3px 3px 0 #000' }}
+                >
+                  PERFECT!
+                </span>
+                <span className="mt-0.5 rounded-full bg-black/55 px-3 py-0.5 text-xs font-bold text-amber-100">
+                  {t.text.replace('完美 ', '')}
+                  {t.sub && <span className="ml-2 opacity-70">{t.sub}</span>}
+                  {t.streak && t.streak >= 2 ? <span className="ml-2 text-amber-300">連續完美 ×{t.streak}</span> : null}
+                </span>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, scale: 0.6, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+                className={`rounded-full bg-gradient-to-r px-4 py-1.5 text-sm font-black shadow-lg ${TONE[t.tone]}`}
+              >
+                {t.text}
+                {t.sub && <span className="ml-2 font-semibold opacity-70">{t.sub}</span>}
+              </motion.div>
+            ),
+          )}
+        </AnimatePresence>
+      </div>
+
+      <AnimatePresence>
+        {banner && (
+          <motion.div
+            key={banner.id}
+            initial={{ opacity: 0, scale: 1.6, rotate: -4 }}
+            animate={{ opacity: 1, scale: 1, rotate: -4 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+            className="absolute inset-x-0 top-[22%] text-center"
+          >
+            <span className="font-display text-4xl font-black italic tracking-tight text-amber-300 drop-shadow-[0_4px_0_rgba(0,0,0,0.9)] md:text-6xl">
+              {banner.text}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 每一分結束的說明卡：失誤時告訴你是哪一條規則 */}
+      <AnimatePresence>
+        {card && (
+          <motion.div
+            key={card.id}
+            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={`absolute inset-x-0 flex justify-center px-4 ${touch ? 'top-[8.75rem] landscape:top-[7.25rem]' : 'top-[30%]'}`}
+          >
+            <div
+              className={`w-full max-w-sm rounded-2xl border text-center shadow-2xl backdrop-blur-xl ${touch ? 'px-4 py-2.5' : 'px-5 py-4'} ${
+                card.won ? 'border-emerald-300/40 bg-emerald-950/75' : 'border-orange-300/40 bg-slate-950/80'
+              }`}
+            >
+              <div className={`text-xs font-bold tracking-[0.2em] ${card.won ? 'text-emerald-300' : 'text-orange-300'}`}>{card.headline}</div>
+              <div className={`mt-0.5 font-black text-white ${touch ? 'text-lg' : 'text-2xl'}`}>{card.title}</div>
+              {card.lesson && <p className={`text-white/80 ${touch ? 'mt-1 text-xs leading-snug' : 'mt-2 text-sm leading-relaxed'}`}>{card.lesson}</p>}
+              {card.call && (
+                <div className={`text-xs text-white/50 ${touch ? 'mt-1' : 'mt-3'}`}>
+                  報分 <span className="text-base font-bold text-white tabular-nums">{card.call}</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 機會球提示：獨立一塊，手機版靠左放在搖桿上方，避開右側的必殺／絕招鍵 */}
+      <div className={`absolute flex ${touch ? 'bottom-[17.5rem] left-3 landscape:bottom-[10.5rem]' : 'inset-x-0 bottom-[6.5rem] justify-center'}`}>
+        <AnimatePresence>
+          {hud.chance && hud.phase === 'rally' && !hud.replay && (
+            <ChanceCue key={hud.chance} kind={hud.chance} ready={hud.aimKind === hud.chance} touch={touch} />
+          )}
+          {!hud.chance && hud.dive && hud.phase === 'rally' && !hud.replay && <DiveCue key="dive" touch={touch} />}
+        </AnimatePresence>
+      </div>
+
+      {/* 下方：發球提示、蓄力、廚房警示 */}
+      <div className={`absolute inset-x-0 flex flex-col items-center gap-2 px-3 ${touch ? (practice ? 'top-[12rem] landscape:top-[9.5rem]' : 'top-[7.5rem]') : 'bottom-5'}`}>
+        {hud.inKitchen && hud.phase === 'rally' && !hud.replay && (
+          <div
+            className={`rounded-full px-3 py-1 text-xs font-bold shadow-lg ${
+              hud.kitchenLocked ? 'animate-pulse bg-red-500 text-white' : 'bg-amber-400/90 text-amber-950'
+            }`}
+          >
+            {hud.kitchenLocked ? '剛截擊完！別踩進廚房' : '你在廚房內：只能打落地球'}
+          </div>
+        )}
+        {hud.slipping && !hud.replay && (
+          <div className="rounded-full bg-sky-400/90 px-3 py-1 text-xs font-bold text-sky-950 shadow-lg">
+            {hud.slipping === 'ice' ? '踩到冰面：腳下打滑' : hud.slipping === 'water' ? '踩進水灘：跑不快' : '被震得站不穩'}
+          </div>
+        )}
+        {hud.charge !== null && !hud.replay && <ChargeBar charge={hud.charge} kind={hud.aimKind} />}
+        {humanServing && hud.servePower === null && (
+          <div className="rounded-full bg-slate-950/70 px-4 py-1.5 text-xs text-white/90 backdrop-blur-md">
+            {touch ? '按住任一擊球鍵蓄力，在綠色區放開發球' : '按住 J／K／L 蓄力，在綠色區放開發球 · ←→ 調方向'}
+          </div>
+        )}
+      </div>
+
+      {hud.servePower !== null && (
+        <div className="absolute right-5 top-1/2 -translate-y-1/2">
+          <ServeMeter power={hud.servePower} />
+        </div>
+      )}
+
+      <AnimatePresence>
+        {cutIn && (
+          <CutIn key={cutIn.id} spec={cutIn.spec} skill={cutIn.skill} awaken={cutIn.awaken} mine={cutIn.mine} portrait={cutIn.portrait} name={cutIn.name} />
+        )}
+        <ReviewOverlay review={hud.review} onChallenge={onChallenge} onAccept={onAccept} />
+        {hud.replay && <ReplayOverlay key="replay" label={hud.replay} touch={touch} onSkip={onSkipReplay} info={hud.replayInfo} />}
+      </AnimatePresence>
+    </div>
+  );
+};

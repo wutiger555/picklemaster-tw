@@ -3,6 +3,7 @@ import { base64url, randomBytes, randomCode, sha256hex, signToken } from './cryp
 import { bad, notFound } from './errors';
 import { promoteAll, publicGame, type GameRow } from './games';
 import * as v from './validate';
+import { deleteArcade } from './arcade';
 
 interface PlayerRow {
   id: string;
@@ -126,6 +127,7 @@ export async function deleteMe(env: Env, id: string, now: number) {
     ).bind(id, now),
     env.DB.prepare(`DELETE FROM session_interests WHERE player_id = ?1`).bind(id),
     env.DB.prepare(`DELETE FROM court_reviews WHERE player_id = ?1`).bind(id),
+    ...deleteArcade(env, id),
     env.DB.prepare(`UPDATE players SET nickname = '已刪除的球友', avatar_seed = 0, level = NULL, dupr = NULL, code_hash = NULL, deleted_at = ?2 WHERE id = ?1`).bind(id, now),
   ]);
   for (const r of results) await promoteAll(env, r.game_id, now);

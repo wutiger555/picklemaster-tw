@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../utils/constants';
 import InteractiveCourt from '../components/court/InteractiveCourt';
 import BallAnimation from '../components/court/BallAnimation';
 import CourtViewer3D from '../components/learning/CourtViewer3D';
@@ -181,6 +183,20 @@ const Rules = () => {
             </section>
           </motion.div>
         )}
+
+        {/* 規則看懂了，到遊戲裡實際打一場（遊戲照比賽規則判，犯規會說明是哪一條） */}
+        <Link
+          to={ROUTES.GAME}
+          className="group mt-4 mb-16 flex flex-col items-start gap-4 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 p-6 text-white shadow-xl ring-1 ring-black/5 transition-transform hover:-translate-y-0.5 sm:flex-row sm:items-center md:p-8"
+        >
+          <span className="text-4xl leading-none">🎮</span>
+          <span className="flex-1">
+            <span className="block text-xs font-bold uppercase tracking-wider text-emerald-300">Pickleball Game</span>
+            <span className="mt-1 block text-xl font-bold md:text-2xl">看懂規則了？到匹克球遊戲實際打一場</span>
+            <span className="mt-1 block text-sm text-white/70">免費 3D 匹克球遊戲「匹克硬邦幫」照比賽規則判，雙彈跳、廚房犯規都會告訴你是哪一條。手機也能玩。</span>
+          </span>
+          <span className="rounded-xl bg-emerald-400 px-5 py-3 font-bold text-emerald-950 transition-colors group-hover:bg-emerald-300">免費開打 →</span>
+        </Link>
       </div>
     </div>
   );

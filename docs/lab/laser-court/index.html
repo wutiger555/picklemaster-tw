@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="一支燈柱、10 顆線雷射，晚上在沒有燈、沒有線的空地打出整個匹克球場的產品企劃與原型做法。">
 <meta property="og:title" content="夜打雷射場線">
-<meta property="og:description" content="一支燈柱、10 顆線雷射，打出整個匹克球場。產品設計、3D 模擬與原型做法。">
+<meta property="og:description" content="一支燈柱、10 顆線雷射，打出整個匹克球場。產品設計、3D 模擬、遮擋模擬與原型做法。">
 <meta property="og:type" content="article">
 <title>夜打雷射場線</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -143,10 +143,10 @@ ol.build ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14.5px}
 <header>
   <div class="eyebrow">專案簡報 v2 · 單機版 · 2026-09-29</div>
   <h1>一支燈柱，打出整個匹克球場</h1>
-  <p class="lede">一台機器架在網柱旁邊 2.5 公尺高，裡面 10 顆綠光線雷射各自負責一條場線。開機後整套場線一起出現，晚上在沒有燈、沒有線的空地也能開場。</p>
+  <p class="lede">一台機器架在網柱旁邊 2.5 公尺高，裡面 10 顆綠光線雷射各自負責一條場線。開機後整套場線一起出現，晚上在沒有燈、沒有線的空地也能開場。原型先做一台；遮擋模擬顯示，正式產品要在兩邊網柱各放一台。</p>
   <div class="facts">
     <div class="fact"><span class="k">擺在哪</span><span class="v">網柱外 25cm、2.5m 高</span><span class="s">用標準網寬當尺，每次位置都一樣</span></div>
-    <div class="fact"><span class="k">裡面有什麼</span><span class="v">10 顆綠光線雷射</span><span class="s">每顆 1～5mW，一顆負責一條線</span></div>
+    <div class="fact"><span class="k">裡面有什麼</span><span class="v">10 顆綠光線雷射</span><span class="s">原型 10 顆；正式版兩台共 14 顆</span></div>
     <div class="fact"><span class="k">用在哪</span><span class="v">晚上沒有燈的空地</span><span class="s">羽球場上可以只開廚房線</span></div>
     <div class="fact"><span class="k">原型成本</span><span class="v">約 NT$8,000～14,500</span><span class="s">不用焊接、不用寫程式</span></div>
   </div>
@@ -258,6 +258,55 @@ ol.build ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14.5px}
   <p class="note">目標是每條線誤差在 3cm 以內（線寬的一半多一點）。</p>
 </section>
 
+<!-- ============ 遮擋 ============ -->
+<section id="shadow">
+  <div class="eyebrow">遮擋模擬</div>
+  <h2>場上有人走動，線會被擋掉多少</h2>
+  <p class="prose muted">雷射是從機器直線打到地上，球員站在中間就會在線上留下一段影子。只放一邊時，影子只能靠自己消失；兩邊都放，一邊被擋住，另一邊還照得到。拖動四個黃點球員看看，也可以按「換一組站位」。</p>
+  <div class="win">
+    <div class="win-head">
+      <span class="t">俯視：紅色是被人擋住的線段</span>
+      <div class="seg" role="group" aria-label="擺法">
+        <button id="sh-single" aria-pressed="true">單邊一台（10 顆）</button>
+        <button id="sh-split" aria-pressed="false">兩邊分工（14 顆）</button>
+        <button id="sh-full" aria-pressed="false">兩邊全打（20 顆）</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <svg id="shsvg" viewBox="0 0 780 400" role="img" aria-label="遮擋模擬俯視圖，球員可拖動" style="touch-action:none"></svg>
+      <div class="row"><button class="seg-btn" id="sh-rand" style="font:inherit;font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;border:1px solid #3DDC84;background:transparent;color:#3DDC84;cursor:pointer">換一組站位</button><span class="note">球員用高 1.75m、半徑 20cm 的圓柱近似，沒有算手臂和球拍。</span></div>
+      <div class="status" id="shstat"></div>
+    </div>
+  </div>
+  <h3>3,000 個雙打站位的統計結果</h3>
+  <p class="prose muted">隨機抽的站位包含：全部退到底線、全部壓在廚房線、一前一後、正在往前移動、發球接發球，也有 15% 追球跑出邊線外。最右邊一欄是：球落在線附近的那一刻，落點前後 25cm 內的線剛好是暗的機率。</p>
+  <div class="tbl"><table>
+    <thead><tr><th>擺法</th><th class="r">模組</th><th class="r">平均亮線比例</th><th>最常被擋的線</th><th class="r">被擋的長度（一般／較差時）</th><th class="r">落點附近的線是暗的</th></tr></thead>
+    <tbody>
+      <tr><td>單邊一台 2.5m（原型）</td><td class="r num">10</td><td class="r num">94.2%</td><td>底線 87%，最遠的兩個角約 83%</td><td class="r num">1.3m／1.7m</td><td class="r"><span class="chip warn">5.3%，約每 19 球 1 次</span></td></tr>
+      <tr><td>單邊一台，架高到 3.5m</td><td class="r num">10</td><td class="r num">96.6%</td><td>中線 92%</td><td class="r num">0.9m／1.4m</td><td class="r"><span class="chip warn">3.3%，約每 30 球 1 次</span></td></tr>
+      <tr><td><b>兩邊分工（正式版）</b></td><td class="r num">14</td><td class="r num">98.6%</td><td>邊線 97%</td><td class="r num">0.7m／2.8m</td><td class="r"><span class="chip good">1.1%，約每 90 球 1 次</span></td></tr>
+      <tr><td>兩邊全打</td><td class="r num">20</td><td class="r num">99.6%</td><td>底線 99%</td><td class="r num">0.2m／0.65m</td><td class="r"><span class="chip good">0.3%，約每 330 球 1 次</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="two">
+    <div class="box"><h3>兩邊分工：每台負責哪些線</h3>
+      <ul>
+        <li><b>兩台都打（最常被擋）</b>：兩條底線、兩條中線。</li>
+        <li><b>只由靠近的那台打</b>：邊線。每台只打自己這一側的兩段，對面那條剛好是另一台的近邊線。</li>
+        <li><b>一台負責一條（幾乎不會被擋）</b>：廚房線，右邊那台打 A 半場，左邊那台打 B 半場。</li>
+        <li>每台 7 顆，共 14 顆。兩台用同一張角度表，左邊那台的旋轉角正負號相反。</li>
+      </ul></div>
+    <div class="box"><h3>結論</h3>
+      <ul>
+        <li><b>原型先做單台</b>：便宜，每 19 球大約 1 次會遇到線剛好被擋，拿來驗證看不看得到、好不好擺已經夠用。</li>
+        <li><b>正式產品做兩台分工</b>：被擋的機率降到約 1/5，成本多約 NT$3,500～6,500。</li>
+        <li>架高到 3.5m 也有幫助，但燈柱更容易被風吹晃，比較不划算。</li>
+        <li>人在動，影子會跟著閃。這種閃爍會不會讓人分心，要在第二關實際錄影才知道。</li>
+      </ul></div>
+  </div>
+</section>
+
 <!-- ============ 怎麼做 ============ -->
 <section id="build">
   <div class="eyebrow">怎麼做</div>
@@ -298,6 +347,7 @@ ol.build ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14.5px}
     </tbody>
     <tfoot><tr><td></td><td colspan="3">合計</td><td class="r num">約 7,850～14,450</td></tr></tfoot>
   </table></div>
+  <p class="note">正式版兩邊分工要再做一台 7 顆的機器：多 4 顆模組和雲台，再加一支燈架、底板、集線器、行動電源、水平泡、對位紅點和沙袋，約多 NT$3,500～6,500。</p>
 </section>
 
 <!-- ============ 驗證 ============ -->
@@ -312,13 +362,13 @@ ol.build ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14.5px}
     </div>
     <div class="stage"><h3>第二關：做出單機原型，測「每次擺好就對得準」</h3>
       <div class="meta"><span>花費 <b>再加 NT$4,000～8,000</b></span><span>時間 <b>第 3～4 週</b></span><span>照 <b>「怎麼做」第 2～6 步</b></span></div>
-      <p>這一關最重要的是重複性測試：收起來、重新擺，量 3 次。</p>
+      <p>這一關最重要的是重複性測試：收起來、重新擺，量 3 次。另外找 4 個人實際打幾局，從側面用手機錄影，事後數一數落在線附近的球，有幾次那段線剛好是暗的，跟模擬的 5% 比對，也順便看影子閃爍會不會讓人分心。</p>
       <div class="decide"><div class="yes"><b>過關：3 次都在 3cm 以內，擺放 2 分鐘內完成</b>單機概念成立，進第三關。</div><div class="no"><b>沒過</b>改善定位方式（例如做一個卡住網柱的夾具）再測。</div></div>
     </div>
     <div class="stage"><h3>第三關：帶去開夜打揪團，看有沒有人要</h3>
       <div class="meta"><span>花費 <b>發光球＋露營燈 NT$1,100～1,800</b></span><span>時間 <b>第 5～6 週</b></span><span>用 <b>站上的揪團功能招人</b></span></div>
       <p>開 2～3 場，每場 8～12 人。打完問：好不好打、會不會再來、願意付多少錢。</p>
-      <div class="decide"><div class="yes"><b>過關：大多數人想再來，也說得出價格</b>開始做正式產品：一體成型的外殼、出廠校正、防水。</div><div class="no"><b>沒過</b>技術可行但沒有市場，構想先放著。</div></div>
+      <div class="decide"><div class="yes"><b>過關：大多數人想再來，也說得出價格</b>開始做正式產品：兩邊網柱各一台分工（共 14 顆）、一體成型的外殼、出廠校正、防水。</div><div class="no"><b>沒過</b>技術可行但沒有市場，構想先放著。</div></div>
     </div>
   </div>
 </section>
@@ -544,6 +594,65 @@ draw3d();
   o+=`<text x="${X(HL)-4}" y="${Y(HW)-8}" font-size="11" text-anchor="end" fill="${mut}" font-family="Noto Sans TC,sans-serif">A 半場</text><text x="${X(-HL)+4}" y="${Y(HW)-8}" font-size="11" fill="${mut}" font-family="Noto Sans TC,sans-serif">B 半場</text>`;
   o+=`<text x="${cx0}" y="292" font-size="11" text-anchor="middle" fill="${mut}" font-family="IBM Plex Mono,monospace">13.41 × 6.10 m · 網柱間距 6.71 m</text>`;
   $('placesvg').innerHTML=o;
+})();
+
+/* ---------- shadow sim ---------- */
+(function(){
+  const RU=[3.6,0,2.5],LU=[-3.6,0,2.5];
+  const CF={
+    single:()=>MODS.map(()=>[RU]),
+    split:()=>MODS.map((m,i)=>[0,5,4,9].includes(i)?[RU,LU]:(i===2||i===7)?[RU]:(i===3||i===8)?[LU]:i===1?[RU]:[LU]),
+    full:()=>MODS.map(()=>[RU,LU])
+  };
+  let cfg='single';
+  const PL=[[-1.4,-6.3],[1.7,-6.0],[0.9,2.6],[2.6,2.9]];
+  const PR=0.2,PH=1.75;
+  function blocked(E,P){const dx=P[0]-E[0],dy=P[1]-E[1],a=dx*dx+dy*dy;
+    for(const c of PL){const fx=E[0]-c[0],fy=E[1]-c[1],b=2*(fx*dx+fy*dy),cc=fx*fx+fy*fy-PR*PR,d=b*b-4*a*cc;if(d<=0)continue;
+      const q=Math.sqrt(d);let t1=Math.max((-b-q)/(2*a),0),t2=Math.min((-b+q)/(2*a),1);if(t1<t2&&E[2]*(1-t2)<PH)return true;}
+    return false;}
+  const svg=$('shsvg'),Sc=46,cx0=390,cy0=200,X=y=>cx0+y*Sc,Y=x=>cy0-x*Sc;
+  function draw(){
+    const em=CF[cfg]();let o=`<rect width="780" height="400" fill="#18222d"/>`;
+    o+=`<line x1="${X(0)}" y1="${Y(POSTX)}" x2="${X(0)}" y2="${Y(-POSTX)}" stroke="#8FA0B2" stroke-width="2" stroke-dasharray="3 3"/>`;
+    let tot=0,lit=0,worst=0;
+    MODS.forEach((m,i)=>{
+      const L=Math.hypot(m.b[0]-m.a[0],m.b[1]-m.a[1]),n=Math.round(L/0.05);let run=0,prev=null,p0=null;
+      for(let k=0;k<=n;k++){
+        const q=[m.a[0]+(m.b[0]-m.a[0])*k/n,m.a[1]+(m.b[1]-m.a[1])*k/n];
+        const under=PL.some(p=>(q[0]-p[0])**2+(q[1]-p[1])**2<(PR+0.05)**2);
+        const on=under?null:em[i].some(E=>!blocked(E,q));
+        if(!under){tot++;if(on){lit++;run=0;}else{run+=0.05;worst=Math.max(worst,run);}}else run=0;
+        const st=under?'u':on?'on':'off';
+        if(st!==prev){if(prev&&prev!=='u')o+=sg(p0,q,prev);p0=q;prev=st;}
+        if(k===n&&prev!=='u')o+=sg(p0,q,prev);
+      }
+    });
+    function sg(a,b,s){return `<line x1="${X(a[1])}" y1="${Y(a[0])}" x2="${X(b[1])}" y2="${Y(b[0])}" stroke="${s==='on'?'#3DF08A':'#F05A5A'}" stroke-width="${s==='on'?3:6}" stroke-linecap="butt"/>`;}
+    const units=cfg==='single'?[RU]:[RU,LU];
+    units.forEach(E=>{o+=`<rect x="${X(E[1])-8}" y="${Y(E[0])-8}" width="16" height="16" rx="3" fill="#F4F7F9" stroke="#3DDC84" stroke-width="2.5"/>`;});
+    PL.forEach((p,i)=>{o+=`<g class="pl" data-i="${i}" style="cursor:grab"><circle cx="${X(p[1])}" cy="${Y(p[0])}" r="${PR*Sc}" fill="#FFC857" stroke="#0F1822" stroke-width="2"/><circle cx="${X(p[1])}" cy="${Y(p[0])}" r="20" fill="transparent"/></g>`;});
+    o+=`<text x="14" y="390" font-size="12" fill="#8FA0B2" font-family="Noto Sans TC,sans-serif">白方塊 = 機器 · 黃點 = 球員（可拖動） · 綠 = 亮著 · 紅 = 被擋住</text>`;
+    svg.innerHTML=o;
+    const pct=lit/tot*100;
+    const c=pct>=99?'good':pct>=95?'warn':'bad';
+    $('shstat').innerHTML=`<div class="st"><span class="k">這一刻亮著的線</span><span class="v">${pct.toFixed(1)}%</span><span class="chip ${c}">${pct>=99?'幾乎沒被擋':pct>=95?'有幾段被擋':'被擋很多'}</span></div>`+
+      `<div class="st"><span class="k">被擋住最長的一段</span><span class="v">${worst.toFixed(2)} m</span></div>`+
+      `<div class="st"><span class="k">模組數</span><span class="v">${em.reduce((a,e)=>a+e.length,0)} 顆</span><span class="k">${cfg==='single'?'只有右邊網柱一台':'左右網柱各一台'}</span></div>`;
+  }
+  let dg=null;
+  const toC=ev=>{const pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());return [(cy0-p.y)/Sc,(p.x-cx0)/Sc];};
+  svg.addEventListener('pointerdown',ev=>{const g=ev.target.closest('.pl');if(!g)return;dg=+g.dataset.i;svg.setPointerCapture(ev.pointerId);ev.preventDefault();});
+  svg.addEventListener('pointermove',ev=>{if(dg===null)return;const c=toC(ev);PL[dg]=[Math.max(-4,Math.min(4,c[0])),Math.max(-8,Math.min(8,c[1]))];draw();});
+  const end=()=>{dg=null;};svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+  const R=(a,b)=>a+Math.random()*(b-a);
+  $('sh-rand').addEventListener('click',()=>{
+    [1,-1].forEach((side,t)=>{const f=['back','net','split','trans'][Math.floor(Math.random()*4)];
+      [[-2.9,-0.3],[0.3,2.9]].forEach(([lo,hi],i)=>{let y=f==='back'?R(5.6,7.3):f==='net'?R(2.2,3.3):f==='split'?(i?R(2.2,3.3):R(5.6,7.2)):R(3.3,5.6);
+        PL[t*2+i]=[R(lo,hi),side*y];});});
+    draw();});
+  [['sh-single','single'],['sh-split','split'],['sh-full','full']].forEach(([id,v],_,all)=>$(id).addEventListener('click',()=>{cfg=v;all.forEach(([j])=>$(j).setAttribute('aria-pressed',j===id));draw();}));
+  draw();
 })();
 })();
 </script>

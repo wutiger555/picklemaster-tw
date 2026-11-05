@@ -609,7 +609,7 @@ export const ARTICLES: Article[] = [
     author: 'Picklemaster Taiwan',
     summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro V、Selkirk LABS Project Boomstik、Paddletek Bantam TS-5 Pro 等頂級選手愛用款，附新手/中階/高階完整推薦。價格與型號已對齊本站球拍資料庫 2026-09 版本。',
     tags: ['球拍', '評測', '2026', 'JOOLA', 'Selkirk', 'Paddletek', 'Perseus Pro V'],
-    coverEmoji: '🏓',
+    coverEmoji: '📝',
     featured: true,
     tableOfContents: [
       '2026 球拍市場趨勢：熱壓成型當道',
@@ -1135,7 +1135,7 @@ Selkirk 的 LABS 實驗系列，取代了早期的 Project 002 成為現行進�
     author: 'Picklemaster Taiwan',
     summary: '匹克球室內球（26 孔）與戶外球（40 孔）完整比較：設計差異、球速、彈跳、耐用度、Dura、Franklin、JOOLA 等主流品牌實測。',
     tags: ['球', '裝備', '規則知識'],
-    coverEmoji: '🎾',
+    coverEmoji: '🟡',
     tableOfContents: [
       '為什麼室內與戶外球不一樣',
       '物理結構差異',

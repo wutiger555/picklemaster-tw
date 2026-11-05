@@ -20,7 +20,7 @@ const Learning = () => {
   const tabs = [
     { id: 'basics', label: '基礎規則', icon: '📚', variant: 'primary' as const },
     { id: 'techniques', label: '技巧訓練', icon: '🎯', variant: 'secondary' as const },
-    { id: 'equipment', label: '裝備指南', icon: '🏓', variant: 'accent' as const },
+    { id: 'equipment', label: '裝備指南', icon: '🎒', variant: 'accent' as const },
     { id: 'quiz', label: '互動測驗', icon: '✏️', variant: 'primary' as const },
     { id: 'learning-paths', label: '學習路徑', icon: '🚀', variant: 'secondary' as const },
   ];

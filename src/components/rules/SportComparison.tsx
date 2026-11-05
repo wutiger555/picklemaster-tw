@@ -99,7 +99,7 @@ const SportComparison = () => {
         },
         {
             question: '匹克球和網球、羽球最大的差異是什麼？',
-            answer: '匹克球有三個獨特之處：\n\n🏓 **1. 廚房區（Non-Volley Zone）**\n• 網前 2.13 公尺禁止截擊\n• 這是匹克球獨有的規則\n• 創造出獨特的「小球對拉」戰術\n• 讓比賽更注重技巧而非力量\n\n⚡ **2. 雙跳規則（Two-Bounce Rule）**\n• 發球和接發球都必須落地彈跳\n• 減少發球優勢\n• 讓回合更長、更精彩\n\n🎯 **3. 只有發球方能得分**\n• 接發球方不能得分\n• 增加戰術深度\n• 比賽節奏更緊湊\n\n💡 **結論**：這些獨特規則讓匹克球成為一項全新的運動，不只是「小網球」或「慢羽球」！',
+            answer: '匹克球有三個獨特之處：\n\n🥒 **1. 廚房區（Non-Volley Zone）**\n• 網前 2.13 公尺禁止截擊\n• 這是匹克球獨有的規則\n• 創造出獨特的「小球對拉」戰術\n• 讓比賽更注重技巧而非力量\n\n⚡ **2. 雙跳規則（Two-Bounce Rule）**\n• 發球和接發球都必須落地彈跳\n• 減少發球優勢\n• 讓回合更長、更精彩\n\n🎯 **3. 只有發球方能得分**\n• 接發球方不能得分\n• 增加戰術深度\n• 比賽節奏更緊湊\n\n💡 **結論**：這些獨特規則讓匹克球成為一項全新的運動，不只是「小網球」或「慢羽球」！',
             icon: '🎯',
         },
     ];
@@ -171,7 +171,7 @@ const SportComparison = () => {
                                 <th className="text-left py-4 px-4 font-bold text-neutral-700">項目</th>
                                 <th className="text-center py-4 px-4">
                                     <div className="flex flex-col items-center">
-                                        <span className="text-2xl mb-1">🏓</span>
+                                        <span className="text-2xl mb-1">🥒</span>
                                         <span className="font-bold text-emerald-600">匹克球</span>
                                     </div>
                                 </th>
@@ -281,7 +281,7 @@ const SportComparison = () => {
                         className="space-y-4"
                     >
                         <div className="text-center">
-                            <div className="text-4xl mb-2">🏓</div>
+                            <div className="text-4xl mb-2">🥒</div>
                             <h4 className="text-xl font-bold text-emerald-600 mb-1">匹克球場</h4>
                             <p className="text-sm text-neutral-600">約為網球場的 1/4</p>
                         </div>
@@ -445,7 +445,7 @@ const SportComparison = () => {
                         </p>
                     </div>
                     <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4">
-                        <div className="text-2xl mb-2">🏓</div>
+                        <div className="text-2xl mb-2">🥒</div>
                         <h5 className="font-bold text-emerald-700 mb-1">獨特廚房區</h5>
                         <p className="text-sm text-neutral-600">
                             網前 2.13 公尺禁止截擊，增加戰術深度與趣味性

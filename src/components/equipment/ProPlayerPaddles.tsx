@@ -251,7 +251,7 @@ const ProPlayerPaddles = () => {
               {/* 球拍資訊 */}
               <div className="bg-gradient-to-r from-pickleball-50 to-court-50 rounded-xl p-5 border-2 border-pickleball-200">
                 <h4 className="font-bold text-gray-800 mb-4 flex items-center">
-                  <span className="text-xl mr-2">🏓</span>
+                  <span className="text-xl mr-2">🎒</span>
                   使用球拍
                 </h4>
 

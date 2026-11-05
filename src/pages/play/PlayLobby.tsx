@@ -312,7 +312,7 @@ function EmptyState({ compact }: { compact?: boolean }) {
   if (compact) {
     return (
       <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
-        <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-lime-300 text-lg" aria-hidden>🏓</span>
+        <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-lime-300 text-lg" aria-hidden>🥒</span>
         <p className="flex-1 text-sm text-neutral-600"><b className="block text-neutral-900">還沒有線上可報名的團</b>你平常就在揪球的話，把它開在這裡，大家就能直接報名。</p>
         <Link to="/play/?new" className="flex-none rounded-xl bg-neutral-900 px-3 py-2 text-sm font-bold text-white">開一團</Link>
       </div>

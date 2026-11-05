@@ -21,7 +21,7 @@ const QuickNav = () => {
       bgColor: 'bg-blue-50',
     },
     {
-      title: '🏓 選球拍',
+      title: '🎒 選球拍',
       description: '裝備推薦',
       path: ROUTES.EQUIPMENT,
       color: 'from-orange-500 to-amber-500',
@@ -53,8 +53,8 @@ const QuickNav = () => {
     },
     {
       icon: '🎮',
-      title: '線上互動遊戲',
-      description: '在遊戲中學習規則',
+      title: '免費匹克球遊戲',
+      description: '3D 對戰、必殺技，邊玩邊學規則',
       path: ROUTES.GAME,
       tag: '推薦',
     },

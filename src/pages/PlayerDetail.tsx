@@ -160,7 +160,7 @@ const PlayerDetail = () => {
             </div>
 
             <div className="bg-white rounded-2xl border border-neutral-100 p-6">
-              <h2 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-4">🏓 使用裝備</h2>
+              <h2 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-4">🎒 使用裝備</h2>
               <div className="text-neutral-900 font-bold mb-1">{player.paddle}</div>
               <div className="text-sm text-neutral-500">贊助品牌：{player.paddleBrand}</div>
               {player.sponsors && player.sponsors.length > 0 && (

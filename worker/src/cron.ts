@@ -79,6 +79,8 @@ export async function runDaily(env: Env, now: number) {
     env.DB.prepare(`DELETE FROM game_players WHERE game_id IN (SELECT id FROM games WHERE starts_at < ?1)`).bind(cutoff),
     env.DB.prepare(`DELETE FROM reports WHERE game_id IN (SELECT id FROM games WHERE starts_at < ?1)`).bind(cutoff),
     env.DB.prepare(`DELETE FROM games WHERE starts_at < ?1`).bind(cutoff),
+    // 小遊戲的每場成績只用在每週排行榜，留一年就夠
+    env.DB.prepare(`DELETE FROM arcade_results WHERE created_at < ?1`).bind(cutoff),
   ]);
 }
 

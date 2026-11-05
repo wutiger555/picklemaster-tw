@@ -45,7 +45,7 @@ const BallAnimation = () => {
       serverPosition: { x: 170, y: 440 },
       highlightZones: ['kitchen-zone', 'service-target-even'],
       regulations: [
-        '🏓 擊球點必須低於腰部',
+        '🎯 擊球點必須低於腰部',
         '📐 球拍面必須由下往上揮動',
         '⚠️ 球必須越過非截擊區線（廚房線）',
         '❌ 觸碰廚房線算短球犯規',
@@ -307,7 +307,7 @@ const BallAnimation = () => {
                   fontWeight="bold"
                   textAnchor="middle"
                 >
-                  🏓
+                  🧍
                 </text>
                 {currentStep < 3 && (
                   <text

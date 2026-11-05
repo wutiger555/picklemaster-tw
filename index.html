@@ -202,8 +202,17 @@
   <script type="module" src="/src/main.tsx"></script>
 
   <!-- Service Worker Registration for PWA -->
+  <!-- 只在正式 build 註冊；dev 時 SW 會快取舊的 Vite 模組，所以主動解除既有註冊（%PROD% 由 Vite 代換） -->
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && '%PROD%' !== 'true') {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if (!regs.length) return;
+        Promise.all(regs.map(r => r.unregister())).then(() => {
+          // 目前頁面若仍被舊 SW 控制，重載一次改由 dev server 直接提供
+          if (navigator.serviceWorker.controller) location.reload();
+        });
+      });
+    } else if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
           .then(registration => {

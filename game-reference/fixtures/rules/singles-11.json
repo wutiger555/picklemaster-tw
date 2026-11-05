@@ -1,0 +1,404 @@
+{
+  "_meta": {
+    "commit": "741c65715820e268733fb0f85ed062a2cee24bae",
+    "doubles": false,
+    "target": 11,
+    "winBy": 2,
+    "start": "單打：發球方分數偶數從右區發"
+  },
+  "rallyWinners": [
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "expected": [
+    {
+      "score": [
+        0,
+        0
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "0 - 0"
+    },
+    {
+      "score": [
+        0,
+        0
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "0 - 0"
+    },
+    {
+      "score": [
+        1,
+        0
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "1 - 0"
+    },
+    {
+      "score": [
+        2,
+        0
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "2 - 0"
+    },
+    {
+      "score": [
+        2,
+        0
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "0 - 2"
+    },
+    {
+      "score": [
+        2,
+        0
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "2 - 0"
+    },
+    {
+      "score": [
+        2,
+        0
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "0 - 2"
+    },
+    {
+      "score": [
+        2,
+        1
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "1 - 2"
+    },
+    {
+      "score": [
+        2,
+        2
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "2 - 2"
+    },
+    {
+      "score": [
+        2,
+        2
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "2 - 2"
+    },
+    {
+      "score": [
+        3,
+        2
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "3 - 2"
+    },
+    {
+      "score": [
+        3,
+        2
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "2 - 3"
+    },
+    {
+      "score": [
+        3,
+        3
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "3 - 3"
+    },
+    {
+      "score": [
+        3,
+        4
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "4 - 3"
+    },
+    {
+      "score": [
+        3,
+        5
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "5 - 3"
+    },
+    {
+      "score": [
+        3,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "3 - 5"
+    },
+    {
+      "score": [
+        4,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "4 - 5"
+    },
+    {
+      "score": [
+        4,
+        5
+      ],
+      "serving": 1,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "5 - 4"
+    },
+    {
+      "score": [
+        4,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "4 - 5"
+    },
+    {
+      "score": [
+        5,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "5 - 5"
+    },
+    {
+      "score": [
+        6,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "6 - 5"
+    },
+    {
+      "score": [
+        7,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "7 - 5"
+    },
+    {
+      "score": [
+        8,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "8 - 5"
+    },
+    {
+      "score": [
+        9,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "9 - 5"
+    },
+    {
+      "score": [
+        10,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "10 - 5"
+    },
+    {
+      "score": [
+        11,
+        5
+      ],
+      "serving": 0,
+      "serverNumber": 1,
+      "rightPlayer": [
+        0,
+        1
+      ],
+      "serverIdx": 0,
+      "call": "11 - 5"
+    }
+  ],
+  "finalWinner": 0
+}

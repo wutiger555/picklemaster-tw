@@ -1,0 +1,213 @@
+{
+  "_meta": {
+    "commit": "741c65715820e268733fb0f85ed062a2cee24bae",
+    "opts": {
+      "seed": 101,
+      "difficulty": [
+        "club",
+        "club"
+      ]
+    },
+    "note": "只有同一份 TS 引擎同種子才會逐字相同；手機版不比這個，比 bands.json 與 rules/"
+  },
+  "score": [
+    4,
+    11
+  ],
+  "winner": 1,
+  "seconds": 300.633,
+  "points": [
+    {
+      "winner": 0,
+      "reason": "net",
+      "faultTeam": 1,
+      "rallyHits": 6,
+      "kinds": "serve,drive,drive,dink,dink,dink",
+      "call": "1 - 0"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 5,
+      "kinds": "serve,drive,drop,dink,dink",
+      "call": "0 - 1"
+    },
+    {
+      "winner": 0,
+      "reason": "net",
+      "faultTeam": 1,
+      "rallyHits": 9,
+      "kinds": "serve,drive,drive,block,drop,dink,dink,dink,dink",
+      "call": "1 - 0"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 5,
+      "kinds": "serve,drive,drop,dink,dink",
+      "call": "0 - 1"
+    },
+    {
+      "winner": 0,
+      "reason": "serveLong",
+      "faultTeam": 1,
+      "rallyHits": 1,
+      "kinds": "serve",
+      "call": "1 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 7,
+      "kinds": "serve,drive,drive,drive,drive,dink,smash",
+      "call": "2 - 0"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 9,
+      "kinds": "serve,drive,drive,block,dink,dink,dink,dink,dink",
+      "call": "0 - 2"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 6,
+      "kinds": "serve,drive,drop,dink,dink,dink",
+      "call": "1 - 2"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 4,
+      "kinds": "serve,drive,drop,dink",
+      "call": "2 - 2"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 6,
+      "kinds": "serve,drive,drive,drive,lob,smash",
+      "call": "2 - 2"
+    },
+    {
+      "winner": 0,
+      "reason": "out",
+      "faultTeam": 1,
+      "rallyHits": 2,
+      "kinds": "serve,drive",
+      "call": "3 - 2"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 9,
+      "kinds": "serve,drive,drop,dink,dink,dink,dink,dink,dink",
+      "call": "2 - 3"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 18,
+      "kinds": "serve,drive,drive,block,dink,dink,dink,dink,dink,dink,dink,dink,dink,dink,dink,dink,dink,dink",
+      "call": "3 - 3"
+    },
+    {
+      "winner": 1,
+      "reason": "out",
+      "faultTeam": 0,
+      "rallyHits": 2,
+      "kinds": "serve,drive",
+      "call": "4 - 3"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 8,
+      "kinds": "serve,drive,drive,punch,drive,block,lob,drop",
+      "call": "5 - 3"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 6,
+      "kinds": "serve,drive,lob,drive,block,dink",
+      "call": "6 - 3"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 20,
+      "kinds": "serve,drive,drop,dink,dink,dink,dink,dink,lob,drop,dink,dink,dink,dink,dink,lob,smash,lob,punch,dink",
+      "call": "7 - 3"
+    },
+    {
+      "winner": 1,
+      "reason": "out",
+      "faultTeam": 0,
+      "rallyHits": 2,
+      "kinds": "serve,drive",
+      "call": "8 - 3"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 28,
+      "kinds": "serve,drive,drive,lob,drop,dink,dink,dink,dink,dink,dink,dink,dink,dink,dink,lob,drop,dink,dink,dink,dink,dink,dink,dink,dink,dink,dink,dink",
+      "call": "9 - 3"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 2,
+      "kinds": "serve,drive",
+      "call": "3 - 9"
+    },
+    {
+      "winner": 0,
+      "reason": "net",
+      "faultTeam": 1,
+      "rallyHits": 10,
+      "kinds": "serve,drive,drive,dink,dink,dink,dink,dink,dink,dink",
+      "call": "4 - 9"
+    },
+    {
+      "winner": 1,
+      "reason": "net",
+      "faultTeam": 0,
+      "rallyHits": 3,
+      "kinds": "serve,drive,drop",
+      "call": "9 - 4"
+    },
+    {
+      "winner": 1,
+      "reason": "out",
+      "faultTeam": 0,
+      "rallyHits": 2,
+      "kinds": "serve,drive",
+      "call": "10 - 4"
+    },
+    {
+      "winner": 1,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 7,
+      "kinds": "serve,drive,drop,dink,lob,lob,smash",
+      "call": "11 - 4"
+    }
+  ]
+}

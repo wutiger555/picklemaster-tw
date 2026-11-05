@@ -13,7 +13,9 @@
     "deploy": "npm run build && git add docs && git commit -m 'Deploy to GitHub Pages' && git push",
     "ship": "git add . && git commit -m 'Update: Auto-deploy via Action' && git push",
     "audit:courts": "node scripts/audit-courts.cjs",
-    "audit:routes": "node scripts/audit-routes.cjs"
+    "audit:routes": "node scripts/audit-routes.cjs",
+    "reference:export": "node scripts/game-reference/run.mjs scripts/game-reference/export.ts",
+    "reference:check": "node scripts/game-reference/run.mjs scripts/game-reference/check.ts"
   },
   "dependencies": {
     "@maplibre/maplibre-gl-leaflet": "^0.1.4",

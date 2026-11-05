@@ -92,14 +92,14 @@
   </noscript>
 
   <title>芎林公三運動公園匹克球場｜新竹縣芎林鄉・戶外1面免費</title>
-  <script type="module" crossorigin src="/assets/index-B8Hxu8rX.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-DxGOteWr.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-Dd_m_y-1.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-DYi0JzXy.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-SQzcZn-a.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-B_88zE-H.js">
+  <script type="module" crossorigin src="/assets/index-CrPTwbfZ.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-D5PRgLKg.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-6kcjKJ5c.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-ByAff6bu.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-lx347qdc.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-lenis-BbENNM21.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-CYbcDOqX.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-CyqwVxxW.css">
 </head>
 
 <body>
@@ -174,8 +174,17 @@
       </main></div>
 
   <!-- Service Worker Registration for PWA -->
+  <!-- 只在正式 build 註冊；dev 時 SW 會快取舊的 Vite 模組，所以主動解除既有註冊（true 由 Vite 代換） -->
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && 'true' !== 'true') {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if (!regs.length) return;
+        Promise.all(regs.map(r => r.unregister())).then(() => {
+          // 目前頁面若仍被舊 SW 控制，重載一次改由 dev server 直接提供
+          if (navigator.serviceWorker.controller) location.reload();
+        });
+      });
+    } else if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
           .then(registration => {

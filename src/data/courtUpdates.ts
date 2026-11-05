@@ -29,6 +29,20 @@ export const COURT_UPDATE_KIND_LABEL: Record<CourtUpdateKind, string> = {
 // 新的在前
 export const COURT_UPDATES: CourtUpdate[] = [
   {
+    date: '2026-11-05',
+    kind: 'added',
+    title: '新增 3 座：樹林貫匹克、仁德 VAMOS!、台南中西區匹咖揪',
+    detail: '貫匹克是本站在樹林區收錄的第一座球場，3 面壓克力地面與分時收費來自球友 10 月的實地心得；VAMOS! 是仁德區第一座，Google 地圖標示 24 小時營業並提供線上預訂；匹咖揪位於中西區樹林街二段。後兩者都沒有公開面數，頁面顯示「面數未公告」，本站不以推測數字填補。',
+    courtIds: [192, 193, 194],
+  },
+  {
+    date: '2026-11-05',
+    kind: 'corrected',
+    title: '哈赫拿爾球場標註地圖別名「竹溪匹克球場」',
+    detail: 'Google 地圖上另有一筆「竹溪匹克球場」，地址同為南區體育路 90 號、座標相距約 150 公尺，查證後確認是同一座球場的別名（當地也寫作「哈赫拿爾球場（竹溪）」）。在場地說明裡標註，避免日後比對名錄時被當成新場重複收錄。',
+    courtIds: [41],
+  },
+  {
     date: '2026-10-21',
     kind: 'added',
     title: '新增雪匹克 SNOWPICK（新莊，室內 1 面）',

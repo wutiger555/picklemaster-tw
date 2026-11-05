@@ -437,7 +437,17 @@ const pageSEO = {
     },
     aepl: {
         title: 'AEPL 職業聯賽專區｜台灣匹克球職業聯盟 球隊・賽程・戰力分析',
-        description: '台灣第一個匹克球職業聯賽 AEPL 完整追蹤：桃園永豐雲豹台中、高雄、宜蘭三站三冠，台南旭日雷霆兩亞一季。6 隊戰力卡、各站戰報與比分、8 站巡迴賽程（第 4 站 10/17-18 新竹）、Dreambreaker 賽制解說、選手焦點。',
+        // 用 getter 延後求值：此物件在 loadTsModule 的 tsModuleCache 宣告之前就會被建立。
+        // 戰績從 aeplData.ts 推導，寫死的版本會跟著賽季過期（2026-11 曾停在第 3 站）。
+        get description() {
+            const { AEPL_LEAGUE, AEPL_TEAMS, AEPL_STATIONS } = loadTsModule('src/data/aeplData.ts');
+            const done = AEPL_STATIONS.filter(st => st.status === 'done');
+            const next = AEPL_STATIONS.find(st => st.status === 'scheduled');
+            return `台灣第一個匹克球職業聯賽 AEPL 完整追蹤：${AEPL_LEAGUE.season}。`
+                + `${AEPL_TEAMS.length} 隊戰力卡、各站戰報與比分、8 站巡迴賽程`
+                + (next ? `（下一站${next.city} ${next.dateLabel}）` : `（已完賽 ${done.length} 站）`)
+                + '、Dreambreaker 賽制解說、選手焦點。';
+        },
         keywords: 'AEPL,亞洲菁英匹克球聯盟,台灣匹克球職業聯賽,匹克球職業,桃園雲豹,台南旭日雷霆,Ahhh,蘆沐,富瑞特科技,鍾振煒,蔡萱,邱子恩,林志穎,匹克球隊,職業匹克球選手,台中火車站 匹克球,高雄駁二 匹克球',
         structuredData: {
             "@context": "https://schema.org",
@@ -848,6 +858,31 @@ const courtsCountUtil = () => loadTsModule('src/utils/courtsCount.ts');
 const fmtCourts = (n, compact) => courtsCountUtil().formatCourts(n, compact);
 const fmtCourtsPhrase = (n) => courtsCountUtil().formatCourtsPhrase(n);
 const fmtCourtsTitleSeg = (n) => courtsCountUtil().formatCourtsTitleSegment(n);
+
+/**
+ * AEPL 預渲染文案一律從 src/data/aeplData.ts 推導，不在這裡手寫。
+ * 2026-11-05 踩到：intro 與六隊的 sub 都是寫死的，資料已經更新到第 5 站（新北），
+ * 預渲染頁卻還停在「前三站…第 4 站 10 月 17-18 日新竹」——爬蟲與 AI 引擎讀到的是
+ * 過期戰績，跟使用者在站上看到的對不起來。理由同 loadNewsItems()：手維護的副本一定會漂。
+ */
+function aeplPrerenderCopy() {
+    const { AEPL_LEAGUE, AEPL_TEAMS, AEPL_STATIONS } = loadTsModule('src/data/aeplData.ts');
+    const done = AEPL_STATIONS.filter(st => st.status === 'done');
+    const next = AEPL_STATIONS.find(st => st.status === 'scheduled');
+    const doneText = done.map(st => `${st.city}（${st.dateLabel}）${(st.note || '').replace(/^🏆\s*/, '')}`).join('、');
+    const intro = `台灣第一個匹克球職業聯賽：${AEPL_LEAGUE.name} ${AEPL_LEAGUE.season}。`
+        + `${AEPL_TEAMS.length} 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。`
+        + (done.length ? `已完賽分站：${doneText}。` : '')
+        + (next ? `下一站${next.city}，${next.dateLabel}。` : '')
+        + '藝人林志穎擔任賽事大使。';
+    // 每隊取最後一條帶名次符號的戰績，沒有的話退回第一條事實
+    const items = AEPL_TEAMS.map(t => {
+        const medals = (t.facts || []).filter(f => /^[🏆🥈🥉]/.test(f));
+        const sub = medals.length ? medals[medals.length - 1] : (t.facts || [])[0] || '';
+        return { href: '/aepl', label: t.name, sub };
+    });
+    return { intro, items };
+}
 
 /**
  * /game 的 JSON-LD：VideoGame（含截圖、預告片）＋ FAQPage。
@@ -1434,15 +1469,7 @@ async function generateStaticPages() {
         const INDEX_PAGES = [
             {
                 route: 'aepl', h1: 'AEPL 職業聯賽專區', crumb: 'AEPL 職業聯賽',
-                intro: '台灣第一個匹克球職業聯賽：AEPL 亞洲菁英匹克球聯盟 2026 創始賽季（8-11 月），6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。前三站台中（8/30）、高雄（9/20）、宜蘭（10/4）冠軍皆為桃園永豐雲豹，三場冠軍戰都以 3:2 在第 5 回合 Dreambreaker 分出勝負；第 4 站 10 月 17-18 日新竹。藝人林志穎擔任賽事大使。',
-                items: [
-                    { href: '/aepl', label: '桃園永豐雲豹', sub: '🏆 台中、高雄、宜蘭三站三冠。TPBL 雲豹體系，隊長鍾振煒、決勝回合王牌林洸賢、15 歲小將邱子恩（宜蘭站拿下冠軍點）' },
-                    { href: '/aepl', label: '台南旭日雷霆', sub: '🥈🥉🥈 台中亞軍、高雄季軍、宜蘭亞軍。尚騰汽車集團×寶嘉聯合共同成立，隊長蔡萱' },
-                    { href: '/aepl', label: '新竹 YANKEY ACE', sub: '三站皆進 4 強：高雄站亞軍、宜蘭站季軍；企業背景待官方介紹' },
-                    { href: '/aepl', label: '新北蘆沐', sub: '台中、高雄兩站 4 強' },
-                    { href: '/aepl', label: 'Ahhh', sub: '台北 Ahhh Social Pickleball Hub 場館品牌跨足職業球隊；宜蘭站 4 強' },
-                    { href: '/aepl', label: '富瑞特科技', sub: '科技產業企業隊' },
-                ],
+                ...aeplPrerenderCopy(),
                 foot: '<a href="/articles/taiwan-pro-pickleball-2026" style="color:#0d9488;">深度專欄：台灣匹克球職業元年全解析</a>　·　<a href="/tournaments" style="color:#0d9488;">2026 賽事總覽</a>',
             },
             {
@@ -2524,7 +2551,7 @@ async function generateStaticPages() {
         // lastmod 只在拿得到「真實異動日」時才寫。
         // 原本 336 筆裡有 309 筆蓋的是建置日期 —— 每跑一次 build 就把全站推成今天，
         // 而 Google 的作法是：lastmod 一旦被判定不可信，就整個忽略掉。
-        // 球場 186 筆本來就有人工查證日（last_updated），文章有 updatedDate，
+        // 球場 189 筆本來就有人工查證日（last_updated），文章有 updatedDate，
         // 新聞有發佈日；其餘拿不到真實日期的，寧可不寫 —— lastmod 本來就是選填。
         const urlEntry = (loc, { lastmod, changefreq, priority, images = [] }) => `
     <url>

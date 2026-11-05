@@ -2,6 +2,32 @@ import type { NewsItem } from '../types/news';
 
 export const NEWS_DATA: NewsItem[] = [
   {
+    id: 'tw-202611-aepl-xinbei',
+    title: 'AEPL 新北站：雲豹 3:1 回敬 YANKEY ACE 重返王座，地主蘆沐苦戰五點拿下隊史最佳季軍',
+    summary: 'AEPL 創始賽季第 5 站 10 月 31 日至 11 月 1 日在新北市政府市民廣場舉行。桃園永豐雲豹冠軍戰 3:1 擊敗上一站終結其連勝的新竹 YANKEY ACE，五站拿下第 4 冠。地主新北蘆沐季軍戰苦戰五點勝台北 Ahhh，創下隊史最佳成績。第 6 站台北站 11 月 14、15 日登場。',
+    content: `
+      <p><strong>AEPL 亞洲菁英匹克球聯盟</strong>創始賽季第 5 站於 <strong>10 月 31 日至 11 月 1 日</strong>在<strong>新北市政府市民廣場</strong>舉行。<strong>桃園永豐雲豹</strong>在冠軍戰以 <strong>3:1</strong> 擊敗<strong>新竹 YANKEY ACE</strong>，五站拿下第 4 座分站冠軍——也是對上一站在新竹被同一對手終結連勝的直接回應。</p>
+
+      <p>這是雲豹本季最乾淨的一場冠軍戰，四點只丟一點：首點男雙<strong>鍾振煒／林洸賢</strong>以 21:14 力退蔡秉橙／賴裕仁；第二點女雙<strong>王亭文／陳懷恕</strong>以 21:12 擊敗鍾汶㚬／莊佩庭，替 YANKEY ACE 扳回唯一一點；第三點混雙由<strong>鍾振煒／鍾汶㚬</strong>兄妹檔 21:18 拿下，雲豹搶先聽牌；第四點混雙<strong>林洸賢／莊佩庭</strong>以 21:13 鎖定勝局。</p>
+
+      <p>莊佩庭賽後談到自己在上一站的失誤：「因為上一站混雙發現自己打得不好的地方，回去一直在看重播，看自己到底為什麼會失誤這麼多，讓隊友一直被攻擊。」她也轉述隊友賽前對她說的話：「他告訴我不要怕，因為他一個人至少可以顧好大概八成的球，我只要顧好那兩成，放心去打。」</p>
+
+      <p>另一條主線是地主隊。<strong>新北蘆沐</strong>在季軍戰苦戰五點以 3:2 擊敗台北 Ahhh，拿下<strong>隊史最佳成績</strong>；分組賽同樣以 3:2 擊敗台南旭日雷霆，兩場都打滿第 5 回合 Dreambreaker 並且都贏下來。4 強戰則是 YANKEY ACE 3:2 險勝台北 Ahhh、雲豹 3:1 勝新北蘆沐。</p>
+
+      <p>聯盟賽事大使林志穎到場，賽前對球員說「不管輸或贏，都不要氣餒」，並在場邊送出簽名球拍。聯盟執行長張智維表示城市巡迴已經走過一半賽程。</p>
+
+      <p>第 6 站<strong>台北站</strong>將於 <strong>11 月 14、15 日</strong>登場，場地待公布。五站完整比分與各隊戰績，見本站 <a href="/aepl" class="text-primary-600 hover:underline">AEPL 職業聯賽專區</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://aepltw.com/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">AEPL 官方賽事中心</a>、<a href="https://www.chinatimes.com/realtimenews/20261101002933-260403" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中時新聞網</a></p>
+    `,
+    date: '2026-11-01',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '新北', '2026']
+  },
+  {
     id: 'tw-202610-aepl-hsinchu',
     title: 'AEPL 新竹站：地主 YANKEY ACE 主場封王，終結雲豹開季三連冠',
     summary: 'AEPL 創始賽季第 4 站 10 月 17、18 日在新竹孔廟前廣場舉行，地主新竹 YANKEY ACE 在冠軍戰 3:1 擊敗桃園永豐雲豹，拿下隊史首座分站冠軍，也終結雲豹前三站全勝的連霸紀錄。最後一回合以 21:20 一分之差守下冠軍點。',

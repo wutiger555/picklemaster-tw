@@ -260,15 +260,16 @@ const RAW_TOURNAMENTS: Tournament[] = [
     id: 'taipei-open-2026',
     name: '2026 臺北匹克球公開賽',
     nameEn: 'Taipei Pickleball Open 2026',
-    date: '2026-11-01',
-    dateLabel: '2026 年 11 月（日期與地點待定）',
-    venue: '待公告',
+    date: '2026-10-31',
+    endDate: '2026-11-01',
+    dateLabel: '2026 年 10 月 31 日 - 11 月 1 日',
+    venue: '世新大學大禮堂 4 樓體育館',
     city: '台北市',
     region: '北部',
     level: '全國',
     status: 'upcoming',
-    organizer: '臺北市政府體育局 / 中華民國匹克球總會',
-    summary: '2025 年使用 17 面天母新場地圓滿落幕。依總會 7 月最新行事曆，2026 年賽事移至 11 月舉行，確切日期與地點待官方公告。',
+    organizer: '中華民國匹克球總會',
+    summary: '2025 年使用 17 面天母新場地圓滿落幕。2026 年移師世新大學大禮堂 4 樓體育館，於 10 月 31 日至 11 月 1 日舉行，由中華民國匹克球總會主辦並於官方頻道全程直播（日期、場地與主辦單位依官方直播資訊）。賽後成績尚未見官方公告。',
     categories: ['公開組', '分齡組', '混合雙打'],
     officialUrl: 'https://www.ctpf.org.tw/',
     featured: true,
@@ -553,7 +554,7 @@ export const getTournamentsByLevel = (level: TournamentLevel): Tournament[] => {
 export const TAIWAN_PICKLEBALL_STATS_2026 = {
   estimatedPlayers: 1_200_000,    // 預估 2026 年球友人數（遠見：2024=14萬, 2025=50萬, 2026=120萬）
   certifiedCoaches: 1400,          // CTPF 已認證 C 級教練
-  knownCourts: 186,                // 全台已知球場（本站收錄 186 座，持續新增）
+  knownCourts: 189,                // 全台已知球場（本站收錄 189 座，持續新增）
   tournamentsYear: TOURNAMENTS_2026.length,
   governingBody: '中華民國匹克球協會 (CTPF)',
   chairman: '陳朝鍵',

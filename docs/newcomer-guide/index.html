@@ -92,14 +92,14 @@
   </noscript>
 
   <title>第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南</title>
-  <script type="module" crossorigin src="/assets/index-B8Hxu8rX.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-DxGOteWr.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-Dd_m_y-1.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-DYi0JzXy.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-SQzcZn-a.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-B_88zE-H.js">
+  <script type="module" crossorigin src="/assets/index-CrPTwbfZ.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-D5PRgLKg.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-6kcjKJ5c.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-ByAff6bu.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-lx347qdc.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-lenis-BbENNM21.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-CYbcDOqX.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-CyqwVxxW.css">
 </head>
 
 <body>
@@ -126,12 +126,23 @@
           <ul style="margin:0;padding-left:20px;font-size:15px;"><li style="margin-bottom:8px;"><a href="/rules" style="color:#0d9488;font-weight:600;">先把規則看懂</a><br><span style="color:#6b7280;font-size:13px;">3D 互動教學，雙彈跳與廚房區是新手最常搞錯的兩條</span></li><li style="margin-bottom:8px;"><a href="/courts" style="color:#0d9488;font-weight:600;">找離你最近的球場</a><br><span style="color:#6b7280;font-size:13px;">全台場地地圖，可篩免費、室內、24 小時</span></li><li style="margin-bottom:8px;"><a href="/glossary" style="color:#0d9488;font-weight:600;">看懂球敘、排拍在說什麼</a><br><span style="color:#6b7280;font-size:13px;">台灣球敘現場的用語與規矩</span></li><li style="margin-bottom:8px;"><a href="/equipment" style="color:#0d9488;font-weight:600;">裝備要買什麼</a><br><span style="color:#6b7280;font-size:13px;">球拍、球鞋、球的選購重點與預算</span></li><li style="margin-bottom:8px;"><a href="/articles/first-open-play-guide" style="color:#0d9488;font-weight:600;">第一次參加球敘完整指南</a><br><span style="color:#6b7280;font-size:13px;">怎麼找球敘、程度怎麼報、費用怎麼分攤</span></li></ul>
         </section>
         
+        
+        
         <p style="font-size:15px;"><a href="/faq" style="color:#0d9488;">常見問題</a>　·　<a href="/tools" style="color:#0d9488;">實用工具</a></p>
       </main></div>
 
   <!-- Service Worker Registration for PWA -->
+  <!-- 只在正式 build 註冊；dev 時 SW 會快取舊的 Vite 模組，所以主動解除既有註冊（true 由 Vite 代換） -->
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && 'true' !== 'true') {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if (!regs.length) return;
+        Promise.all(regs.map(r => r.unregister())).then(() => {
+          // 目前頁面若仍被舊 SW 控制，重載一次改由 dev server 直接提供
+          if (navigator.serviceWorker.controller) location.reload();
+        });
+      });
+    } else if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
           .then(registration => {

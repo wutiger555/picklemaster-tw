@@ -1,0 +1,109 @@
+{
+  "_meta": {
+    "commit": "741c65715820e268733fb0f85ed062a2cee24bae",
+    "opts": {
+      "seed": 102,
+      "difficulty": [
+        "pro",
+        "rookie"
+      ]
+    },
+    "note": "只有同一份 TS 引擎同種子才會逐字相同；手機版不比這個，比 bands.json 與 rules/"
+  },
+  "score": [
+    11,
+    0
+  ],
+  "winner": 0,
+  "seconds": 119.658,
+  "points": [
+    {
+      "winner": 0,
+      "reason": "net",
+      "faultTeam": 1,
+      "rallyHits": 20,
+      "kinds": "serve,drive,drive,block,drive,lob,punch,lob,punch,drive,dink,dink,dink,dink,dink,lob,drive,drive,block,dink",
+      "call": "1 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "net",
+      "faultTeam": 1,
+      "rallyHits": 6,
+      "kinds": "serve,drive,drive,drive,drive,block",
+      "call": "2 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 3,
+      "kinds": "serve,drive,drive",
+      "call": "3 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "net",
+      "faultTeam": 1,
+      "rallyHits": 14,
+      "kinds": "serve,drive,drive,lob,drive,drive,punch,block,dink,dink,dink,dink,speedup,dink",
+      "call": "4 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 3,
+      "kinds": "serve,drive,drive",
+      "call": "5 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 7,
+      "kinds": "serve,drive,drive,drive,block,dink,smash",
+      "call": "6 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "ace",
+      "faultTeam": null,
+      "rallyHits": 1,
+      "kinds": "serve",
+      "call": "7 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 5,
+      "kinds": "serve,drive,drive,drive,drive",
+      "call": "8 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 5,
+      "kinds": "serve,drive,drive,lob,drive",
+      "call": "9 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "out",
+      "faultTeam": 1,
+      "rallyHits": 2,
+      "kinds": "serve,drive",
+      "call": "10 - 0"
+    },
+    {
+      "winner": 0,
+      "reason": "winner",
+      "faultTeam": null,
+      "rallyHits": 3,
+      "kinds": "serve,drive,drive",
+      "call": "11 - 0"
+    }
+  ]
+}

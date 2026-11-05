@@ -26,6 +26,7 @@ const TIMEOUT_MS = 20000;
 const STALE_DAYS = 120; // 超過這個天數沒查證就列出來
 const RECHECK_CLOSED_DAYS = 60; // 標記關閉超過這麼久就該複查是否已復業
 const CONCURRENCY = 6; // 再高會讓 DNS 誤報 ENOTFOUND
+const RETRY_DELAY_MS = 3000; // 第一輪失敗後等一下，讓瞬間壅塞過去再序列重驗
 
 // Facebook / Instagram 對非瀏覽器客戶端會回 400/302，不代表連結壞掉
 const SOCIAL_HOSTS = /(^|\.)(facebook|instagram|threads|line|lin)\.(com|me|ee)$/i;
@@ -86,6 +87,20 @@ async function probe(item) {
       await new Promise((r) => setTimeout(r, 400));
       await dns.lookup(host); // 序列重試一次，避免並行造成的假性失敗
     } catch {
+      // 連序列重試都失敗，仍要問 curl 一次才敢說它死了。
+      // 2026-10-21 一次誤報 4 條：gym.e-land.gov.tw、www.bqsports.com.tw、www.aligh.co、
+      // wulili810.booknow.com.tw 全被判「網域已無 DNS 紀錄」，但 curl 都回 200，
+      // 事後單獨重查 dns.lookup 也全部成功——就是上面那個註解說的並行假性失敗，
+      // 只是 400ms 重試一次還不夠。這條路徑原本直接 return，繞過了下面的第二意見。
+      const alt = await curlStatus(item.url);
+      if (alt >= 200 && alt < 400) {
+        return {
+          ...item,
+          ok: true,
+          code: alt,
+          reason: `Node 查不到 DNS 紀錄但 curl 回 ${alt}（${host}）—— 多半是並行查詢造成的假性失敗`,
+        };
+      }
       return { ...item, ok: false, code: 0, reason: `網域已無 DNS 紀錄（${host}）` };
     }
   }
@@ -172,10 +187,37 @@ function dataQuality(courts) {
   return issues;
 }
 
+/**
+ * 失效的連結一律重驗一次，而且是序列執行。
+ *
+ * 2026-10-21 一輪巡檢報了 6 條失效，手動重試全部回 200——六個不同主機（17fit、
+ * bookfastpos、tmcysports…）同時連線失敗，是本機對外連線的瞬間壅塞（當時剛跑完
+ * 建置、瀏覽器也開著），不是六個網站同時掛掉。並行 6 條、每條 20 秒逾時，在這種
+ * 時候很容易整批誤判，而誤判會直接害人去「修」根本沒壞的資料。
+ *
+ * 只重驗第一輪失敗的那幾條，所以正常情況下完全不影響執行時間。
+ */
+async function recheckFailed(failed) {
+  if (!failed.length) return [];
+  await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+  const out = [];
+  for (const f of failed) out.push(await probe(f)); // 序列：不要再自己製造壅塞
+  return out;
+}
+
 (async () => {
   const courts = loadCourts();
   const links = collectLinks(courts);
-  const results = await mapPool(links, probe, CONCURRENCY);
+  let results = await mapPool(links, probe, CONCURRENCY);
+
+  // 第一輪的失敗全部重驗一次，救回來的以第二輪結果為準
+  const firstRoundFailed = results.filter((r) => !r.ok);
+  if (firstRoundFailed.length) {
+    const retried = await recheckFailed(firstRoundFailed);
+    const byKey = new Map(retried.map((r) => [`${r.id}|${r.field}`, r]));
+    results = results.map((r) => byKey.get(`${r.id}|${r.field}`) || r);
+  }
+  const recovered = firstRoundFailed.length - results.filter((r) => !r.ok).length;
 
   const broken = results.filter((r) => !r.ok);
   const needsEyes = results.filter((r) => r.ok && r.reason);
@@ -192,7 +234,7 @@ function dataQuality(courts) {
 
   if (asJson) {
     console.log(
-      JSON.stringify({ total: courts.length, private: priv.length, broken, needsEyes, stale, closed, recheckClosed, quality }, null, 2)
+      JSON.stringify({ total: courts.length, private: priv.length, recovered, broken, needsEyes, stale, closed, recheckClosed, quality }, null, 2)
     );
     return;
   }
@@ -202,7 +244,15 @@ function dataQuality(courts) {
   line(`場地 ${courts.length} 座（民營 ${priv.length}）・外部連結 ${links.length} 條`);
   line();
 
-  line(`■ 連結失效　${broken.length} 條`);
+  if (firstRoundFailed.length) {
+    line(
+      recovered > 0
+        ? `　第一輪有 ${firstRoundFailed.length} 條失敗，序列重驗後救回 ${recovered} 條——那幾條是瞬間壅塞造成的誤判，不用去動資料`
+        : `　第一輪有 ${firstRoundFailed.length} 條失敗，序列重驗後仍然全部失敗`
+    );
+    line();
+  }
+  line(`■ 連結失效　${broken.length} 條（已重驗）`);
   if (!broken.length) line('  （無）');
   for (const b of broken) line(`  id=${b.id} ${b.name}　${b.field}　${b.reason}\n     ${b.url}`);
   line();

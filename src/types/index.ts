@@ -20,6 +20,7 @@ export interface Court {
     rental?: string; // 球具租借
     membership?: string; // 會員費用
   };
+  /** 面數。0 代表場館未對外公告面數（不是 0 面）——顯示一律走 src/utils/courtsCount.ts */
   courts_count: number;
   surface?: 'concrete' | 'wood' | 'synthetic' | 'acrylic' | 'grass'; // 場地材質
   net_type?: 'permanent' | 'portable' | 'self' | 'provided'; // 球網類型

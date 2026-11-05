@@ -15,6 +15,7 @@ import CourtQuickSheet from '../components/court/CourtQuickSheet';
 import { NEW_COURT_FORM_URL, REPORT_FORM_URL } from '../config/community';
 import OpenNowBadge from '../components/court/OpenNowBadge';
 import { CourtStatusChip } from '../components/court/CourtStatusNotice';
+import { formatCourts } from '../utils/courtsCount';
 
 // Pickleball Icon Component
 const PickleballIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
@@ -365,7 +366,7 @@ const Courts = () => {
             {court.fee === 'free' ? '免費' : '付費'}
           </span>
           <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600">
-            {court.courts_count}面
+            {formatCourts(court.courts_count, true)}
           </span>
           {court.status ? <CourtStatusChip status={court.status} /> : <OpenNowBadge openingHours={court.opening_hours} />}
           {court.type === 'outdoor' && (
@@ -984,7 +985,7 @@ const Courts = () => {
                         </div>
                         <div>
                           <span className="text-neutral-400 text-xs">球場數</span>
-                          <p className="font-semibold text-neutral-800">{court.courts_count} 面</p>
+                          <p className="font-semibold text-neutral-800">{formatCourts(court.courts_count)}</p>
                         </div>
                         <div>
                           <span className="text-neutral-400 text-xs">經營</span>

@@ -178,7 +178,7 @@ export const FAQ_DATA: FAQItem[] = [
   {
     category: '裝備器材',
     question: '第一支球拍該花多少錢？',
-    answer: '建議 NT$ 3,000-5,000。推薦新手款如 Titan Pro、Franklin Ben Johns 系列、Engage Pursuit Pro1。不需要一開始就買頂級球拍，等 DUPR 達到 3.5+ 再升級。',
+    answer: '建議 NT$ 3,000-5,000。推薦新手款如 PROLITE Titan Pro Black Diamond、Franklin Signature Pro Series、Six Zero Double Black Diamond。不需要一開始就買頂級球拍，等 DUPR 達到 3.5+ 再升級。',
   },
   {
     category: '裝備器材',
@@ -384,7 +384,7 @@ export const FAQ_DATA: FAQItem[] = [
   {
     category: '球場設施',
     question: '台灣有多少匹克球場？',
-    answer: '2026 年 10 月本站《球場地圖》已收錄 213 座，覆蓋全台 17 個縣市。其中台北 46 座、新北 44 座、台中 32 座、高雄 16 座、桃園 15 座、彰化 12 座、台南 11 座、新竹縣 8 座，雲林、嘉義縣、基隆、新竹市也在 2026 年迎來首批場地。',
+    answer: '2026 年 10 月本站《球場地圖》已收錄 216 座，覆蓋全台 17 個縣市。其中台北 46 座、新北 44 座、台中 32 座、高雄 16 座、桃園 15 座、彰化 12 座、台南 11 座、新竹縣 8 座，雲林、嘉義縣、基隆、新竹市也在 2026 年迎來首批場地。',
     relatedLinks: [{ text: '全台球場地圖', url: '/courts' }],
   },
   {

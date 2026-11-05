@@ -6,6 +6,7 @@ import { courtSlug } from '../../utils/slugify';
 import WeatherBadge from './WeatherBadge';
 import OpenNowBadge from './OpenNowBadge';
 import { CourtStatusChip } from './CourtStatusNotice';
+import { formatCourts } from '../../utils/courtsCount';
 
 interface Props {
   court: Court | null;
@@ -90,7 +91,7 @@ export default function CourtQuickSheet({ court, weather, distanceLabel, onClose
                 <span className={`px-2.5 py-1 text-xs font-medium rounded-full border ${court.fee === 'free' ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-neutral-50 text-neutral-600 border-neutral-200'}`}>
                   {court.fee === 'free' ? '免費' : '付費'}
                 </span>
-                <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-neutral-50 text-neutral-600 border border-neutral-200">{court.courts_count} 面</span>
+                <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-neutral-50 text-neutral-600 border border-neutral-200">{formatCourts(court.courts_count)}</span>
                 {court.status ? <CourtStatusChip status={court.status} /> : <OpenNowBadge openingHours={court.opening_hours} size="md" />}
                 {/24\s*小時/.test(court.opening_hours || '') && (
                   <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-violet-50 text-violet-700 border border-violet-100">24H</span>

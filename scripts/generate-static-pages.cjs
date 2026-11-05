@@ -437,7 +437,17 @@ const pageSEO = {
     },
     aepl: {
         title: 'AEPL 職業聯賽專區｜台灣匹克球職業聯盟 球隊・賽程・戰力分析',
-        description: '台灣第一個匹克球職業聯賽 AEPL 完整追蹤：五站戰罷桃園永豐雲豹四冠，新竹 YANKEY ACE 主場奪冠。6 隊戰力卡、各站戰報與比分、賽程（第 6 站 11/14-15 台北）、Dreambreaker 賽制解說、選手焦點。',
+        // 用 getter 延後求值：此物件在 loadTsModule 的 tsModuleCache 宣告之前就會被建立。
+        // 戰績從 aeplData.ts 推導，寫死的版本會跟著賽季過期（2026-11 曾停在第 3 站）。
+        get description() {
+            const { AEPL_LEAGUE, AEPL_TEAMS, AEPL_STATIONS } = loadTsModule('src/data/aeplData.ts');
+            const done = AEPL_STATIONS.filter(st => st.status === 'done');
+            const next = AEPL_STATIONS.find(st => st.status === 'scheduled');
+            return `台灣第一個匹克球職業聯賽 AEPL 完整追蹤：${AEPL_LEAGUE.season}。`
+                + `${AEPL_TEAMS.length} 隊戰力卡、各站戰報與比分、8 站巡迴賽程`
+                + (next ? `（下一站${next.city} ${next.dateLabel}）` : `（已完賽 ${done.length} 站）`)
+                + '、Dreambreaker 賽制解說、選手焦點。';
+        },
         keywords: 'AEPL,亞洲菁英匹克球聯盟,台灣匹克球職業聯賽,匹克球職業,桃園雲豹,台南旭日雷霆,Ahhh,蘆沐,富瑞特科技,鍾振煒,蔡萱,邱子恩,林志穎,匹克球隊,職業匹克球選手,台中火車站 匹克球,高雄駁二 匹克球',
         structuredData: {
             "@context": "https://schema.org",
@@ -807,7 +817,7 @@ const ARTICLE_SLUGS = [
     { slug: 'paddle-specs-explained-2026', title: '匹克球拍規格全解析：厚度、揮重、扭轉慣量到底在講什麼', summary: '為什麼兩支同重量的球拍打起來天差地遠？拆解核心厚度、靜態重量與揮重的差異、扭轉慣量如何決定容錯、四種面板材質的實戰差異，以及 2026 年 USAP 把 PBCoR 上限收緊到 .43 的影響。', category: '器材評測' },
     { slug: 'buy-paddle-taiwan-2026', title: '2026 台灣買匹克球拍完全指南：正版通路、水貨真相、價格行情', summary: '本站逐一查證 25 個品牌在台灣的購買管道。說明台灣實際的通路現況、水貨與平行輸入的保固現實、辨識假拍的五個檢查點，以及海外直購的成本試算。', category: '器材評測' },
     { slug: 'taiwan-pro-pickleball-2026', title: '台灣匹克球「職業元年」全解析：AEPL 開打，然後呢？', summary: '2026 年 8 月 29 日，AEPL 亞洲菁英匹克球聯盟在台中火車站空中廊道開打，台灣有了第一個匹克球職業聯賽。本文拆解 6 支企業隊背後的產業版圖、選手為何說「終於不用一直飛國外」、聯盟制度設計與國際接軌時程。', category: '產業動態' },
-    { slug: '2026-best-pickleball-paddles', title: '2026 十大匹克球拍完整評測', summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro IV、Selkirk Labs Project 002、Paddletek Bantam TS-5 等頂級選手愛用款。', category: '器材評測' },
+    { slug: '2026-best-pickleball-paddles', title: '2026 十大匹克球拍完整評測', summary: '2026 年十大熱門匹克球拍完整評測：JOOLA Perseus Pro V、Selkirk LABS Project Boomstik、Paddletek Bantam TS-5 Pro 等頂級選手愛用款。', category: '器材評測' },
     { slug: 'pickleball-vs-tennis-badminton-padel', title: '匹克球 vs 網球 vs 羽球 vs Padel 完整比較', summary: '四大拍類運動一次看懂：場地、難度、體能、社群文化。', category: '比較分析' },
     { slug: '2026-best-pickleball-shoes', title: '2026 最佳匹克球鞋選購指南', summary: '匹克球專用鞋 vs 網球鞋 vs 羽球鞋完整比較。2026 Top 8 匹克球鞋實測。', category: '器材評測' },
     { slug: 'indoor-vs-outdoor-balls', title: '匹克球室內球 vs 戶外球全解析', summary: '26 孔還是 40 孔？設計差異、球速、彈跳、耐用度、主流品牌實測。', category: '器材評測' },
@@ -837,6 +847,40 @@ function loadTsModule(relPath) {
     new Function('module', 'exports', 'require', out.outputFiles[0].text)(mod, mod.exports, require);
     tsModuleCache.set(relPath, mod.exports);
     return mod.exports;
+}
+
+/**
+ * 面數顯示走和前端同一份 src/utils/courtsCount.ts，不在這裡手抄一份——
+ * 鏡像一定會漂，而 courts_count === 0 是「未公告」不是「0 面」，
+ * 抄錯會直接讓 SEO title/description 印出「0 面球場」這種假資訊。
+ */
+const courtsCountUtil = () => loadTsModule('src/utils/courtsCount.ts');
+const fmtCourts = (n, compact) => courtsCountUtil().formatCourts(n, compact);
+const fmtCourtsPhrase = (n) => courtsCountUtil().formatCourtsPhrase(n);
+const fmtCourtsTitleSeg = (n) => courtsCountUtil().formatCourtsTitleSegment(n);
+
+/**
+ * AEPL 預渲染文案一律從 src/data/aeplData.ts 推導，不在這裡手寫。
+ * 2026-11-05 踩到：intro 與六隊的 sub 都是寫死的，資料已經更新到第 5 站（新北），
+ * 預渲染頁卻還停在「前三站…」——爬蟲與 AI 引擎讀到的是過期戰績，跟使用者在站上
+ * 看到的對不起來。理由同 loadNewsItems()：手維護的副本一定會漂。
+ */
+function aeplPrerenderCopy() {
+    const { AEPL_LEAGUE, AEPL_TEAMS, AEPL_STATIONS } = loadTsModule('src/data/aeplData.ts');
+    const done = AEPL_STATIONS.filter(st => st.status === 'done');
+    const next = AEPL_STATIONS.find(st => st.status === 'scheduled');
+    const doneText = done.map(st => `${st.city}（${st.dateLabel}）${(st.note || '').replace(/^🏆\s*/, '')}`).join('、');
+    const intro = `台灣第一個匹克球職業聯賽：${AEPL_LEAGUE.name} ${AEPL_LEAGUE.season}。`
+        + `${AEPL_TEAMS.length} 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。`
+        + (done.length ? `已完賽分站：${doneText}。` : '')
+        + (next ? `下一站${next.city}，${next.dateLabel}。` : '')
+        + '藝人林志穎擔任賽事大使。';
+    const items = AEPL_TEAMS.map(t => {
+        const medals = (t.facts || []).filter(f => /^[🏆🥈🥉]/.test(f));
+        const sub = medals.length ? medals[medals.length - 1] : (t.facts || [])[0] || '';
+        return { href: '/aepl', label: t.name, sub };
+    });
+    return { intro, items };
 }
 
 /**
@@ -1424,15 +1468,7 @@ async function generateStaticPages() {
         const INDEX_PAGES = [
             {
                 route: 'aepl', h1: 'AEPL 職業聯賽專區', crumb: 'AEPL 職業聯賽',
-                intro: '台灣第一個匹克球職業聯賽：AEPL 亞洲菁英匹克球聯盟 2026 創始賽季（8-11 月），6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。前三站台中（8/30）、高雄（9/20）、宜蘭（10/4）冠軍皆為桃園永豐雲豹，三場冠軍戰都以 3:2 在第 5 回合 Dreambreaker 分出勝負；第 4 站新竹（10/18）由 YANKEY ACE 主場奪冠，第 5 站新北（11/1）雲豹再奪第 4 冠；第 6 站 11 月 14-15 日台北。藝人林志穎擔任賽事大使。',
-                items: [
-                    { href: '/aepl', label: '桃園永豐雲豹', sub: '🏆 台中、高雄、宜蘭、新北四冠，新竹站亞軍。TPBL 雲豹體系，隊長鍾振煒、決勝回合王牌林洸賢、15 歲小將邱子恩（宜蘭站拿下冠軍點）' },
-                    { href: '/aepl', label: '台南旭日雷霆', sub: '🥈🥉🥈🥉 台中亞軍、高雄季軍、宜蘭亞軍、新竹季軍。尚騰汽車集團×寶嘉聯合共同成立，隊長蔡萱' },
-                    { href: '/aepl', label: '新竹 YANKEY ACE', sub: '🏆 新竹站主場冠軍，終結雲豹三連冠；五站皆進 4 強（一冠二亞一季）' },
-                    { href: '/aepl', label: '新北蘆沐', sub: '🥉 新北站主場季軍（隊史最佳）；台中、高雄兩站 4 強' },
-                    { href: '/aepl', label: 'Ahhh', sub: '台北 Ahhh Social Pickleball Hub 場館品牌跨足職業球隊；宜蘭、新北兩站 4 強' },
-                    { href: '/aepl', label: '富瑞特科技', sub: '科技產業企業隊；新竹站 4 強' },
-                ],
+                ...aeplPrerenderCopy(),
                 foot: '<a href="/articles/taiwan-pro-pickleball-2026" style="color:#0d9488;">深度專欄：台灣匹克球職業元年全解析</a>　·　<a href="/tournaments" style="color:#0d9488;">2026 賽事總覽</a>',
             },
             {
@@ -1960,7 +1996,7 @@ async function generateStaticPages() {
         <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">室內 ${indoor} 座・戶外/風雨 ${outdoor} 座・免費 ${free} 座${open24 ? `・24 小時 ${open24} 座` : ''}</p>
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(city)}匹克球場完整名單</h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${cityCourts.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${c.courts_count} 面・${c.fee === 'free' ? '免費' : '收費'}）— ${esc(c.location.address)}</li>`).join('')}</ul>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${cityCourts.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${fmtCourts(c.courts_count)}・${c.fee === 'free' ? '免費' : '收費'}）— ${esc(c.location.address)}</li>`).join('')}</ul>
         </section>
         ${(() => {
                     // 屬性分組：直接回答「台中免費匹克球場地」這類查詢（GSC 上該查詢 73 曝光、排名 9.7）。
@@ -2010,7 +2046,7 @@ async function generateStaticPages() {
                 });
                 faqs.push({
                     q: `${court.name}有幾面球場？是室內還是戶外？`,
-                    a: `${court.name}共有 ${court.courts_count} 面球場，屬於${typeLabel}場地${court.surface ? `，場地材質為${court.surface}` : ''}。`,
+                    a: `${court.name}${fmtCourtsPhrase(court.courts_count)}，屬於${typeLabel}場地${court.surface ? `，場地材質為${court.surface}` : ''}。`,
                 });
                 if (court.facilities && court.facilities.length) {
                     faqs.push({
@@ -2041,14 +2077,14 @@ async function generateStaticPages() {
         <h1 style="font-size:30px;font-weight:800;margin:0 0 8px;">${esc(court.name)}</h1>
         ${court.status ? `<p style="margin:0 0 10px;padding:10px 14px;border:2px solid #fecdd3;background:#fff1f2;border-radius:10px;color:#881337;font-size:15px;"><strong>⚠️ 此場地目前${court.status === 'permanently_closed' ? '已歇業' : '暫時關閉'}</strong>${court.status_note ? `　${esc(court.status_note)}` : ''}${court.status_verified ? `（查證日期 ${esc(court.status_verified)}）` : ''}</p>` : ''}
         <p style="color:#4b5563;margin:0 0 4px;">📍 ${esc(court.location.address)}</p>
-        <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">${esc(city)}${esc(district)}・${typeLabel}球場・${court.courts_count} 面・${esc(feeText)}${courtIs24h(court.opening_hours) ? '・24 小時開放' : ''}</p>
+        <p style="color:#6b7280;font-size:14px;margin:0 0 20px;">${esc(city)}${esc(district)}・${typeLabel}球場・${fmtCourts(court.courts_count)}・${esc(feeText)}${courtIs24h(court.opening_hours) ? '・24 小時開放' : ''}</p>
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">基本資訊</h2>
           <ul style="list-style:none;padding:0;margin:0;font-size:15px;">
             <li><strong>地址：</strong>${esc(court.location.address)}</li>
             <li><strong>開放時間：</strong>${esc(court.opening_hours || '依現場公告')}</li>
             <li><strong>費用：</strong>${esc(feeText)}</li>
-            <li><strong>球場數：</strong>${court.courts_count} 面</li>
+            <li><strong>球場數：</strong>${fmtCourts(court.courts_count)}</li>
             <li><strong>類型：</strong>${typeLabel}${court.surface ? `（${esc(court.surface)}）` : ''}</li>
             ${ownLabel ? `<li><strong>經營類型：</strong>${esc(ownLabel)}</li>` : ''}
             ${court.contact ? `<li><strong>聯絡電話：</strong>${esc(court.contact)}</li>` : ''}
@@ -2092,7 +2128,7 @@ async function generateStaticPages() {
         ${siblings && siblings.length ? `
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(city)}其他匹克球場</h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${siblings.map(s => `<li><a href="/courts/court-${s.id}" style="color:#0d9488;">${esc(s.name)}</a>（${typeLabelOf(s.type)}・${s.courts_count} 面・${s.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${siblings.map(s => `<li><a href="/courts/court-${s.id}" style="color:#0d9488;">${esc(s.name)}</a>（${typeLabelOf(s.type)}・${fmtCourts(s.courts_count)}・${s.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
           ${citySlug ? `<p style="margin:12px 0 0;font-size:15px;"><a href="/courts/${citySlug}" style="color:#0d9488;font-weight:600;">查看${esc(city)}全部匹克球場 →</a></p>` : ''}
         </section>` : ''}
         <p style="font-size:14px;"><a href="/courts" style="color:#0d9488;">← 返回全台匹克球場地圖</a></p>
@@ -2119,7 +2155,7 @@ async function generateStaticPages() {
                             "@id": `${canonical}#place`,
                             "name": court.name,
                             "sport": "Pickleball",
-                            "description": `${court.name}是位於${city}${court.location.district || ''}的${typeLabel}匹克球場，共 ${court.courts_count} 面球場，${court.fee === 'free' ? '免費開放' : '收費'}。`,
+                            "description": `${court.name}是位於${city}${court.location.district || ''}的${typeLabel}匹克球場，${fmtCourtsPhrase(court.courts_count)}，${court.fee === 'free' ? '免費開放' : '收費'}。`,
                             "address": { "@type": "PostalAddress", "streetAddress": court.location.address, "addressLocality": court.location.district, "addressRegion": city, "addressCountry": "TW" },
                             "geo": { "@type": "GeoCoordinates", "latitude": court.location.lat, "longitude": court.location.lng },
                             ...(court.status ? {} : { "openingHours": court.opening_hours }),
@@ -2152,9 +2188,9 @@ async function generateStaticPages() {
                 const siblings = courtsData.courts.filter(c => c.location.city === city && c.id !== court.id).slice(0, 6);
                 const statusTag = court.status === 'permanently_closed' ? '【已歇業】' : court.status === 'temporarily_closed' ? '【暫時關閉】' : '';
                 // 場館名本身已含「匹克球」時不再補「匹克球場」，避免標題重複同一個詞被行動版截掉
-                const title = `${statusTag}${court.name}｜${city}${district}${court.name.includes('匹克球') ? '' : '匹克球場'}・${typeLabel}${court.courts_count}面${feeLabel}`;
+                const title = `${statusTag}${court.name}｜${city}${district}${court.name.includes('匹克球') ? '' : '匹克球場'}・${typeLabel}${fmtCourtsTitleSeg(court.courts_count)}${feeLabel}`;
                 const statusDesc = court.status ? `${court.status === 'permanently_closed' ? '【本站查證：已歇業】' : '【本站查證：暫時關閉】'}${court.status_verified ? `（${court.status_verified}）` : ''}` : '';
-                const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}`;
+                const desc = `${statusDesc}${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，${fmtCourtsPhrase(court.courts_count)}。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}${court.facilities && court.facilities.length ? `設施：${court.facilities.slice(0, 4).join('、')}。` : ''}`;
                 const canonical = `${BASE_URL}/courts/${slug}/`;
                 let content = template;
                 content = content.replace(/<title>.*<\/title>/, `<title>${esc(title)}</title>`);
@@ -2167,7 +2203,7 @@ async function generateStaticPages() {
                 content = content.replace('<div id="root"></div>', `<div id="root">${courtPrerender(court, siblings)}</div>`);
                 content = applyOg(content, `og/court-${court.id}.png`, {
                     title: court.name, type: 'court', badge: '球場',
-                    subtitle: `${city}${district} · ${typeLabel} · ${court.fee === 'free' ? '免費' : '付費'} · ${court.courts_count} 面`,
+                    subtitle: `${city}${district} · ${typeLabel} · ${court.fee === 'free' ? '免費' : '付費'} · ${fmtCourts(court.courts_count)}`,
                 });
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
             }
@@ -2282,7 +2318,7 @@ async function generateStaticPages() {
         ${cities.map(c => `
         <section style="margin-bottom:20px;">
           <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;"><a href="/courts/${c.slug}" style="color:#1f2937;text-decoration:none;">${esc(c.city)}匹克球場（${c.list.length} 座）</a></h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${c.list.map(x => `<li style="margin-bottom:4px;"><a href="/courts/court-${x.id}" style="color:#0d9488;">${esc(x.name)}</a>（${typeLabelOf(x.type)}・${x.courts_count} 面・${x.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${c.list.map(x => `<li style="margin-bottom:4px;"><a href="/courts/court-${x.id}" style="color:#0d9488;">${esc(x.name)}</a>（${typeLabelOf(x.type)}・${fmtCourts(x.courts_count)}・${x.fee === 'free' ? '免費' : '收費'}）</li>`).join('')}</ul>
         </section>`).join('')}
         <p style="font-size:15px;"><a href="/rules" style="color:#0d9488;">匹克球規則教學</a>　·　<a href="/newcomer-guide" style="color:#0d9488;">新手入門指南</a>　·　<a href="/equipment" style="color:#0d9488;">裝備選購</a></p>`;
                     const content = injectPrerender(fs.readFileSync(indexPath, 'utf-8'), prerenderShell({
@@ -2334,7 +2370,7 @@ async function generateStaticPages() {
         ${byCity.map(g => `
         <section style="margin-bottom:20px;">
           <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;"><a href="/courts/${g.slug}" style="color:#1f2937;text-decoration:none;">${esc(g.city)}</a>（${g.list.length} 座）</h2>
-          <ul style="margin:0;padding-left:20px;font-size:15px;">${g.list.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${c.courts_count} 面・${c.fee === 'free' ? '免費' : '收費'}・${esc(c.opening_hours || '依現場公告')}）— ${esc(c.location.address)}</li>`).join('')}</ul>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${g.list.map(c => `<li style="margin-bottom:6px;"><a href="/courts/court-${c.id}" style="color:#0d9488;font-weight:600;">${esc(c.name)}</a>（${typeLabelOf(c.type)}・${fmtCourts(c.courts_count)}・${c.fee === 'free' ? '免費' : '收費'}・${esc(c.opening_hours || '依現場公告')}）— ${esc(c.location.address)}</li>`).join('')}</ul>
         </section>`).join('')}
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">常見問題</h2>
@@ -2514,7 +2550,7 @@ async function generateStaticPages() {
         // lastmod 只在拿得到「真實異動日」時才寫。
         // 原本 336 筆裡有 309 筆蓋的是建置日期 —— 每跑一次 build 就把全站推成今天，
         // 而 Google 的作法是：lastmod 一旦被判定不可信，就整個忽略掉。
-        // 球場 213 筆本來就有人工查證日（last_updated），文章有 updatedDate，
+        // 球場 216 筆本來就有人工查證日（last_updated），文章有 updatedDate，
         // 新聞有發佈日；其餘拿不到真實日期的，寧可不寫 —— lastmod 本來就是選填。
         const urlEntry = (loc, { lastmod, changefreq, priority, images = [] }) => `
     <url>

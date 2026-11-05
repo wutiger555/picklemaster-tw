@@ -10,6 +10,7 @@ import OpenNowBadge from '../components/court/OpenNowBadge';
 import CourtStatusNotice, { CourtStatusChip } from '../components/court/CourtStatusNotice';
 import { reportUrl } from '../config/community';
 import CourtReviews from '../components/court/CourtReviews';
+import { formatCourts, formatCourtsPhrase, formatCourtsTitleSegment } from '../utils/courtsCount';
 
 const TYPE_LABEL = (t: Court['type']) => (t === 'indoor' ? '室內' : t === 'covered' ? '風雨' : '戶外');
 const PRICE_TIERS = [
@@ -46,7 +47,7 @@ function buildCourtFaqs(court: Court): { q: string; a: string }[] {
     },
     {
       q: `${court.name}有幾面球場？是室內還是戶外？`,
-      a: `${court.name}共有 ${court.courts_count} 面球場，屬於${typeLabel}場地${court.surface ? `，場地材質為${court.surface}` : ''}。`,
+      a: `${court.name}${formatCourtsPhrase(court.courts_count)}，屬於${typeLabel}場地${court.surface ? `，場地材質為${court.surface}` : ''}。`,
     },
   ];
   if (court.facilities && court.facilities.length) {
@@ -116,7 +117,7 @@ const CourtDetail = () => {
           '@id': `${canonical}#place`,
           name: court.name,
           sport: 'Pickleball',
-          description: `${court.name}是位於${court.location.city}${court.location.district || ''}的${typeLabel}匹克球場，共 ${court.courts_count} 面球場，${court.fee === 'free' ? '免費開放' : '收費'}。`,
+          description: `${court.name}是位於${court.location.city}${court.location.district || ''}的${typeLabel}匹克球場，${formatCourtsPhrase(court.courts_count)}，${court.fee === 'free' ? '免費開放' : '收費'}。`,
           address: {
             '@type': 'PostalAddress',
             streetAddress: court.location.address,
@@ -170,8 +171,8 @@ const CourtDetail = () => {
   return (
     <LazyMotion features={domAnimation}>
       <SEOHead
-        customTitle={`${court.name}｜${court.location.city}${court.location.district || ''}${court.name.includes('匹克球') ? '' : '匹克球場'}・${typeLabel}${court.courts_count}面${feeLabel}`}
-        customDescription={`${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，共 ${court.courts_count} 面。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}`}
+        customTitle={`${court.name}｜${court.location.city}${court.location.district || ''}${court.name.includes('匹克球') ? '' : '匹克球場'}・${typeLabel}${formatCourtsTitleSegment(court.courts_count)}${feeLabel}`}
+        customDescription={`${court.name}位於${court.location.address}，為${typeLabel}${feeLabel}匹克球場，${formatCourtsPhrase(court.courts_count)}。開放時間：${court.opening_hours || '依現場公告'}。${court.fee !== 'free' && court.price ? `費用：${court.price}。` : ''}`}
       />
       <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50/30 to-white">
         <section className="pt-8 pb-8 md:pt-12">
@@ -199,7 +200,7 @@ const CourtDetail = () => {
                 {court.fee === 'free' ? '免費' : '付費'}
               </span>
               <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-700">
-                {court.courts_count} 面球場
+                {formatCourts(court.courts_count)}
               </span>
               {is24h(court.opening_hours) && (
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-violet-100 text-violet-700">24 小時</span>
@@ -246,7 +247,7 @@ const CourtDetail = () => {
                   <dd className="text-neutral-900 font-semibold">{court.price || (court.fee === 'free' ? '免費' : '付費')}</dd>
 
                   <dt className="text-neutral-500">球場數</dt>
-                  <dd className="text-neutral-900 font-semibold">{court.courts_count} 面</dd>
+                  <dd className="text-neutral-900 font-semibold">{formatCourts(court.courts_count)}</dd>
 
                   {court.surface && (
                     <>
@@ -705,7 +706,7 @@ const CourtDetail = () => {
                     <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
                       <span className="px-1.5 py-0.5 rounded-full bg-neutral-100 text-neutral-600">{TYPE_LABEL(s.type)}</span>
                       <span className={`px-1.5 py-0.5 rounded-full ${s.fee === 'free' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>{s.fee === 'free' ? '免費' : '付費'}</span>
-                      <span className="px-1.5 py-0.5 rounded-full bg-neutral-100 text-neutral-600">{s.courts_count} 面</span>
+                      <span className="px-1.5 py-0.5 rounded-full bg-neutral-100 text-neutral-600">{formatCourts(s.courts_count)}</span>
                     </div>
                   </Link>
                 ))}

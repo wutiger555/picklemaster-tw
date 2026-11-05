@@ -233,7 +233,7 @@ export const HISTORY_TIMELINE: HistoryEvent[] = [
   {
     year: '2026',
     title: 'Carbon Core 碳芯球拍時代',
-    description: 'Selkirk Labs Project 002、Six Zero Ruby 等碳芯球拍普及，硬度更高、回饋更直接。',
+    description: '核心材料分化為三路：碳芯（Gearbox SST 一體碳纖）、發泡芯（CRBN TruFoam Genesis、Six Zero Ruby）與傳統聚合物蜂窩，硬度與回饋差異明顯。',
     category: '科技',
     icon: '🔧',
   },

@@ -175,7 +175,7 @@ const PaddleRecommender = () => {
           surface: 'Carbon Fiber / Carbon Friction',
           budget: 'NT$ 8,000 - 12,000',
         },
-        brands: ['JOOLA Perseus Pro IV (Ben Johns)', 'CRBN-2 Power', 'Selkirk Vanguard Invikta'],
+        brands: ['JOOLA Perseus Pro V (Ben Johns)', 'CRBN 1X Power Series', 'Selkirk Vanguard Power Air Invikta'],
         whyThisChoice: [
           '✅ 職業選手級別的材質和工藝',
           '✅ 最大化擊球力道和速度',

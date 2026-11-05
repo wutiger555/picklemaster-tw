@@ -92,14 +92,14 @@
   </noscript>
 
   <title>匹克球工具箱 | DUPR 模擬器、輪轉排程、籤表、計分器</title>
-  <script type="module" crossorigin src="/assets/index-Ph9H3Y8I.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-DxGOteWr.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-Dd_m_y-1.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-DYi0JzXy.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-SQzcZn-a.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-B_88zE-H.js">
+  <script type="module" crossorigin src="/assets/index-DMlwp5yP.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-BS1nVvjk.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-QiFbFOfb.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-CFutg3IW.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-Oou_fHkk.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-lenis-BbENNM21.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-CYbcDOqX.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-CyqwVxxW.css">
 </head>
 
 <body>
@@ -126,12 +126,23 @@
           <ul style="margin:0;padding-left:20px;font-size:15px;"><li style="margin-bottom:8px;"><a href="/tools/dupr-simulator" style="color:#0d9488;font-weight:600;">DUPR 分數試算</a><br><span style="color:#6b7280;font-size:13px;">輸入比賽結果，估算這場對你的 DUPR 評級大約有什麼影響</span></li><li style="margin-bottom:8px;"><a href="/tools/rotation" style="color:#0d9488;font-weight:600;">輪場排點器</a><br><span style="color:#6b7280;font-size:13px;">人數多於場地時，排出讓每個人上場次數平均的輪替表</span></li><li style="margin-bottom:8px;"><a href="/tools/bracket" style="color:#0d9488;font-weight:600;">賽程表產生器</a><br><span style="color:#6b7280;font-size:13px;">單淘汰、雙淘汰與循環賽的對戰表自動編排</span></li><li style="margin-bottom:8px;"><a href="/tools/court-lines" style="color:#0d9488;font-weight:600;">場地劃線指南</a><br><span style="color:#6b7280;font-size:13px;">在羽球場或網球場上加劃匹克球線的尺寸與步驟</span></li></ul>
         </section>
         
+        
+        
         <p style="font-size:15px;"><a href="/courts" style="color:#0d9488;">找球場</a>　·　<a href="/rules" style="color:#0d9488;">規則教學</a></p>
       </main></div>
 
   <!-- Service Worker Registration for PWA -->
+  <!-- 只在正式 build 註冊；dev 時 SW 會快取舊的 Vite 模組，所以主動解除既有註冊（true 由 Vite 代換） -->
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && 'true' !== 'true') {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if (!regs.length) return;
+        Promise.all(regs.map(r => r.unregister())).then(() => {
+          // 目前頁面若仍被舊 SW 控制，重載一次改由 dev server 直接提供
+          if (navigator.serviceWorker.controller) location.reload();
+        });
+      });
+    } else if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
           .then(registration => {

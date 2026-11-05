@@ -10,6 +10,8 @@ import {
 } from '../data/aeplData';
 
 const [LATEST, ...EARLIER] = AEPL_STATION_REPORTS;
+// Hero 徽章從資料推出來，不寫死——之前寫死「下一站 9/19-20」掛了一個多月沒人發現
+const NEXT_STATION = AEPL_STATIONS.find(st => st.status === 'live' || st.status === 'scheduled');
 
 const STATION_STATUS: Record<string, { label: string; cls: string }> = {
   live: { label: '● 進行中', cls: 'bg-red-500 text-white animate-pulse' },
@@ -21,8 +23,8 @@ const STATION_STATUS: Record<string, { label: string; cls: string }> = {
 const FAQS = [
   { q: 'AEPL 是什麼？', a: 'AEPL（亞洲菁英匹克球聯盟）是台灣第一個匹克球職業聯賽，由亞洲菁英匹克球股份有限公司於 2026 年 5 月成立，定位為「台灣匹克球賽事的最高殿堂」。創始賽季 6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元，藝人林志穎擔任賽事大使。' },
   { q: 'AEPL 的比賽怎麼進行？', a: '採企業隊際制：每隊編制 6-10 名選手，每個分站登錄 4 人出賽，8 月至 11 月巡迴全台 8 站，11 月舉行總決賽。分站刻意選在人潮聚集的公共場域（如台中火車站空中廊道、高雄駁二特區），讓路過民眾就能看到職業比賽。' },
-  { q: '有哪些球隊？', a: '創始賽季共 6 隊：桃園永豐雲豹（TPBL 雲豹體系，首站冠軍）、台南旭日雷霆（尚騰汽車×寶嘉聯合，首站亞軍）、新竹 YANKEY ACE、新北蘆沐、Ahhh（台北場館品牌）、富瑞特科技。' },
-  { q: '在哪裡可以看比賽？', a: '分站均在開放公共場域舉行，現場觀賽免費親民。開幕站已於台中火車站空中廊道完賽（冠軍桃園永豐雲豹），第 2 站 9 月 19、20 日在高雄駁二特區登場，後續站點遍及雙北、桃園、新竹、宜蘭、台南等地，日期公布後本站將即時更新。' },
+  { q: '有哪些球隊？', a: '創始賽季共 6 隊：桃園永豐雲豹（TPBL 雲豹體系，五站四冠）、新竹 YANKEY ACE（新竹站冠軍）、台南旭日雷霆（尚騰汽車×寶嘉聯合，兩亞兩季）、新北蘆沐、Ahhh（台北場館品牌）、富瑞特科技。' },
+  { q: '在哪裡可以看比賽？', a: '分站均在開放公共場域舉行，現場觀賽免費。已完賽五站：台中火車站空中廊道、高雄駁二特區、宜蘭運動公園、新竹孔廟前廣場、新北市政府市民廣場；第 6 站 11 月 14、15 日在台北登場（場館待公布），之後的分站與總決賽日期公布後本站將即時更新。' },
 ];
 
 const Aepl = () => {
@@ -70,7 +72,7 @@ const Aepl = () => {
     <div className="min-h-screen bg-neutral-950 text-white">
       <SEOHead
         customTitle="AEPL 職業聯賽專區｜台灣匹克球職業聯盟 球隊・賽程・戰力分析"
-        customDescription="台灣第一個匹克球職業聯賽 AEPL 完整追蹤：首站冠軍桃園永豐雲豹、6 隊戰力卡、8 站巡迴賽程（第 2 站 9/19-20 高雄駁二）、Dreambreaker 賽制解說、選手焦點與戰報分析。總獎金百萬的創始賽季一站掌握。"
+        customDescription="台灣第一個匹克球職業聯賽 AEPL 完整追蹤：五站戰罷桃園永豐雲豹四冠、新竹 YANKEY ACE 主場奪冠；6 隊戰力卡、各站戰報與比分、第 6 站 11/14-15 台北、Dreambreaker 賽制解說。總獎金百萬的創始賽季一站掌握。"
       />
 
       {/* ===== Hero ===== */}
@@ -90,8 +92,10 @@ const Aepl = () => {
 
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
             <div className="flex flex-wrap items-center gap-2 mb-5">
-              <span className="px-3 py-1 rounded-full bg-amber-400 text-neutral-900 text-xs font-black tracking-wide">🏆 首站冠軍：桃園永豐雲豹</span>
-              <span className="px-3 py-1 rounded-full bg-red-500 text-white text-xs font-black tracking-wide animate-pulse">● 下一站 9/19-20 高雄駁二</span>
+              <span className="px-3 py-1 rounded-full bg-amber-400 text-neutral-900 text-xs font-black tracking-wide">🏆 {LATEST.title}冠軍：{LATEST.champion}</span>
+              {NEXT_STATION && (
+                <span className="px-3 py-1 rounded-full bg-red-500 text-white text-xs font-black tracking-wide animate-pulse">● 下一站 {NEXT_STATION.dateLabel} {NEXT_STATION.city}</span>
+              )}
               <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-neutral-200">2026 創始賽季</span>
               <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-neutral-200">台灣首個匹克球職業聯賽</span>
             </div>
@@ -130,7 +134,7 @@ const Aepl = () => {
             <h2 className="text-2xl md:text-3xl font-black">🗓️ 賽季進度</h2>
             <span className="text-xs text-neutral-500">更新於 {AEPL_LEAGUE.lastUpdated}</span>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {AEPL_STATIONS.map(st => {
               const badge = STATION_STATUS[st.status];
               return (

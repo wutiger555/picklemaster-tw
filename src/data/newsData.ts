@@ -3,6 +3,108 @@ import type { NewsItem } from '../types/news';
 export const NEWS_DATA: NewsItem[] = [
   // ===== 2026 Q4 最新消息 =====
   {
+    id: 'tw-202611-aepl-station5',
+    title: '雲豹 3:1 討回冠軍！AEPL 新北站拿下本季第 4 冠',
+    summary: 'AEPL 第 5 站新北站 11 月 1 日落幕，新竹站冠亞軍再度交手，桃園永豐雲豹以 3:1 擊敗新竹 YANKEY ACE 奪回冠軍，五站拿下四冠。新北蘆沐在主場以 3:2 勝台北 Ahhh，拿下隊史最佳的季軍。',
+    content: `
+      <p><strong>AEPL 亞洲菁英匹克球聯盟</strong>創始賽季第 5 站於 10 月 31 日、11 月 1 日在<strong>新北市政府市民廣場</strong>舉行。冠軍戰是兩週前新竹站的重演：<strong>桃園永豐雲豹</strong>對<strong>新竹 YANKEY ACE</strong>。</p>
+
+      <p>雲豹男雙<strong>鍾振煒／林洸賢</strong>以 21:14 先馳得點；YANKEY ACE 女雙<strong>王亭文／陳懷恕</strong> 21:12 扳平。接下來兩場混雙都是雲豹的：鍾振煒／鍾汶㚬 21:18、林洸賢／莊佩庭 21:13，總比數 3:1，雲豹討回新竹站失去的冠軍。</p>
+
+      <p>季軍戰由地主<strong>新北蘆沐</strong>以 3:2 擊敗<strong>台北 Ahhh</strong>，這是蘆沐開季以來的最佳成績。五站打完，雲豹四冠一亞，YANKEY ACE 一冠二亞一季、五站都進 4 強。第 6 站 <strong>11 月 14、15 日在台北</strong>登場，場館尚待聯盟公布。</p>
+
+      <p>各站完整比分與各隊戰績，見本站 <a href="/aepl" class="text-primary-600 hover:underline">AEPL 職業聯賽專區</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.chinatimes.com/realtimenews/20261101002933-260403" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中時新聞網</a>、<a href="https://aepltw.com/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">AEPL 官網</a></p>
+    `,
+    date: '2026-11-01',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '2026']
+  },
+  {
+    id: 'tw-202610-pingtung-arena-groundbreaking',
+    title: '屏東縣立綜合運動館動土：主場地可切成 10 面匹克球場',
+    summary: '屏東縣立綜合運動館 10 月 20 日動土，總經費 3.5 億元、運動部補助 1 億元，主場地可切換為 10 面匹克球場，預計 2027 年 11 月底完工。',
+    content: `
+      <p><strong>屏東縣立綜合運動館</strong>於 10 月 20 日動土。工程總經費約新台幣 <strong>3.5 億元</strong>，其中運動部補助 1 億元，預計 <strong>2027 年 11 月底</strong>完工。</p>
+
+      <p>新館主場地規劃為多用途，可切換為 <strong>10 面匹克球場</strong>。以目前全台室內場館多為 2 到 6 面的規模，完工後將是南部少數能承辦大型匹克球賽事的公有場館。</p>
+
+      <p>屏東目前本站收錄的匹克球場地只有 2 座，新館完工後將大幅補上南台灣的缺口。完工啟用時，本站會收進 <a href="/courts" class="text-primary-600 hover:underline">球場地圖</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://udn.com/news/story/7327/9826394" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a></p>
+    `,
+    date: '2026-10-20',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts',
+    tags: ['Taiwan', '屏東', '新球館', '2026']
+  },
+  {
+    id: 'tw-202610-aepl-station4',
+    title: 'YANKEY ACE 主場封王！AEPL 新竹站終結雲豹三連冠',
+    summary: 'AEPL 第 4 站新竹站 10 月 18 日在新竹孔廟前廣場落幕，新竹 YANKEY ACE 以 3:1 擊敗桃園永豐雲豹，拿下隊史首座分站冠軍，終結雲豹開季三連冠。最後一點 21:20 驚險收下。',
+    content: `
+      <p><strong>AEPL</strong> 創始賽季第 4 站於 10 月 17、18 日在<strong>新竹孔廟前廣場</strong>舉行，6 隊參賽。地主<strong>新竹 YANKEY ACE</strong> 在冠軍戰以 3:1 擊敗開季三連冠的<strong>桃園永豐雲豹</strong>，比數 11:21、21:13、21:19、21:20。</p>
+
+      <p>YANKEY ACE 首回合男雙先輸，接著女雙<strong>易楷芬／陳懷恕</strong>扳平，混雙陳懷恕／王耀城 21:19 超前；第 4 點混雙易楷芬／陳昱翰對上林洸賢／莊佩庭，以 21:20 一分之差拿下冠軍點。易楷芬談女雙搭檔時說：「進攻交給她，我做好防守，我們的機會就很大。」</p>
+
+      <p>4 強賽中，YANKEY ACE 以 3:1 擊敗台南旭日雷霆，雲豹則 3:0 勝高雄富瑞特；季軍戰旭日雷霆 3:0 勝富瑞特。雲豹隊長<strong>鍾振煒</strong>賽後說：「輸要知道輸在哪，並將其改善。」</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://tw.sports.yahoo.com/news/aepl-yankey-ace%E6%8D%8D%E8%A1%9B%E4%B8%BB%E5%A0%B4-%E6%96%B0%E7%AB%B9%E7%AB%99%E4%B8%AD%E6%96%B7%E6%B0%B8%E8%B1%90%E9%9B%B2%E8%B1%B9%E9%96%8B%E5%AD%A33%E9%80%A3%E5%86%A0-082738659.html" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Yahoo 運動</a>、<a href="https://n.yam.com/Article/20261019825636" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">蕃新聞</a></p>
+    `,
+    date: '2026-10-18',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '2026']
+  },
+  {
+    id: 'tw-202610-tmlp-linkou',
+    title: 'TMLP 積分巡迴賽林口站：公開報名最終戰兩天湧入逾千人',
+    summary: 'TMLP 台灣匹克球積分巡迴賽 10 月 17、18 日在新北林口高中舉行，作為今年公開報名的最後一站，兩天報名逾千人。年終站 12 月 12 日改為依積分邀請參賽。',
+    content: `
+      <p><strong>TMLP 台灣匹克球積分巡迴賽</strong> 10 月 17、18 日在<strong>新北市林口高中</strong>舉行，這是 2026 賽季開放公開報名的最後一站，兩天報名人數超過一千人。</p>
+
+      <p>報導也介紹了參賽的聽障選手<strong>邱弈偉</strong>，他曾在美國、加拿大的聽障匹克球錦標賽拿下獎牌。</p>
+
+      <p>依 TMLP 官方賽事頁，年終積分邀請賽訂於 <strong>12 月 12 日</strong>，地點為新北淡水的 <a href="/courts/court-53" class="text-primary-600 hover:underline">Triple Ace & P.DANG 匹克球館</a>，依全年積分邀請選手。完整賽程見 <a href="/tournaments" class="text-primary-600 hover:underline">賽事總覽</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://sports.ltn.com.tw/news/breakingnews/5610711" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由體育</a>、<a href="https://www.tmlp.com.tw/events/taipei-season-invitational-2026" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">TMLP 官網</a></p>
+    `,
+    date: '2026-10-18',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', 'TMLP', '積分賽', '2026']
+  },
+  {
+    id: 'tw-202610-taichung-open-kickoff',
+    title: '台中國際匹克球公開賽開幕：16 國逾千名選手同場',
+    summary: '2026 台中國際匹克球公開賽 10 月 14 日在台中國際網球中心開幕，開幕報導稱 16 國、逾千名選手參賽，涵蓋美、加、日、韓、新加坡、荷蘭與東南亞各國，另有約 100 名台中在地選手。',
+    content: `
+      <p><strong>2026 台中國際匹克球公開賽</strong> 10 月 14 日在<strong>台中國際網球中心</strong>開幕，副市長鄭照新代表市長出席。開幕報導稱共有 <strong>16 國、逾千名選手</strong>參賽，國家包括美國、加拿大、日本、韓國、新加坡、荷蘭、菲律賓、印尼、馬來西亞等，另有約 100 名台中在地選手。</p>
+
+      <p>賽事獲運動部「台灣品牌國際賽事計畫」補助，四天賽程涵蓋團體賽、單打、雙打與混雙，開幕日團體賽採美國匹克球小聯盟（MiLP）賽制。全程於中華民國匹克球協會 YouTube 頻道轉播，報導點名的選手包括新加坡長青組的 Pini Lee 與台灣的王亭文。</p>
+
+      <p>賽前預估為 10 國約 1,300 人，開幕報導的數字與此不同；各組完整成績以主辦單位公告為準。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.nownews.com/news/6883451" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">NOWnews</a>、<a href="https://taiwanpost.net/2026/life/176099" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">臺灣郵報</a></p>
+    `,
+    date: '2026-10-14',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '國際賽', '台中', '2026']
+  },
+  {
     id: 'tw-202610-aepl-station3',
     title: '雲豹三站三冠！15 歲邱子恩拿下 AEPL 宜蘭站冠軍點',
     summary: 'AEPL 第 3 站宜蘭站 10 月 4 日落幕，桃園永豐雲豹冠軍戰 1:2 落後再逆轉台南旭日雷霆，Dreambreaker 由 15 歲邱子恩拿下冠軍點，完成台中、高雄、宜蘭三站三冠。本站創下開季以來最多觀戰人潮。',

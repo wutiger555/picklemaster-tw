@@ -92,14 +92,14 @@
   </noscript>
 
   <title>匹克球從 0 到 100：新手入門 → 高手進階完整學習地圖</title>
-  <script type="module" crossorigin src="/assets/index-Ph9H3Y8I.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-DxGOteWr.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-Dd_m_y-1.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-DYi0JzXy.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-SQzcZn-a.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-B_88zE-H.js">
+  <script type="module" crossorigin src="/assets/index-DMlwp5yP.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-BS1nVvjk.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-QiFbFOfb.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-CFutg3IW.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-Oou_fHkk.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-lenis-BbENNM21.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-CYbcDOqX.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-CyqwVxxW.css">
 </head>
 
 <body>
@@ -126,12 +126,23 @@
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">學習路徑（3）</h2>
           <dl style="margin:0;"><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">新手入門<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 6 週・10 課</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">從零開始，帶你認識並愛上匹克球。課程：第一章：認識匹克球、第二章：球場與裝備、第三章：基本規則、第四章：握拍與準備姿勢、第五章：發球技巧、第六章：接發球與回球、第七章：基本擊球技術、第八章：移動與步法、第九章：球場禮儀與安全、第十章：第一場比賽</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">中階進修<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 8 週・5 課</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">提升技術，成為更有競爭力的球員。課程：進階擊球技巧、第三球小球策略、網前對決技巧、雙打站位與配合、常見錯誤診斷與修正</dd><dt style="font-weight:600;font-size:16px;margin:12px 0 2px;">進階強化<span style="color:#6b7280;font-weight:400;font-size:14px;"> — 10 週・5 課</span></dt><dd style="margin:0;font-size:15px;color:#4b5563;">追求卓越，準備參加比賽。課程：專業技術細節優化、高階戰術運用、比賽心理與心態、體能訓練與傷害預防、教練培訓與教學</dd></dl>
         </section>
+        
+        
         <p style="font-size:15px;"><a href="/techniques" style="color:#0d9488;">技術教學</a>　·　<a href="/training-programs" style="color:#0d9488;">訓練菜單</a>　·　<a href="/rules" style="color:#0d9488;">規則教學</a></p>
       </main></div>
 
   <!-- Service Worker Registration for PWA -->
+  <!-- 只在正式 build 註冊；dev 時 SW 會快取舊的 Vite 模組，所以主動解除既有註冊（true 由 Vite 代換） -->
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && 'true' !== 'true') {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if (!regs.length) return;
+        Promise.all(regs.map(r => r.unregister())).then(() => {
+          // 目前頁面若仍被舊 SW 控制，重載一次改由 dev server 直接提供
+          if (navigator.serviceWorker.controller) location.reload();
+        });
+      });
+    } else if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
           .then(registration => {

@@ -57,8 +57,8 @@ function injectPrerender(content, shellHtml) {
 // SEO Data (Copied from src/utils/seo.ts)
 const pageSEO = {
     courts: {
-        title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 150+ 免費/室內/24H 場地',
-        description: '2026 全台最新匹克球場地圖！收錄 150+ 球場，17 縣市全覆蓋（含花博 MAJI、內湖 PicklePickle、板橋國運、台中 YIYI、雲林 PK Park、花蓮 PKing 等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
+        title: '全台匹克球場地圖 2026 » GPS 一鍵找球場 200+ 免費/室內/24H 場地',
+        description: '2026 全台最新匹克球場地圖！收錄 200+ 球場，17 縣市全覆蓋（含花博 MAJI、內湖 PicklePickle、板橋國運、台中 YIYI、雲林 PK Park、花蓮 PKing 等）。GPS 定位找最近球場，篩選室內冷氣、戶外免費、24 小時、風雨球場，桃園/新竹/彰化/嘉義新場全更新。',
         keywords: '匹克球場,匹克球場地,皮克球場地,台灣匹克球場,匹克球場地圖,匹克球場推薦,匹克球場預約,戶外匹克球場,免費匹克球場,室內匹克球場,附近匹克球場,最近匹克球場,24小時匹克球場,台北匹克球場,新北匹克球場,桃園匹克球場地,新竹匹克球場,台中匹克球場,彰化匹克球場,嘉義匹克球場,台南匹克球場,高雄匹克球場,屏東匹克球場,宜蘭匹克球場,花蓮匹克球場,南投匹克球場,天母公園匹克球場,大村匹克球,竹北星空匹克球場,北投匹克球場,信義匹克球場,士林匹克球場,內湖匹克球場,大安匹克球場,松山匹克球場,中和匹克球場,新莊匹克球場,板橋匹克球場,淡水匹克球場,龜山匹克球場,中壢匹克球場,平鎮匹克球場,西屯匹克球場,南屯匹克球場,東區匹克球場,鳳山匹克球場,左營匹克球場,前金匹克球場,埔里匹克球場,大村匹克球場,秀水匹克球場,公園匹克球場,河濱匹克球場,學校匹克球場,運動中心匹克球,網球中心匹克球場,PICKZONE,Pickle Day,Downstairs Pickleball,Social N Pickle,P.dang,Seattle Pickleball,pickleball court taiwan,pickleball court taipei,pickleball court kaohsiung,pickleball court taichung,pickleball court taoyuan,pickleball court hsinchu,pickleball near me',
         structuredData: {
             "@context": "https://schema.org",
@@ -67,7 +67,7 @@ const pageSEO = {
                     "@type": "WebPage",
                     "@id": "https://picklemastertw.com/courts#webpage",
                     "url": "https://picklemastertw.com/courts/",
-                    "name": "台灣匹克球場地圖 2026 | 全台 150+ 球場完整資訊",
+                    "name": "台灣匹克球場地圖 2026 | 全台 200+ 球場完整資訊",
                     "description": "2026 年台灣最完整的匹克球場地圖！GPS 定位找最近球場、篩選室內/戶外/免費/24 小時/公園/河濱場地。",
                     "isPartOf": { "@id": "https://picklemastertw.com/#website" },
                     "inLanguage": "zh-TW"
@@ -437,7 +437,7 @@ const pageSEO = {
     },
     aepl: {
         title: 'AEPL 職業聯賽專區｜台灣匹克球職業聯盟 球隊・賽程・戰力分析',
-        description: '台灣第一個匹克球職業聯賽 AEPL 完整追蹤：桃園永豐雲豹台中、高雄、宜蘭三站三冠，台南旭日雷霆兩亞一季。6 隊戰力卡、各站戰報與比分、8 站巡迴賽程（第 4 站 10/17-18 新竹）、Dreambreaker 賽制解說、選手焦點。',
+        description: '台灣第一個匹克球職業聯賽 AEPL 完整追蹤：五站戰罷桃園永豐雲豹四冠，新竹 YANKEY ACE 主場奪冠。6 隊戰力卡、各站戰報與比分、賽程（第 6 站 11/14-15 台北）、Dreambreaker 賽制解說、選手焦點。',
         keywords: 'AEPL,亞洲菁英匹克球聯盟,台灣匹克球職業聯賽,匹克球職業,桃園雲豹,台南旭日雷霆,Ahhh,蘆沐,富瑞特科技,鍾振煒,蔡萱,邱子恩,林志穎,匹克球隊,職業匹克球選手,台中火車站 匹克球,高雄駁二 匹克球',
         structuredData: {
             "@context": "https://schema.org",
@@ -463,7 +463,7 @@ const pageSEO = {
     },
     tournaments: {
         title: '2026 台灣匹克球賽事總覽 | CTPF 全年認證賽、國際積分賽',
-        description: '完整掌握 2026 台灣匹克球 26 場賽事：AEPL 職業聯賽、TCI APP ASIA TOUR 台北站、金碧盃、南華盃、臺北公開賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
+        description: '完整掌握 2026 台灣匹克球 32 場賽事：AEPL 職業聯賽、台中國際公開賽、城市盃全國團體賽、新光認真盃、桐花盃、TMLP 年終邀請賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
         keywords: '2026匹克球賽事,台灣匹克球比賽,CTPF賽事,臺灣盃匹克球,NAPA盃,港都盃,中正盃,噶瑪蘭盃,臺北匹克球公開賽,APG 亞洲匹克球運動會,匹克球錦標賽,匹克球報名',
         structuredData: {
             "@context": "https://schema.org",
@@ -1424,14 +1424,14 @@ async function generateStaticPages() {
         const INDEX_PAGES = [
             {
                 route: 'aepl', h1: 'AEPL 職業聯賽專區', crumb: 'AEPL 職業聯賽',
-                intro: '台灣第一個匹克球職業聯賽：AEPL 亞洲菁英匹克球聯盟 2026 創始賽季（8-11 月），6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。前三站台中（8/30）、高雄（9/20）、宜蘭（10/4）冠軍皆為桃園永豐雲豹，三場冠軍戰都以 3:2 在第 5 回合 Dreambreaker 分出勝負；第 4 站 10 月 17-18 日新竹。藝人林志穎擔任賽事大使。',
+                intro: '台灣第一個匹克球職業聯賽：AEPL 亞洲菁英匹克球聯盟 2026 創始賽季（8-11 月），6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。前三站台中（8/30）、高雄（9/20）、宜蘭（10/4）冠軍皆為桃園永豐雲豹，三場冠軍戰都以 3:2 在第 5 回合 Dreambreaker 分出勝負；第 4 站新竹（10/18）由 YANKEY ACE 主場奪冠，第 5 站新北（11/1）雲豹再奪第 4 冠；第 6 站 11 月 14-15 日台北。藝人林志穎擔任賽事大使。',
                 items: [
-                    { href: '/aepl', label: '桃園永豐雲豹', sub: '🏆 台中、高雄、宜蘭三站三冠。TPBL 雲豹體系，隊長鍾振煒、決勝回合王牌林洸賢、15 歲小將邱子恩（宜蘭站拿下冠軍點）' },
-                    { href: '/aepl', label: '台南旭日雷霆', sub: '🥈🥉🥈 台中亞軍、高雄季軍、宜蘭亞軍。尚騰汽車集團×寶嘉聯合共同成立，隊長蔡萱' },
-                    { href: '/aepl', label: '新竹 YANKEY ACE', sub: '三站皆進 4 強：高雄站亞軍、宜蘭站季軍；企業背景待官方介紹' },
-                    { href: '/aepl', label: '新北蘆沐', sub: '台中、高雄兩站 4 強' },
-                    { href: '/aepl', label: 'Ahhh', sub: '台北 Ahhh Social Pickleball Hub 場館品牌跨足職業球隊；宜蘭站 4 強' },
-                    { href: '/aepl', label: '富瑞特科技', sub: '科技產業企業隊' },
+                    { href: '/aepl', label: '桃園永豐雲豹', sub: '🏆 台中、高雄、宜蘭、新北四冠，新竹站亞軍。TPBL 雲豹體系，隊長鍾振煒、決勝回合王牌林洸賢、15 歲小將邱子恩（宜蘭站拿下冠軍點）' },
+                    { href: '/aepl', label: '台南旭日雷霆', sub: '🥈🥉🥈🥉 台中亞軍、高雄季軍、宜蘭亞軍、新竹季軍。尚騰汽車集團×寶嘉聯合共同成立，隊長蔡萱' },
+                    { href: '/aepl', label: '新竹 YANKEY ACE', sub: '🏆 新竹站主場冠軍，終結雲豹三連冠；五站皆進 4 強（一冠二亞一季）' },
+                    { href: '/aepl', label: '新北蘆沐', sub: '🥉 新北站主場季軍（隊史最佳）；台中、高雄兩站 4 強' },
+                    { href: '/aepl', label: 'Ahhh', sub: '台北 Ahhh Social Pickleball Hub 場館品牌跨足職業球隊；宜蘭、新北兩站 4 強' },
+                    { href: '/aepl', label: '富瑞特科技', sub: '科技產業企業隊；新竹站 4 強' },
                 ],
                 foot: '<a href="/articles/taiwan-pro-pickleball-2026" style="color:#0d9488;">深度專欄：台灣匹克球職業元年全解析</a>　·　<a href="/tournaments" style="color:#0d9488;">2026 賽事總覽</a>',
             },
@@ -2514,7 +2514,7 @@ async function generateStaticPages() {
         // lastmod 只在拿得到「真實異動日」時才寫。
         // 原本 336 筆裡有 309 筆蓋的是建置日期 —— 每跑一次 build 就把全站推成今天，
         // 而 Google 的作法是：lastmod 一旦被判定不可信，就整個忽略掉。
-        // 球場 181 筆本來就有人工查證日（last_updated），文章有 updatedDate，
+        // 球場 213 筆本來就有人工查證日（last_updated），文章有 updatedDate，
         // 新聞有發佈日；其餘拿不到真實日期的，寧可不寫 —— lastmod 本來就是選填。
         const urlEntry = (loc, { lastmod, changefreq, priority, images = [] }) => `
     <url>

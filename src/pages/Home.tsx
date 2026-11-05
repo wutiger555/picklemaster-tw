@@ -140,7 +140,7 @@ const Home = () => {
                 className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-3xl mx-auto border-t border-neutral-100 pt-8"
               >
                 <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-black text-neutral-900">130+</div>
+                  <div className="text-2xl md:text-3xl font-black text-neutral-900">200+</div>
                   <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider mt-1">球場</div>
                 </div>
                 <div className="text-center md:border-l border-neutral-100">
@@ -180,9 +180,9 @@ const Home = () => {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="font-black text-lg md:text-xl">AEPL 職業聯賽專區</span>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-neutral-900 text-[10px] font-black">🏆 雲豹三站三冠</span>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-neutral-900 text-[10px] font-black">🏆 雲豹五站四冠</span>
                   </div>
-                  <p className="text-sm text-neutral-300 truncate">宜蘭站戰報：15 歲邱子恩拿下冠軍點・下一站 10/17 新竹</p>
+                  <p className="text-sm text-neutral-300 truncate">新北站戰報：雲豹 3:1 討回冠軍・下一站 11/14 台北</p>
                 </div>
               </div>
               <svg className="w-6 h-6 text-teal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5-5 5M6 12h12" /></svg>
@@ -260,7 +260,7 @@ const Home = () => {
               {[
                 { to: ROUTES.GLOSSARY, label: '術語字典', desc: '中英對照權威詞彙', icon: '📖' },
                 { to: ROUTES.RATINGS, label: 'DUPR 評級', desc: '2026 全球評分系統', icon: '📊' },
-                { to: ROUTES.COURTS, label: '球場地圖', desc: '130+ 場地一鍵搜尋', icon: '🗺️' },
+                { to: ROUTES.COURTS, label: '球場地圖', desc: '200+ 場地一鍵搜尋', icon: '🗺️' },
               ].map(item => (
                 <Link
                   key={item.to}

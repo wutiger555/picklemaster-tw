@@ -3,6 +3,228 @@ import type { NewsItem } from '../types/news';
 export const NEWS_DATA: NewsItem[] = [
   // ===== 2026 Q4 最新消息 =====
   {
+    id: 'tw-202611-aepl-station7',
+    title: 'YANKEY ACE Dreambreaker 22:20 封王！AEPL 桃園站再從雲豹手上奪冠',
+    summary: 'AEPL 第 7 站桃園站 11 月 22 日落幕，新竹 YANKEY ACE 在冠軍戰 Dreambreaker 以 22:20 擊敗桃園永豐雲豹，拿下本季第 2 冠；台北 Ahhh 0:2 落後逆轉台南旭日雷霆，本季首度拿下季軍。',
+    content: `
+      <p><strong>AEPL</strong> 創始賽季第 7 站於 11 月 21、22 日在<strong>桃園藝文廣場</strong>舉行。冠軍戰又是<strong>新竹 YANKEY ACE</strong> 對<strong>桃園永豐雲豹</strong>，比數 21:16、21:13、18:21、18:21、22:20。</p>
+
+      <p>YANKEY ACE 男雙、女雙先拿兩點，雲豹靠鍾振煒／鍾汶㚬、林洸賢／莊佩庭兩組混雙追成 2:2。決勝的 Dreambreaker 單打接力，易楷芬首輪以 3:1 領先林洸賢，林洸賢隨後兩輪獨得 8 分，鍾振煒一路追到 20:20；最後<strong>陳懷恕</strong>面對鍾汶㚬連拿 2 分，收下冠軍點。陳懷恕賽後說：「我想著在我這裡結束就好！」</p>
+
+      <p>季軍戰<strong>台北 Ahhh</strong> 前兩點以 15:21 連輸，之後連扳三點（21:20、21:19、21:19），3:2 逆轉台南旭日雷霆，本季首度站上頒獎台。七站打完，雲豹五冠、YANKEY ACE 兩冠，兩座都是在冠軍戰擊敗雲豹拿下。第 8 站 <strong>12 月 5、6 日在台南</strong>登場，場館與總決賽日期尚待聯盟公布。</p>
+
+      <p>各站比分與各隊戰績見 <a href="/aepl" class="text-primary-600 hover:underline">AEPL 職業聯賽專區</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.chinatimes.com/realtimenews/20261123001868-260403" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中時新聞網</a>、<a href="https://aepltw.com/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">AEPL 官網</a></p>
+    `,
+    date: '2026-11-22',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '2026']
+  },
+  {
+    id: 'tw-202611-lujiang-solar-court',
+    title: '彰化鹿江光電球場啟用：光電棚架下可排 17 面匹克球場',
+    summary: '彰化鹿江國際中小學的光電綜合球場 11 月 21 日啟用，太陽光電棚架遮陽避雨，平時是 4 面籃球場加 1 面排球場，改成匹克球配置可排 17 面，報導稱是中部最大。縣府全額出資約 2,025 萬元，未來校園與社區共用。',
+    content: `
+      <p><strong>彰化縣鹿江國際中小學</strong>的光電綜合球場於 11 月 21 日啟用，縣長王惠美到場開球。球場建在<strong>太陽光電棚架</strong>下，可以遮陽也能避雨。</p>
+
+      <p>場地平時規劃為 4 面標準籃球場加 1 面排球場，改成匹克球配置時可容納 <strong>17 面</strong>，報導稱是中部最大的匹克球場地。工程由縣府全額出資，約新台幣 <strong>2,025 萬元</strong>。</p>
+
+      <p>球場未來採「學校與社區共用」，啟用當天同步舉辦首屆社區匹克球聯賽，共 101 隊參加。對外開放的時段與方式尚未公布，公布後本站會收進 <a href="/courts" class="text-primary-600 hover:underline">球場地圖</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://sports.ltn.com.tw/news/breakingnews/5648494" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由體育</a>、<a href="https://n.yam.com/Article/20261121631976" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">蕃新聞</a></p>
+    `,
+    date: '2026-11-21',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts',
+    tags: ['Taiwan', '彰化', '新球場', '2026']
+  },
+  {
+    id: 'tw-202611-nantou-indigenous-cup',
+    title: '南投首屆原民盃匹克球賽：21 隊來自信義、仁愛、魚池與花蓮卓溪',
+    summary: '南投縣政府原住民族行政處 11 月 21 日在埔里大成國中舉辦首屆原民盃匹克球暨戰鬥陀螺競賽，匹克球共 21 隊報名，來自南投信義、仁愛、魚池與花蓮卓溪，前 8 名皆有獎金。',
+    content: `
+      <p><strong>南投縣政府原住民族行政處</strong> 11 月 21 日在埔里鎮大成國中舉辦<strong>首屆原民盃匹克球暨戰鬥陀螺競賽</strong>，原民處長林婷玉代表縣長主持。</p>
+
+      <p>匹克球共 <strong>21 隊</strong>報名，隊伍來自南投信義、仁愛、魚池等鄉鎮，以及花蓮縣卓溪鄉，前 8 名都有獎金。</p>
+
+      <p>匹克球場地小、器材便宜，近年在部落與偏鄉推廣得很快；南投信義鄉 8 月也才啟用一座匹克球場。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://n.yam.com/Article/20261122183549" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">蕃新聞</a>、<a href="https://n.yam.com/Article/20261121439489" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">蕃新聞</a></p>
+    `,
+    date: '2026-11-21',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '南投', '原住民', '賽事', '2026']
+  },
+  {
+    id: 'tw-202611-aepl-station6',
+    title: '雨延後一日三戰！雲豹逆轉奪 AEPL 台北站冠軍，本季第 5 冠',
+    summary: 'AEPL 第 6 站台北站 11 月 14 日在台北 101 水舞廣場開打，15 日因雨延賽，20 日移到桃園藝文廣場補賽。分組首戰輸給旭日雷霆的雲豹當天一日三勝，冠軍戰 3:1 擊敗首度闖進冠軍戰的新北蘆沐。',
+    content: `
+      <p><strong>AEPL</strong> 第 6 站原訂 11 月 14、15 日在<strong>台北 101 水舞廣場</strong>舉行，14 日打完部分分組賽後，15 日因雨延賽。聯盟執行長張智維說，延賽是為了不讓工作人員在雨中拆裝、並降低場地風險。剩下的賽程移到 <strong>11 月 20 日在桃園藝文廣場</strong>補完。</p>
+
+      <p><strong>桃園永豐雲豹</strong>分組首戰 2:3 輸給台南旭日雷霆，一度面臨無法晉級。補賽當天雲豹一日三戰：晉級戰與新竹 YANKEY ACE 打到 Dreambreaker，YANKEY ACE 一度大幅領先，林洸賢追到 18:18，再由隊長鍾振煒完成逆轉；4 強 3:0 勝台北 Ahhh，冠軍戰 3:1 擊敗<strong>新北蘆沐</strong>，拿下本季第 5 冠。蘆沐則是隊史首度打進冠軍戰。</p>
+
+      <p>林洸賢形容奪冠心情「從地獄到天堂」；鍾振煒說首戰狀態不好，球隊很快面對問題、在練習中修正。各點比分官方尚未公布。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://udn.com/news/story/7005/9893097" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a>、<a href="https://sports.ltn.com.tw/news/breakingnews/5648474" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由體育</a>、<a href="https://sports.ltn.com.tw/news/breakingnews/5643670" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由體育（延賽）</a></p>
+    `,
+    date: '2026-11-20',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/aepl',
+    tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '2026']
+  },
+  {
+    id: 'tw-202611-ncyu-courts',
+    title: '嘉義大學校慶啟用 6 面匹克球場：3 面網球練習牆改建',
+    summary: '國立嘉義大學 11 月 19 日在 107 週年校慶當天啟用新建的戶外匹克球場，由原本 3 面網球練習牆場地改建為 6 面匹克球場，經費來自教育部校園運動場地改善計畫，供學生課餘與體育課使用。',
+    content: `
+      <p><strong>國立嘉義大學</strong>在 107 週年校慶當天（11 月 19 日）為新建的戶外匹克球場剪綵啟用，由校長林翰謙主持。</p>
+
+      <p>球場由原本 <strong>3 面網球練習牆</strong>場地改建成 <strong>6 面匹克球場</strong>，經費來自教育部的校園運動場地改善計畫（報導未寫金額），供學生課餘與體育課教學使用。</p>
+
+      <p>校方表示，明年各校區的籃球、排球、匹克球等運動設施預計陸續完工，學務處也規劃把匹克球納入系際盃競賽。對校外人士是否開放尚未公布。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.ettoday.net/news/20261119/3274809.htm" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">ETtoday</a></p>
+    `,
+    date: '2026-11-19',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts/chiayi',
+    tags: ['Taiwan', '嘉義', '校園', '新球場', '2026']
+  },
+  {
+    id: 'tw-202611-shinkong-cup-result',
+    title: '首屆新光認真盃落幕：報名兩天額滿，父子檔拿下新手男雙',
+    summary: '新光人壽主辦的首屆新光認真盃 11 月 14、15 日在國立臺北教育大學舉行，報名不到兩天額滿，逾百組、14 到 70 歲選手參賽。中階男雙由林凱群／陳佑昇奪冠，新手男雙由宜蘭父子游正源／游博元拿下，主辦單位表示明年擴大舉辦。',
+    content: `
+      <p>新光人壽首度主辦的<strong>新光認真盃匹克球公開賽</strong>，11 月 14、15 日在<strong>國立臺北教育大學</strong>舉行。賽事依 DUPR 分為新手、初階、中階三級，報名不到兩天就額滿，逾百組、年齡 14 到 70 歲的球友參賽，賽事顧問為 AEPL 台南旭日雷霆隊長蔡萱。</p>
+
+      <p>各組冠軍：新手男雙<strong>游正源／游博元</strong>（宜蘭父子檔）、新手女雙洪得容／曾詠婕、初階女雙邱曉玲／陳嘉儀、中階男雙<strong>林凱群／陳佑昇</strong>、中階女雙林芯伃／邱冠樺。</p>
+
+      <p>新光人壽副董事長洪士琪表示，明年將擴大舉辦。更多年底賽事見 <a href="/tournaments" class="text-primary-600 hover:underline">2026 賽事總覽</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.cna.com.tw/news/ahel/202611150173.aspx" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中央社</a>、<a href="https://sports.ltn.com.tw/news/breakingnews/5640873" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由體育</a>、<a href="https://www.chinatimes.com/realtimenews/20261115002440-260403" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中時新聞網</a></p>
+    `,
+    date: '2026-11-15',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '賽事', '新光認真盃', '2026']
+  },
+  {
+    id: 'tw-202611-tainan-changjung-cup',
+    title: '台南長榮盃全齡匹克球賽：142 隊、350 人同場，設 55 歲以上組',
+    summary: '長榮大學與歸仁區全民運動中心合辦的 2026 長榮盃全齡匹克球交流錦標賽暨俱樂部邀請賽 11 月 14 日開打，共 142 隊、約 350 位選手與民眾參與，組別含 55 歲以上組與俱樂部團體積分賽。',
+    content: `
+      <p><strong>2026 長榮盃全齡匹克球交流錦標賽暨俱樂部邀請賽</strong>於 11 月 14 日在台南歸仁的長榮大學體育館開打，由長榮大學與設在校內的歸仁區全民運動中心合辦。</p>
+
+      <p>共 <strong>142 隊、約 350 位</strong>選手與民眾參與，組別有男雙、女雙、混雙、<strong>55 歲以上組</strong>、體驗推廣組，以及採團體積分制的俱樂部邀請賽。</p>
+
+      <p>台南市長黃偉哲與體育局長王效文到場，都提到要推動全齡運動。長榮大學體育室主任林信佑表示，匹克球規則易懂、參與門檻低。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.taiwanhot.net/news/1154906/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">台灣好新聞</a>、<a href="https://n.yam.com/Article/20261115104934" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">蕃新聞</a></p>
+    `,
+    date: '2026-11-14',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '台南', '賽事', '樂齡', '2026']
+  },
+  {
+    id: 'tw-202611-kaohsiung-wheelchair-pickleball',
+    title: '高雄首場輪椅匹克球體驗：25 位身障朋友在永達盃試打',
+    summary: '第 10 屆永達盃高雄國際輪椅網球公開賽 11 月 11 至 14 日在橋頭輪椅夢公園舉行，主辦單位首度加入輪椅匹克球體驗，由示範教練柯昱妏帶領 25 位身障朋友認識匹克球。',
+    content: `
+      <p><strong>第 10 屆永達盃高雄國際輪椅網球公開賽</strong>於 11 月 11 至 14 日在橋頭輪椅夢公園舉行。賽事期間，主辦單位新推出<strong>高雄首場輪椅匹克球體驗</strong>。</p>
+
+      <p>由示範教練柯昱妏帶領 <strong>25 位</strong>身障朋友認識匹克球的規則與打法。賽事由中華民國身心障礙者休閒發展協會、永達保經等單位主辦。</p>
+
+      <p>匹克球場地小、球速較慢，國外已發展出輪椅匹克球的規則與賽事；這次是高雄第一次以體驗活動引進。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://udn.com/news/story/7005/9877710" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a></p>
+    `,
+    date: '2026-11-13',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1515523110800-9415d13b84a8?q=80&w=1974&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '高雄', '共融', '2026']
+  },
+  {
+    id: 'tw-202611-taichung-renhua-park',
+    title: '台中大里仁化公園將建 4 面標準匹克球場，經費 600 萬元',
+    summary: '台中市大里區仁化公園將新建 4 面標準匹克球場，施作面積約 645 平方公尺、經費 600 萬元，施工說明會已召開。報導同時提到，霧峰光復國中小光電匹克球場與大里高中籃球場暨匹克球場已完工。',
+    content: `
+      <p>台中市府將在<strong>大里區仁化公園</strong>新建 <strong>4 面標準匹克球場</strong>，施作面積 644.66 平方公尺，經費 <strong>600 萬元</strong>，施工說明會已經召開，開工與完工日期尚未公布。</p>
+
+      <p>同篇報導提到，霧峰光復國中小的光電匹克球場、大里高中籃球場暨匹克球場已經完工。</p>
+
+      <p>大里區目前本站收錄的場地見 <a href="/courts/taichung" class="text-primary-600 hover:underline">台中球場頁</a>；仁化公園完工後會收進球場地圖。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://n.yam.com/Article/20261109956220" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">台灣好新聞（蕃新聞轉載）</a></p>
+    `,
+    date: '2026-11-09',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts/taichung',
+    tags: ['Taiwan', '台中', '新球場', '2026']
+  },
+  {
+    id: 'tw-202611-hsinchu-mayor-cup-wukong',
+    title: '竹市第 2 屆市長盃在建功國小「悟空球場」開打，近 300 人參賽',
+    summary: '新竹市第 2 屆市長盃匹克球錦標賽 11 月 7、8 日在建功國小舉行，近 70 隊、近 300 名選手參加。主場地「悟空球場」有 4 面符合競賽標準的匹克球場，經費 299 萬元，這是球場啟用後的第一場公開賽。',
+    content: `
+      <p><strong>新竹市第 2 屆市長盃匹克球錦標賽</strong>於 11 月 7、8 日在建功國小舉行，近 70 隊、近 300 名選手參加，市長高虹安 8 日到場開幕。組別有國小 U12，以及依 DUPR 12／14／16 分級的成人團體組。</p>
+
+      <p>主場地<strong>「悟空球場」</strong>有 4 面符合競賽標準的匹克球場，經費 299 萬元，用於地坪、照明、圍網、儲藏室與監視器。報導稱這是全國首座國小專屬匹克球場，這次市長盃是它啟用後的第一場公開賽。</p>
+
+      <p>新竹市目前本站收錄的場地見 <a href="/courts/hsinchu-city" class="text-primary-600 hover:underline">新竹市球場頁</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://n.yam.com/Article/20261109314733" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中央社（蕃新聞轉載）</a></p>
+    `,
+    date: '2026-11-08',
+    category: 'Tournament',
+    image: 'https://images.unsplash.com/photo-1515523110800-9415d13b84a8?q=80&w=1974&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/tournaments',
+    tags: ['Taiwan', '新竹', '賽事', '2026']
+  },
+  {
+    id: 'tw-202611-chiayi-west-sports-center',
+    title: '嘉義市西區全民運動館啟用：6.1 億元，綜合球場含匹克球',
+    summary: '嘉義市西區全民運動館 11 月 5 日落成，總經費約 6.1 億元（運動部補助 2 億元），由舞動陽光營運。館內有 50 公尺泳池、健身中心，以及羽球、籃球、匹克球、桌球場地，11 月 9 日起免費試營運一週。',
+    content: `
+      <p><strong>嘉義市西區全民運動館</strong>於 11 月 5 日落成啟用，運動部次長楊啓文與市長黃敏惠出席。總經費約 <strong>6.1 億元</strong>，市府出資 4.1 億元、運動部體育署補助 2 億元，由舞動陽光營運。</p>
+
+      <p>館內除了 50 公尺泳池與健身中心，還有羽球、籃球、<strong>匹克球</strong>、桌球場地（報導未寫匹克球場面數）。11 月 9 日至 15 日免費試營運，每天分 6 梯、每梯 90 分鐘。</p>
+
+      <p>匹克球場的面數、收費與預約方式確認後，本站會收進 <a href="/courts/chiayi" class="text-primary-600 hover:underline">嘉義市球場頁</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://udn.com/news/story/7005/9873342" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網</a>、<a href="https://www.cna.com.tw/postwrite/chi/450014" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中央社訊息平台</a></p>
+    `,
+    date: '2026-11-05',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts/chiayi',
+    tags: ['Taiwan', '嘉義', '運動中心', '2026']
+  },
+  {
     id: 'tw-202611-aepl-station5',
     title: '雲豹 3:1 討回冠軍！AEPL 新北站拿下本季第 4 冠',
     summary: 'AEPL 第 5 站新北站 11 月 1 日落幕，新竹站冠亞軍再度交手，桃園永豐雲豹以 3:1 擊敗新竹 YANKEY ACE 奪回冠軍，五站拿下四冠。新北蘆沐在主場以 3:2 勝台北 Ahhh，拿下隊史最佳的季軍。',
@@ -23,6 +245,46 @@ export const NEWS_DATA: NewsItem[] = [
     source: 'Picklemaster Taiwan',
     link: '/aepl',
     tags: ['Taiwan', 'AEPL', '職業聯賽', '戰報', '2026']
+  },
+  {
+    id: 'tw-202610-tainan-yongkang-solar-courts',
+    title: '台南永康忠孝網球場光電工程動土：廠商回饋 4 面匹克球場',
+    summary: '台南市府 10 月 29 日為永康忠孝紅土網球場太陽光電工程動土，由廠商投資興建、市府分收益，光電棚架可遮陽擋雨，廠商另回饋新設 4 面匹克球場，預計 2027 年底完工後開放付費使用。',
+    content: `
+      <p>台南市府 10 月 29 日舉行<strong>永康忠孝紅土網球場太陽光電工程</strong>開工典禮，由市長黃偉哲主持。工程由廠商投資興建，市府不必另編建置經費，還能分到售電收益。</p>
+
+      <p>光電棚架完工後可遮陽擋雨。廠商另外回饋新設 <strong>4 面匹克球場</strong>，預計 <strong>2027 年底</strong>完工，完工後開放民眾付費使用。</p>
+
+      <p>以光電棚架結合球場的作法，近來在彰化鹿江國際中小學、台中霧峰光復國中小也都看得到，是地方政府在不增加預算下擴充風雨球場的新模式。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://n.yam.com/Article/20261029753396" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">蕃新聞</a>、<a href="https://tw.news.yahoo.com/%E6%B0%B8%E5%BA%B7%E5%BF%A0%E5%AD%9D%E7%B4%85%E5%9C%9F%E7%B6%B2%E7%90%83%E5%A0%B4%E5%85%89%E9%9B%BB%E5%B7%A5%E7%A8%8B%E5%8B%95%E5%9C%9F-%E5%A2%9E%E8%A8%AD%E5%8C%B9%E5%85%8B%E7%90%83%E5%A0%B4%E6%89%93%E9%80%A0%E5%85%A8%E5%A4%A9%E5%80%99%E9%81%8B%E5%8B%95%E7%A9%BA%E9%96%93-103659464.html" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中華日報（Yahoo 轉載）</a></p>
+    `,
+    date: '2026-10-29',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts/tainan',
+    tags: ['Taiwan', '台南', '光電球場', '2026']
+  },
+  {
+    id: 'tw-202610-miaoli-courts-plan',
+    title: '苗栗山佳國小體育館將劃設匹克球場，竹南全民運動館轉民營、3 樓設匹克球',
+    summary: '苗栗縣長鍾東錦 10 月 28 日在議會表示，將在興建中的山佳國小體育館完工後劃設匹克球場，並建議鄉鎮公所活動中心增設；竹南全民運動館則已於 10 月 16 日改由民間團隊經營，3 樓將設匹克球場地。',
+    content: `
+      <p>苗栗縣議會 10 月 28 日質詢時，議員建議竹南海口羽球館導入匹克球場。縣長鍾東錦回應，海口羽球館應維持羽球用途，改為在興建中的<strong>山佳國小體育館</strong>完工後劃設匹克球場，也建議鄉鎮公所的活動中心增設。</p>
+
+      <p>另外，<strong>竹南全民運動館</strong>於 10 月 16 日結束自營，改由民間團隊接手，3 樓將設匹克球場地，整備完成後至少免費試營運 7 天（日期未公布）。</p>
+
+      <p>苗栗目前本站尚未收錄常態開放的匹克球場，這兩處開放後會優先補上。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://n.yam.com/Article/20261028810497" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">台灣捷報（蕃新聞轉載）</a>、<a href="https://www.chinatimes.com/realtimenews/20261020002834-260421" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">中時新聞網</a></p>
+    `,
+    date: '2026-10-28',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts',
+    tags: ['Taiwan', '苗栗', '新球場', '2026']
   },
   {
     id: 'tw-202610-pingtung-arena-groundbreaking',
@@ -83,6 +345,46 @@ export const NEWS_DATA: NewsItem[] = [
     source: 'Picklemaster Taiwan',
     link: '/tournaments',
     tags: ['Taiwan', 'TMLP', '積分賽', '2026']
+  },
+  {
+    id: 'tw-202610-mailiao-park-courts',
+    title: '麥寮城鄉運動公園翻新啟用：雲林首座專用匹克球場',
+    summary: '雲林麥寮鄉公所自籌約 3,000 萬元翻修啟用 30 年的城鄉運動公園，新建 2 座網球場與匹克球場，媒體稱為雲林首座專用匹克球場，10 月 17 日舉辦啟用活動並有匹克球賽。',
+    content: `
+      <p>雲林縣<strong>麥寮鄉公所</strong>自籌約 <strong>3,000 萬元</strong>，翻修啟用已 30 年的城鄉運動公園，工程自 2026 年 1 月動工，新建 2 座網球場與匹克球場，媒體稱為雲林首座專用匹克球場。</p>
+
+      <p>公所 10 月 17 日舉辦「城鄉運動公園啟用暨畜牧產業展」，現場有匹克球與網球賽事。匹克球場面數來源未寫明。</p>
+
+      <p>面數與開放方式確認後，本站會收進 <a href="/courts/yunlin" class="text-primary-600 hover:underline">雲林球場頁</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://www.mlvillage.gov.tw/achievement/Details.aspx?Parser=99%2C5%2C32%2C%2C%2C%2C118" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">麥寮鄉公所</a>、<a href="https://udn.com/news/story/7326/9288072" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">聯合新聞網（動工報導）</a></p>
+    `,
+    date: '2026-10-17',
+    category: 'Courts',
+    image: 'https://images.unsplash.com/photo-1505235687559-28b5f54645b7?q=80&w=2070&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts/yunlin',
+    tags: ['Taiwan', '雲林', '新球場', '2026']
+  },
+  {
+    id: 'tw-202610-taipei-court-expansion',
+    title: '北市新生館已設 5 面匹克球場，市府評估河濱、橋下再增場',
+    summary: '台北市長蔣萬安 10 月 16 日出席星動盃明星匹克球公益賽記者會時表示，7 月啟用的新生公園新生館已設 5 面匹克球場（室內 2、室外 3），市府將評估在河濱與橋下空間增設球場，並從校園培養選手。',
+    content: `
+      <p>台北市長蔣萬安 10 月 16 日出席「星動盃明星匹克球公益賽」的宣傳活動時表示，7 月啟用的<strong>新生公園新生館</strong>已設 <strong>5 面匹克球場</strong>（室內 2 面、室外 3 面）。</p>
+
+      <p>市府將評估在<strong>河濱與橋下空間</strong>增設球場，也希望從校園開始培養選手。這次的星動盃從新北移師台北，<strong>12 月 6 日</strong>在臺北市體育館舉行，善款用於照顧弱勢兒少。</p>
+
+      <p>台北現有場地見 <a href="/courts/taipei" class="text-primary-600 hover:underline">台北球場頁</a>；星動盃詳情見 <a href="/tournaments" class="text-primary-600 hover:underline">賽事總覽</a>。</p>
+
+      <p class="mt-8 text-sm text-gray-500">資料來源：<a href="https://sports.ltn.com.tw/news/breakingnews/5608624" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由體育</a>、<a href="https://news.ltn.com.tw/news/life/breakingnews/5609490" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">自由時報</a></p>
+    `,
+    date: '2026-10-16',
+    category: 'Taiwan',
+    image: 'https://images.unsplash.com/photo-1515523110800-9415d13b84a8?q=80&w=1974&auto=format&fit=crop',
+    source: 'Picklemaster Taiwan',
+    link: '/courts/taipei',
+    tags: ['Taiwan', '台北', '政策', '2026']
   },
   {
     id: 'tw-202610-taichung-open-kickoff',

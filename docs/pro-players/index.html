@@ -20,6 +20,11 @@
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
 
+  <!-- Google AdSense（帳號驗證 + 廣告腳本） -->
+  <meta name="google-adsense-account" content="ca-pub-1245763004722958">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1245763004722958"
+    crossorigin="anonymous"></script>
+
   <!-- SEO Meta Tags (2026 Revision) -->
   <meta name="description" content="認識世界排名前十的匹克球職業選手。Ben Johns 用什麼球拍？Anna Leigh Waters 的必殺技是什麼？完整戰力分析與裝備大公開。" />
   <meta name="keywords" content="匹克球選手,匹克球排名,Ben Johns,Anna Leigh Waters,匹克球職業選手, PPA巡迴賽, APP巡迴賽, 匹克球球星" />
@@ -92,7 +97,7 @@
   </noscript>
 
   <title>世界頂尖匹克球選手排名 & 裝備解密 | Picklemaster Taiwan</title>
-  <script type="module" crossorigin src="/assets/index-CI5Hc2JU.js"></script>
+  <script type="module" crossorigin src="/assets/index-CHAl4RCs.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-D5PRgLKg.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-6kcjKJ5c.js">
@@ -155,26 +160,6 @@
     }
   </script>
 
-  <!-- Lazy Load Google AdSense -->
-  <script>
-    const loadAdSense = () => {
-      const script = document.createElement('script');
-      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      document.head.appendChild(script);
-
-      // Remove event listeners after loading the script
-      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-        window.removeEventListener(event, loadAdSense, { once: true })
-      );
-    };
-
-    // Add event listeners to trigger AdSense loading on user interaction
-    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-      window.addEventListener(event, loadAdSense, { once: true, passive: true })
-    );
-  </script>
 </body>
 
 </html>

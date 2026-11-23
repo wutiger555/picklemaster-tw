@@ -20,6 +20,11 @@
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
 
+  <!-- Google AdSense（帳號驗證 + 廣告腳本） -->
+  <meta name="google-adsense-account" content="ca-pub-1245763004722958">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1245763004722958"
+    crossorigin="anonymous"></script>
+
   <!-- SEO Meta Tags (2026 Revision) -->
   <meta name="description" content="想變強必看！提供 3D 球場戰術板教學、職業選手球路分析。發球致勝技巧、第三球各種打法、網前截擊反應訓練。互動式內容讓你觀念大升級。" />
   <meta name="keywords" content="匹克球技巧,匹克球教學,匹克球訓練,匹克球發球,匹克球截擊,匹克球戰術,匹克球策略,pickleball technique" />
@@ -92,7 +97,7 @@
   </noscript>
 
   <title>匹克球實戰技巧 | 3D 球路分析 & 360 度站位教學</title>
-  <script type="module" crossorigin src="/assets/index-CI5Hc2JU.js"></script>
+  <script type="module" crossorigin src="/assets/index-CHAl4RCs.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-D5PRgLKg.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-6kcjKJ5c.js">
@@ -155,26 +160,6 @@
     }
   </script>
 
-  <!-- Lazy Load Google AdSense -->
-  <script>
-    const loadAdSense = () => {
-      const script = document.createElement('script');
-      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      document.head.appendChild(script);
-
-      // Remove event listeners after loading the script
-      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-        window.removeEventListener(event, loadAdSense, { once: true })
-      );
-    };
-
-    // Add event listeners to trigger AdSense loading on user interaction
-    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-      window.addEventListener(event, loadAdSense, { once: true, passive: true })
-    );
-  </script>
 </body>
 
 </html>

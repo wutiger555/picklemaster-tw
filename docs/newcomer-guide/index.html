@@ -20,6 +20,11 @@
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
 
+  <!-- Google AdSense（帳號驗證 + 廣告腳本） -->
+  <meta name="google-adsense-account" content="ca-pub-1245763004722958">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1245763004722958"
+    crossorigin="anonymous"></script>
+
   <!-- SEO Meta Tags (2026 Revision) -->
   <meta name="description" content="想打匹克球但不知道從何開始？專為台灣新手設計的懶人包。互動式預算試算、羽球轉匹克球技巧分析。" />
   <meta name="keywords" content="匹克球新手,匹克球入門,匹克球費用,匹克球拍價格,羽球轉匹克球,網球轉匹克球,匹克球教學,台灣匹克球" />
@@ -92,7 +97,7 @@
   </noscript>
 
   <title>第一次打匹克球就上手 - 台灣新手懶人包 | 費用試算 & 入門指南</title>
-  <script type="module" crossorigin src="/assets/index-CI5Hc2JU.js"></script>
+  <script type="module" crossorigin src="/assets/index-CHAl4RCs.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-D5PRgLKg.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-6kcjKJ5c.js">
@@ -155,26 +160,6 @@
     }
   </script>
 
-  <!-- Lazy Load Google AdSense -->
-  <script>
-    const loadAdSense = () => {
-      const script = document.createElement('script');
-      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      document.head.appendChild(script);
-
-      // Remove event listeners after loading the script
-      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-        window.removeEventListener(event, loadAdSense, { once: true })
-      );
-    };
-
-    // Add event listeners to trigger AdSense loading on user interaction
-    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-      window.addEventListener(event, loadAdSense, { once: true, passive: true })
-    );
-  </script>
 </body>
 
 </html>

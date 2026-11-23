@@ -110,6 +110,12 @@ const PaddleDetailPage = () => {
               <p className="text-sm text-emerald-600 font-semibold mb-3">⭐ {paddle.endorser}</p>
             )}
 
+            {paddle.discontinued && (
+              <p className="text-sm text-neutral-700 bg-neutral-100 rounded-xl px-3 py-2 mb-3">
+                <strong>⏸ 已有新世代或停產。</strong>{paddle.discontinuedNote ?? '新品可能不易買到，價格常見清倉折扣。'}
+              </p>
+            )}
+
             {/* 拍型定位 */}
             <div className="rounded-2xl border p-4 mb-4" style={{ borderColor: `${info.color}44`, backgroundColor: `${info.color}0d` }}>
               <div className="flex items-center gap-2 mb-1.5">
@@ -209,7 +215,7 @@ const PaddleDetailPage = () => {
             />
             <SpecRow label="握把長度" value={paddle.gripLength} note={parseFloat(paddle.gripLength) >= 5.5 ? '5.5" 以上適合雙手反拍' : '標準長度，單手反拍為主的球員足夠'} />
             <SpecRow label="握把粗細" value={paddle.gripSize} note={parseFloat(paddle.gripSize) <= 4.125 ? '偏細，適合手掌較小者；也可自行加纏帶加粗' : '標準粗細'} />
-            <SpecRow label="USAP 認證" value={paddle.usapApproved ? '✓ 通過' : '未認證'} note={paddle.usapApproved ? '可用於 USAP 認證賽事。2026 年起 PBCoR 上限收緊為 .43' : undefined} />
+            <SpecRow label="USAP 認證" value={paddle.usapApproved ? '✓ 通過' : '未認證'} note={paddle.usapApproved ? '可用於 USAP 認證賽事。PBCoR 上限自 2025-11-01 起為 .43；2026-10-01 起新送測球拍另須通過轉速測試' : undefined} />
           </div>
 
           <div className="space-y-6">

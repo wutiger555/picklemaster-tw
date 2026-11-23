@@ -20,6 +20,11 @@
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
 
+  <!-- Google AdSense（帳號驗證 + 廣告腳本） -->
+  <meta name="google-adsense-account" content="ca-pub-1245763004722958">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1245763004722958"
+    crossorigin="anonymous"></script>
+
   <!-- SEO Meta Tags (2026 Revision) -->
   <meta name="description" content="免費線上匹克球遊戲「匹克硬邦幫」：打開瀏覽器就能玩，手機觸控、電腦鍵盤都可以。3D 真實物理，雙彈跳、廚房規則照比賽判；六支球拍各有必殺技，還有殺球、飛身撲接、無雙覺醒與電視輔助判決。" />
   <meta name="keywords" content="匹克球遊戲,匹克球小遊戲,線上匹克球遊戲,免費匹克球遊戲,匹克球手機遊戲,pickleball game,匹克硬邦幫,3D 匹克球" />
@@ -92,7 +97,7 @@
   </noscript>
 
   <title>匹克球遊戲｜匹克硬邦幫：免費線上 3D 匹克球對戰，手機免下載</title>
-  <script type="module" crossorigin src="/assets/index-CI5Hc2JU.js"></script>
+  <script type="module" crossorigin src="/assets/index-CHAl4RCs.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-D5PRgLKg.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-6kcjKJ5c.js">
@@ -167,26 +172,6 @@
     }
   </script>
 
-  <!-- Lazy Load Google AdSense -->
-  <script>
-    const loadAdSense = () => {
-      const script = document.createElement('script');
-      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      document.head.appendChild(script);
-
-      // Remove event listeners after loading the script
-      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-        window.removeEventListener(event, loadAdSense, { once: true })
-      );
-    };
-
-    // Add event listeners to trigger AdSense loading on user interaction
-    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-      window.addEventListener(event, loadAdSense, { once: true, passive: true })
-    );
-  </script>
 </body>
 
 </html>

@@ -3047,7 +3047,7 @@
         "2026/2/27 開幕",
         "可企業包場"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-09-02",
       "reviews": "花博 MAJI 園區內的半戶外粉紅球場，大滿貫級地板結合運動社交",
@@ -3094,7 +3094,7 @@
         "場地線加寬間距符合匹克球規格",
         "燈具移至兩側改善眩光"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-11-05",
       "reviews": "2025 年封館整修後於 2026 年 1 月試營運重啟，正式支援匹克球",
@@ -3163,7 +3163,7 @@
         "2026/5/1 起開放現場預約",
         "租用人須自行架網/拆網"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-07-14",
       "reviews": "新店國民運動中心 4F 綜合球場 2026 年 5 月起開放匹克球租用"
@@ -3199,7 +3199,7 @@
         "綜合球場彈性劃設匹克球場",
         "可辦賽事"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-07-14",
       "reviews": "高雄楠梓全新運動中心，2026 年 6 月試營運，綜合球場含匹克球場地"
@@ -3239,7 +3239,7 @@
         "24 小時無人智慧場館",
         "2026 上半年開幕"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-11-05",
       "reviews": "內科園區單場私人包場模式，24 小時智慧預約，適合小團體練球"
@@ -3271,7 +3271,7 @@
         "24 小時室內智能球場",
         "2026 年開幕"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-09-11",
       "reviews": "新竹寶山 24 小時智能匹克球場，2026 年新開幕（部分資訊待官方公告）",
@@ -3305,7 +3305,7 @@
         "約 110 坪羽球/排球/匹克球綜合球館",
         "彰化第一間合法綜合球館"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-11-05",
       "reviews": "社頭織襪品牌 OH9 打造的綜合球館，試營運以來傍晚場地幾乎訂滿 2026-11 依 Google 地圖更正：球館實際位於員林市溝皂東街（原資料誤記為社頭鄉）。"
@@ -3341,7 +3341,7 @@
         "近捷運善導寺站 6 號出口步行 5 分鐘",
         "鄰近華山文創園區"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-11-05",
       "reviews": "華山旁的社交型匹克球館，打球結合酒吧聚會的新型態場館",
@@ -3941,8 +3941,8 @@
       "name": "匹克那邊 Pickle Side",
       "location": {
         "address": "新北市五股區民義路一段220巷24-6號",
-        "lat": 25.0902,
-        "lng": 121.4382,
+        "lat": 25.092401,
+        "lng": 121.429441,
         "city": "新北市",
         "district": "五股區"
       },
@@ -3964,7 +3964,7 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-11-23",
       "reviews": "五股室內館，Open Play 250 元打 4 小時",
       "price_details": {
         "weekday": "一般開放時段 NT$250/人",
@@ -4067,7 +4067,7 @@
         "2 面專用 + 2 面練習場",
         "2 面專用場 + 2 面練習場"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-11-05",
       "reviews": "龍潭新開室內館，2026 年 4 月開幕",
@@ -4084,8 +4084,8 @@
       "name": "邷力豹 Pickleball",
       "location": {
         "address": "桃園市蘆竹區中興路756巷109號、105號",
-        "lat": 25.0452,
-        "lng": 121.2922,
+        "lat": 25.011281,
+        "lng": 121.248846,
         "city": "桃園市",
         "district": "蘆竹區"
       },
@@ -4107,9 +4107,9 @@
         "2 面專用場",
         "2 面專用球場"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-09-02",
+      "last_updated": "2026-11-23",
       "reviews": "蘆竹新開專用館，2026 年 4 月開幕。官方報名系統採場次制，標示強度 1.0~5.0+，A/B 兩面場地。",
       "booking_url": "https://www.aligh.co/zh-TW/venue/1723?sportId=2",
       "price_details": {
@@ -4803,7 +4803,7 @@
         "4 面標準場",
         "2026/6 開幕"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-07",
       "last_updated": "2026-10-05",
       "reviews": "雲林第一座匹克球專用館，交流道旁交通方便",
@@ -4866,9 +4866,9 @@
       "id": 119,
       "name": "嘉義帝寶球場",
       "location": {
-        "address": "嘉義市西區中興路60號附近",
-        "lat": 23.4792,
-        "lng": 120.4332,
+        "address": "嘉義市西區僑嘉三街95號",
+        "lat": 23.480951,
+        "lng": 120.427154,
         "city": "嘉義市",
         "district": "西區"
       },
@@ -4889,7 +4889,7 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-11-23",
       "reviews": "嘉義市西區室內球場"
     },
     {
@@ -4927,9 +4927,9 @@
       "id": 121,
       "name": "嘉義縣政府田徑場匹克球場",
       "location": {
-        "address": "嘉義縣朴子市學府路一段（縣政府田徑場）",
-        "lat": 23.4592,
-        "lng": 120.2932,
+        "address": "嘉義縣朴子市朴子三路16號（縣政府田徑場旁）",
+        "lat": 23.455969,
+        "lng": 120.288371,
         "city": "嘉義縣",
         "district": "朴子市"
       },
@@ -4948,7 +4948,7 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-07-14",
+      "last_updated": "2026-11-23",
       "reviews": "朴子縣府田徑場旁免費場"
     },
     {
@@ -5322,7 +5322,7 @@
         "2026 年 8 月新開幕",
         "球場面數待官方確認"
       ],
-      "is_new": true,
+      "is_new": false,
       "added_date": "2026-08",
       "last_updated": "2026-09-02",
       "booking_url": "https://p9arena.linkcourt.app/",
@@ -8384,6 +8384,570 @@
       "is_new": true,
       "added_date": "2026-11",
       "last_updated": "2026-11-05"
+    },
+    {
+      "id": 222,
+      "name": "Pickle Space 匹克空間",
+      "location": {
+        "address": "台北市內湖區瑞光路435號1樓（愛因斯坦大樓）",
+        "lat": 25.078826,
+        "lng": 121.570496,
+        "city": "台北市",
+        "district": "內湖區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "付費，依預約頁公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依預約時段（Google 地圖標示 24 小時）",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "預約制"
+      ],
+      "website": "https://pickletown.app/court/62fc6f3a-8fc3-4d1b-a66f-134d0e426ab1",
+      "reviews": "內湖科技園區瑞光路上的室內匹克球場，PickleTown 登錄為室內 1 面、付費預約。營業時間 Google 地圖標示 24 小時，實際開放以預約頁為準。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 223,
+      "name": "木柵河濱公園匹克球場",
+      "location": {
+        "address": "台北市文山區辛亥路七段85-1號（木柵河濱公園）",
+        "lat": 24.9848898,
+        "lng": 121.5449265,
+        "city": "台北市",
+        "district": "文山區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "日間免費",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "08:00–20:00",
+      "contact": "臺北市河濱球場租借專線 02-2570-2330 #6199",
+      "contact_details": {
+        "phone": "02-2570-2330 #6199"
+      },
+      "facilities": [
+        "戶外"
+      ],
+      "features": [
+        "河濱公園內免費場"
+      ],
+      "website": "https://vbs.sports.taipei/venues/?K=922",
+      "reviews": "臺北市體育局河濱場地租借系統登錄的戶外匹克球場，1 面、日間免費，開放 08:00–20:00。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 224,
+      "name": "捷運綠帶線形公園匹克球場",
+      "location": {
+        "address": "台北市北投區文林北路80巷101號對面（捷運綠帶線形公園）",
+        "lat": 25.1168167,
+        "lng": 121.5140109,
+        "city": "台北市",
+        "district": "北投區"
+      },
+      "type": "outdoor",
+      "fee": "free",
+      "price": "免費",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "public",
+      "opening_hours": "09:00–18:00",
+      "contact": "臺北市體育局場地租借專線 02-2570-2330 #6588",
+      "contact_details": {
+        "phone": "02-2570-2330 #6588"
+      },
+      "facilities": [
+        "戶外"
+      ],
+      "features": [
+        "公園內免費場"
+      ],
+      "website": "https://vbs.sports.taipei/venues/?K=1105",
+      "reviews": "臺北市體育局場地租借系統登錄的戶外匹克球場，位於捷運淡水線旁的綠帶線形公園，1 面、免費，開放 09:00–18:00。地圖位置依公園位置標示。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 225,
+      "name": "PickleFun 瘋匹克 三重都會館",
+      "location": {
+        "address": "新北市三重區中興北街246號",
+        "lat": 25.062453,
+        "lng": 121.468854,
+        "city": "新北市",
+        "district": "三重區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 NT$790–990（依時段）",
+      "courts_count": 3,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "07:00–22:00",
+      "contact": "LINE @picklefun",
+      "contact_details": {
+        "line": "@picklefun"
+      },
+      "facilities": [
+        "室內",
+        "空調"
+      ],
+      "features": [
+        "匹克球專用硬地",
+        "含 1 面教學場",
+        "線上預約"
+      ],
+      "website": "https://picklefun.tw/v/picklefun-zhongxing",
+      "booking_url": "https://picklefun.tw/book",
+      "reviews": "瘋匹克連鎖的三重新館，3 面室內場（含 1 面教學場），品牌館皆為匹克球專用硬地、全館空調。每小時 790 到 990 元，開放 07:00–22:00，線上預約。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 226,
+      "name": "Dien匹克生活 京站小碧潭店",
+      "location": {
+        "address": "新北市新店區中央路157號5樓（京站小碧潭）",
+        "lat": 24.972394,
+        "lng": 121.530427,
+        "city": "新北市",
+        "district": "新店區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方公告（Google 地圖標示至 21:00）",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "商場內球館"
+      ],
+      "reviews": "新店京站小碧潭 5 樓的室內匹克球場，Google 地圖登錄為匹克球場。面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 227,
+      "name": "58飛流運動智能教育培訓基地",
+      "location": {
+        "address": "新北市林口區南勢四街302-8號",
+        "lat": 25.075351,
+        "lng": 121.357038,
+        "city": "新北市",
+        "district": "林口區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方公告",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "匹克球教學",
+        "羽球"
+      ],
+      "reviews": "林口南勢的運動培訓基地，Google 地圖登錄為匹克球場，官方 LINE 社群有匹克球教學與零打團。面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 228,
+      "name": "隔壁匹克球",
+      "location": {
+        "address": "新北市板橋區僑中一街124巷29-3號A棟",
+        "lat": 25.015076,
+        "lng": 121.445502,
+        "city": "新北市",
+        "district": "板橋區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方公告",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [],
+      "reviews": "板橋僑中一街的匹克球場館，室內外依建物型態暫判為室內。面數官方未公告，本站暫記 1 面待查證。同巷 27-5 號是排球俱樂部，非同一家。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 229,
+      "name": "痞客柏 匹克球俱樂部",
+      "location": {
+        "address": "桃園市龜山區頂湖路9-2號2樓",
+        "lat": 25.046659,
+        "lng": 121.361299,
+        "city": "桃園市",
+        "district": "龜山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方公告",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [],
+      "reviews": "位於林口與龜山交界頂湖路的匹克球俱樂部，設在 2 樓，暫判為室內。面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 230,
+      "name": "The Picknic Club",
+      "location": {
+        "address": "新竹縣寶山鄉寶山路二段472-8號",
+        "lat": 24.751957,
+        "lng": 121.019822,
+        "city": "新竹縣",
+        "district": "寶山鄉"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每面每小時離峰 NT$900／尖峰 NT$1,200",
+      "courts_count": 4,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "平日 10:00–22:00、假日 09:00–22:00",
+      "contact": "IG @thepicknicclub",
+      "contact_details": {
+        "instagram": "https://instagram.com/thepicknicclub"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "4 面室內專業球場",
+        "2026/11 正式營運"
+      ],
+      "website": "https://picknicclub.com/",
+      "reviews": "靠近新竹市區的寶山鄉新館，官網標示四面室內專業球場，2026 年 11 月 9 日正式營運。每面每小時離峰 900 元、尖峰 1,200 元。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 231,
+      "name": "INPICKLEBALL IN匹克球館",
+      "location": {
+        "address": "台中市太平區樹德路290號",
+        "lat": 24.157109,
+        "lng": 120.712883,
+        "city": "台中市",
+        "district": "太平區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "付費，依官方公告",
+      "courts_count": 3,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "24 小時（智慧球場）",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "24 小時",
+        "智慧球場"
+      ],
+      "website": "https://pickletown.app/court/00294e5d-01ba-49db-bda4-ab071ce490ed",
+      "reviews": "太平樹德路的室內匹克球館，PickleTown 登錄為室內 3 面、付費。Google 地圖標示 24 小時營業。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 232,
+      "name": "Pick瘋匹克球場",
+      "location": {
+        "address": "台中市西屯區西平南巷1之2號",
+        "lat": 24.197909,
+        "lng": 120.612181,
+        "city": "台中市",
+        "district": "西屯區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方公告（Google 地圖標示至 23:00）",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [],
+      "reviews": "西屯西平南巷的匹克球場，室內外依營業時間暫判為室內。面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 233,
+      "name": "鹿江國際中小學 光電綜合球場",
+      "location": {
+        "address": "彰化縣鹿港鎮自由路300號（鹿江國際中小學）",
+        "lat": 24.065512,
+        "lng": 120.4381269,
+        "city": "彰化縣",
+        "district": "鹿港鎮"
+      },
+      "type": "covered",
+      "fee": "free",
+      "price": "開放辦法未公布",
+      "courts_count": 17,
+      "net_type": "portable",
+      "ownership": "public",
+      "opening_hours": "開放時段未公布",
+      "contact": "鹿江國際中小學 04-777-5701",
+      "contact_details": {
+        "phone": "04-777-5701"
+      },
+      "facilities": [
+        "風雨球場",
+        "太陽光電棚架"
+      ],
+      "features": [
+        "可排 17 面匹克球場",
+        "學校與社區共用",
+        "2026/11/21 啟用"
+      ],
+      "reviews": "2026 年 11 月 21 日啟用的光電綜合球場，太陽光電棚架下可遮陽避雨，平時為 4 面籃球場加 1 面排球場，改匹克球配置可排 17 面，報導稱為中部最大。縣府出資約 2,025 萬元，未來學校與社區共用，對外開放時段與辦法尚未公布，前往前請先洽學校。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 234,
+      "name": "Get 匹匹 匹克球館",
+      "location": {
+        "address": "雲林縣斗六市建興路174號",
+        "lat": 23.708952,
+        "lng": 120.522107,
+        "city": "雲林縣",
+        "district": "斗六市"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "場租依官方公告；課程每人 NT$400–600",
+      "courts_count": 3,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方公告",
+      "contact": "0912-478-383",
+      "contact_details": {
+        "phone": "0912-478-383",
+        "instagram": "https://instagram.com/getpp_pickleball",
+        "line": "https://lin.ee/RuUjoPv"
+      },
+      "facilities": [
+        "室內",
+        "空調"
+      ],
+      "features": [
+        "2026/11 試營運",
+        "匹克球課程"
+      ],
+      "website": "https://www.threads.com/@getpp_pickleball",
+      "reviews": "斗六的室內冷氣匹克球館，官方 Threads 介紹為 3 面，約 11 月中旬試營運。另開體驗班（每人 400 元）與初階班（每人 600 元），每堂 2 小時，LINE 預約。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 235,
+      "name": "VIPIK 唯匹客 匹克球生活館",
+      "location": {
+        "address": "高雄市左營區自由二路108號3樓",
+        "lat": 22.660052,
+        "lng": 120.30906,
+        "city": "高雄市",
+        "district": "左營區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方公告",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [],
+      "reviews": "左營自由二路大樓 3 樓的匹克球生活館。面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 236,
+      "name": "羽貓球 匹克球／羽球共享空間",
+      "location": {
+        "address": "高雄市鳳山區鳳屏二路36號",
+        "lat": 22.639717,
+        "lng": 120.404623,
+        "city": "高雄市",
+        "district": "鳳山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依線上預訂頁公告",
+      "courts_count": 1,
+      "net_type": "shared",
+      "ownership": "private",
+      "opening_hours": "24 小時（依 Google 地圖）",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "24 小時",
+        "羽球／匹克球共用"
+      ],
+      "reviews": "鳳山的匹克球與羽球共享空間，Google 地圖標示 24 小時營業並提供線上預訂。面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 237,
+      "name": "ELTON Pickleball Club",
+      "location": {
+        "address": "高雄市橋頭區里芋寮路南段36號",
+        "lat": 22.758197,
+        "lng": 120.289564,
+        "city": "高雄市",
+        "district": "橋頭區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依官方公告",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "依官方公告（Google 地圖標示至 23:00）",
+      "contact": "官方聯絡管道未公開，請先洽場館",
+      "facilities": [
+        "室內"
+      ],
+      "features": [],
+      "reviews": "橋頭里芋寮路的匹克球俱樂部，室內外依營業時間暫判為室內。行政區依地圖位置判定。面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 238,
+      "name": "高雄市岡山運動中心",
+      "location": {
+        "address": "高雄市岡山區中山南路169號",
+        "lat": 22.783979,
+        "lng": 120.299526,
+        "city": "高雄市",
+        "district": "岡山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時離峰 NT$250／尖峰 NT$350",
+      "courts_count": 1,
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "06:00–22:00",
+      "contact": "07-625-0666",
+      "contact_details": {
+        "phone": "07-625-0666"
+      },
+      "facilities": [
+        "室內",
+        "綜合球場"
+      ],
+      "features": [
+        "1F 綜合球場可租匹克球場"
+      ],
+      "website": "https://www.wskgsc.com.tw/",
+      "reviews": "舞動陽光經營的岡山運動中心，官網列 1F 綜合球場可租匹克球場 1 面，每小時離峰 250 元、尖峰 350 元，開放 06:00–22:00。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
+    },
+    {
+      "id": 239,
+      "name": "PickleFun 瘋匹克 宜蘭原野館",
+      "location": {
+        "address": "宜蘭縣三星鄉三星路四段25號",
+        "lat": 24.667492,
+        "lng": 121.662785,
+        "city": "宜蘭縣",
+        "district": "三星鄉"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "每小時 NT$650–850（依時段）",
+      "courts_count": 1,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "06:00–23:00（官方頁面資料不一致，以預約頁為準）",
+      "contact": "LINE @picklefun",
+      "contact_details": {
+        "line": "@picklefun"
+      },
+      "facilities": [
+        "室內",
+        "空調"
+      ],
+      "features": [
+        "匹克球專用硬地",
+        "線上預約"
+      ],
+      "website": "https://picklefun.tw/YL",
+      "booking_url": "https://picklefun.tw/book",
+      "reviews": "瘋匹克連鎖的宜蘭館，品牌館皆為匹克球專用硬地、全館空調。每小時 650 到 850 元。官方頁面的面數與營業時間前後不一致，面數官方未公告，本站暫記 1 面待查證。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-23"
     }
   ]
 }

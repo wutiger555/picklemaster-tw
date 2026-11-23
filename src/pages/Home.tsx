@@ -180,9 +180,9 @@ const Home = () => {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="font-black text-lg md:text-xl">AEPL 職業聯賽專區</span>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-neutral-900 text-[10px] font-black">🏆 雲豹五站四冠</span>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-neutral-900 text-[10px] font-black">🏆 雲豹七站五冠</span>
                   </div>
-                  <p className="text-sm text-neutral-300 truncate">新北站戰報：雲豹 3:1 討回冠軍・下一站 11/14 台北</p>
+                  <p className="text-sm text-neutral-300 truncate">桃園站戰報：YANKEY ACE Dreambreaker 22:20 封王・下一站 12/5 台南</p>
                 </div>
               </div>
               <svg className="w-6 h-6 text-teal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5-5 5M6 12h12" /></svg>

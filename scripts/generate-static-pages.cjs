@@ -473,7 +473,7 @@ const pageSEO = {
     },
     tournaments: {
         title: '2026 台灣匹克球賽事總覽 | CTPF 全年認證賽、國際積分賽',
-        description: '完整掌握 2026 台灣匹克球 32 場賽事：AEPL 職業聯賽、台中國際公開賽、城市盃全國團體賽、新光認真盃、桐花盃、TMLP 年終邀請賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
+        description: '完整掌握 2026 台灣匹克球 32 場賽事：AEPL 職業聯賽、台中國際公開賽、星動盃明星公益賽、三運盃、TMLP 年終邀請賽、全國共融盃，以及臺北公開賽、新光認真盃等完賽紀錄。報名時間、場地、組別、獎金一次看。',
         keywords: '2026匹克球賽事,台灣匹克球比賽,CTPF賽事,臺灣盃匹克球,NAPA盃,港都盃,中正盃,噶瑪蘭盃,臺北匹克球公開賽,APG 亞洲匹克球運動會,匹克球錦標賽,匹克球報名',
         structuredData: {
             "@context": "https://schema.org",
@@ -594,14 +594,14 @@ const pageSEO = {
         }
     },
     paddles: {
-        title: '匹克球拍完整資料庫 | 26 大品牌 45 款規格對照、並排比較',
-        description: 'JOOLA、Selkirk、Paddletek、Vatic Pro、Ronbus、Niupipo、Facolos、ProKennex 等 26 大品牌 45 款球拍。小紅書熱門、高 CP 值新手拍完整收錄，附拍型定位與六軸專業篩選，支援 2-4 支規格並排比較。',
+        title: '匹克球拍完整資料庫 | 27 大品牌 55 款規格對照、並排比較',
+        description: 'JOOLA、Selkirk、Paddletek、Vatic Pro、Ronbus、Niupipo、Facolos、ProKennex 等 27 大品牌 55 款球拍。小紅書熱門、高 CP 值新手拍完整收錄，附拍型定位與六軸專業篩選，支援 2-4 支規格並排比較。',
         keywords: '匹克球拍資料庫,球拍規格,匹克球拍比較,匹克球拍推薦,新手匹克球拍,JOOLA Perseus,Vatic Pro,Ronbus,Niupipo,高CP值球拍,pickleball paddle database,paddle comparison',
         structuredData: {
             "@context": "https://schema.org",
             "@type": "ItemList",
             "name": "匹克球拍完整資料庫",
-            "description": "26 大品牌 45 款熱門匹克球拍完整規格對照",
+            "description": "27 大品牌 55 款熱門匹克球拍完整規格對照",
             "numberOfItems": 45,
             "url": "https://picklemastertw.com/paddles/"
         }

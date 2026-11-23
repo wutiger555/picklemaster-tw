@@ -74,7 +74,7 @@ const AdBanner = ({
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
-        data-ad-client="ca-pub-7062108661079564"
+        data-ad-client="ca-pub-1245763004722958"
         data-ad-slot={adSlot}
         data-ad-format={format === 'horizontal' ? 'horizontal' : 'auto'}
         data-full-width-responsive="true"

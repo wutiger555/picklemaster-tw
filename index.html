@@ -20,6 +20,11 @@
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
 
+  <!-- Google AdSense（帳號驗證 + 廣告腳本） -->
+  <meta name="google-adsense-account" content="ca-pub-1245763004722958">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1245763004722958"
+    crossorigin="anonymous"></script>
+
   <!-- SEO Meta Tags (2026 Revision) -->
   <meta name="description"
     content="匹克球台灣 Picklemaster Taiwan - 台灣最完整的匹克球權威資訊平台。2026 全台 200+ 球場地圖、CTPF 認證賽事總覽、DUPR 評級指南、3D 互動規則教學、術語字典與裝備選購。從新手到職業選手一站搞定。" />
@@ -225,26 +230,6 @@
     }
   </script>
 
-  <!-- Lazy Load Google AdSense -->
-  <script>
-    const loadAdSense = () => {
-      const script = document.createElement('script');
-      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      document.head.appendChild(script);
-
-      // Remove event listeners after loading the script
-      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-        window.removeEventListener(event, loadAdSense, { once: true })
-      );
-    };
-
-    // Add event listeners to trigger AdSense loading on user interaction
-    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-      window.addEventListener(event, loadAdSense, { once: true, passive: true })
-    );
-  </script>
 </body>
 
 </html>

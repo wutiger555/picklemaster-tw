@@ -373,7 +373,7 @@ git push origin main
 ## 🔌 第三方整合
 
 ### Google AdSense
-- **客戶端 ID**: `ca-pub-7062108661079564`
+- **客戶端 ID**: `ca-pub-1245763004722958`
 - **位置**: `index.html` 底部腳本
 - **廣告組件**: `src/components/ads/AdBanner.tsx`
 

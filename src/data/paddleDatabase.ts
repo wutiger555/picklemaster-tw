@@ -1686,6 +1686,31 @@ export interface AffiliateOffer {
 
 // 商品層級：直接對應到某一支球拍
 export const PADDLE_AFFILIATES: Record<string, AffiliateOffer[]> = {
+  'joola-scorpeus-pro-iv': [
+    { shop: 'JR 育樂', url: 'https://s.shopee.tw/4VeaIByOju', variant: 'Pro IV 系列 14／16mm（下單時選 Scorpeus）' },
+  ],
+  'joola-magnus-3': [
+    { shop: 'JR 育樂', url: 'https://s.shopee.tw/4VeaIByOju', variant: 'Pro IV 系列 14／16mm（下單時選 Magnus）' },
+  ],
+  'joola-perseus-power-fx-16mm': [
+    { shop: '丘林體育 Chilling', url: 'https://s.shopee.tw/4LLA5sz24t', variant: 'POWER FX FREEZE 全泡棉' },
+  ],
+  'selkirk-boomstik-st-elongated': [
+    { shop: '丘林體育 Chilling', url: 'https://s.shopee.tw/qlHvSCMBE', variant: 'Boomstik ST' },
+  ],
+  'franklin-c45': [
+    { shop: '台灣匹克熊', url: 'https://s.shopee.tw/gRrj9CzWD', variant: 'C45° 14mm 版（本站規格為 16mm，下單前確認厚度）' },
+  ],
+  'vatic-pro-v-sol-tour': [
+    { shop: '匹克病毒 PickleVirus', url: 'https://s.shopee.tw/60TO4yqqfd', variant: 'V-Sol Tour' },
+  ],
+  'vatic-pro-prism-flash': [
+    { shop: '匹克病毒 PickleVirus', url: 'https://s.shopee.tw/6VPeftowek', variant: 'Prism Flash 紫拍' },
+    { shop: '典將體育', url: 'https://s.shopee.tw/6L6ETapZzj', variant: 'Prism Flash 紫拍（附拍套）' },
+  ],
+  'bread-butter-loco-2': [
+    { shop: '匹克窩 Pickle Nest', url: 'https://s.shopee.tw/6q2V4Vnfyq', variant: 'Loco 2（附球拍套）' },
+  ],
   'joola-perseus-pro-v-16mm': [
     { shop: '力揚體育', url: 'https://s.shopee.tw/1qbcGNhaEh', variant: '600558 / 600555' },
     { shop: '丘林體育 Chilling', url: 'https://s.shopee.tw/6q0IDb6ch9', variant: '14 / 16mm 可選' },
@@ -1700,6 +1725,7 @@ export const PADDLE_AFFILIATES: Record<string, AffiliateOffer[]> = {
   'selkirk-labs-boomstik': [
     { shop: '匹克魂', url: 'https://s.shopee.tw/5LBUQs4249', variant: '美版（長／寬版）', parallelImport: true },
     { shop: '古大體育 匹克魂', url: 'https://s.shopee.tw/7VFz10Toy1', variant: '亞版 Raw Carbon', parallelImport: true },
+    { shop: '匹克窩 Pickle Nest', url: 'https://s.shopee.tw/6fj4sCoJJp', variant: 'LABS Project BOOMSTIK' },
   ],
   'selkirk-luxx-control-air-invikta': [
     { shop: 'JR 育樂', url: 'https://s.shopee.tw/6AkbRl9YCK', variant: 'InfiniGrit / INVICTA / EPIC', parallelImport: true },
@@ -1717,6 +1743,7 @@ export const PADDLE_AFFILIATES: Record<string, AffiliateOffer[]> = {
   ],
   'crbn-1x-power': [
     { shop: '威盛國際', url: 'https://s.shopee.tw/4LIxGXj4Eg', variant: '同店另有 3X Power Series', parallelImport: true },
+    { shop: '台灣匹克熊', url: 'https://s.shopee.tw/1BO8K4B5VK', variant: '1X Power Series' },
   ],
 };
 
@@ -1729,6 +1756,14 @@ export const BRAND_SHOP_AFFILIATES: Partial<Record<PaddleBrand, AffiliateOffer[]
   Selkirk: [{ shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' }],
   LUZZ: [{ shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' }],
   adidas: [{ shop: '力揚體育 蝦皮賣場', url: 'https://s.shopee.tw/gPesTfl8M' }],
+  Paddletek: [{ shop: '匹克窩 Pickle Nest 蝦皮賣場', url: 'https://s.shopee.tw/3LScu6SABq', variant: '有 Honeyfoam、Bantam 系列' }],
+  ProKennex: [{ shop: '匹克窩 Pickle Nest 蝦皮賣場', url: 'https://s.shopee.tw/3LScu6SABq', variant: '有 Black Ace 系列' }],
+  'Bread & Butter': [{ shop: '匹克窩 Pickle Nest 蝦皮賣場', url: 'https://s.shopee.tw/3LScu6SABq' }],
+  Honolulu: [{ shop: 'Pikomi 匹克迷 蝦皮賣場', url: 'https://s.shopee.tw/3Vm36PRWqt', variant: '有 J2CR／J6CR 系列' }],
+  Franklin: [{ shop: '台灣匹克熊 蝦皮賣場', url: 'https://s.shopee.tw/4LLA5wOMA4', variant: '有 C45 系列' }],
+  CRBN: [{ shop: '台灣匹克熊 蝦皮賣場', url: 'https://s.shopee.tw/4LLA5wOMA4', variant: '有 1X／3X Power Series' }],
+  HEAD: [{ shop: '台灣匹克熊 蝦皮賣場', url: 'https://s.shopee.tw/4LLA5wOMA4', variant: '有 HEAD Radical 系列' }],
+  'Vatic Pro': [{ shop: '匹克病毒 PickleVirus 蝦皮賣場', url: 'https://s.shopee.tw/4VeaIFNip7', variant: '有 V-Sol、Prism 系列' }],
 };
 
 export const getAffiliateOffers = (paddle: Paddle): AffiliateOffer[] => {

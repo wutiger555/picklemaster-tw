@@ -247,6 +247,10 @@ const PaddleCard = ({
 
     <div className="text-xs text-neutral-500 mb-2 line-clamp-1"><strong className="text-neutral-700">適合：</strong>{p.bestFor}</div>
 
+    {p.discontinued && (
+      <div className="text-[11px] text-neutral-600 bg-neutral-100 rounded-xl px-2.5 py-1.5 mb-2 line-clamp-1">⏸ 已有新世代{p.discontinuedNote ? `：${p.discontinuedNote}` : ''}</div>
+    )}
+
     {p.cons && (
       <div className="text-[11px] text-amber-700 bg-amber-50 rounded-xl px-2.5 py-1.5 mb-2 line-clamp-1">⚠️ {p.cons}</div>
     )}

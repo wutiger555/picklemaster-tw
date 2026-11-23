@@ -437,7 +437,7 @@ const pageSEO = {
     },
     aepl: {
         title: 'AEPL 職業聯賽專區｜台灣匹克球職業聯盟 球隊・賽程・戰力分析',
-        description: '台灣第一個匹克球職業聯賽 AEPL 完整追蹤：五站戰罷桃園永豐雲豹四冠，新竹 YANKEY ACE 主場奪冠。6 隊戰力卡、各站戰報與比分、賽程（第 6 站 11/14-15 台北）、Dreambreaker 賽制解說、選手焦點。',
+        description: '台灣第一個匹克球職業聯賽 AEPL 完整追蹤：七站戰罷桃園永豐雲豹五冠，新竹 YANKEY ACE 兩冠。6 隊戰力卡、各站戰報與比分、賽程（第 8 站 12/5-6 台南）、Dreambreaker 賽制解說、選手焦點。',
         keywords: 'AEPL,亞洲菁英匹克球聯盟,台灣匹克球職業聯賽,匹克球職業,桃園雲豹,台南旭日雷霆,Ahhh,蘆沐,富瑞特科技,鍾振煒,蔡萱,邱子恩,林志穎,匹克球隊,職業匹克球選手,台中火車站 匹克球,高雄駁二 匹克球',
         structuredData: {
             "@context": "https://schema.org",
@@ -463,7 +463,7 @@ const pageSEO = {
     },
     tournaments: {
         title: '2026 台灣匹克球賽事總覽 | CTPF 全年認證賽、國際積分賽',
-        description: '完整掌握 2026 台灣匹克球 32 場賽事：AEPL 職業聯賽、台中國際公開賽、城市盃全國團體賽、新光認真盃、桐花盃、TMLP 年終邀請賽、APG 亞洲賽。報名時間、場地、組別、獎金一次看。',
+        description: '完整掌握 2026 台灣匹克球 32 場賽事：AEPL 職業聯賽、台中國際公開賽、星動盃明星公益賽、三運盃、TMLP 年終邀請賽、全國共融盃，以及臺北公開賽、新光認真盃等完賽紀錄。報名時間、場地、組別、獎金一次看。',
         keywords: '2026匹克球賽事,台灣匹克球比賽,CTPF賽事,臺灣盃匹克球,NAPA盃,港都盃,中正盃,噶瑪蘭盃,臺北匹克球公開賽,APG 亞洲匹克球運動會,匹克球錦標賽,匹克球報名',
         structuredData: {
             "@context": "https://schema.org",
@@ -584,14 +584,14 @@ const pageSEO = {
         }
     },
     paddles: {
-        title: '匹克球拍完整資料庫 | 26 大品牌 45 款規格對照、並排比較',
-        description: 'JOOLA、Selkirk、Paddletek、Vatic Pro、Ronbus、Niupipo、Facolos、ProKennex 等 26 大品牌 45 款球拍。小紅書熱門、高 CP 值新手拍完整收錄，附拍型定位與六軸專業篩選，支援 2-4 支規格並排比較。',
+        title: '匹克球拍完整資料庫 | 27 大品牌 55 款規格對照、並排比較',
+        description: 'JOOLA、Selkirk、Paddletek、Vatic Pro、Ronbus、Niupipo、Facolos、ProKennex 等 27 大品牌 55 款球拍。小紅書熱門、高 CP 值新手拍完整收錄，附拍型定位與六軸專業篩選，支援 2-4 支規格並排比較。',
         keywords: '匹克球拍資料庫,球拍規格,匹克球拍比較,匹克球拍推薦,新手匹克球拍,JOOLA Perseus,Vatic Pro,Ronbus,Niupipo,高CP值球拍,pickleball paddle database,paddle comparison',
         structuredData: {
             "@context": "https://schema.org",
             "@type": "ItemList",
             "name": "匹克球拍完整資料庫",
-            "description": "26 大品牌 45 款熱門匹克球拍完整規格對照",
+            "description": "27 大品牌 55 款熱門匹克球拍完整規格對照",
             "numberOfItems": 45,
             "url": "https://picklemastertw.com/paddles/"
         }
@@ -1424,13 +1424,13 @@ async function generateStaticPages() {
         const INDEX_PAGES = [
             {
                 route: 'aepl', h1: 'AEPL 職業聯賽專區', crumb: 'AEPL 職業聯賽',
-                intro: '台灣第一個匹克球職業聯賽：AEPL 亞洲菁英匹克球聯盟 2026 創始賽季（8-11 月），6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。前三站台中（8/30）、高雄（9/20）、宜蘭（10/4）冠軍皆為桃園永豐雲豹，三場冠軍戰都以 3:2 在第 5 回合 Dreambreaker 分出勝負；第 4 站新竹（10/18）由 YANKEY ACE 主場奪冠，第 5 站新北（11/1）雲豹再奪第 4 冠；第 6 站 11 月 14-15 日台北。藝人林志穎擔任賽事大使。',
+                intro: '台灣第一個匹克球職業聯賽：AEPL 亞洲菁英匹克球聯盟 2026 創始賽季（8-12 月），6 支企業隊、全台 8 站巡迴、總獎金新台幣 100 萬元。前三站台中（8/30）、高雄（9/20）、宜蘭（10/4）冠軍皆為桃園永豐雲豹，三場冠軍戰都以 3:2 在第 5 回合 Dreambreaker 分出勝負；第 4 站新竹（10/18）由 YANKEY ACE 主場奪冠，第 5 站新北（11/1）、第 6 站台北（因雨延至 11/20 在桃園補賽）雲豹再奪兩冠；第 7 站桃園（11/22）YANKEY ACE 以 Dreambreaker 22:20 擊敗雲豹拿下第 2 冠；第 8 站 12 月 5-6 日台南。藝人林志穎擔任賽事大使。',
                 items: [
-                    { href: '/aepl', label: '桃園永豐雲豹', sub: '🏆 台中、高雄、宜蘭、新北四冠，新竹站亞軍。TPBL 雲豹體系，隊長鍾振煒、決勝回合王牌林洸賢、15 歲小將邱子恩（宜蘭站拿下冠軍點）' },
+                    { href: '/aepl', label: '桃園永豐雲豹', sub: '🏆 台中、高雄、宜蘭、新北、台北五冠，新竹、桃園站亞軍。TPBL 雲豹體系，隊長鍾振煒、決勝回合王牌林洸賢、15 歲小將邱子恩（宜蘭站拿下冠軍點）' },
                     { href: '/aepl', label: '台南旭日雷霆', sub: '🥈🥉🥈🥉 台中亞軍、高雄季軍、宜蘭亞軍、新竹季軍。尚騰汽車集團×寶嘉聯合共同成立，隊長蔡萱' },
-                    { href: '/aepl', label: '新竹 YANKEY ACE', sub: '🏆 新竹站主場冠軍，終結雲豹三連冠；五站皆進 4 強（一冠二亞一季）' },
-                    { href: '/aepl', label: '新北蘆沐', sub: '🥉 新北站主場季軍（隊史最佳）；台中、高雄兩站 4 強' },
-                    { href: '/aepl', label: 'Ahhh', sub: '台北 Ahhh Social Pickleball Hub 場館品牌跨足職業球隊；宜蘭、新北兩站 4 強' },
+                    { href: '/aepl', label: '新竹 YANKEY ACE', sub: '🏆 新竹、桃園兩站冠軍，兩度在冠軍戰擊敗雲豹' },
+                    { href: '/aepl', label: '新北蘆沐', sub: '🥈 台北站亞軍（隊史首度打進冠軍戰）；新北站季軍' },
+                    { href: '/aepl', label: 'Ahhh', sub: '台北 Ahhh Social Pickleball Hub 場館品牌跨足職業球隊；桃園站季軍（本季首度站上頒獎台）' },
                     { href: '/aepl', label: '富瑞特科技', sub: '科技產業企業隊；新竹站 4 強' },
                 ],
                 foot: '<a href="/articles/taiwan-pro-pickleball-2026" style="color:#0d9488;">深度專欄：台灣匹克球職業元年全解析</a>　·　<a href="/tournaments" style="color:#0d9488;">2026 賽事總覽</a>',

@@ -284,7 +284,7 @@ export const ARTICLES: Article[] = [
       {
         heading: 'PBCoR 與 2026 新規',
         content: `<p>PBCoR（Paddle/Ball Coefficient of Restitution）是 USA Pickleball 用來衡量球拍「彈性」的標準——簡單說，就是球拍把能量還給球的效率。</p>
-<p><strong>2026 年起，USAP 把 PBCoR 上限從 .44 收緊到 .43</strong>。這個改變的背景是：熱壓成型與發泡核心讓球拍出球速度大幅提升，比賽節奏變快到影響觀賞性與安全性，因此協會決定拉回。</p>
+<p><strong>2025 年 11 月 1 日起，USAP 把 PBCoR 上限從 .44 收緊到 .43</strong>；2026 年 10 月 1 日起，新送測的球拍還要通過轉速測試（低於 2,100 RPM）。這個改變的背景是：熱壓成型與發泡核心讓球拍出球速度大幅提升，比賽節奏變快到影響觀賞性與安全性，因此協會決定拉回。</p>
 <p><strong>對你的實際影響：</strong></p>
 <ul>
 <li>如果你只是休閒打球，沒有影響。</li>

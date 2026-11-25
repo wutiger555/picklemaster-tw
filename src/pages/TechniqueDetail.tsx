@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { m, LazyMotion, domAnimation } from 'framer-motion';
 import { getTechniqueBySlug, TECHNIQUES } from '../data/techniquesData';
 import SEOHead from '../components/common/SEOHead';
+import TechniqueVisuals from '../components/techniques/TechniqueVisuals';
 import { useEffect } from 'react';
 
 const Section = ({ title, children, icon }: { title: string; children: React.ReactNode; icon: string }) => (
@@ -120,6 +121,8 @@ const TechniqueDetail = () => {
         </section>
 
         <div className="container mx-auto px-4 max-w-4xl pb-20">
+          <TechniqueVisuals slug={technique.slug} />
+
           {/* Key Points */}
           <Section title="關鍵要點" icon="🎯">
             <ul className="space-y-2">

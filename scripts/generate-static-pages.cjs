@@ -1199,12 +1199,41 @@ async function generateStaticPages() {
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(playerSchema)}</script>`);
             {
-                const others = PLAYER_SLUGS.filter(x => x.slug !== p.slug).slice(0, 8);
+                const full_ = (loadTsModule('src/data/playersData.ts').PLAYERS || []).find(x => x.slug === p.slug) || {};
+                const related = (full_.relatedPlayers || []).map(s => PLAYER_SLUGS.find(x => x.slug === s)).filter(Boolean);
+                const others = (related.length ? related : PLAYER_SLUGS.filter(x => x.slug !== p.slug)).slice(0, 8);
+                const st = full_.stats || {};
+                const profile = [
+                    full_.birthYear && `出生年：${full_.birthYear}`,
+                    full_.hand && `慣用手：${full_.hand}`,
+                    full_.height && `身高：${full_.height}`,
+                    full_.playingStyle && `打法：${full_.playingStyle}`,
+                    full_.rankCategory && `排名：${full_.rankCategory}`,
+                    full_.duprRating && `DUPR：${full_.duprRating}`,
+                    full_.signatureShot && `招牌球：${full_.signatureShot}`,
+                ].filter(Boolean);
                 const body = `
-        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(p.country)} · 職業匹克球選手</p>
-        <p style="font-size:16px;margin:0 0 20px;">${esc(p.bio)}</p>
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(p.country)} · 職業匹克球選手${full_.nameZh ? ` · ${esc(full_.nameZh)}` : ''}</p>
+        <p style="font-size:16px;line-height:1.7;margin:0 0 20px;">${esc(full_.bio || p.bio)}</p>${profile.length ? `
         <section style="margin-bottom:24px;">
-          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他職業選手</h2>
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">基本資料</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${profile.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+        </section>` : ''}${full_.paddle ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">使用球拍與贊助</h2>
+          <p style="font-size:15px;margin:0;">目前使用 ${esc(full_.paddle)}（${esc(full_.paddleBrand || '')}）。${(full_.sponsors || []).length ? `贊助商：${esc(full_.sponsors.join('、'))}。` : ''}<a href="/paddles" style="color:#0d9488;">查看球拍資料庫</a></p>
+        </section>` : ''}${(full_.achievements || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">生涯重要成就</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${full_.achievements.map(a => `<li>${esc(a.year)}：${esc(a.event)}</li>`).join('')}</ul>
+        </section>` : ''}${st.power != null ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">能力側寫</h2>
+          <p style="font-size:15px;margin:0;">力量 ${st.power}・控球 ${st.control}・速度 ${st.speed}・戰術 ${st.strategy}・經驗 ${st.experience}（滿分 100）。為本站依比賽表現綜合判讀的相對分數，非官方數據。</p>
+        </section>` : ''}${full_.quote ? `
+        <blockquote style="font-size:15px;color:#4b5563;border-left:3px solid #0d9488;margin:0 0 24px;padding:4px 12px;">${esc(full_.quote)}</blockquote>` : ''}
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${related.length ? '相關選手' : '其他職業選手'}</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/players/${o.slug}" style="color:#0d9488;">${esc(o.name)}</a>（${esc(o.country)}）</li>`).join('')}</ul>
         </section>
         <p style="font-size:15px;"><a href="/pro-players" style="color:#0d9488;">職業選手總覽</a>　·　<a href="/hall-of-fame" style="color:#0d9488;">名人堂</a></p>`;
@@ -1456,16 +1485,45 @@ async function generateStaticPages() {
                 "@context": "https://schema.org", "@type": "HowTo",
                 "name": `如何學會${t.name}`,
                 "description": t.tagline,
-                "url": canonical
+                "url": canonical,
+                "step": (((loadTsModule('src/data/techniquesData.ts').TECHNIQUES || []).find(x => x.slug === t.slug) || {}).steps || [])
+                    .map((s, i) => ({ "@type": "HowToStep", "position": i + 1, "name": s.title, "text": s.description }))
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(howTo)}</script>`);
             {
-                const others = TECHNIQUE_SLUGS.filter(x => x.slug !== t.slug).slice(0, 8);
+                const full_ = (loadTsModule('src/data/techniquesData.ts').TECHNIQUES || []).find(x => x.slug === t.slug) || {};
+                const related = (full_.relatedTechniques || []).map(s => TECHNIQUE_SLUGS.find(x => x.slug === s)).filter(Boolean);
+                const others = (related.length ? related : TECHNIQUE_SLUGS.filter(x => x.slug !== t.slug)).slice(0, 8);
+                const h2 = (s) => `<h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${s}</h2>`;
                 const body = `
-        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(t.nameEn)}</p>
-        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(t.tagline)}</p>
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(t.nameEn)}${full_.level ? ` · ${esc(full_.level)}` : ''}${full_.category ? ` · ${esc(full_.category)}` : ''}${full_.difficulty ? ` · 難度 ${full_.difficulty}/5` : ''}${full_.timeToLearn ? ` · 學習時間約 ${esc(full_.timeToLearn)}` : ''}</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(t.tagline)}</p>${full_.whenToUse ? `
         <section style="margin-bottom:24px;">
-          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他匹克球技巧</h2>
+          ${h2('什麼時候用')}
+          <p style="font-size:15px;line-height:1.7;margin:0;">${esc(full_.whenToUse)}</p>
+        </section>` : ''}${(full_.keyPoints || []).length ? `
+        <section style="margin-bottom:24px;">
+          ${h2('關鍵要點')}
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${full_.keyPoints.map(k => `<li>${esc(k)}</li>`).join('')}</ul>
+        </section>` : ''}${(full_.steps || []).length ? `
+        <section style="margin-bottom:24px;">
+          ${h2('步驟分解')}
+          <ol style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;">${full_.steps.map(s => `<li><strong>${esc(s.title)}</strong>：${esc(s.description)}</li>`).join('')}</ol>
+        </section>` : ''}${(full_.commonMistakes || []).length ? `
+        <section style="margin-bottom:24px;">
+          ${h2('常見錯誤與修正')}
+          <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;">${full_.commonMistakes.map(m => `<li><strong>${esc(m.mistake)}</strong>：${esc(m.fix)}</li>`).join('')}</ul>
+        </section>` : ''}${(full_.drills || []).length ? `
+        <section style="margin-bottom:24px;">
+          ${h2('練習菜單')}
+          <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;">${full_.drills.map(d => `<li><strong>${esc(d.name)}</strong>（${esc(d.reps)}）：${esc(d.description)}</li>`).join('')}</ul>
+        </section>` : ''}${full_.proTip ? `
+        <section style="margin-bottom:24px;">
+          ${h2('進階心法')}
+          <p style="font-size:15px;line-height:1.7;margin:0;">${esc(full_.proTip)}</p>
+        </section>` : ''}
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${related.length ? '相關技巧' : '其他匹克球技巧'}</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/techniques/${o.slug}" style="color:#0d9488;">${esc(o.name)}</a>（${esc(o.nameEn)}）</li>`).join('')}</ul>
         </section>
         <p style="font-size:15px;"><a href="/techniques" style="color:#0d9488;">技巧百科總覽</a>　·　<a href="/learning" style="color:#0d9488;">3D 互動技巧教學</a>　·　<a href="/courts" style="color:#0d9488;">找場地練習 →</a></p>`;

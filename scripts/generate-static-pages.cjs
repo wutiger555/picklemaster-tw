@@ -1153,14 +1153,37 @@ async function generateStaticPages() {
             content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
             const howToSchema = {
                 "@context": "https://schema.org", "@type": "HowTo",
-                "name": p.title, "description": p.subtitle, "url": canonical
+                "name": p.title, "description": p.subtitle, "url": canonical,
+                "step": ((((loadTsModule('src/data/trainingProgramsData.ts').TRAINING_PROGRAMS || []).find(x => x.slug === p.slug) || {}).weeks) || [])
+                    .map((w, i) => ({ "@type": "HowToStep", "position": i + 1, "name": `第 ${w.week} 週：${w.theme}`, "text": (w.goals || []).join('；') || w.theme }))
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(howToSchema)}</script>`);
             {
                 const others = PROGRAM_SLUGS.filter(x => x.slug !== p.slug).slice(0, 5);
+                const full_ = (loadTsModule('src/data/trainingProgramsData.ts').TRAINING_PROGRAMS || []).find(x => x.slug === p.slug) || {};
+                const overview = [
+                    full_.level && `程度：${full_.level}`,
+                    full_.focus && `重點：${full_.focus}`,
+                    full_.duration && `期間：${full_.duration}`,
+                    full_.weeklyHours && `每週練習：${full_.weeklyHours}`,
+                    full_.prerequisite && `先備條件：${full_.prerequisite}`,
+                    full_.outcome && `完成後：${full_.outcome}`,
+                    (full_.equipment || []).length && `需要器材：${full_.equipment.join('、')}`,
+                ].filter(Boolean);
+                const weeksHtml = (full_.weeks || []).map(w => `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 8px;">第 ${w.week} 週：${esc(w.theme)}</h2>${(w.goals || []).length ? `
+          <p style="font-size:15px;margin:0 0 8px;"><strong>本週目標：</strong>${esc(w.goals.join('；'))}</p>` : ''}${(w.days || []).map(d => `
+          <h3 style="font-size:16px;font-weight:700;margin:12px 0 4px;">${esc(d.day)}・${esc(d.sessionType)}${d.totalTime ? `（${esc(d.totalTime)}）` : ''}</h3>${(d.drills || []).length ? `
+          <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;">${d.drills.map(dr => `<li><strong>${esc(dr.name)}</strong>（${esc(dr.duration)}${dr.reps ? `，${esc(dr.reps)}` : ''}）：${esc(dr.description)}</li>`).join('')}</ul>` : ''}`).join('')}${w.weeklyCheckpoint ? `
+          <p style="font-size:15px;margin:8px 0 0;"><strong>週末自評：</strong>${esc(w.weeklyCheckpoint)}</p>` : ''}
+        </section>`).join('');
                 const body = `
-        <p style="font-size:17px;color:#4b5563;margin:0 0 16px;">${esc(p.subtitle)}</p>
-        <p style="font-size:15px;margin:0 0 20px;">這份訓練菜單提供系統化、每週逐日的練習安排並可追蹤進度。跟著計畫穩定練習，逐步提升你的匹克球實力。</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 16px;">${esc(p.subtitle)}</p>${overview.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">菜單概覽</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${overview.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+        </section>` : ''}${weeksHtml}
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他訓練菜單</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/training-programs/${o.slug}" style="color:#0d9488;">${esc(o.title)}</a> — ${esc(o.subtitle)}</li>`).join('')}</ul>
@@ -1725,7 +1748,7 @@ async function generateStaticPages() {
                     items: [
                         { href: '/tools/dupr-simulator', label: 'DUPR 分數試算', sub: '輸入比賽結果，估算這場對你的 DUPR 評級大約有什麼影響' },
                         { href: '/tools/rotation', label: '輪場排點器', sub: '人數多於場地時，排出讓每個人上場次數平均的輪替表' },
-                        { href: '/tools/bracket', label: '賽程表產生器', sub: '單淘汰、雙淘汰與循環賽的對戰表自動編排' },
+                        { href: '/tools/bracket', label: '賽程表產生器', sub: '單淘汰與循環賽的籤表自動編排，可列印' },
                         { href: '/tools/court-lines', label: '場地劃線指南', sub: '在羽球場或網球場上加劃匹克球線的尺寸與步驟' },
                     ],
                     foot: foot('courts', 'rules'),
@@ -1738,6 +1761,17 @@ async function generateStaticPages() {
                         { href: '/ratings', label: 'DUPR 評級完整說明', sub: '1.0 到 8.0 各級距的實際能力描述' },
                         { href: '/tools', label: '其他實用工具', sub: '輪場排點、賽程表、場地劃線' },
                     ],
+                    sections: [
+                        { heading: '怎麼用', terms: [
+                            { t: '1. 輸入雙方評級', d: '填入你的 DUPR 評級與對手的評級（雙打可用兩人平均）。' },
+                            { t: '2. 輸入比分', d: '填入這場的比分，例如 11：7。' },
+                            { t: '3. 看估算結果', d: '工具會顯示這場大約讓你的評級上升或下降多少，以及賽後的估計評級。' },
+                        ] },
+                        { heading: '試算邏輯與限制', terms: [
+                            { t: '採用簡化的 Elo 式公式', d: '先依雙方評級差算出你的預期勝率，再依實際勝負調整：贏過評級比你高的對手加得多，輸給評級比你低的對手扣得多；比分差距越大，變動幅度也稍微放大。' },
+                            { t: '和官方 DUPR 的差別', d: '官方 DUPR 使用更複雜的模型，會納入歷史比賽、搭檔、比賽時間遠近等因素，所以實際變動會不同。這個工具適合用來理解「為什麼這場贏了分數卻沒漲多少」，實際數值請以 DUPR 官方 App 為準。' },
+                        ] },
+                    ],
                     foot: foot('glossary', 'courts'),
                 },
                 {
@@ -1748,15 +1782,37 @@ async function generateStaticPages() {
                         { href: '/glossary', label: '什麼是球敘、排拍？', sub: '台灣球敘現場的輪場規矩' },
                         { href: '/tools/bracket', label: '賽程表產生器', sub: '要辦正式比賽時改用這個' },
                     ],
+                    sections: [
+                        { heading: '怎麼用', terms: [
+                            { t: '1. 設定人數、輪數、場地數', d: '支援 4 到 16 人、最多 20 輪、最多 8 面場地。' },
+                            { t: '2. 填入球員名字', d: '不填也可以，預設顯示「球員 1、球員 2…」。' },
+                            { t: '3. 產生並列印輪轉表', d: '每一輪列出各場地的兩組搭檔，按「列印輪轉表」就能印出來帶去球場，不需註冊，資料只在你的瀏覽器裡。' },
+                        ] },
+                        { heading: '排點原則', terms: [
+                            { t: '搭檔盡量不重複', d: '每輪安排時會優先挑還沒當過搭檔的組合，讓大家輪流跟不同人配對。' },
+                            { t: '人數多於場地時輪流下場', d: '每面場地 4 人，排不進場的人那一輪休息，每輪的組合會重新排列，避免固定同一批人一直坐板凳。' },
+                        ] },
+                    ],
                     foot: foot('courts', 'faq'),
                 },
                 {
                     route: 'tools/bracket', h1: '匹克球賽程表產生器', crumb: '賽程表產生器',
-                    intro: '辦小型比賽用的對戰表工具：輸入隊伍數，產生單淘汰、雙淘汰或循環賽的賽程與輪次安排。',
+                    intro: '辦球友聚會或社區小型比賽用的籤表工具：輸入參賽者或隊伍名單，自動產生單淘汰或循環賽籤表，可直接列印。',
                     itemsHeading: '延伸閱讀',
                     items: [
                         { href: '/tournaments', label: '2026 賽事總覽', sub: '全台正式賽事的日期與報名資訊' },
                         { href: '/tools/rotation', label: '輪場排點器', sub: '一般球敘輪場用這個' },
+                    ],
+                    sections: [
+                        { heading: '怎麼用', terms: [
+                            { t: '1. 選賽制', d: '單淘汰：輸一場就淘汰，場次少、適合時間有限。循環賽：每人（隊）和其他所有對手各打一次，場次多但最公平。' },
+                            { t: '2. 貼上名單', d: '一行一個名字，雙打就一行填一組隊名。' },
+                            { t: '3. 列印籤表', d: '按「列印籤表」印出，現場直接填比分。' },
+                        ] },
+                        { heading: '常見問題', terms: [
+                            { t: '人數不是 2 的次方怎麼辦？', d: '單淘汰會自動補到下一個 2 的次方（例如 6 人補到 8 格），多出來的位置是輪空（BYE），抽到的人第一輪直接晉級。' },
+                            { t: '循環賽要打幾場？', d: 'N 人的循環賽共 N×(N−1)÷2 場，例如 6 人要打 15 場。工具會把場次分成數輪，每輪每人最多打一場。' },
+                        ] },
                     ],
                     foot: foot('rules', 'courts'),
                 },
@@ -1767,6 +1823,27 @@ async function generateStaticPages() {
                     items: [
                         { href: '/rules', label: '匹克球規則教學', sub: '廚房區、雙彈跳等與場地相關的規則' },
                         { href: '/courts', label: '全台球場地圖', sub: '已經劃好線的場地在哪裡' },
+                    ],
+                    sections: [
+                        { heading: '標準尺寸（依 USA Pickleball 規則）', terms: [
+                            { t: '球場長寬', d: '44 × 20 英尺（13.41 × 6.10 公尺），尺寸含線。' },
+                            { t: '網高', d: '中央 34 英寸（86.4 公分），網柱處 36 英寸（91.4 公分）。' },
+                            { t: '廚房區（非截擊區）', d: '球網兩側各 7 英尺（2.13 公尺）深。' },
+                            { t: '發球區', d: '廚房線到底線 15 英尺（4.57 公尺），由中線分成左右各 10 英尺（3.05 公尺）寬。' },
+                            { t: '線寬與周邊空間', d: '線寬 2 英寸（約 5 公分）；建議場地四周再留約 10 英尺（3 公尺）的安全區。' },
+                        ] },
+                        { heading: '羽球場改匹克球場', terms: [
+                            { t: '保留外框', d: '雙打羽球場外框也是 44 × 20 英尺，外框線可以直接沿用。' },
+                            { t: '加劃廚房線', d: '在球網兩側各 7 英尺（2.13 公尺）處，畫一條與球網平行的線。' },
+                            { t: '加劃中線', d: '從廚房線到底線畫一條中線，分出左右發球區。' },
+                            { t: '降低球網', d: '羽球網太高，要換成或調整到中央 34 英寸、網柱 36 英寸。預算有限可以先用膠帶貼線試打。' },
+                        ] },
+                        { heading: '常見地面材質', terms: [
+                            { t: '壓克力面層', d: '國際賽常用，球速與彈跳最穩定，成本高。' },
+                            { t: 'PU 彈性地墊', d: '對膝蓋較友善，成本中高。' },
+                            { t: '水泥／柏油', d: '最經濟，戶外公園常見。' },
+                            { t: '木地板', d: '室內館常見，球速較快。' },
+                        ] },
                     ],
                     foot: foot('glossary', 'faq'),
                 },

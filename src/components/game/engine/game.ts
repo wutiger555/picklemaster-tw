@@ -2243,7 +2243,9 @@ export class GameEngine {
     const r = this.rally;
     r.hits += 1;
     r.lastTeam = a.team;
-    r.lastHitter = this.athletes.indexOf(a);
+    // 帽哥的分身是臨時選手，不在 athletes 裡：記 null，後面照「該隊第一位」處理
+    const idx = this.athletes.indexOf(a);
+    r.lastHitter = idx >= 0 ? idx : null;
     r.lastHitTime = this.time;
     r.bouncesSinceHit = 0;
     r.lastKindByTeam[a.team] = plan.kind;

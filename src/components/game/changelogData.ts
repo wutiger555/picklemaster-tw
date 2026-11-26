@@ -1,6 +1,11 @@
 /** 版本說明：新版本加在最前面 */
 export const VERSIONS: { v: string; date: string; items: string[] }[] = [
   {
+    v: '1.14',
+    date: '2026-11-06',
+    items: ['修正：熱血版帶帽哥時，分身截擊後對手放小球落廚房會讓比賽卡住'],
+  },
+  {
     v: '1.13',
     date: '2026-10-30',
     items: [

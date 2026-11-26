@@ -1225,7 +1225,7 @@ async function generateStaticPages() {
                 const dirPath = path.join(BUILD_DIR, 'paddles', pd.slug);
                 fs.mkdirSync(dirPath, { recursive: true });
                 const full = `${pd.brand} ${pd.model}`;
-                const title = `${full} 規格與評測 | 厚度 ${pd.thickness}、${pd.face} | 匹克球拍資料庫`;
+                const title = `${full} 規格與評測｜匹克球拍資料庫`;
                 const desc = `${full}（${pd.year}）完整規格：${pd.shape}、核心 ${pd.thickness} ${pd.core}、拍面 ${pd.face}、重量 ${pd.weight}。拍型定位、力量控球旋轉容錯四項評比與台灣購買管道一次看。`;
                 const canonical = `${BASE_URL}/paddles/${pd.slug}/`;
                 let content = template;
@@ -1250,17 +1250,55 @@ async function generateStaticPages() {
                 content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(productSchema)}</script>`);
                 {
                     const others = PADDLE_SLUGS.filter(x => x.slug !== pd.slug && x.brand === pd.brand).slice(0, 5);
+                    const PDB = loadTsModule('src/data/paddleDatabase.ts');
+                    const full_ = PDB.PADDLE_DATABASE.find(x => x.slug === pd.slug) || {};
+                    const channels = (PDB.BRAND_PURCHASE || {})[pd.brand] || [];
+                    const offers = PDB.getAffiliateOffers ? PDB.getAffiliateOffers(full_) : [];
+                    const r = full_.rating || {};
+                    const lab = full_.lab || {};
+                    const labItems = [
+                        lab.swingWeight != null && `揮重 ${lab.swingWeight}`,
+                        lab.twistWeight != null && `扭轉慣量 ${lab.twistWeight}`,
+                        lab.balancePoint != null && `平衡點 ${lab.balancePoint}mm`,
+                        lab.spinRPM != null && `轉速 ${lab.spinRPM} RPM`,
+                        lab.pbcor != null && `PBCoR ${lab.pbcor}`,
+                    ].filter(Boolean);
+                    const li = (x) => `<li>${esc(x)}</li>`;
                     const body = `
-        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(pd.brand)} · ${esc(pd.level)}級 · ${esc(pd.year)}</p>
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(pd.brand)} · ${esc(pd.level)}級 · ${esc(pd.year)}${full_.origin ? ` · ${esc(full_.origin)}品牌` : ''}${full_.endorser ? ` · 代言：${esc(full_.endorser)}` : ''}</p>${full_.discontinued ? `
+        <p style="font-size:15px;background:#f3f4f6;padding:8px 12px;border-radius:8px;">已有新世代或停產。${esc(full_.discontinuedNote || '')}</p>` : ''}${full_.specialty ? `
+        <p style="font-size:16px;line-height:1.7;margin:0 0 16px;">${esc(full_.specialty)}</p>` : ''}${(full_.highlights || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">產品特色</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${full_.highlights.map(li).join('')}</ul>
+        </section>` : ''}
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">適合誰</h2>
+          <p style="font-size:15px;margin:0 0 8px;">${esc(full_.bestFor || '')}</p>${full_.cons ? `
+          <p style="font-size:15px;margin:0;"><strong>注意：</strong>${esc(full_.cons)}</p>` : ''}
+        </section>
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">規格</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">
             <li>拍形：${esc(pd.shape)}</li>
             <li>核心厚度：${esc(pd.thickness)}（${esc(pd.core)}）</li>
             <li>拍面材質：${esc(pd.face)}</li>
-            <li>重量：${esc(pd.weight)}</li>
+            <li>重量：${esc(pd.weight)}</li>${full_.gripLength ? `
+            <li>握把長度／周長：${esc(full_.gripLength)}／${esc(full_.gripSize || '')}</li>` : ''}
+            <li>USAP 認證：${full_.usapApproved ? '通過' : '未列入 USAP 核准清單'}</li>
+            <li>台灣行情參考價：NT$ ${Number(full_.priceTWD || 0).toLocaleString('en-US')}${full_.priceUSD ? `（約 US$${esc(full_.priceUSD)}）` : ''}</li>
           </ul>
-        </section>${others.length ? `
+        </section>${r.power != null ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">四項評比</h2>
+          <p style="font-size:15px;margin:0 0 8px;">力量 ${r.power}・控球 ${r.control}・旋轉 ${r.spin}・容錯 ${r.forgiveness}（滿分 100）。為本站依公開規格、原廠資料與國外評測綜合判讀的相對分數，非實驗室量測。</p>${labItems.length ? `
+          <p style="font-size:15px;margin:0;">第三方或原廠數據：${esc(labItems.join('、'))}${lab.source ? `（來源：${esc(lab.source)}）` : ''}</p>` : ''}
+        </section>` : ''}${(channels.length || offers.length) ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">在哪裡買</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${channels.map(c => `<li><a href="${esc(c.url)}" rel="noopener" style="color:#0d9488;">${esc(c.label)}</a>${c.note ? `：${esc(c.note)}` : ''}</li>`).join('')}${offers.map(o => `<li><a href="${esc(o.url)}" rel="sponsored nofollow noopener" style="color:#0d9488;">蝦皮：${esc(o.shop)}</a>${o.variant ? `（${esc(o.variant)}）` : ''}${o.parallelImport ? '・平行輸入' : ''}</li>`).join('')}</ul>${offers.length ? `
+          <p style="font-size:13px;color:#6b7280;margin:8px 0 0;">標示「蝦皮」的連結為本站分潤連結，透過它下單本站會獲得少量回饋，不影響你的價格與本站評比。</p>` : ''}
+        </section>` : ''}${others.length ? `
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(pd.brand)} 其他型號</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/paddles/${o.slug}" style="color:#0d9488;">${esc(o.model)}</a></li>`).join('')}</ul>
@@ -1308,9 +1346,30 @@ async function generateStaticPages() {
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`);
             {
                 const others = ARTICLE_SLUGS.filter(x => x.slug !== a.slug).slice(0, 6);
+                const full_ = (loadTsModule('src/data/articlesData.ts').ARTICLES || []).find(x => x.slug === a.slug) || {};
+                const sectionsHtml = (full_.sections || []).map(sec => `
+        <section style="margin-bottom:24px;font-size:16px;line-height:1.75;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(sec.heading)}</h2>
+          ${sec.content}
+        </section>`).join('');
+                const faqHtml = (full_.faqs || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">常見問題</h2>${full_.faqs.map(f => `
+          <h3 style="font-size:16px;font-weight:700;margin:12px 0 4px;">${esc(f.question)}</h3>
+          <p style="font-size:15px;margin:0;">${esc(f.answer)}</p>`).join('')}
+        </section>` : '';
+                const refsHtml = (full_.references || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">參考資料</h2>
+          <ul style="margin:0;padding-left:20px;font-size:14px;">${full_.references.map(x => `<li><a href="${esc(x.url)}" rel="noopener" style="color:#0d9488;">${esc(x.title)}</a></li>`).join('')}</ul>
+        </section>` : '';
+                if ((full_.faqs || []).length) {
+                    const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": full_.faqs.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })) };
+                    content = content.replace('</head>', `<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>\n</head>`);
+                }
                 const body = `
-        <p style="font-size:14px;color:#6b7280;margin:0 0 12px;">${esc(a.category)}</p>
-        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(a.summary)}</p>
+        <p style="font-size:14px;color:#6b7280;margin:0 0 12px;">${esc(a.category)}${full_.readingTime ? ` · 閱讀約 ${esc(full_.readingTime)} 分鐘` : ''}${full_.updatedDate ? ` · 更新 ${esc(full_.updatedDate)}` : ''}</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(a.summary)}</p>${sectionsHtml}${faqHtml}${refsHtml}
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">延伸閱讀</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li style="margin-bottom:6px;"><a href="/articles/${o.slug}" style="color:#0d9488;">${esc(o.title)}</a></li>`).join('')}</ul>

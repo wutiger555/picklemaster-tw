@@ -321,10 +321,10 @@ export const deleteCourtReview = (courtId: number) =>
 
 // ---------- 小遊戲（匹克硬邦幫）：雲端存檔與每週排行榜 ----------
 
-export type ArcadeBoard = 'points' | 'pro' | 'dink';
+export type ArcadeBoard = 'points' | 'pro' | 'dink' | 'survival';
 
 export interface ArcadeResult {
-  mode: 'match' | 'dink';
+  mode: 'match' | 'dink' | 'daily' | 'survival';
   difficulty: 'rookie' | 'club' | 'pro';
   venue: string;
   doubles: boolean;

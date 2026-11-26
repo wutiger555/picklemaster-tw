@@ -180,6 +180,7 @@ const BOARDS: { id: ArcadeBoard; label: string; unit: string; desc: string }[] =
   { id: 'points', label: '本週積分', unit: '分', desc: '贏新手 1 分、球友 2 分、高手 4 分' },
   { id: 'pro', label: '擊敗高手', unit: '勝', desc: '本週贏了高手電腦幾場' },
   { id: 'dink', label: 'Dink 最長', unit: '拍', desc: '本週 Dink 挑戰的最長拍數' },
+  { id: 'survival', label: '生存賽', unit: '關', desc: '本週連勝生存賽最多過了幾關' },
 ];
 
 const CACHE_MS = 5 * 60_000;
@@ -232,7 +233,7 @@ export const LeaderboardSheet = ({ open, onClose, onSignIn }: { open: boolean; o
 
   return (
     <Sheet open={open} onClose={onClose} title="🏆 本週排行榜" sub={data ? `每週一 00:00 重置・${resetText(data.resetsAt)}` : '每週一 00:00 重置'}>
-      <div className="grid grid-cols-3 gap-1 rounded-2xl bg-slate-950/70 p-1 ring-1 ring-white/10">
+      <div className="grid grid-cols-4 gap-1 rounded-2xl bg-slate-950/70 p-1 ring-1 ring-white/10">
         {BOARDS.map((b) => (
           <button
             key={b.id}

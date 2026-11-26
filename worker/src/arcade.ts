@@ -16,13 +16,17 @@ const WEEK0 = Date.UTC(1970, 0, 5) - 8 * HOUR;
 export const weekOf = (t: number) => WEEK0 + Math.floor((t - WEEK0) / WEEK) * WEEK;
 
 const MAX_PROFILE = 16_000;
-const MODES = ['match', 'dink'] as const;
+/** match 一般比賽、dink 挑戰、daily 每日挑戰（達成才送）、survival 連勝生存賽（rallies＝過了幾關） */
+const MODES = ['match', 'dink', 'daily', 'survival'] as const;
 const DIFFS = ['rookie', 'club', 'pro'] as const;
 const VENUES = ['arena', 'rosegarden', 'xinyi', 'riverside', 'beach'] as const;
 /** 贏一場的積分：新手 1、球友 2、高手 4 */
 const WIN_POINTS: Record<(typeof DIFFS)[number], number> = { rookie: 1, club: 2, pro: 4 };
 
-export const BOARDS = ['points', 'pro', 'dink'] as const;
+export const BOARDS = ['points', 'pro', 'dink', 'survival'] as const;
+/** 每日挑戰達成的積分；生存賽每過一關 1 分，最多算 10 關 */
+const DAILY_POINTS = 3;
+const SURVIVAL_POINTS_CAP = 10;
 type Board = (typeof BOARDS)[number];
 
 // ---------- 存檔 ----------
@@ -48,8 +52,8 @@ export async function putProfile(env: Env, playerId: string, body: Record<string
 
 // ---------- 比賽結果 ----------
 
-/** 單打換發球制 11 分、贏 2 分：贏家剛好 11 且領先至少 2，或超過 11 時剛好領先 2 */
-const validMatchScore = (w: number, l: number) => (w === 11 && l <= 9) || (w > 11 && w - l === 2);
+/** 換發球制 11 分（15 分週是 15）、贏 2 分：贏家剛好 11 且領先至少 2，或超過 11 時剛好領先 2 */
+const validMatchScore = (w: number, l: number, target = 11) => (w === target && l <= target - 2) || (w > target && w - l === 2);
 
 export async function postResult(env: Env, playerId: string, body: Record<string, unknown>, now: number) {
   const mode = v.oneOf(body.mode, 'mode', MODES, '模式');
@@ -62,18 +66,29 @@ export async function postResult(env: Env, playerId: string, body: Record<string
   let scoreMe = 0;
   let scoreOpp = 0;
   let rallies = 0;
-  if (mode === 'match') {
+  let points = 0;
+  if (mode === 'match' || mode === 'daily') {
     scoreMe = v.int(body.scoreMe, 'score_me', 0, 40, '比分');
     scoreOpp = v.int(body.scoreOpp, 'score_opp', 0, 40, '比分');
     won = scoreMe > scoreOpp;
-    const ok = won ? validMatchScore(scoreMe, scoreOpp) : validMatchScore(scoreOpp, scoreMe);
+    // 15 分週：先到 15 贏 2 分
+    const target = scoreMe >= 15 || scoreOpp >= 15 ? 15 : 11;
+    const ok = won ? validMatchScore(scoreMe, scoreOpp, target) : validMatchScore(scoreOpp, scoreMe, target);
     // 每一分至少要打幾秒（發球＋回球）；換發球制實際打的分數比總分多，所以這是很寬鬆的下限
     if (!ok || durationMs < (scoreMe + scoreOpp) * 4000) throw bad('implausible_result', '這場的成績不太合理，沒有記錄');
+    // 每日挑戰：達成（贏）才會送上來，給固定積分
+    if (mode === 'daily' && !won) throw bad('implausible_result', '每日挑戰要達成才算');
+    points = mode === 'daily' ? DAILY_POINTS : won ? WIN_POINTS[difficulty] : 0;
+  } else if (mode === 'survival') {
+    // 過了幾關；每關先到 5 分，一關至少要打 40 秒
+    rallies = v.int(body.rallies, 'rallies', 0, 30, '關數');
+    if (durationMs < rallies * 40_000) throw bad('implausible_result', '這場的成績不太合理，沒有記錄');
+    won = rallies > 0;
+    points = Math.min(rallies, SURVIVAL_POINTS_CAP);
   } else {
     rallies = v.int(body.rallies, 'rallies', 0, 2000, '拍數');
     if (durationMs < rallies * 800) throw bad('implausible_result', '這場的成績不太合理，沒有記錄');
   }
-  const points = won ? WIN_POINTS[difficulty] : 0;
   await env.DB.prepare(
     `INSERT INTO arcade_results (player_id, week, mode, difficulty, doubles, specials, venue, won, score_me, score_opp, rallies, points, duration_ms, created_at)
      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)`,
@@ -90,6 +105,7 @@ const VALUE: Record<Board, string> = {
   points: `SUM(r.points)`,
   pro: `SUM(r.won AND r.difficulty = 'pro')`,
   dink: `MAX(CASE WHEN r.mode = 'dink' THEN r.rallies ELSE 0 END)`,
+  survival: `MAX(CASE WHEN r.mode = 'survival' THEN r.rallies ELSE 0 END)`,
 };
 
 export async function leaderboard(env: Env, board: string, playerId: string | null, now: number) {

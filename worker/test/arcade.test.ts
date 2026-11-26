@@ -42,7 +42,7 @@ describe('小遊戲：比賽結果', () => {
     const t = await newPlayer();
     const post = (body: unknown, token = t) => api('/api/arcade/results', { token, body });
     expect((await post(win('pro', 11, 10))).json.error.code).toBe('implausible_result'); // 11 分要贏 2 分
-    expect((await post(win('pro', 15, 3))).json.error.code).toBe('implausible_result'); // 超過 11 只能剛好贏 2
+    expect((await post(win('pro', 14, 3))).json.error.code).toBe('implausible_result'); // 超過 11 只能剛好贏 2（15:3 是 15 分週的合法比分）
     expect((await post(win('pro', 11, 0, { durationMs: 10_000 }))).json.error.code).toBe('implausible_result');
     expect((await post({ mode: 'dink', difficulty: 'club', venue: 'arena', rallies: 500, durationMs: 60_000 })).json.error.code).toBe('implausible_result');
     expect((await post(win('legend'))).json.error.code).toBe('invalid_difficulty');
@@ -120,5 +120,21 @@ describe('小遊戲：緊急開關', () => {
     } finally {
       (env as unknown as { ARCADE_MODE: string }).ARCADE_MODE = 'on';
     }
+  });
+});
+
+describe('小遊戲：每日挑戰、15 分週、生存賽', () => {
+  it('每日挑戰達成給 3 分、沒達成不收；15 分比分合規；生存賽關數上榜', async () => {
+    const t = await newPlayer('輪換王');
+    const post = (body: Record<string, unknown>) => api('/api/arcade/results', { token: t, body });
+    expect((await post({ ...win('club'), mode: 'daily' })).json.points).toBe(3);
+    expect((await post({ ...win('club', 5, 11), mode: 'daily' })).json.error.code).toBe('implausible_result');
+    expect((await post(win('pro', 15, 9, { durationMs: 8 * 60_000 }))).json.points).toBe(4);
+    expect((await post(win('pro', 15, 14, { durationMs: 8 * 60_000 }))).json.error.code).toBe('implausible_result');
+    expect((await post(win('pro', 16, 14, { durationMs: 8 * 60_000 }))).json.points).toBe(4);
+    expect((await post({ mode: 'survival', difficulty: 'club', venue: 'arena', rallies: 6, durationMs: 6 * 60_000 })).json.points).toBe(6);
+    expect((await post({ mode: 'survival', difficulty: 'club', venue: 'arena', rallies: 6, durationMs: 60_000 })).json.error.code).toBe('implausible_result');
+    const board = await api('/api/arcade/leaderboard/survival', { token: t });
+    expect(board.json.me.value).toBe(6);
   });
 });

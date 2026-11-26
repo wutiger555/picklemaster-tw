@@ -319,12 +319,12 @@ export const putCourtReview = (courtId: number, tags: string[]) =>
 export const deleteCourtReview = (courtId: number) =>
   request<CourtReviews>(`/api/courts/${courtId}/reviews`, { method: 'DELETE' });
 
-// ---------- 小遊戲（匹克硬邦幫）：雲端存檔與每週排行榜 ----------
+// ---------- 小遊戲（匹克硬邦幫）：雲端存檔與歷史排行榜 ----------
 
-export type ArcadeBoard = 'points' | 'pro' | 'dink';
+export type ArcadeBoard = 'points' | 'pro' | 'dink' | 'survival';
 
 export interface ArcadeResult {
-  mode: 'match' | 'dink';
+  mode: 'match' | 'dink' | 'daily' | 'survival';
   difficulty: 'rookie' | 'club' | 'pro';
   venue: string;
   doubles: boolean;
@@ -333,10 +333,28 @@ export interface ArcadeResult {
   scoreOpp?: number;
   rallies?: number;
   durationMs: number;
+  /** 球友卡用：這場最長連擊、用的選手與球拍 */
+  longestRally?: number;
+  character?: string;
+  paddle?: string;
 }
 
-export interface ArcadeBoardRow {
+/** 一位球友的累計數字（排行榜每一行和球友卡共用） */
+export interface ArcadeStats {
+  wins: number;
+  plays: number;
+  proWins: number;
+  points: number;
+  dinkBest: number;
+  survivalBest: number;
+  longestRally: number;
+  dailies: number;
+  firstAt: number | null;
+}
+
+export interface ArcadeBoardRow extends ArcadeStats {
   rank: number;
+  id: string;
   nickname: string;
   avatarSeed: number;
   value: number;
@@ -345,8 +363,8 @@ export interface ArcadeBoardRow {
 
 export interface ArcadeLeaderboard {
   board: ArcadeBoard;
-  week: number;
-  resetsAt: number;
+  /** 最早一筆成績的時間（榜是歷史累計） */
+  since: number | null;
   rows: ArcadeBoardRow[];
   me: { rank: number | null; value: number } | null;
 }
@@ -354,4 +372,16 @@ export interface ArcadeLeaderboard {
 export const getArcadeProfile = () => request<{ data: Record<string, unknown> | null; updatedAt: number | null }>('/api/arcade/profile');
 export const putArcadeProfile = (data: Record<string, unknown>) => request<{ updatedAt: number }>('/api/arcade/profile', { method: 'PUT', body: { data } });
 export const postArcadeResult = (r: ArcadeResult) => request<{ points: number; week: number }>('/api/arcade/results', { body: r });
+
+export interface ArcadePlayerCard extends ArcadeStats {
+  nickname: string;
+  avatarSeed: number;
+  joinedAt: number;
+  byDifficulty: Partial<Record<'rookie' | 'club' | 'pro', { wins: number; plays: number }>>;
+  favVenue: { value: string; count: number } | null;
+  favCharacter: { value: string; count: number } | null;
+  favPaddle: { value: string; count: number } | null;
+  recent: { mode: ArcadeResult['mode']; difficulty: ArcadeResult['difficulty']; venue: string; won: boolean; score: [number, number]; rallies: number; at: number }[];
+}
+export const getArcadePlayer = (id: string) => request<ArcadePlayerCard>(`/api/arcade/players/${id}`);
 export const getArcadeLeaderboard = (board: ArcadeBoard) => request<ArcadeLeaderboard>(`/api/arcade/leaderboard/${board}`);

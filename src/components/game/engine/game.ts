@@ -43,6 +43,7 @@ import { type V3, v3, clamp, clone, gauss, len } from './vec';
 import { REPLAY_STRIDE, ReplayTape } from './replay';
 import type { Level, LevelFx, LevelHud, Puddle } from './levels';
 import { type Backhand, type Grip, backhandReach, techniqueLabel, techniqueMods } from './technique';
+import type { WeeklyRule } from './liveRules';
 
 /** drill = 冒險模式的小遊戲（發球機餵球，計分交給關卡） */
 export type GameMode = 'match' | 'dink' | 'drill';
@@ -699,6 +700,8 @@ export class GameEngine {
   dinkStreak = 0;
   /** 是否啟用必殺技（寫實模式關閉） */
   readonly specials: boolean;
+  /** 本週規則（沒有＝一般比賽） */
+  readonly rule: WeeklyRule | null = null;
   /** 真實時間（秒），慢動作與頓幀都用它計時 */
   real = 0;
   /** 目前的時間倍率（給畫面做演出用） */
@@ -822,6 +825,10 @@ export class GameEngine {
     rand?: () => number;
     level?: Level;
     practice?: Practice;
+    /** 幾分獲勝（預設 11；生存賽每關先到 5 分） */
+    target?: number;
+    /** 本週規則賽的規則（見 liveModes.ts） */
+    rule?: WeeklyRule | null;
   }) {
     this.mode = opts.mode;
     this.practice = opts.practice ?? null;
@@ -829,7 +836,11 @@ export class GameEngine {
     this.assist = opts.assist;
     this.controls = opts.controls ?? 'auto';
     this.specials = opts.specials ?? true;
+    this.rule = opts.rule ?? null;
+    if (opts.target && opts.mode === 'match') this.match = newMatch(opts.target);
     this.rand = opts.rand ?? Math.random;
+    // 強風週：整場固定一陣側風（方向隨機），AI 的瞄準本來就會看風
+    if (this.rule === 'wind' && !opts.level) this.ball.wind = { x: (this.rand() < 0.5 ? 1 : -1) * 3.4, z: (this.rand() - 0.5) * 1.6 };
     const mine = paddleById(opts.paddles?.[0] ?? PADDLES[0].id);
     const others = PADDLES.filter((p) => p.id !== mine.id);
     const theirs = opts.paddles?.[1] ? paddleById(opts.paddles[1]) : others[Math.floor(this.rand() * others.length)];
@@ -1475,7 +1486,8 @@ export class GameEngine {
     const rate =
       (a.ai ? AI_ENERGY_RATE[this.difficulty] : 1) * (a.awakenHits > 0 ? AWAKEN.energyRate : 1) * (this.effectBy('cheer', a.team) ? SKILL_FX.cheer.rate : 1);
     const before = a.energy;
-    a.energy = Math.min(ENERGY.max, a.energy + amount * rate);
+    // 雙倍能量週
+    a.energy = Math.min(ENERGY.max, a.energy + amount * rate * (this.rule === 'doubleEnergy' ? 2 : 1));
     if (before < ENERGY.max && a.energy >= ENERGY.max) this.emit({ type: 'energyFull', team: a.team });
   }
 
@@ -1519,6 +1531,8 @@ export class GameEngine {
 
   /** team 放的某個絕招效果還在不在 */
   effectBy(id: SkillEffectId, team: Team) {
+    // 停電週：整場像被關燈，雙方都看不到提示
+    if (id === 'lightsOut' && this.rule === 'blackout') return true;
     return this.skillEffects.some((e) => e.id === id && e.team === team && (e.untilPoint !== undefined ? this.pointsPlayed < e.untilPoint : this.time < e.until));
   }
 
@@ -2083,7 +2097,7 @@ export class GameEngine {
       this.endRally(other(a.team), 'twoBounce', a.team);
       return;
     }
-    if (volley && feetInKitchen(a.pos)) {
+    if (volley && feetInKitchen(a.pos) && this.rule !== 'noKitchen') {
       this.endRally(other(a.team), 'kitchenVolley', a.team);
       return;
     }
@@ -2101,7 +2115,8 @@ export class GameEngine {
       contact: clone(b.pos),
       incomingSpeed: incoming,
       opponent: this.opponentOf(a).pos,
-      paddle: { pace: a.paddle.mods.pace * a.traits.pace * (this.effectOn('sour', a.team) ? SKILL_FX.sour.pace : 1), spin: a.paddle.mods.spin },
+      // 超速週：所有人的球都快 15%
+      paddle: { pace: a.paddle.mods.pace * a.traits.pace * (this.effectOn('sour', a.team) ? SKILL_FX.sour.pace : 1) * (this.rule === 'turbo' ? 1.15 : 1), spin: a.paddle.mods.spin },
       volley,
       slack: a.ai ? 0 : ATTACK_SLACK,
     };
@@ -2651,7 +2666,7 @@ export class GameEngine {
         this.endRally(other(a.team), 'bodyHit', a.team);
         return;
       }
-      if (this.time < a.kitchenLockUntil && feetInKitchen(a.pos)) {
+      if (this.time < a.kitchenLockUntil && feetInKitchen(a.pos) && this.rule !== 'noKitchen') {
         this.endRally(other(a.team), 'kitchenMomentum', a.team);
         return;
       }

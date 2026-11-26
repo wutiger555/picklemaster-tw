@@ -101,7 +101,7 @@ const TEMPLATES: Template[] = [
   (_r, d) => ({ icon: '🤝', title: '雙打', desc: `雙打打敗${DIFF_LABEL[d]}`, mode: 'match', doubles: true, check: (s) => s.won && s.doubles }),
   (r, d) => {
     const n = 1 + Math.floor(r() * 2);
-    return { icon: '🎾', title: '發球得分', desc: `打敗${DIFF_LABEL[d]}，發球直接得分 ${n} 次`, mode: 'match', doubles: false, check: (s) => s.won && s.stats.aces >= n };
+    return { icon: '🚀', title: '發球得分', desc: `打敗${DIFF_LABEL[d]}，發球直接得分 ${n} 次`, mode: 'match', doubles: false, check: (s) => s.won && s.stats.aces >= n };
   },
   () => ({ icon: '🛫', title: '客場', desc: '在指定球場打敗高手', mode: 'match', doubles: false, difficulty: 'pro', check: (s) => s.won }),
   (_r, d) => ({ icon: '🍋', title: '守規矩', desc: `打敗${DIFF_LABEL[d]}，零廚房違例、失誤不超過 3 次`, mode: 'match', doubles: false, check: (s) => s.won && s.stats.kitchenFaults === 0 && s.stats.errors <= 3 }),
@@ -199,3 +199,9 @@ export const saveSurvivalBest = (rounds: number) => {
 
 /** 開賽時帶的「活動模式」資訊；finish 時用來判定、記錄 */
 export type LiveStart = { kind: 'daily'; challenge: DailyChallenge } | { kind: 'rule'; rule: WeeklyRuleDef } | { kind: 'survival'; round: SurvivalRound };
+
+/** 結算畫面要顯示的活動結果 */
+export type LiveResult =
+  | { kind: 'daily'; done: boolean; streak: number; title: string }
+  | { kind: 'rule'; name: string; icon: string }
+  | { kind: 'survival'; round: number; cleared: number; best: number; ended: boolean };

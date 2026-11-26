@@ -58,8 +58,8 @@ describe('小遊戲：比賽結果', () => {
   });
 });
 
-describe('小遊戲：每週排行榜', () => {
-  it('依本週積分排名，顯示暱稱與自己的名次；高手榜與 Dink 榜各自計算', async () => {
+describe('小遊戲：歷史排行榜', () => {
+  it('依累計積分排名，顯示暱稱與自己的名次；高手榜與 Dink 榜各自計算', async () => {
     const [a, b, c] = await Promise.all([newPlayer('排行A'), newPlayer('排行B'), newPlayer('排行C')]);
     // A：贏高手 2 場＝8 分；B：贏球友 1 場＝2 分、Dink 120 拍；C：只輸球
     await api('/api/arcade/results', { token: a, body: win('pro') });
@@ -74,7 +74,7 @@ describe('小遊戲：每週排行榜', () => {
     expect(names).not.toContain('排行C'); // 沒得分不上榜
     expect(pts.json.me.value).toBe(2);
     expect(pts.json.rows.find((r: { isMe: boolean }) => r.isMe).nickname).toBe('排行B');
-    expect(pts.json.resetsAt - pts.json.week).toBe(7 * 24 * 3600_000);
+    expect(typeof pts.json.since).toBe('number');
 
     const pro = await api('/api/arcade/leaderboard/pro', { token: a });
     expect(pro.json.me).toMatchObject({ value: 2 });
@@ -128,7 +128,13 @@ describe('小遊戲：每日挑戰、15 分週、生存賽', () => {
     const t = await newPlayer('輪換王');
     const post = (body: Record<string, unknown>) => api('/api/arcade/results', { token: t, body });
     expect((await post({ ...win('club'), mode: 'daily' })).json.points).toBe(3);
-    expect((await post({ ...win('club', 5, 11), mode: 'daily' })).json.error.code).toBe('implausible_result');
+    // 同一天第二次不算
+    expect((await post({ ...win('club', 5, 11), mode: 'daily' })).json.error.code).toBe('daily_done');
+    // 輸球也可以達成（連擊、完美擊球這類題目）
+    const t2 = await newPlayer();
+    expect((await api('/api/arcade/results', { token: t2, body: { ...win('club', 5, 11), mode: 'daily' } })).json.points).toBe(3);
+    const t3 = await newPlayer();
+    expect((await api('/api/arcade/results', { token: t3, body: { mode: 'daily', difficulty: 'club', venue: 'arena', rallies: 25, durationMs: 60_000 } })).json.points).toBe(3);
     expect((await post(win('pro', 15, 9, { durationMs: 8 * 60_000 }))).json.points).toBe(4);
     expect((await post(win('pro', 15, 14, { durationMs: 8 * 60_000 }))).json.error.code).toBe('implausible_result');
     expect((await post(win('pro', 16, 14, { durationMs: 8 * 60_000 }))).json.points).toBe(4);
@@ -136,5 +142,28 @@ describe('小遊戲：每日挑戰、15 分週、生存賽', () => {
     expect((await post({ mode: 'survival', difficulty: 'club', venue: 'arena', rallies: 6, durationMs: 60_000 })).json.error.code).toBe('implausible_result');
     const board = await api('/api/arcade/leaderboard/survival', { token: t });
     expect(board.json.me.value).toBe(6);
+  });
+});
+
+describe('小遊戲：球友卡與排行榜細節', () => {
+  it('排行榜每一行帶累計數字；球友卡有分難度戰績、最愛、最近幾場；刪除後 404', async () => {
+    const t = await newPlayer('卡片王');
+    await api('/api/arcade/results', { token: t, body: win('pro', 11, 3, { longestRally: 23, character: 'p1', paddle: 'blaze' }) });
+    await api('/api/arcade/results', { token: t, body: win('rookie', 11, 9, { longestRally: 9, character: 'p1', paddle: 'storm', venue: 'arena' }) });
+    await api('/api/arcade/results', { token: t, body: win('club', 4, 11, { character: 'p2', paddle: 'blaze' }) });
+    const board = await api('/api/arcade/leaderboard/points', { token: t });
+    const me = board.json.rows.find((r: { isMe: boolean }) => r.isMe);
+    expect(me).toMatchObject({ nickname: '卡片王', wins: 2, plays: 3, proWins: 1, points: 5, longestRally: 23 });
+    expect(typeof me.id).toBe('string');
+    const card = await api(`/api/arcade/players/${me.id}`);
+    expect(card.json).toMatchObject({ nickname: '卡片王', wins: 2, plays: 3, proWins: 1, longestRally: 23 });
+    expect(card.json.byDifficulty.pro).toEqual({ wins: 1, plays: 1 });
+    expect(card.json.favVenue.value).toBe('xinyi');
+    expect(card.json.favCharacter.value).toBe('p1');
+    expect(card.json.favPaddle.value).toBe('blaze');
+    expect(card.json.recent).toHaveLength(3);
+    expect(card.json.recent[0]).toMatchObject({ won: false, difficulty: 'club' });
+    await api('/api/me', { method: 'DELETE', token: t });
+    expect((await api(`/api/arcade/players/${me.id}`)).status).toBe(404);
   });
 });

@@ -82,7 +82,7 @@ const RotationScheduler = () => {
               雙打輪轉排程器
             </h1>
             <p className="text-neutral-600 text-base md:text-lg max-w-2xl">
-              5-16 人球友約球再也不用自己排！輸入人數、場數、場地數，自動產生避免重複配對的輪轉表，可列印帶去球場。
+              4-16 人球友約球再也不用自己排！輸入人數、場數、場地數，自動產生避免重複配對的輪轉表，可列印帶去球場。
             </p>
           </div>
         </section>

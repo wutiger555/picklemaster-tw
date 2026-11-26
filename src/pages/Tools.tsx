@@ -15,7 +15,7 @@ const TOOLS = [
     to: ROUTES.TOOL_ROTATION,
     icon: '🔁',
     title: '雙打輪轉排程器',
-    desc: '5-16 人約球自動排輪次，避免重複配對',
+    desc: '4-16 人約球自動排輪次，避免重複配對',
     tag: '約球',
   },
   {

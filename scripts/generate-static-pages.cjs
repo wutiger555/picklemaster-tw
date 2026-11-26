@@ -32,6 +32,15 @@ function applyOg(content, ogPathRel, opts) {
     return content;
 }
 
+// meta description 長度控制：超過 max 時在句號／逗號處截斷，避免搜尋結果被硬切在字中間
+function clipDesc(s, max = 120) {
+    const chars = [...String(s || '').replace(/\s+/g, ' ').trim()];
+    if (chars.length <= max) return chars.join('');
+    const head = chars.slice(0, max).join('');
+    const cut = Math.max(head.lastIndexOf('。'), head.lastIndexOf('；'));
+    return cut >= 60 ? head.slice(0, cut + 1) : chars.slice(0, max - 1).join('') + '…';
+}
+
 // HTML 逸出（供各詳情頁預渲染共用）
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -564,7 +573,7 @@ const pageSEO = {
     },
     playbook: {
         title: '匹克球戰術劇本庫 | 30+ 情境戰術對照',
-        description: '30+ 比賽情境戰術速查：對方深發球、被連續強攻、搭檔失誤等。',
+        description: '30 個匹克球比賽情境的應對速查：對方深發球、被連續強攻、搭檔失誤、比分落後怎麼辦。每個情境說明為什麼會發生、最佳回應與替代打法，分開局、網前、防守、心理、雙打、單打六類。',
         keywords: '匹克球戰術,匹克球戰略,匹克球比賽戰術,pickleball tactics',
         structuredData: {
             "@context": "https://schema.org",
@@ -656,7 +665,7 @@ const pageSEO = {
     },
     'tools/dupr-simulator': {
         title: 'DUPR 評分模擬器 | 預估下一場比賽對你的評分影響',
-        description: '輸入你與對手 DUPR、比賽結果，即時預估你下一場的 DUPR 變動。',
+        description: '輸入你與對手的 DUPR 評級和比分，估算這場比賽讓你的評級上升或下降多少。用簡化的 Elo 式公式說明「為什麼贏了分數卻沒漲多少」，實際數值以 DUPR 官方為準。',
         keywords: 'DUPR 模擬器,DUPR 計算,匹克球評分預估',
         structuredData: {
             "@context": "https://schema.org",
@@ -667,18 +676,18 @@ const pageSEO = {
         }
     },
     'tools/rotation': {
-        title: '雙打輪轉排程器 | 5-16 人約球自動排輪次',
-        description: '球友約球自動排輪次，避免重複配對。',
+        title: '雙打輪轉排程器 | 4-16 人約球自動排輪次',
+        description: '球友約球人多場少怎麼排？輸入 4 到 16 人、輪數與場地數，自動產生搭檔盡量不重複、每個人輪流下場的雙打輪轉表，可直接列印帶去球場，免註冊。',
         keywords: '匹克球 輪轉,雙打輪轉,約球排程'
     },
     'tools/bracket': {
         title: '比賽籤表產生器 | 單淘汰、循環賽 PDF 列印',
-        description: '自動生成單淘汰、循環賽籤表，支援列印。',
+        description: '辦球友聚會或社區小比賽用的籤表產生器：貼上名單，自動排出單淘汰或循環賽籤表，人數不足會自動補輪空，循環賽附總場次計算，可直接列印，免註冊。',
         keywords: '比賽籤表,pickleball bracket generator,匹克球賽事'
     },
     'tools/court-lines': {
         title: '匹克球場地劃線指南 | 標準尺寸 + 羽球場改造教學',
-        description: '完整場地尺寸、廚房區、網高規範、場地材質建議。',
+        description: '匹克球場標準尺寸 44×20 英尺（13.41×6.10 公尺）、廚房區 7 英尺、網高中央 34 英寸。附羽球場改匹克球場的加線步驟與常見地面材質比較，社區自己劃線也做得到。',
         keywords: '匹克球 場地尺寸,pickleball court dimensions,羽球場 改 匹克球'
     },
     'newcomer-guide': {
@@ -1142,7 +1151,8 @@ async function generateStaticPages() {
             const dirPath = path.join(BUILD_DIR, 'training-programs', p.slug);
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${p.title} | 匹克球訓練菜單`;
-            const desc = `${p.subtitle} - 系統化訓練計劃，每週逐日詳細安排，含進度追蹤。`;
+            const progFull = (loadTsModule('src/data/trainingProgramsData.ts').TRAINING_PROGRAMS || []).find(x => x.slug === p.slug) || {};
+            const desc = clipDesc(`${p.title}：${p.subtitle}。適合${progFull.level || ''}程度，為期 ${progFull.duration || ''}、每週約 ${progFull.weeklyHours || ''}，逐週目標與每日練習安排。完成後${progFull.outcome || '能明顯看到進步'}。`);
             const canonical = `${BASE_URL}/training-programs/${p.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
@@ -1205,7 +1215,8 @@ async function generateStaticPages() {
             const dirPath = path.join(BUILD_DIR, 'players', p.slug);
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${p.name} 完整資料 | 球拍、戰績、打法 | 匹克球選手資料庫`;
-            const desc = `${p.name} - ${p.country} 匹克球職業選手。${p.bio}`;
+            const plFull = (loadTsModule('src/data/playersData.ts').PLAYERS || []).find(x => x.slug === p.slug) || {};
+            const desc = clipDesc(`${p.name}${plFull.nameZh ? `（${plFull.nameZh}）` : ''}，${p.country} 匹克球職業選手。${plFull.bio || p.bio}${plFull.paddle ? `目前使用 ${plFull.paddle}。` : ''}生涯成就、打法與能力側寫一次看。`);
             const canonical = `${BASE_URL}/players/${p.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
@@ -1360,6 +1371,7 @@ async function generateStaticPages() {
                         crumbs: [{ name: '首頁', href: '/' }, { name: '球拍資料庫', href: '/paddles' }, { name: pd.model }],
                         h1: full, bodyHtml: body,
                     }));
+                    content = applyOg(content, `og/paddle-${pd.slug}.png`, { title: full, subtitle: [pd.shape, pd.face, pd.weight].filter(Boolean).join(' · '), badge: '球拍', type: 'technique' });
                 }
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
             }
@@ -1373,7 +1385,7 @@ async function generateStaticPages() {
             const dirPath = path.join(BUILD_DIR, 'articles', a.slug);
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${a.title} | 匹克球深度專欄`;
-            const desc = a.summary;
+            const desc = clipDesc(((loadTsModule('src/data/articlesData.ts').ARTICLES || []).find(x => x.slug === a.slug) || {}).summary || a.summary, 150);
             const canonical = `${BASE_URL}/articles/${a.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
@@ -1495,7 +1507,8 @@ async function generateStaticPages() {
             const dirPath = path.join(BUILD_DIR, 'techniques', t.slug);
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${t.name} (${t.nameEn}) 完整教學 | 匹克球技巧百科`;
-            const desc = `${t.tagline} — 深度步驟分解、常見錯誤、練習菜單與職業選手心法。`;
+            const tFull = (loadTsModule('src/data/techniquesData.ts').TECHNIQUES || []).find(x => x.slug === t.slug) || {};
+            const desc = clipDesc(`${t.name}（${t.nameEn}）怎麼打？${t.tagline}。${tFull.level ? `${tFull.level}技巧，` : ''}含 ${(tFull.steps || []).length} 個步驟分解、${(tFull.commonMistakes || []).length} 個常見錯誤修正與 ${(tFull.drills || []).length} 套練習菜單。${tFull.whenToUse ? `使用時機：${tFull.whenToUse}` : ''}`);
             const canonical = `${BASE_URL}/techniques/${t.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
@@ -2682,6 +2695,27 @@ async function generateStaticPages() {
             }
         } catch (e) {
             console.warn('  Skip per-court generation:', e.message);
+        }
+
+        // ===== 列表／單元頁的分享預覽圖 =====
+        // 上面沒有專屬分享圖的頁面（仍是預設 og-image.png），補一張帶頁名的卡片。首頁保留原本的品牌圖。
+        {
+            const h1ByRoute = Object.fromEntries(INDEX_PAGES.map(pg => [pg.route, pg.h1]));
+            const routes = [...new Set([...Object.keys(pageSEO), ...INDEX_PAGES.map(pg => pg.route)])];
+            let n = 0;
+            for (const route of routes) {
+                const filePath = path.join(BUILD_DIR, route, 'index.html');
+                if (!fs.existsSync(filePath)) continue;
+                let content = fs.readFileSync(filePath, 'utf-8');
+                if (!/<meta property="og:image" content="[^"]*\/og-image\.png"/.test(content)) continue;
+                const parts = ((content.match(/<title>(.*?)<\/title>/) || [])[1] || '').split(/\s*[|｜]\s*/);
+                const title = h1ByRoute[route] || parts[0];
+                const sub = parts[1] && [...parts[1]].length <= 26 && !/Picklemaster/i.test(parts[1]) ? parts[1] : '';
+                content = applyOg(content, `og/page-${route.replace(/\//g, '-')}.png`, { title, subtitle: sub });
+                fs.writeFileSync(filePath, content);
+                n++;
+            }
+            console.log(`  Added share images to ${n} section pages`);
         }
 
         // Generate Sitemap.xml (2026 enhanced)

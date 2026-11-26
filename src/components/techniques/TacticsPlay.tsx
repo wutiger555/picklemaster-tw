@@ -1,74 +1,32 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
+import type { P, TacticPlay } from './tactics';
 
 /**
- * 第三球戰術俯視動畫：雙打從發球到四人都站上廚房線，一步一步看站位與球路。
- * 座標用英尺（場地 44 × 20 ft），左邊是發球方（你這隊）。
+ * 雙打俯視戰術動畫：一步一步看站位和球路。
+ * 座標用英尺（場地 44 × 20 ft），左邊是「你這隊」。
  */
 
 const S = 10;
 const OX = 30;
-const OY = 28;
+const OY = 34;
 const X = (ft: number) => OX + ft * S;
 const Y = (ft: number) => OY + ft * S;
 
-type P = [number, number];
-interface Step {
-  title: string;
-  caption: string;
-  players: { A1: P; A2: P; B1: P; B2: P };
-  /** 球路：起點 → 落地點 → 擊球點（落地點那一格會畫彈跳圈） */
-  ball: P[];
-  bounce?: number;
-}
-
-const STEPS: Step[] = [
-  {
-    title: '開局站位',
-    caption: '發球方兩人都留在底線。雙彈跳規則規定發球和接發球都要先落地才能打，所以第三球之前不能上網；接發球方的搭檔則已經站在廚房線。',
-    players: { A1: [-1.5, 15], A2: [-1.5, 5], B1: [45.5, 5], B2: [29.6, 15] },
-    ball: [[-0.6, 14.4]],
-  },
-  {
-    title: '發球',
-    caption: '從右區斜對角發到對方的發球區，球必須先落地，接發球的人才能回擊。',
-    players: { A1: [-1.5, 15], A2: [-1.5, 5], B1: [45.5, 5], B2: [29.6, 15] },
-    ball: [[-0.6, 14.4], [38, 5.5], [45, 5.2]],
-    bounce: 1,
-  },
-  {
-    title: '接發球',
-    caption: '接發球打深，把發球方壓在底線；接完立刻上網，接發球方兩人都站上廚房線，佔了上風。',
-    players: { A1: [-1.5, 15], A2: [2.6, 7.5], B1: [29.6, 5], B2: [29.6, 15] },
-    ball: [[45, 5.2], [6.5, 8], [3.2, 7.8]],
-    bounce: 1,
-  },
-  {
-    title: '第三球下切',
-    caption: '用下切把球輕輕送進對方廚房。球飛得慢、落在對手腳前，對手只能等它落地再往上挑。趁這一秒多，兩人一起往前衝。',
-    players: { A1: [7.5, 14.5], A2: [8, 6.5], B1: [29.6, 5], B2: [29.6, 15] },
-    ball: [[3.2, 7.8], [25.5, 11], [28.6, 11.2]],
-    bounce: 1,
-  },
-  {
-    title: '跟上網前',
-    caption: '四個人都站上廚房線，開局的劣勢變成平手。接下來進入吊球（dink）對戰，比的是耐心。',
-    players: { A1: [14.4, 14.5], A2: [14.4, 5.5], B1: [29.6, 5], B2: [29.6, 15] },
-    ball: [[28.6, 11.2], [18.5, 9.5], [15.4, 8.8]],
-    bounce: 1,
-  },
-];
-
-const Player = ({ id, at, team }: { id: string; at: P; team: 'A' | 'B' }) => (
+const Player = ({ label, at, team, focus }: { label: string; at: P; team: 'A' | 'B'; focus: boolean }) => (
   <m.g initial={false} animate={{ x: X(at[0]), y: Y(at[1]) }} transition={{ duration: 1.1, ease: [0.4, 0, 0.2, 1] }}>
-    <circle r={11} fill={team === 'A' ? '#059669' : '#475569'} stroke="#fff" strokeWidth={2.5} />
+    {focus && (
+      <m.circle r={11} fill="none" stroke="#fde047" strokeWidth={2} initial={{ scale: 1, opacity: 0.9 }} animate={{ scale: [1, 1.9], opacity: [0.9, 0] }} transition={{ duration: 1.3, repeat: Infinity }} />
+    )}
+    <circle r={11} fill={team === 'A' ? '#059669' : '#475569'} stroke={focus ? '#fde047' : '#fff'} strokeWidth={2.5} />
     <text textAnchor="middle" dy={4.5} fontSize={11} fontWeight={800} fill="#fff" className="text-[12px]">
-      {id}
+      {label}
     </text>
   </m.g>
 );
 
-const ThirdShotPlay = () => {
+const TacticsPlay = ({ play }: { play: TacticPlay }) => {
+  const { steps: STEPS } = play;
   const [i, setI] = useState(0);
   const [auto, setAuto] = useState(false);
   const step = STEPS[i];
@@ -81,7 +39,7 @@ const ThirdShotPlay = () => {
     }
     const id = window.setTimeout(() => setI((n) => n + 1), 3200);
     return () => window.clearTimeout(id);
-  }, [auto, i]);
+  }, [auto, i, STEPS.length]);
 
   const pts = step.ball.map(([x, y]) => [X(x), Y(y)] as const);
   const bounce = step.bounce !== undefined ? pts[step.bounce] : null;
@@ -89,7 +47,7 @@ const ThirdShotPlay = () => {
   return (
     <div>
       <div className="rounded-2xl overflow-hidden border border-neutral-100 bg-gradient-to-br from-emerald-900 via-emerald-950 to-slate-900 p-2 sm:p-4">
-        <svg viewBox="0 0 500 256" className="w-full h-auto block" role="img" aria-label={`第三球戰術俯視圖：${step.title}`}>
+        <svg viewBox="0 0 500 280" className="w-full h-auto block" role="img" aria-label={`${play.label}俯視圖：${step.title}`}>
           {/* 場地 */}
           <rect x={X(0)} y={Y(0)} width={44 * S} height={20 * S} fill="#1e6091" stroke="#f8fafc" strokeWidth={2} />
           <rect x={X(15)} y={Y(0)} width={14 * S} height={20 * S} fill="#2a78b0" stroke="#f8fafc" strokeWidth={2} />
@@ -97,14 +55,19 @@ const ThirdShotPlay = () => {
           <line x1={X(29)} x2={X(44)} y1={Y(10)} y2={Y(10)} stroke="#f8fafc" strokeWidth={2} />
           <line x1={X(22)} x2={X(22)} y1={Y(-1)} y2={Y(21)} stroke="#0f172a" strokeWidth={4} />
           <line x1={X(22)} x2={X(22)} y1={Y(-1)} y2={Y(21)} stroke="#e2e8f0" strokeWidth={1.2} strokeDasharray="3 3" />
-          <text x={X(22)} y={Y(0) - 9} textAnchor="middle" fontSize={10} fill="#a7f3d0" fontWeight={700} className="text-[15px] sm:text-[10px]">
-            廚房（非截擊區）
+          {[-1, 21].map((y) => (
+            <circle key={y} cx={X(22)} cy={Y(y)} r={3.5} fill="#e2e8f0" stroke="#0f172a" strokeWidth={1.5} />
+          ))}
+          {[18.5, 25.5].map((x) => (
+            <text key={x} x={X(x)} y={Y(1.6)} textAnchor="middle" fontSize={9} fill="#dbeafe" fillOpacity={0.55} fontWeight={700} className="text-[13px] sm:text-[9px]">
+              廚房
+            </text>
+          ))}
+          <text x={X(7.5)} y={Y(0) - 12} textAnchor="middle" fontSize={11} fill="#6ee7b7" fontWeight={800} className="text-[16px] sm:text-[11px]">
+            {play.sides[0]}
           </text>
-          <text x={X(7.5)} y={Y(20) + 18} textAnchor="middle" fontSize={11} fill="#6ee7b7" fontWeight={800} className="text-[16px] sm:text-[11px]">
-            發球方（你這隊）
-          </text>
-          <text x={X(36.5)} y={Y(20) + 18} textAnchor="middle" fontSize={11} fill="#cbd5e1" fontWeight={800} className="text-[16px] sm:text-[11px]">
-            接發球方
+          <text x={X(36.5)} y={Y(0) - 12} textAnchor="middle" fontSize={11} fill="#cbd5e1" fontWeight={800} className="text-[16px] sm:text-[11px]">
+            {play.sides[1]}
           </text>
 
           {/* 球路 */}
@@ -135,26 +98,27 @@ const ThirdShotPlay = () => {
                   transition={{ duration: 0.6, delay: 0.75 }}
                 />
               )}
-              <m.circle
-                r={5}
-                fill="#e6f53a"
-                stroke="#713f12"
-                strokeWidth={1}
-                initial={{ cx: pts[0][0], cy: pts[0][1] }}
-                animate={{ cx: pts.map((p) => p[0]), cy: pts.map((p) => p[1]) }}
-                transition={{ duration: 1.2, ease: 'easeInOut' }}
-              />
+              {pts.length > 0 && (
+                <m.circle
+                  r={5}
+                  fill="#e6f53a"
+                  stroke="#713f12"
+                  strokeWidth={1}
+                  initial={{ cx: pts[0][0], cy: pts[0][1] }}
+                  animate={{ cx: pts.map((p) => p[0]), cy: pts.map((p) => p[1]) }}
+                  transition={{ duration: 1.2, ease: 'easeInOut' }}
+                />
+              )}
             </m.g>
           </AnimatePresence>
 
-          <Player id="你" at={step.players.A1} team="A" />
-          <Player id="友" at={step.players.A2} team="A" />
-          <Player id="B1" at={step.players.B1} team="B" />
-          <Player id="B2" at={step.players.B2} team="B" />
+          {play.roster.map((r) => (
+            <Player key={r.id} label={r.label} team={r.team} at={step.players[r.id]} focus={step.focus === r.id} />
+          ))}
         </svg>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2" role="tablist" aria-label="戰術步驟">
+      <div className="mt-4 flex flex-wrap items-center gap-2" role="tablist" aria-label={`${play.label}步驟`}>
         {STEPS.map((s, k) => (
           <button
             key={s.title}
@@ -197,4 +161,4 @@ const ThirdShotPlay = () => {
   );
 };
 
-export default ThirdShotPlay;
+export default TacticsPlay;

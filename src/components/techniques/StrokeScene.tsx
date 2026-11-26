@@ -18,11 +18,26 @@ import type { CameraView, DemoClock, StrokeDemoConfig } from './strokeConfig';
 const TC = 100;
 /** 示範選手用引擎的 1 號座位（AI、遠端半場，面向 +Z、右手在 −X） */
 const SEAT = 1;
-const STAND = new THREE.Vector3(0, 0, -6);
 const R = new THREE.Vector3(-1, 0, 0);
 const BALL_R = 0.037;
+/** 球拿在手掌裡：比手腕骨頭稍微前面一點 */
+const _lift = new THREE.Vector3(0, -0.02, 0.06);
+/** 發球：擊球前多久放手讓球落下 */
+const DROP = 0.32;
 
-const VIEWS: Record<CameraView, { pos: [number, number, number]; target: [number, number, number] }> = {
+type View = { pos: [number, number, number]; target: [number, number, number] };
+
+/** 站位：示範選手右手在 −X，所以「往右」是 −X；離網距離轉成 −Z */
+const standOf = (cfg: StrokeDemoConfig) => new THREE.Vector3(-(cfg.stand?.[0] ?? 0), 0, -(cfg.stand?.[1] ?? 6));
+
+/** 鏡頭以底線站位（z = −6）為準設計，其他站位整組平移 */
+const viewsFor = (stand: THREE.Vector3) => {
+  const d = [stand.x, 0, stand.z + 6] as const;
+  const shift = (v: [number, number, number]): [number, number, number] => [v[0] + d[0], v[1], v[2] + d[2]];
+  return Object.fromEntries(Object.entries(BASE_VIEWS).map(([k, v]) => [k, { pos: shift(v.pos), target: shift(v.target) }])) as Record<CameraView, View>;
+};
+
+const BASE_VIEWS: Record<CameraView, View> = {
   side: { pos: [-3.5, 1.35, -4.3], target: [-0.25, 0.95, -5.8] },
   front: { pos: [-0.9, 1.5, -2.3], target: [-0.25, 0.95, -5.9] },
   back: { pos: [0.85, 1.75, -9.7], target: [-0.3, 0.95, -5.5] },
@@ -34,17 +49,18 @@ const useDemo = (cfg: StrokeDemoConfig) =>
     const engine = new GameEngine({ mode: 'match', difficulty: 'rookie', assist: false, specials: false, paddles: ['storm', 'storm'] });
     const a = engine.athletes[SEAT];
     a.traits = { ...a.traits, grip: cfg.grip, backhand: 'two' };
-    a.pos.x = a.prevPos.x = STAND.x;
-    a.pos.z = a.prevPos.z = STAND.z;
+    const stand = standOf(cfg);
+    a.pos.x = a.prevPos.x = stand.x;
+    a.pos.z = a.prevPos.z = stand.z;
     const [right, up, fwd] = cfg.contact;
-    const c = STAND.clone().addScaledVector(R, right).setY(up);
+    const c = stand.clone().addScaledVector(R, right).setY(up);
     c.z += fwd;
     engine.phase = 'rally';
     engine.rally.lastTeam = 0;
     a.swing.button = cfg.button;
     a.ai!.plan = {
       contactT: TC,
-      stand: { x: STAND.x, z: STAND.z },
+      stand: { x: stand.x, z: stand.z },
       path: [],
       pathT0: 0,
       pathBounces0: 0,
@@ -56,15 +72,32 @@ const useDemo = (cfg: StrokeDemoConfig) =>
       feasible: true,
     };
     // 對手出手的瞬間：示範選手照真實節奏先做分腿墊步
-    engine.athletes[0].swing.contactAt = TC + cfg.from + 0.1;
-    return { engine, contact: c };
+    engine.athletes[0].swing.contactAt = cfg.split === false ? -1000 : TC + cfg.from + 0.1;
+    return { engine, contact: c, stand, views: viewsFor(stand) };
   }, [cfg]);
 
-/** 球的位置：來球先落地彈起、在擊球點被打出去（擊球前後各一段拋物線） */
-const ballAt = (cfg: StrokeDemoConfig, c: THREE.Vector3, u: number, out: THREE.Vector3) => {
+/**
+ * 球的位置：來球先落地彈起（或直接截擊）、在擊球點被打出去（擊球前後各一段拋物線）。
+ * 發球時球先在左手（hand），放手後落到擊球點。
+ */
+const ballAt = (cfg: StrokeDemoConfig, c: THREE.Vector3, u: number, out: THREE.Vector3, hand: THREE.Vector3 | null, drop: THREE.Vector3) => {
   const g = 4.905;
   if (u >= 0) {
-    out.set(c.x - 0.5 * u, c.y + cfg.ballOut.vy * u - g * u * u, c.z + cfg.ballOut.speed * u);
+    out.set(c.x - (cfg.ballOut.dx ?? 0.5) * u, c.y + cfg.ballOut.vy * u - g * u * u, c.z + cfg.ballOut.speed * u);
+  } else if (cfg.ballIn.hold) {
+    if (u < -DROP) {
+      // 還沒放手：跟著左手；drop 記住最後一刻的位置，放手後從這裡落下
+      if (hand) drop.copy(hand).add(_lift);
+      else drop.copy(c).setY(c.y + 0.45);
+      out.copy(drop);
+    } else {
+      if (!drop.lengthSq()) drop.copy(c).setY(c.y + 0.45);
+      const k = 1 + u / DROP;
+      out.lerpVectors(drop, c, k);
+      out.y = drop.y + (c.y - drop.y) * k * k;
+    }
+  } else if (cfg.ballIn.bounceBefore <= 0) {
+    out.set(c.x + 0.15 * u, c.y + (cfg.ballIn.vy ?? 0) * u - g * u * u, c.z - cfg.ballIn.speed * u);
   } else {
     const tb = cfg.ballIn.bounceBefore;
     const vb = (c.y - BALL_R + g * tb * tb) / tb;
@@ -79,6 +112,10 @@ const ballAt = (cfg: StrokeDemoConfig, c: THREE.Vector3, u: number, out: THREE.V
 /** 推進示範時鐘、把時間與球寫進引擎（要比選手的 useFrame 先跑：放在選手前面掛載） */
 const Driver = ({ engine, clock, cfg, contact, ball }: { engine: GameEngine; clock: DemoClock; cfg: StrokeDemoConfig; contact: THREE.Vector3; ball: React.RefObject<THREE.Mesh> }) => {
   const p = useMemo(() => new THREE.Vector3(), []);
+  const drop = useMemo(() => new THREE.Vector3(), []);
+  const hp = useMemo(() => new THREE.Vector3(), []);
+  const scene = useThree((s) => s.scene);
+  const handBone = useRef<THREE.Object3D | null>(null);
   useFrame((_, raw) => {
     const dt = Math.min(0.05, raw);
     if (clock.playing) {
@@ -90,7 +127,13 @@ const Driver = ({ engine, clock, cfg, contact, ball }: { engine: GameEngine; clo
     }
     engine.time = TC + clock.u;
     engine.real = engine.time;
-    ballAt(cfg, contact, clock.u, p);
+    // 發球：球拿在左手（選手模型載入後才找得到骨頭；上一幀的手位置就夠準）
+    let hand: THREE.Vector3 | null = null;
+    if (cfg.ballIn.hold) {
+      handBone.current ??= scene.getObjectByName('hand_l') ?? null;
+      if (handBone.current) hand = handBone.current.getWorldPosition(hp);
+    }
+    ballAt(cfg, contact, clock.u, p, hand, drop);
     engine.ball.pos.x = p.x;
     engine.ball.pos.y = p.y;
     engine.ball.pos.z = p.z;
@@ -150,7 +193,7 @@ const ContactMark = ({ clock, contact }: { clock: DemoClock; contact: THREE.Vect
   );
 };
 
-const CameraRig = ({ clock }: { clock: DemoClock }) => {
+const CameraRig = ({ clock, views: VIEWS }: { clock: DemoClock; views: Record<CameraView, View> }) => {
   const { camera, controls, size } = useThree();
   const a = useRef({ nonce: -1, t: 1, fromP: new THREE.Vector3(), fromT: new THREE.Vector3(), toP: new THREE.Vector3(), toT: new THREE.Vector3() });
   useFrame((_, raw) => {
@@ -245,15 +288,15 @@ interface Props {
 }
 
 const StrokeScene = ({ cfg, clock, active, orbit, onReady }: Props) => {
-  const { engine, contact } = useDemo(cfg);
+  const { engine, contact, stand, views } = useDemo(cfg);
   const look = useMemo(() => lookFromCharacter(CHARACTERS[0]), []);
   const ball = useRef<THREE.Mesh>(null);
   const lightTarget = useMemo(() => {
     const o = new THREE.Object3D();
-    o.position.copy(STAND);
+    o.position.copy(stand);
     return o;
-  }, []);
-  const v = VIEWS[cfg.view];
+  }, [stand]);
+  const v = views[cfg.view];
 
   return (
     <Canvas shadows dpr={[1, 1.75]} frameloop={active ? 'always' : 'never'} camera={{ position: v.pos, fov: 34, near: 0.1, far: 60 }} gl={{ antialias: true }}>
@@ -262,7 +305,7 @@ const StrokeScene = ({ cfg, clock, active, orbit, onReady }: Props) => {
       <hemisphereLight args={['#ffffff', '#24463a', 1.5]} />
       <primitive object={lightTarget} />
       <directionalLight
-        position={[-2.5, 6, -3.5]}
+        position={[stand.x - 2.5, 6, stand.z + 2.5]}
         intensity={3.2}
         target={lightTarget}
         castShadow
@@ -273,7 +316,7 @@ const StrokeScene = ({ cfg, clock, active, orbit, onReady }: Props) => {
         shadow-camera-bottom={-3}
         shadow-bias={-0.0004}
       />
-      <directionalLight position={[3, 2.5, -9]} intensity={1.4} color="#a7f3d0" />
+      <directionalLight position={[stand.x + 3, 2.5, stand.z - 3]} intensity={1.4} color="#a7f3d0" />
       <Court />
       <Driver engine={engine} clock={clock} cfg={cfg} contact={contact} ball={ball} />
       <mesh ref={ball} castShadow>
@@ -286,7 +329,7 @@ const StrokeScene = ({ cfg, clock, active, orbit, onReady }: Props) => {
         <SwingTrail clock={clock} cfg={cfg} />
         <Ready onReady={onReady} />
       </Suspense>
-      <CameraRig clock={clock} />
+      <CameraRig clock={clock} views={views} />
       <OrbitControls makeDefault enabled={orbit} target={v.target} enablePan={false} minDistance={1.6} maxDistance={9} maxPolarAngle={Math.PI / 2 - 0.05} />
     </Canvas>
   );

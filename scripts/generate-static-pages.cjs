@@ -32,6 +32,15 @@ function applyOg(content, ogPathRel, opts) {
     return content;
 }
 
+// meta description 長度控制：超過 max 時在句號／逗號處截斷，避免搜尋結果被硬切在字中間
+function clipDesc(s, max = 120) {
+    const chars = [...String(s || '').replace(/\s+/g, ' ').trim()];
+    if (chars.length <= max) return chars.join('');
+    const head = chars.slice(0, max).join('');
+    const cut = Math.max(head.lastIndexOf('。'), head.lastIndexOf('；'));
+    return cut >= 60 ? head.slice(0, cut + 1) : chars.slice(0, max - 1).join('') + '…';
+}
+
 // HTML 逸出（供各詳情頁預渲染共用）
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -574,7 +583,7 @@ const pageSEO = {
     },
     playbook: {
         title: '匹克球戰術劇本庫 | 30+ 情境戰術對照',
-        description: '30+ 比賽情境戰術速查：對方深發球、被連續強攻、搭檔失誤等。',
+        description: '30 個匹克球比賽情境的應對速查：對方深發球、被連續強攻、搭檔失誤、比分落後怎麼辦。每個情境說明為什麼會發生、最佳回應與替代打法，分開局、網前、防守、心理、雙打、單打六類。',
         keywords: '匹克球戰術,匹克球戰略,匹克球比賽戰術,pickleball tactics',
         structuredData: {
             "@context": "https://schema.org",
@@ -666,7 +675,7 @@ const pageSEO = {
     },
     'tools/dupr-simulator': {
         title: 'DUPR 評分模擬器 | 預估下一場比賽對你的評分影響',
-        description: '輸入你與對手 DUPR、比賽結果，即時預估你下一場的 DUPR 變動。',
+        description: '輸入你與對手的 DUPR 評級和比分，估算這場比賽讓你的評級上升或下降多少。用簡化的 Elo 式公式說明「為什麼贏了分數卻沒漲多少」，實際數值以 DUPR 官方為準。',
         keywords: 'DUPR 模擬器,DUPR 計算,匹克球評分預估',
         structuredData: {
             "@context": "https://schema.org",
@@ -677,18 +686,18 @@ const pageSEO = {
         }
     },
     'tools/rotation': {
-        title: '雙打輪轉排程器 | 5-16 人約球自動排輪次',
-        description: '球友約球自動排輪次，避免重複配對。',
+        title: '雙打輪轉排程器 | 4-16 人約球自動排輪次',
+        description: '球友約球人多場少怎麼排？輸入 4 到 16 人、輪數與場地數，自動產生搭檔盡量不重複、每個人輪流下場的雙打輪轉表，可直接列印帶去球場，免註冊。',
         keywords: '匹克球 輪轉,雙打輪轉,約球排程'
     },
     'tools/bracket': {
         title: '比賽籤表產生器 | 單淘汰、循環賽 PDF 列印',
-        description: '自動生成單淘汰、循環賽籤表，支援列印。',
+        description: '辦球友聚會或社區小比賽用的籤表產生器：貼上名單，自動排出單淘汰或循環賽籤表，人數不足會自動補輪空，循環賽附總場次計算，可直接列印，免註冊。',
         keywords: '比賽籤表,pickleball bracket generator,匹克球賽事'
     },
     'tools/court-lines': {
         title: '匹克球場地劃線指南 | 標準尺寸 + 羽球場改造教學',
-        description: '完整場地尺寸、廚房區、網高規範、場地材質建議。',
+        description: '匹克球場標準尺寸 44×20 英尺（13.41×6.10 公尺）、廚房區 7 英尺、網高中央 34 英寸。附羽球場改匹克球場的加線步驟與常見地面材質比較，社區自己劃線也做得到。',
         keywords: '匹克球 場地尺寸,pickleball court dimensions,羽球場 改 匹克球'
     },
     'newcomer-guide': {
@@ -1186,7 +1195,8 @@ async function generateStaticPages() {
             const dirPath = path.join(BUILD_DIR, 'training-programs', p.slug);
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${p.title} | 匹克球訓練菜單`;
-            const desc = `${p.subtitle} - 系統化訓練計劃，每週逐日詳細安排，含進度追蹤。`;
+            const progFull = (loadTsModule('src/data/trainingProgramsData.ts').TRAINING_PROGRAMS || []).find(x => x.slug === p.slug) || {};
+            const desc = clipDesc(`${p.title}：${p.subtitle}。適合${progFull.level || ''}程度，為期 ${progFull.duration || ''}、每週約 ${progFull.weeklyHours || ''}，逐週目標與每日練習安排。完成後${progFull.outcome || '能明顯看到進步'}。`);
             const canonical = `${BASE_URL}/training-programs/${p.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
@@ -1197,14 +1207,37 @@ async function generateStaticPages() {
             content = content.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
             const howToSchema = {
                 "@context": "https://schema.org", "@type": "HowTo",
-                "name": p.title, "description": p.subtitle, "url": canonical
+                "name": p.title, "description": p.subtitle, "url": canonical,
+                "step": ((((loadTsModule('src/data/trainingProgramsData.ts').TRAINING_PROGRAMS || []).find(x => x.slug === p.slug) || {}).weeks) || [])
+                    .map((w, i) => ({ "@type": "HowToStep", "position": i + 1, "name": `第 ${w.week} 週：${w.theme}`, "text": (w.goals || []).join('；') || w.theme }))
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(howToSchema)}</script>`);
             {
                 const others = PROGRAM_SLUGS.filter(x => x.slug !== p.slug).slice(0, 5);
+                const full_ = (loadTsModule('src/data/trainingProgramsData.ts').TRAINING_PROGRAMS || []).find(x => x.slug === p.slug) || {};
+                const overview = [
+                    full_.level && `程度：${full_.level}`,
+                    full_.focus && `重點：${full_.focus}`,
+                    full_.duration && `期間：${full_.duration}`,
+                    full_.weeklyHours && `每週練習：${full_.weeklyHours}`,
+                    full_.prerequisite && `先備條件：${full_.prerequisite}`,
+                    full_.outcome && `完成後：${full_.outcome}`,
+                    (full_.equipment || []).length && `需要器材：${full_.equipment.join('、')}`,
+                ].filter(Boolean);
+                const weeksHtml = (full_.weeks || []).map(w => `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 8px;">第 ${w.week} 週：${esc(w.theme)}</h2>${(w.goals || []).length ? `
+          <p style="font-size:15px;margin:0 0 8px;"><strong>本週目標：</strong>${esc(w.goals.join('；'))}</p>` : ''}${(w.days || []).map(d => `
+          <h3 style="font-size:16px;font-weight:700;margin:12px 0 4px;">${esc(d.day)}・${esc(d.sessionType)}${d.totalTime ? `（${esc(d.totalTime)}）` : ''}</h3>${(d.drills || []).length ? `
+          <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;">${d.drills.map(dr => `<li><strong>${esc(dr.name)}</strong>（${esc(dr.duration)}${dr.reps ? `，${esc(dr.reps)}` : ''}）：${esc(dr.description)}</li>`).join('')}</ul>` : ''}`).join('')}${w.weeklyCheckpoint ? `
+          <p style="font-size:15px;margin:8px 0 0;"><strong>週末自評：</strong>${esc(w.weeklyCheckpoint)}</p>` : ''}
+        </section>`).join('');
                 const body = `
-        <p style="font-size:17px;color:#4b5563;margin:0 0 16px;">${esc(p.subtitle)}</p>
-        <p style="font-size:15px;margin:0 0 20px;">這份訓練菜單提供系統化、每週逐日的練習安排並可追蹤進度。跟著計畫穩定練習，逐步提升你的匹克球實力。</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 16px;">${esc(p.subtitle)}</p>${overview.length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">菜單概覽</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${overview.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+        </section>` : ''}${weeksHtml}
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他訓練菜單</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/training-programs/${o.slug}" style="color:#0d9488;">${esc(o.title)}</a> — ${esc(o.subtitle)}</li>`).join('')}</ul>
@@ -1226,7 +1259,8 @@ async function generateStaticPages() {
             const dirPath = path.join(BUILD_DIR, 'players', p.slug);
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${p.name} 完整資料 | 球拍、戰績、打法 | 匹克球選手資料庫`;
-            const desc = `${p.name} - ${p.country} 匹克球職業選手。${p.bio}`;
+            const plFull = (loadTsModule('src/data/playersData.ts').PLAYERS || []).find(x => x.slug === p.slug) || {};
+            const desc = clipDesc(`${p.name}${plFull.nameZh ? `（${plFull.nameZh}）` : ''}，${p.country} 匹克球職業選手。${plFull.bio || p.bio}${plFull.paddle ? `目前使用 ${plFull.paddle}。` : ''}生涯成就、打法與能力側寫一次看。`);
             const canonical = `${BASE_URL}/players/${p.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
@@ -1243,12 +1277,41 @@ async function generateStaticPages() {
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(playerSchema)}</script>`);
             {
-                const others = PLAYER_SLUGS.filter(x => x.slug !== p.slug).slice(0, 8);
+                const full_ = (loadTsModule('src/data/playersData.ts').PLAYERS || []).find(x => x.slug === p.slug) || {};
+                const related = (full_.relatedPlayers || []).map(s => PLAYER_SLUGS.find(x => x.slug === s)).filter(Boolean);
+                const others = (related.length ? related : PLAYER_SLUGS.filter(x => x.slug !== p.slug)).slice(0, 8);
+                const st = full_.stats || {};
+                const profile = [
+                    full_.birthYear && `出生年：${full_.birthYear}`,
+                    full_.hand && `慣用手：${full_.hand}`,
+                    full_.height && `身高：${full_.height}`,
+                    full_.playingStyle && `打法：${full_.playingStyle}`,
+                    full_.rankCategory && `排名：${full_.rankCategory}`,
+                    full_.duprRating && `DUPR：${full_.duprRating}`,
+                    full_.signatureShot && `招牌球：${full_.signatureShot}`,
+                ].filter(Boolean);
                 const body = `
-        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(p.country)} · 職業匹克球選手</p>
-        <p style="font-size:16px;margin:0 0 20px;">${esc(p.bio)}</p>
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(p.country)} · 職業匹克球選手${full_.nameZh ? ` · ${esc(full_.nameZh)}` : ''}</p>
+        <p style="font-size:16px;line-height:1.7;margin:0 0 20px;">${esc(full_.bio || p.bio)}</p>${profile.length ? `
         <section style="margin-bottom:24px;">
-          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他職業選手</h2>
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">基本資料</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${profile.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+        </section>` : ''}${full_.paddle ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">使用球拍與贊助</h2>
+          <p style="font-size:15px;margin:0;">目前使用 ${esc(full_.paddle)}（${esc(full_.paddleBrand || '')}）。${(full_.sponsors || []).length ? `贊助商：${esc(full_.sponsors.join('、'))}。` : ''}<a href="/paddles" style="color:#0d9488;">查看球拍資料庫</a></p>
+        </section>` : ''}${(full_.achievements || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">生涯重要成就</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${full_.achievements.map(a => `<li>${esc(a.year)}：${esc(a.event)}</li>`).join('')}</ul>
+        </section>` : ''}${st.power != null ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">能力側寫</h2>
+          <p style="font-size:15px;margin:0;">力量 ${st.power}・控球 ${st.control}・速度 ${st.speed}・戰術 ${st.strategy}・經驗 ${st.experience}（滿分 100）。為本站依比賽表現綜合判讀的相對分數，非官方數據。</p>
+        </section>` : ''}${full_.quote ? `
+        <blockquote style="font-size:15px;color:#4b5563;border-left:3px solid #0d9488;margin:0 0 24px;padding:4px 12px;">${esc(full_.quote)}</blockquote>` : ''}
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${related.length ? '相關選手' : '其他職業選手'}</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/players/${o.slug}" style="color:#0d9488;">${esc(o.name)}</a>（${esc(o.country)}）</li>`).join('')}</ul>
         </section>
         <p style="font-size:15px;"><a href="/pro-players" style="color:#0d9488;">職業選手總覽</a>　·　<a href="/hall-of-fame" style="color:#0d9488;">名人堂</a></p>`;
@@ -1269,7 +1332,7 @@ async function generateStaticPages() {
                 const dirPath = path.join(BUILD_DIR, 'paddles', pd.slug);
                 fs.mkdirSync(dirPath, { recursive: true });
                 const full = `${pd.brand} ${pd.model}`;
-                const title = `${full} 規格與評測 | 厚度 ${pd.thickness}、${pd.face} | 匹克球拍資料庫`;
+                const title = `${full} 規格與評測｜匹克球拍資料庫`;
                 const desc = `${full}（${pd.year}）完整規格：${pd.shape}、核心 ${pd.thickness} ${pd.core}、拍面 ${pd.face}、重量 ${pd.weight}。拍型定位、力量控球旋轉容錯四項評比與台灣購買管道一次看。`;
                 const canonical = `${BASE_URL}/paddles/${pd.slug}/`;
                 let content = template;
@@ -1294,17 +1357,55 @@ async function generateStaticPages() {
                 content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(productSchema)}</script>`);
                 {
                     const others = PADDLE_SLUGS.filter(x => x.slug !== pd.slug && x.brand === pd.brand).slice(0, 5);
+                    const PDB = loadTsModule('src/data/paddleDatabase.ts');
+                    const full_ = PDB.PADDLE_DATABASE.find(x => x.slug === pd.slug) || {};
+                    const channels = (PDB.BRAND_PURCHASE || {})[pd.brand] || [];
+                    const offers = PDB.getAffiliateOffers ? PDB.getAffiliateOffers(full_) : [];
+                    const r = full_.rating || {};
+                    const lab = full_.lab || {};
+                    const labItems = [
+                        lab.swingWeight != null && `揮重 ${lab.swingWeight}`,
+                        lab.twistWeight != null && `扭轉慣量 ${lab.twistWeight}`,
+                        lab.balancePoint != null && `平衡點 ${lab.balancePoint}mm`,
+                        lab.spinRPM != null && `轉速 ${lab.spinRPM} RPM`,
+                        lab.pbcor != null && `PBCoR ${lab.pbcor}`,
+                    ].filter(Boolean);
+                    const li = (x) => `<li>${esc(x)}</li>`;
                     const body = `
-        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(pd.brand)} · ${esc(pd.level)}級 · ${esc(pd.year)}</p>
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(pd.brand)} · ${esc(pd.level)}級 · ${esc(pd.year)}${full_.origin ? ` · ${esc(full_.origin)}品牌` : ''}${full_.endorser ? ` · 代言：${esc(full_.endorser)}` : ''}</p>${full_.discontinued ? `
+        <p style="font-size:15px;background:#f3f4f6;padding:8px 12px;border-radius:8px;">已有新世代或停產。${esc(full_.discontinuedNote || '')}</p>` : ''}${full_.specialty ? `
+        <p style="font-size:16px;line-height:1.7;margin:0 0 16px;">${esc(full_.specialty)}</p>` : ''}${(full_.highlights || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">產品特色</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${full_.highlights.map(li).join('')}</ul>
+        </section>` : ''}
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">適合誰</h2>
+          <p style="font-size:15px;margin:0 0 8px;">${esc(full_.bestFor || '')}</p>${full_.cons ? `
+          <p style="font-size:15px;margin:0;"><strong>注意：</strong>${esc(full_.cons)}</p>` : ''}
+        </section>
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">規格</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">
             <li>拍形：${esc(pd.shape)}</li>
             <li>核心厚度：${esc(pd.thickness)}（${esc(pd.core)}）</li>
             <li>拍面材質：${esc(pd.face)}</li>
-            <li>重量：${esc(pd.weight)}</li>
+            <li>重量：${esc(pd.weight)}</li>${full_.gripLength ? `
+            <li>握把長度／周長：${esc(full_.gripLength)}／${esc(full_.gripSize || '')}</li>` : ''}
+            <li>USAP 認證：${full_.usapApproved ? '通過' : '未列入 USAP 核准清單'}</li>
+            <li>台灣行情參考價：NT$ ${Number(full_.priceTWD || 0).toLocaleString('en-US')}${full_.priceUSD ? `（約 US$${esc(full_.priceUSD)}）` : ''}</li>
           </ul>
-        </section>${others.length ? `
+        </section>${r.power != null ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">四項評比</h2>
+          <p style="font-size:15px;margin:0 0 8px;">力量 ${r.power}・控球 ${r.control}・旋轉 ${r.spin}・容錯 ${r.forgiveness}（滿分 100）。為本站依公開規格、原廠資料與國外評測綜合判讀的相對分數，非實驗室量測。</p>${labItems.length ? `
+          <p style="font-size:15px;margin:0;">第三方或原廠數據：${esc(labItems.join('、'))}${lab.source ? `（來源：${esc(lab.source)}）` : ''}</p>` : ''}
+        </section>` : ''}${(channels.length || offers.length) ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">在哪裡買</h2>
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${channels.map(c => `<li><a href="${esc(c.url)}" rel="noopener" style="color:#0d9488;">${esc(c.label)}</a>${c.note ? `：${esc(c.note)}` : ''}</li>`).join('')}${offers.map(o => `<li><a href="${esc(o.url)}" rel="sponsored nofollow noopener" style="color:#0d9488;">蝦皮：${esc(o.shop)}</a>${o.variant ? `（${esc(o.variant)}）` : ''}${o.parallelImport ? '・平行輸入' : ''}</li>`).join('')}</ul>${offers.length ? `
+          <p style="font-size:13px;color:#6b7280;margin:8px 0 0;">標示「蝦皮」的連結為本站分潤連結，透過它下單本站會獲得少量回饋，不影響你的價格與本站評比。</p>` : ''}
+        </section>` : ''}${others.length ? `
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(pd.brand)} 其他型號</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/paddles/${o.slug}" style="color:#0d9488;">${esc(o.model)}</a></li>`).join('')}</ul>
@@ -1314,6 +1415,7 @@ async function generateStaticPages() {
                         crumbs: [{ name: '首頁', href: '/' }, { name: '球拍資料庫', href: '/paddles' }, { name: pd.model }],
                         h1: full, bodyHtml: body,
                     }));
+                    content = applyOg(content, `og/paddle-${pd.slug}.png`, { title: full, subtitle: [pd.shape, pd.face, pd.weight].filter(Boolean).join(' · '), badge: '球拍', type: 'technique' });
                 }
                 fs.writeFileSync(path.join(dirPath, 'index.html'), content);
             }
@@ -1327,7 +1429,7 @@ async function generateStaticPages() {
             const dirPath = path.join(BUILD_DIR, 'articles', a.slug);
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${a.title} | 匹克球深度專欄`;
-            const desc = a.summary;
+            const desc = clipDesc(((loadTsModule('src/data/articlesData.ts').ARTICLES || []).find(x => x.slug === a.slug) || {}).summary || a.summary, 150);
             const canonical = `${BASE_URL}/articles/${a.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
@@ -1352,9 +1454,30 @@ async function generateStaticPages() {
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`);
             {
                 const others = ARTICLE_SLUGS.filter(x => x.slug !== a.slug).slice(0, 6);
+                const full_ = (loadTsModule('src/data/articlesData.ts').ARTICLES || []).find(x => x.slug === a.slug) || {};
+                const sectionsHtml = (full_.sections || []).map(sec => `
+        <section style="margin-bottom:24px;font-size:16px;line-height:1.75;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${esc(sec.heading)}</h2>
+          ${sec.content}
+        </section>`).join('');
+                const faqHtml = (full_.faqs || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">常見問題</h2>${full_.faqs.map(f => `
+          <h3 style="font-size:16px;font-weight:700;margin:12px 0 4px;">${esc(f.question)}</h3>
+          <p style="font-size:15px;margin:0;">${esc(f.answer)}</p>`).join('')}
+        </section>` : '';
+                const refsHtml = (full_.references || []).length ? `
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">參考資料</h2>
+          <ul style="margin:0;padding-left:20px;font-size:14px;">${full_.references.map(x => `<li><a href="${esc(x.url)}" rel="noopener" style="color:#0d9488;">${esc(x.title)}</a></li>`).join('')}</ul>
+        </section>` : '';
+                if ((full_.faqs || []).length) {
+                    const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": full_.faqs.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })) };
+                    content = content.replace('</head>', `<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>\n</head>`);
+                }
                 const body = `
-        <p style="font-size:14px;color:#6b7280;margin:0 0 12px;">${esc(a.category)}</p>
-        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(a.summary)}</p>
+        <p style="font-size:14px;color:#6b7280;margin:0 0 12px;">${esc(a.category)}${full_.readingTime ? ` · 閱讀約 ${esc(full_.readingTime)} 分鐘` : ''}${full_.updatedDate ? ` · 更新 ${esc(full_.updatedDate)}` : ''}</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(a.summary)}</p>${sectionsHtml}${faqHtml}${refsHtml}
         <section style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">延伸閱讀</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li style="margin-bottom:6px;"><a href="/articles/${o.slug}" style="color:#0d9488;">${esc(o.title)}</a></li>`).join('')}</ul>
@@ -1428,7 +1551,8 @@ async function generateStaticPages() {
             const dirPath = path.join(BUILD_DIR, 'techniques', t.slug);
             fs.mkdirSync(dirPath, { recursive: true });
             const title = `${t.name} (${t.nameEn}) 完整教學 | 匹克球技巧百科`;
-            const desc = `${t.tagline} — 深度步驟分解、常見錯誤、練習菜單與職業選手心法。`;
+            const tFull = (loadTsModule('src/data/techniquesData.ts').TECHNIQUES || []).find(x => x.slug === t.slug) || {};
+            const desc = clipDesc(`${t.name}（${t.nameEn}）怎麼打？${t.tagline}。${tFull.level ? `${tFull.level}技巧，` : ''}含 ${(tFull.steps || []).length} 個步驟分解、${(tFull.commonMistakes || []).length} 個常見錯誤修正與 ${(tFull.drills || []).length} 套練習菜單。${tFull.whenToUse ? `使用時機：${tFull.whenToUse}` : ''}`);
             const canonical = `${BASE_URL}/techniques/${t.slug}/`;
             let content = template;
             content = content.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
@@ -1441,16 +1565,45 @@ async function generateStaticPages() {
                 "@context": "https://schema.org", "@type": "HowTo",
                 "name": `如何學會${t.name}`,
                 "description": t.tagline,
-                "url": canonical
+                "url": canonical,
+                "step": (((loadTsModule('src/data/techniquesData.ts').TECHNIQUES || []).find(x => x.slug === t.slug) || {}).steps || [])
+                    .map((s, i) => ({ "@type": "HowToStep", "position": i + 1, "name": s.title, "text": s.description }))
             };
             content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(howTo)}</script>`);
             {
-                const others = TECHNIQUE_SLUGS.filter(x => x.slug !== t.slug).slice(0, 8);
+                const full_ = (loadTsModule('src/data/techniquesData.ts').TECHNIQUES || []).find(x => x.slug === t.slug) || {};
+                const related = (full_.relatedTechniques || []).map(s => TECHNIQUE_SLUGS.find(x => x.slug === s)).filter(Boolean);
+                const others = (related.length ? related : TECHNIQUE_SLUGS.filter(x => x.slug !== t.slug)).slice(0, 8);
+                const h2 = (s) => `<h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${s}</h2>`;
                 const body = `
-        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(t.nameEn)}</p>
-        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(t.tagline)}</p>
+        <p style="font-size:15px;color:#6b7280;margin:0 0 12px;">${esc(t.nameEn)}${full_.level ? ` · ${esc(full_.level)}` : ''}${full_.category ? ` · ${esc(full_.category)}` : ''}${full_.difficulty ? ` · 難度 ${full_.difficulty}/5` : ''}${full_.timeToLearn ? ` · 學習時間約 ${esc(full_.timeToLearn)}` : ''}</p>
+        <p style="font-size:17px;color:#4b5563;margin:0 0 24px;">${esc(t.tagline)}</p>${full_.whenToUse ? `
         <section style="margin-bottom:24px;">
-          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">其他匹克球技巧</h2>
+          ${h2('什麼時候用')}
+          <p style="font-size:15px;line-height:1.7;margin:0;">${esc(full_.whenToUse)}</p>
+        </section>` : ''}${(full_.keyPoints || []).length ? `
+        <section style="margin-bottom:24px;">
+          ${h2('關鍵要點')}
+          <ul style="margin:0;padding-left:20px;font-size:15px;">${full_.keyPoints.map(k => `<li>${esc(k)}</li>`).join('')}</ul>
+        </section>` : ''}${(full_.steps || []).length ? `
+        <section style="margin-bottom:24px;">
+          ${h2('步驟分解')}
+          <ol style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;">${full_.steps.map(s => `<li><strong>${esc(s.title)}</strong>：${esc(s.description)}</li>`).join('')}</ol>
+        </section>` : ''}${(full_.commonMistakes || []).length ? `
+        <section style="margin-bottom:24px;">
+          ${h2('常見錯誤與修正')}
+          <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;">${full_.commonMistakes.map(m => `<li><strong>${esc(m.mistake)}</strong>：${esc(m.fix)}</li>`).join('')}</ul>
+        </section>` : ''}${(full_.drills || []).length ? `
+        <section style="margin-bottom:24px;">
+          ${h2('練習菜單')}
+          <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;">${full_.drills.map(d => `<li><strong>${esc(d.name)}</strong>（${esc(d.reps)}）：${esc(d.description)}</li>`).join('')}</ul>
+        </section>` : ''}${full_.proTip ? `
+        <section style="margin-bottom:24px;">
+          ${h2('進階心法')}
+          <p style="font-size:15px;line-height:1.7;margin:0;">${esc(full_.proTip)}</p>
+        </section>` : ''}
+        <section style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:700;margin:0 0 12px;">${related.length ? '相關技巧' : '其他匹克球技巧'}</h2>
           <ul style="margin:0;padding-left:20px;font-size:15px;">${others.map(o => `<li><a href="/techniques/${o.slug}" style="color:#0d9488;">${esc(o.name)}</a>（${esc(o.nameEn)}）</li>`).join('')}</ul>
         </section>
         <p style="font-size:15px;"><a href="/techniques" style="color:#0d9488;">技巧百科總覽</a>　·　<a href="/learning" style="color:#0d9488;">3D 互動技巧教學</a>　·　<a href="/courts" style="color:#0d9488;">找場地練習 →</a></p>`;
@@ -1644,7 +1797,7 @@ async function generateStaticPages() {
                     items: [
                         { href: '/tools/dupr-simulator', label: 'DUPR 分數試算', sub: '輸入比賽結果，估算這場對你的 DUPR 評級大約有什麼影響' },
                         { href: '/tools/rotation', label: '輪場排點器', sub: '人數多於場地時，排出讓每個人上場次數平均的輪替表' },
-                        { href: '/tools/bracket', label: '賽程表產生器', sub: '單淘汰、雙淘汰與循環賽的對戰表自動編排' },
+                        { href: '/tools/bracket', label: '賽程表產生器', sub: '單淘汰與循環賽的籤表自動編排，可列印' },
                         { href: '/tools/court-lines', label: '場地劃線指南', sub: '在羽球場或網球場上加劃匹克球線的尺寸與步驟' },
                     ],
                     foot: foot('courts', 'rules'),
@@ -1657,6 +1810,17 @@ async function generateStaticPages() {
                         { href: '/ratings', label: 'DUPR 評級完整說明', sub: '1.0 到 8.0 各級距的實際能力描述' },
                         { href: '/tools', label: '其他實用工具', sub: '輪場排點、賽程表、場地劃線' },
                     ],
+                    sections: [
+                        { heading: '怎麼用', terms: [
+                            { t: '1. 輸入雙方評級', d: '填入你的 DUPR 評級與對手的評級（雙打可用兩人平均）。' },
+                            { t: '2. 輸入比分', d: '填入這場的比分，例如 11：7。' },
+                            { t: '3. 看估算結果', d: '工具會顯示這場大約讓你的評級上升或下降多少，以及賽後的估計評級。' },
+                        ] },
+                        { heading: '試算邏輯與限制', terms: [
+                            { t: '採用簡化的 Elo 式公式', d: '先依雙方評級差算出你的預期勝率，再依實際勝負調整：贏過評級比你高的對手加得多，輸給評級比你低的對手扣得多；比分差距越大，變動幅度也稍微放大。' },
+                            { t: '和官方 DUPR 的差別', d: '官方 DUPR 使用更複雜的模型，會納入歷史比賽、搭檔、比賽時間遠近等因素，所以實際變動會不同。這個工具適合用來理解「為什麼這場贏了分數卻沒漲多少」，實際數值請以 DUPR 官方 App 為準。' },
+                        ] },
+                    ],
                     foot: foot('glossary', 'courts'),
                 },
                 {
@@ -1667,15 +1831,37 @@ async function generateStaticPages() {
                         { href: '/glossary', label: '什麼是球敘、排拍？', sub: '台灣球敘現場的輪場規矩' },
                         { href: '/tools/bracket', label: '賽程表產生器', sub: '要辦正式比賽時改用這個' },
                     ],
+                    sections: [
+                        { heading: '怎麼用', terms: [
+                            { t: '1. 設定人數、輪數、場地數', d: '支援 4 到 16 人、最多 20 輪、最多 8 面場地。' },
+                            { t: '2. 填入球員名字', d: '不填也可以，預設顯示「球員 1、球員 2…」。' },
+                            { t: '3. 產生並列印輪轉表', d: '每一輪列出各場地的兩組搭檔，按「列印輪轉表」就能印出來帶去球場，不需註冊，資料只在你的瀏覽器裡。' },
+                        ] },
+                        { heading: '排點原則', terms: [
+                            { t: '搭檔盡量不重複', d: '每輪安排時會優先挑還沒當過搭檔的組合，讓大家輪流跟不同人配對。' },
+                            { t: '人數多於場地時輪流下場', d: '每面場地 4 人，排不進場的人那一輪休息，每輪的組合會重新排列，避免固定同一批人一直坐板凳。' },
+                        ] },
+                    ],
                     foot: foot('courts', 'faq'),
                 },
                 {
                     route: 'tools/bracket', h1: '匹克球賽程表產生器', crumb: '賽程表產生器',
-                    intro: '辦小型比賽用的對戰表工具：輸入隊伍數，產生單淘汰、雙淘汰或循環賽的賽程與輪次安排。',
+                    intro: '辦球友聚會或社區小型比賽用的籤表工具：輸入參賽者或隊伍名單，自動產生單淘汰或循環賽籤表，可直接列印。',
                     itemsHeading: '延伸閱讀',
                     items: [
                         { href: '/tournaments', label: '2026 賽事總覽', sub: '全台正式賽事的日期與報名資訊' },
                         { href: '/tools/rotation', label: '輪場排點器', sub: '一般球敘輪場用這個' },
+                    ],
+                    sections: [
+                        { heading: '怎麼用', terms: [
+                            { t: '1. 選賽制', d: '單淘汰：輸一場就淘汰，場次少、適合時間有限。循環賽：每人（隊）和其他所有對手各打一次，場次多但最公平。' },
+                            { t: '2. 貼上名單', d: '一行一個名字，雙打就一行填一組隊名。' },
+                            { t: '3. 列印籤表', d: '按「列印籤表」印出，現場直接填比分。' },
+                        ] },
+                        { heading: '常見問題', terms: [
+                            { t: '人數不是 2 的次方怎麼辦？', d: '單淘汰會自動補到下一個 2 的次方（例如 6 人補到 8 格），多出來的位置是輪空（BYE），抽到的人第一輪直接晉級。' },
+                            { t: '循環賽要打幾場？', d: 'N 人的循環賽共 N×(N−1)÷2 場，例如 6 人要打 15 場。工具會把場次分成數輪，每輪每人最多打一場。' },
+                        ] },
                     ],
                     foot: foot('rules', 'courts'),
                 },
@@ -1686,6 +1872,27 @@ async function generateStaticPages() {
                     items: [
                         { href: '/rules', label: '匹克球規則教學', sub: '廚房區、雙彈跳等與場地相關的規則' },
                         { href: '/courts', label: '全台球場地圖', sub: '已經劃好線的場地在哪裡' },
+                    ],
+                    sections: [
+                        { heading: '標準尺寸（依 USA Pickleball 規則）', terms: [
+                            { t: '球場長寬', d: '44 × 20 英尺（13.41 × 6.10 公尺），尺寸含線。' },
+                            { t: '網高', d: '中央 34 英寸（86.4 公分），網柱處 36 英寸（91.4 公分）。' },
+                            { t: '廚房區（非截擊區）', d: '球網兩側各 7 英尺（2.13 公尺）深。' },
+                            { t: '發球區', d: '廚房線到底線 15 英尺（4.57 公尺），由中線分成左右各 10 英尺（3.05 公尺）寬。' },
+                            { t: '線寬與周邊空間', d: '線寬 2 英寸（約 5 公分）；建議場地四周再留約 10 英尺（3 公尺）的安全區。' },
+                        ] },
+                        { heading: '羽球場改匹克球場', terms: [
+                            { t: '保留外框', d: '雙打羽球場外框也是 44 × 20 英尺，外框線可以直接沿用。' },
+                            { t: '加劃廚房線', d: '在球網兩側各 7 英尺（2.13 公尺）處，畫一條與球網平行的線。' },
+                            { t: '加劃中線', d: '從廚房線到底線畫一條中線，分出左右發球區。' },
+                            { t: '降低球網', d: '羽球網太高，要換成或調整到中央 34 英寸、網柱 36 英寸。預算有限可以先用膠帶貼線試打。' },
+                        ] },
+                        { heading: '常見地面材質', terms: [
+                            { t: '壓克力面層', d: '國際賽常用，球速與彈跳最穩定，成本高。' },
+                            { t: 'PU 彈性地墊', d: '對膝蓋較友善，成本中高。' },
+                            { t: '水泥／柏油', d: '最經濟，戶外公園常見。' },
+                            { t: '木地板', d: '室內館常見，球速較快。' },
+                        ] },
                     ],
                     foot: foot('glossary', 'faq'),
                 },
@@ -2524,6 +2731,27 @@ async function generateStaticPages() {
             }
         } catch (e) {
             console.warn('  Skip per-court generation:', e.message);
+        }
+
+        // ===== 列表／單元頁的分享預覽圖 =====
+        // 上面沒有專屬分享圖的頁面（仍是預設 og-image.png），補一張帶頁名的卡片。首頁保留原本的品牌圖。
+        {
+            const h1ByRoute = Object.fromEntries(INDEX_PAGES.map(pg => [pg.route, pg.h1]));
+            const routes = [...new Set([...Object.keys(pageSEO), ...INDEX_PAGES.map(pg => pg.route)])];
+            let n = 0;
+            for (const route of routes) {
+                const filePath = path.join(BUILD_DIR, route, 'index.html');
+                if (!fs.existsSync(filePath)) continue;
+                let content = fs.readFileSync(filePath, 'utf-8');
+                if (!/<meta property="og:image" content="[^"]*\/og-image\.png"/.test(content)) continue;
+                const parts = ((content.match(/<title>(.*?)<\/title>/) || [])[1] || '').split(/\s*[|｜]\s*/);
+                const title = h1ByRoute[route] || parts[0];
+                const sub = parts[1] && [...parts[1]].length <= 26 && !/Picklemaster/i.test(parts[1]) ? parts[1] : '';
+                content = applyOg(content, `og/page-${route.replace(/\//g, '-')}.png`, { title, subtitle: sub });
+                fs.writeFileSync(filePath, content);
+                n++;
+            }
+            console.log(`  Added share images to ${n} section pages`);
         }
 
         // Generate Sitemap.xml (2026 enhanced)

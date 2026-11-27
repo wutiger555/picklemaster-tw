@@ -2,6 +2,9 @@ import { AI_PROFILES, type Difficulty } from './engine/ai';
 import type { GameEvent, TeamStats } from './engine/game';
 import { paddleById, PADDLES, SPECIALS } from './engine/paddles';
 import { CHARACTERS, type CharacterDef } from './characters';
+import type { ArcadePlayerCard } from '../../utils/playApi';
+import { avatarColors } from '../play/avatarColors';
+import type { Title as RankTitle } from './titles';
 
 /**
  * 戰績分享與挑戰連結。全部在前端完成，不需要後端：
@@ -505,3 +508,212 @@ export const canvasToFile = (canvas: HTMLCanvasElement) =>
   new Promise<File | null>((resolve) =>
     canvas.toBlob((b) => resolve(b ? new File([b], 'pickle-master-result.png', { type: 'image/png' }) : null), 'image/png'),
   );
+
+/** 複製文字：先用 Clipboard API，不行（舊版 in-app 瀏覽器）再退回 execCommand */
+export const copyText = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+};
+
+export const download = (url: string, name = 'pickle-master-result.png') => {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+};
+
+/* ───────────────────────── 球友卡分享圖（canvas 1080×1350） ───────────────────────── */
+
+const RANK_COLOR = (rank: number | null): [string, string, string] =>
+  rank === 1 ? ['#fde68a', '#f59e0b', '#78350f'] : rank === 2 ? ['#f1f5f9', '#94a3b8', '#1e293b'] : rank === 3 ? ['#fdba74', '#c2410c', '#431407'] : ['#a7f3d0', '#34d399', '#022c22'];
+
+/** 球拍頭像（和 PaddleAvatar 同一套顏色） */
+const drawAvatar = (ctx: CanvasRenderingContext2D, name: string, seed: number, x: number, y: number, size: number, ring: string) => {
+  const { c1, c2, initial } = avatarColors(name, seed);
+  const r = size * 0.4;
+  // 光環
+  ctx.save();
+  ctx.shadowColor = ring;
+  ctx.shadowBlur = 40;
+  roundRect(ctx, x - 8, y - 8, size + 16, size + 16, r + 8);
+  ctx.fillStyle = ring;
+  ctx.fill();
+  ctx.restore();
+  roundRect(ctx, x, y, size, size, r);
+  ctx.fillStyle = c1;
+  ctx.fill();
+  ctx.strokeStyle = c2;
+  ctx.lineWidth = 8;
+  ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `900 ${Math.round(size * 0.46)}px ${CJK}`;
+  ctx.fillText(initial, x + size / 2, y + size / 2 + size * 0.02);
+  ctx.textAlign = 'left';
+};
+
+export const drawPlayerCard = async (c: ArcadePlayerCard, titles: RankTitle[]): Promise<HTMLCanvasElement> => {
+  const canvas = document.createElement('canvas');
+  canvas.width = CARD_W;
+  canvas.height = CARD_H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+  try {
+    await Promise.all([document.fonts.load(`900 200px Inter`), document.fonts.load(`800 40px Inter`)]);
+  } catch {
+    /* 字型載不到就用系統字 */
+  }
+  const [soft, accent, dark] = RANK_COLOR(c.rank);
+  const pad = 80;
+  drawBackground(ctx, true);
+
+  // 背景大字：名次
+  ctx.save();
+  ctx.font = `italic 900 420px ${NUM}`;
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.fillText(c.rank ? `#${c.rank}` : 'PK', 40, 700);
+  ctx.restore();
+
+  // 頂部：品牌
+  ctx.textBaseline = 'middle';
+  roundRect(ctx, pad, 72, 470, 56, 28);
+  ctx.fillStyle = 'rgba(52,211,153,0.12)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(110,231,183,0.35)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = '#6ee7b7';
+  ctx.font = `800 24px ${NUM}`;
+  ctx.letterSpacing = '6px';
+  ctx.fillText('PICKLE MASTER', pad + 28, 101);
+  ctx.letterSpacing = '0px';
+  ctx.fillStyle = 'rgba(110,231,183,0.7)';
+  ctx.font = `700 24px ${CJK}`;
+  ctx.fillText('歷史排行榜', pad + 300, 101);
+
+  // 頭像＋名次徽章
+  drawAvatar(ctx, c.nickname, c.avatarSeed, pad, 200, 220, accent);
+  if (c.rank) {
+    const label = c.rank <= 3 ? ['🥇', '🥈', '🥉'][c.rank - 1] : '🏆';
+    ctx.font = `900 40px ${CJK}`;
+    const text = `${label} 第 ${c.rank} 名`;
+    const w = ctx.measureText(text).width + 56;
+    roundRect(ctx, pad + 250, 206, w, 72, 36);
+    ctx.fillStyle = accent;
+    ctx.fill();
+    ctx.fillStyle = dark;
+    ctx.fillText(text, pad + 278, 243);
+  }
+  // 暱稱
+  ctx.fillStyle = '#ffffff';
+  const nameSize = fitFont(ctx, c.nickname, 900, 92, CJK, CARD_W - pad * 2 - 250);
+  ctx.font = `900 ${nameSize}px ${CJK}`;
+  ctx.fillText(c.nickname, pad + 250, 345);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = `600 26px ${NUM}`;
+  ctx.fillText(`${new Date(c.joinedAt).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long' })}加入・出賽 ${c.plays} 場`, pad + 250, 405);
+
+  // 稱號
+  let tx = pad;
+  const ty = 490;
+  ctx.font = `800 30px ${CJK}`;
+  for (const t of titles.slice(0, 4)) {
+    const text = `${t.icon} ${t.name}`;
+    const w = ctx.measureText(text).width + 48;
+    if (tx + w > CARD_W - pad) break;
+    roundRect(ctx, tx, ty, w, 60, 30);
+    ctx.fillStyle = 'rgba(253,230,138,0.14)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(253,230,138,0.4)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = soft;
+    ctx.fillText(text, tx + 24, ty + 31);
+    tx += w + 14;
+  }
+
+  // 數據格 3×2
+  const pct = c.plays ? `${Math.round((c.wins / c.plays) * 100)}%` : '—';
+  const cells: [string, string, string][] = [
+    ['積分', String(c.points), '分'],
+    ['勝率', pct, ''],
+    ['擊敗高手', String(c.proWins), '勝'],
+    ['最長連擊', String(c.longestRally), '拍'],
+    ['Dink 最長', String(c.dinkBest), '拍'],
+    ['生存賽', String(c.survivalBest), '關'],
+  ];
+  const cw = (CARD_W - pad * 2 - 24 * 2) / 3;
+  const ch = 190;
+  cells.forEach(([label, value, unit], i) => {
+    const x = pad + (i % 3) * (cw + 24);
+    const y = 600 + Math.floor(i / 3) * (ch + 24);
+    roundRect(ctx, x, y, cw, ch, 26);
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = `700 26px ${CJK}`;
+    ctx.fillText(label, x + 26, y + 44);
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#ffffff';
+    const vs = fitFont(ctx, value, 900, 84, NUM, cw - 90);
+    ctx.font = `900 ${vs}px ${NUM}`;
+    ctx.fillText(value, x + 24, y + 150);
+    const vw = ctx.measureText(value).width;
+    ctx.fillStyle = soft;
+    ctx.font = `700 24px ${NUM}`;
+    ctx.fillText(unit, x + 34 + vw, y + 148);
+    ctx.textBaseline = 'middle';
+  });
+
+  // 底部
+  const fy = 1120;
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(pad, fy);
+  ctx.lineTo(CARD_W - pad, fy);
+  ctx.stroke();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `900 46px ${CJK}`;
+  ctx.fillText(c.rank && c.rank <= 10 ? '來把我擠下去啊' : '你也來上榜？', pad, fy + 70);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = `600 28px ${NUM}`;
+  ctx.fillText('picklemastertw.com/game・免下載直接玩', pad, fy + 122);
+  ctx.font = `900 34px ${CJK}`;
+  const tag = '#匹克球';
+  const tagW = ctx.measureText(tag).width + 56;
+  roundRect(ctx, CARD_W - pad - tagW, fy + 62, tagW, 72, 36);
+  ctx.fillStyle = accent;
+  ctx.fill();
+  ctx.fillStyle = dark;
+  ctx.textAlign = 'center';
+  ctx.fillText(tag, CARD_W - pad - tagW / 2, fy + 99);
+  ctx.textAlign = 'left';
+  return canvas;
+};
+
+export const playerCardText = (c: ArcadePlayerCard, titles: RankTitle[]) =>
+  `${c.rank ? `匹克硬邦幫歷史排行榜第 ${c.rank} 名` : '我的匹克硬邦幫球友卡'}${titles[0] ? `・${titles[0].name}` : ''}：${c.wins} 勝 ${c.plays - c.wins} 敗、最長連擊 ${c.longestRally} 拍。來挑戰 👉 https://picklemastertw.com/game #匹克球`;

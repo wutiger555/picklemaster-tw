@@ -112,7 +112,7 @@ export const pageSEO: Record<string, SEOConfig> = {
   },
   'tool-dupr': {
     title: 'DUPR 評分模擬器 | 預估下一場比賽對你的評分影響',
-    description: '輸入你與對手 DUPR 評分、比賽結果，即時預估你下一場的 DUPR 變動。純前端 Elo 簡化演算法，零後端、即時計算。',
+    description: '輸入你與對手的 DUPR 評級和比分，估算這場比賽讓你的評級上升或下降多少。用簡化的 Elo 式公式說明「為什麼贏了分數卻沒漲多少」，實際數值以 DUPR 官方為準。',
     keywords: 'DUPR 模擬器,DUPR 計算,匹克球評分預估,DUPR simulator,DUPR calculator'
   },
   // 揪團約打。預渲染的 title/description 在 scripts/generate-static-pages.cjs 的 pageSEO['play']，兩邊要一致
@@ -122,18 +122,18 @@ export const pageSEO: Record<string, SEOConfig> = {
     keywords: '匹克球揪團,匹克球臨打,匹克球零打,匹克球約打,匹克球球敘,匹克球找球友,pickleball open play taiwan',
   },
   'tool-rotation': {
-    title: '雙打輪轉排程器 | 5-16 人約球自動排輪次',
-    description: '球友約球不再手忙腳亂！輸入人數、場次、場地數，自動產生避免重複配對的雙打輪轉表，支援列印帶到球場用。',
+    title: '雙打輪轉排程器 | 4-16 人約球自動排輪次',
+    description: '球友約球人多場少怎麼排？輸入 4 到 16 人、輪數與場地數，自動產生搭檔盡量不重複、每個人輪流下場的雙打輪轉表，可直接列印帶去球場，免註冊。',
     keywords: '匹克球 輪轉,雙打輪轉,約球排程,pickleball rotation,匹克球 約球工具'
   },
   'tool-bracket': {
     title: '比賽籤表產生器 | 單淘汰、循環賽 PDF 列印',
-    description: '辦球友聚會、社區小型賽事必備。自動生成單淘汰、循環賽籤表，支援列印。適合 4-32 人規模賽事。',
+    description: '辦球友聚會或社區小比賽用的籤表產生器：貼上名單，自動排出單淘汰或循環賽籤表，人數不足會自動補輪空，循環賽附總場次計算，可直接列印，免註冊。',
     keywords: '比賽籤表,pickleball bracket generator,匹克球賽事,循環賽,單淘汰,匹克球小比賽'
   },
   'tool-court-lines': {
     title: '匹克球場地劃線指南 | 標準尺寸 + 羽球場改造教學',
-    description: '完整場地尺寸（20×44 英尺）、廚房區位置、網高規範、場地材質建議。教你如何把羽毛球場改造為匹克球場。',
+    description: '匹克球場標準尺寸 44×20 英尺（13.41×6.10 公尺）、廚房區 7 英尺、網高中央 34 英寸。附羽球場改匹克球場的加線步驟與常見地面材質比較，社區自己劃線也做得到。',
     keywords: '匹克球 場地尺寸,pickleball court dimensions,羽球場 改 匹克球,匹克球 劃線,匹克球 場地建造'
   },
   articles: {
@@ -163,7 +163,7 @@ export const pageSEO: Record<string, SEOConfig> = {
   },
   playbook: {
     title: '匹克球戰術劇本庫 | 30+ 情境戰術對照「對方做 X 我該怎麼辦」',
-    description: '30+ 比賽情境戰術速查：對方深發球、被連續強攻、搭檔失誤、心理崩盤等。每個情境含為什麼發生、最佳回應、替代方案、職業案例。',
+    description: '30 個匹克球比賽情境的應對速查：對方深發球、被連續強攻、搭檔失誤、比分落後怎麼辦。每個情境說明為什麼會發生、最佳回應與替代打法，分開局、網前、防守、心理、雙打、單打六類。',
     keywords: '匹克球戰術,匹克球戰略,匹克球比賽戰術,雙打戰術,單打戰術,匹克球策略,pickleball tactics,匹克球比賽應對'
   },
   'hall-of-fame': {

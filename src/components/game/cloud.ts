@@ -1,4 +1,4 @@
-import { type ArcadeResult, getArcadeProfile, getToken, postArcadeResult, putArcadeProfile } from '../../utils/playApi';
+import { type ArcadeBoard, type ArcadeLeaderboard, type ArcadeResult, getArcadeLeaderboard, getArcadeProfile, getToken, postArcadeResult, putArcadeProfile } from '../../utils/playApi';
 
 /**
  * 遊戲進度的雲端存檔（和揪團共用球友身分）。
@@ -14,6 +14,8 @@ const KEYS = {
   tips: 'pm-game-tips',
   tutorial: 'pm-game-tutorial-done',
   welcome: 'pm-game-welcome',
+  daily: 'pm-game-daily',
+  survival: 'pm-game-survival',
 } as const;
 type Field = keyof typeof KEYS;
 export type Snapshot = Partial<Record<Field, unknown>>;
@@ -75,6 +77,8 @@ export const merge = (local: Snapshot, remote: Snapshot): Snapshot => {
   const out: Snapshot = { ...remote, ...local };
   if (local.records !== undefined && remote.records !== undefined) out.records = maxDeep(local.records, remote.records);
   if (local.tour !== undefined && remote.tour !== undefined) out.tour = maxDeep(local.tour, remote.tour);
+  if (local.daily !== undefined && remote.daily !== undefined) out.daily = maxDeep(local.daily, remote.daily);
+  if (local.survival !== undefined && remote.survival !== undefined) out.survival = Math.max(Number(local.survival) || 0, Number(remote.survival) || 0);
   if (isObj(local.tips) && isObj(remote.tips)) {
     const a = Array.isArray(local.tips.seen) ? local.tips.seen : [];
     const b = Array.isArray(remote.tips.seen) ? remote.tips.seen : [];
@@ -183,10 +187,34 @@ async function flushQueue() {
 
 export const boardCacheKey = (b: string) => `pm-game-board-${b}-${signedIn() ? 'me' : 'anon'}`;
 
+const CACHE_MS = 5 * 60_000;
+export const cachedBoard = (b: ArcadeBoard): ArcadeLeaderboard | null => {
+  try {
+    const raw = sessionStorage.getItem(boardCacheKey(b));
+    if (!raw) return null;
+    const v = JSON.parse(raw) as { at: number; data: ArcadeLeaderboard };
+    return Date.now() - v.at < CACHE_MS ? v.data : null;
+  } catch {
+    return null;
+  }
+};
+/** 讀一個榜（5 分鐘內用快取，省請求）；主選單的榜首、結算的名次也用這個 */
+export const loadBoard = async (b: ArcadeBoard, force = false): Promise<ArcadeLeaderboard> => {
+  const hit = force ? null : cachedBoard(b);
+  if (hit) return hit;
+  const d = await getArcadeLeaderboard(b);
+  try {
+    sessionStorage.setItem(boardCacheKey(b), JSON.stringify({ at: Date.now(), data: d }));
+  } catch {
+    /* 存不了 */
+  }
+  return d;
+};
+
 /** 剛打完一場：清掉排行榜快取，打開時看得到自己最新的名次 */
 export const invalidateBoards = () => {
   try {
-    for (const b of ['points', 'pro', 'dink']) for (const who of ['me', 'anon']) sessionStorage.removeItem(`pm-game-board-${b}-${who}`);
+    for (const b of ['points', 'pro', 'dink', 'survival']) for (const who of ['me', 'anon']) sessionStorage.removeItem(`pm-game-board-${b}-${who}`);
   } catch {
     /* 存不了 */
   }

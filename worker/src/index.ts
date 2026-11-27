@@ -98,6 +98,11 @@ app.post('/api/arcade/results', async (c) => {
   return c.json(await arcade.postResult(c.env, pid, await readJson(c.req.raw), now), 201);
 });
 
+app.get('/api/arcade/players/:id', async (c) => {
+  c.header('Cache-Control', 'public, max-age=60');
+  return c.json(await arcade.playerCard(c.env, c.req.param('id')));
+});
+
 app.get('/api/arcade/leaderboard/:board', async (c) => {
   const pid = c.get('playerId');
   // 沒帶身分的公開排行可以快取；帶身分的要算自己的名次，不快取

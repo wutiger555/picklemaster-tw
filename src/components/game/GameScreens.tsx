@@ -8,6 +8,8 @@ import { characterById } from './characters';
 import { paddleById } from './engine/paddles';
 import { ComicTitle } from './ComicTitle';
 import { lessonsFor } from './tutorial';
+import type { DailyChallenge, LiveResult } from './liveModes';
+import type { WeeklyRuleDef } from './engine/liveRules';
 import { type Difficulty, AI_PROFILES } from './engine/ai';
 import type { Controls, GameMode, TeamStats } from './engine/game';
 import type { Challenge, MatchResult } from './share';
@@ -139,17 +141,26 @@ interface MenuProps {
   onNext: () => void;
   /** 快速開打：沿用上次的選手、球拍、場地直接比賽 */
   onQuick: () => void;
-  /** 每週排行榜、球友身分（雲端存檔） */
+  /** 歷史排行榜、球友身分（雲端存檔） */
   onBoard: () => void;
+  /** 榜首與自己的名次（讀過排行榜才有） */
+  glory: { champion: { nickname: string; value: number } | null; myRank: number | null } | null;
   onAccount: () => void;
   /** 已有球友身分時顯示暱稱 */
   accountName: string | null;
   onTutorial: () => void;
+  /** 自動輪換的活動：每日挑戰、本週規則賽、連勝生存賽 */
+  daily: { challenge: DailyChallenge; done: boolean; streak: number; tick: number };
+  rule: WeeklyRuleDef;
+  survivalBest: number;
+  onDaily: () => void;
+  onRule: () => void;
+  onSurvival: () => void;
   /** 教學做完過了：入口縮成一行小字 */
   tutorialDone: boolean;
 }
 
-export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onQuick, onBoard, onAccount, accountName, onTutorial, tutorialDone }: MenuProps) => {
+export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onQuick, onBoard, glory, onAccount, accountName, onTutorial, tutorialDone, daily, rule, survivalBest, onDaily, onRule, onSurvival }: MenuProps) => {
   // 標題畫面只放「選一個玩法就開打」；對手、場地、操作這些細項收進設定面板（像多數獨立遊戲的標題選單）
   const [sheet, setSheet] = useState(false);
   const [news, setNews] = useState(false);
@@ -265,6 +276,44 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
           </button>
           </motion.div>
 
+          {/* 每天、每週自動換的活動：今日挑戰、本週規則賽、連勝生存賽 */}
+          <motion.div variants={TILE} className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={onDaily}
+              className={`relative flex flex-col rounded-xl border p-2.5 text-left backdrop-blur-md transition-colors ${
+                daily.done ? 'border-emerald-300/40 bg-emerald-400/10' : 'border-amber-300/50 bg-amber-400/15 hover:bg-amber-400/25'
+              }`}
+            >
+              <span className="flex items-center justify-between text-[10px] font-bold text-white/60">
+                今日挑戰
+                {daily.streak > 0 && <span className="text-amber-300">🔥{daily.streak}</span>}
+              </span>
+              <span className="mt-0.5 flex items-center gap-1 text-sm font-black text-white">
+                <span>{daily.challenge.icon}</span>
+                <span className="truncate">{daily.challenge.title}</span>
+              </span>
+              <span className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-white/60">{daily.done ? '今天達成了！明天再來' : daily.challenge.desc}</span>
+              {daily.done && <span className="absolute -top-2 right-2 rounded-full bg-emerald-400 px-1.5 text-[9px] font-black text-emerald-950">✓ 達成</span>}
+            </button>
+            <button type="button" onClick={onRule} className="flex flex-col rounded-xl border border-white/15 bg-slate-900/70 p-2.5 text-left backdrop-blur-md transition-colors hover:bg-slate-800/80">
+              <span className="text-[10px] font-bold text-white/60">本週規則賽</span>
+              <span className="mt-0.5 flex items-center gap-1 text-sm font-black text-white">
+                <span>{rule.icon}</span>
+                <span className="truncate">{rule.name}</span>
+              </span>
+              <span className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-white/60">{rule.desc}</span>
+            </button>
+            <button type="button" onClick={onSurvival} className="flex flex-col rounded-xl border border-white/15 bg-slate-900/70 p-2.5 text-left backdrop-blur-md transition-colors hover:bg-slate-800/80">
+              <span className="text-[10px] font-bold text-white/60">連勝生存賽</span>
+              <span className="mt-0.5 flex items-center gap-1 text-sm font-black text-white">
+                <span>🏔️</span>
+                <span className="truncate">一命闖關</span>
+              </span>
+              <span className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-white/60">{survivalBest > 0 ? `最佳 ${survivalBest} 關・每關先到 5 分` : '對手一關比一關強，看你能過幾關'}</span>
+            </button>
+          </motion.div>
+
           <div className="grid grid-cols-2 gap-2.5">
             {(
               [
@@ -348,9 +397,14 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
             <button
               type="button"
               onClick={onBoard}
-              className="flex items-center gap-1.5 rounded-full bg-amber-300 px-3.5 py-2 text-xs font-black text-amber-950 shadow-lg shadow-amber-500/20"
+              className="flex max-w-[15rem] items-center gap-1.5 rounded-full bg-amber-300 px-3.5 py-2 text-xs font-black text-amber-950 shadow-lg shadow-amber-500/20"
             >
-              🏆 排行榜
+              <span>🏆 排行榜</span>
+              {glory?.myRank ? (
+                <span className="truncate rounded-full bg-amber-950/15 px-1.5 py-px text-[10px] font-black">你第 {glory.myRank} 名</span>
+              ) : glory?.champion ? (
+                <span className="truncate rounded-full bg-amber-950/15 px-1.5 py-px text-[10px] font-bold">👑 {glory.champion.nickname}</span>
+              ) : null}
             </button>
             <button
               type="button"
@@ -670,7 +724,59 @@ interface OverProps {
   challenge: Challenge | null;
   onAgain: () => void;
   onMenu: () => void;
+  /** 活動模式的結果（每日挑戰、規則賽、生存賽） */
+  live?: LiveResult | null;
+  /** 這場送出後在歷史積分榜的名次，與上一次的名次（進榜、升名次時慶祝） */
+  rank?: { now: number; prev: number | null } | null;
 }
+
+/** 結算畫面的名次：第一次進榜、名次上升時放大慶祝，沒變就一行小字 */
+const RankLine = ({ rank }: { rank: NonNullable<OverProps['rank']> }) => {
+  const up = rank.prev === null ? null : rank.prev - rank.now;
+  const big = rank.prev === null || (up !== null && up > 0);
+  const medal = rank.now <= 3 ? ['🥇', '🥈', '🥉'][rank.now - 1] : '🏆';
+  return (
+    <motion.div
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 18 }}
+      className={`mt-4 rounded-2xl px-4 py-3 ${big ? 'bg-gradient-to-r from-amber-300/25 via-orange-400/15 to-amber-300/25 ring-1 ring-amber-300/60' : 'bg-white/5 ring-1 ring-white/10'}`}
+    >
+      <div className="text-xs font-bold tracking-wider text-amber-300">歷史積分榜</div>
+      <div className={`mt-0.5 font-black text-white ${big ? 'text-2xl' : 'text-base'}`}>
+        {medal} 第 {rank.now} 名
+        {rank.prev === null && <span className="ml-2 text-base text-amber-200">進榜了！</span>}
+        {up !== null && up > 0 && <span className="ml-2 text-base text-emerald-300">↑ {up}</span>}
+        {up !== null && up < 0 && <span className="ml-2 text-xs text-white/50">↓ {-up}</span>}
+      </div>
+    </motion.div>
+  );
+};
+
+/** 結算畫面上方的活動結果：達成／連續天數、本週規則、生存賽關數 */
+const LiveBanner = ({ live }: { live: LiveResult }) => {
+  if (live.kind === 'daily')
+    return (
+      <div className={`mt-4 rounded-2xl px-4 py-3 ${live.done ? 'bg-amber-400/20 ring-1 ring-amber-300/60' : 'bg-white/5 ring-1 ring-white/10'}`}>
+        <div className="text-xs font-bold tracking-wider text-amber-300">今日挑戰・{live.title}</div>
+        <div className="mt-0.5 text-lg font-black text-white">{live.done ? `達成！🔥 連續 ${live.streak} 天` : '還沒達成，再試一次'}</div>
+        {live.done && <div className="text-[11px] text-white/60">排行榜積分 +3・明天有新題目</div>}
+      </div>
+    );
+  if (live.kind === 'rule')
+    return (
+      <div className="mt-4 rounded-2xl bg-white/5 px-4 py-2 text-sm text-white/70 ring-1 ring-white/10">
+        {live.icon} 本週規則賽・{live.name}
+      </div>
+    );
+  return (
+    <div className={`mt-4 rounded-2xl px-4 py-3 ${live.ended ? 'bg-white/5 ring-1 ring-white/10' : 'bg-emerald-400/15 ring-1 ring-emerald-300/50'}`}>
+      <div className="text-xs font-bold tracking-wider text-emerald-300">連勝生存賽</div>
+      <div className="mt-0.5 text-lg font-black text-white">{live.ended ? `止步第 ${live.round} 關，共過 ${live.cleared} 關` : `第 ${live.round} 關過關！`}</div>
+      <div className="text-[11px] text-white/60">最佳紀錄 {live.best} 關{live.ended && live.cleared > 0 && live.cleared >= live.best ? '・新紀錄！' : ''}</div>
+    </div>
+  );
+};
 
 export const GameOverScreen = (p: OverProps) => {
   const rows: [string, number, number][] = [
@@ -721,12 +827,14 @@ export const GameOverScreen = (p: OverProps) => {
               </div>
             </div>
             {p.challenge && <ChallengeVerdict challenge={p.challenge} score={p.score} />}
+            {p.live && <LiveBanner live={p.live} />}
+            {p.rank && <RankLine rank={p.rank} />}
             {p.result && <ShareActions result={p.result} />}
           </>
         )}
         <div className={`${p.result ? 'mt-2' : 'mt-5'} grid grid-cols-2 gap-2`}>
           <button type="button" onClick={p.onAgain} className="rounded-xl bg-emerald-400 py-3 font-bold text-emerald-950">
-            再來一場
+            {p.live?.kind === 'survival' ? (p.live.ended ? '再闖一次' : `下一關 ▶ 第 ${p.live.round + 1} 關`) : p.live?.kind === 'daily' && !p.live.done ? '再試一次' : '再來一場'}
           </button>
           <button type="button" onClick={p.onMenu} className="rounded-xl bg-white/10 py-3 font-bold text-white hover:bg-white/15">
             換模式／難度

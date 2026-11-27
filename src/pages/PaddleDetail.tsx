@@ -69,7 +69,7 @@ const PaddleDetailPage = () => {
   // 與 scripts/generate-static-pages.cjs 產生的靜態 <title>／description 保持一致，
   // 避免 hydration 後被資料庫總覽頁的通用標題蓋掉（45 支拍會共用同一個標題）。
   const fullName = `${paddle.brand} ${paddle.model}`;
-  const seoTitle = `${fullName} 規格與評測 | 厚度 ${paddle.thickness}、${paddle.face} | 匹克球拍資料庫`;
+  const seoTitle = `${fullName} 規格與評測｜匹克球拍資料庫`;
   const seoDesc = `${fullName}（${paddle.year}）完整規格：${paddle.shape}、核心 ${paddle.thickness} ${paddle.core}、拍面 ${paddle.face}、重量 ${paddle.weight}。拍型定位、力量控球旋轉容錯四項評比與台灣購買管道一次看。`;
 
   return (

@@ -253,10 +253,11 @@ const PickleballGame = () => {
       alive = false;
     };
   }, [screen]);
-  /** 成績送出後：清榜的快取、重讀自己的名次，進榜或升名次就在結算畫面慶祝 */
+  /** 成績送出後：清榜的快取；有拿到積分（贏球、達成挑戰、生存賽過關）才重讀名次，省請求 */
   const afterSubmit = useCallback((pts: number | null) => {
     if (pts === null) return;
     cloud.invalidateBoards();
+    if (pts <= 0) return;
     cloud
       .loadBoard('points', true)
       .then((d) => {

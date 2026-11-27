@@ -156,7 +156,8 @@ describe('小遊戲：球友卡與排行榜細節', () => {
     expect(me).toMatchObject({ nickname: '卡片王', wins: 2, plays: 3, proWins: 1, points: 5, longestRally: 23 });
     expect(typeof me.id).toBe('string');
     const card = await api(`/api/arcade/players/${me.id}`);
-    expect(card.json).toMatchObject({ nickname: '卡片王', wins: 2, plays: 3, proWins: 1, longestRally: 23 });
+    expect(card.json).toMatchObject({ id: me.id, rank: board.json.me.rank, nickname: '卡片王', wins: 2, plays: 3, proWins: 1, longestRally: 23 });
+    expect(board.json.me.id).toBe(me.id);
     expect(card.json.byDifficulty.pro).toEqual({ wins: 1, plays: 1 });
     expect(card.json.favVenue.value).toBe('xinyi');
     expect(card.json.favCharacter.value).toBe('p1');

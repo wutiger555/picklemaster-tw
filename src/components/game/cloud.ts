@@ -1,4 +1,4 @@
-import { type ArcadeResult, getArcadeProfile, getToken, postArcadeResult, putArcadeProfile } from '../../utils/playApi';
+import { type ArcadeBoard, type ArcadeLeaderboard, type ArcadeResult, getArcadeLeaderboard, getArcadeProfile, getToken, postArcadeResult, putArcadeProfile } from '../../utils/playApi';
 
 /**
  * 遊戲進度的雲端存檔（和揪團共用球友身分）。
@@ -186,6 +186,30 @@ async function flushQueue() {
 // ---------- 排行榜快取（5 分鐘，省請求） ----------
 
 export const boardCacheKey = (b: string) => `pm-game-board-${b}-${signedIn() ? 'me' : 'anon'}`;
+
+const CACHE_MS = 5 * 60_000;
+export const cachedBoard = (b: ArcadeBoard): ArcadeLeaderboard | null => {
+  try {
+    const raw = sessionStorage.getItem(boardCacheKey(b));
+    if (!raw) return null;
+    const v = JSON.parse(raw) as { at: number; data: ArcadeLeaderboard };
+    return Date.now() - v.at < CACHE_MS ? v.data : null;
+  } catch {
+    return null;
+  }
+};
+/** 讀一個榜（5 分鐘內用快取，省請求）；主選單的榜首、結算的名次也用這個 */
+export const loadBoard = async (b: ArcadeBoard, force = false): Promise<ArcadeLeaderboard> => {
+  const hit = force ? null : cachedBoard(b);
+  if (hit) return hit;
+  const d = await getArcadeLeaderboard(b);
+  try {
+    sessionStorage.setItem(boardCacheKey(b), JSON.stringify({ at: Date.now(), data: d }));
+  } catch {
+    /* 存不了 */
+  }
+  return d;
+};
 
 /** 剛打完一場：清掉排行榜快取，打開時看得到自己最新的名次 */
 export const invalidateBoards = () => {

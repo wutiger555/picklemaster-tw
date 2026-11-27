@@ -122,6 +122,23 @@ const VALUE: Record<Board, string> = {
   survival: `MAX(CASE WHEN r.mode = 'survival' THEN r.rallies ELSE 0 END)`,
 };
 
+/** 某位球友在某個榜的名次（沒成績回 null） */
+const rankOf = async (env: Env, b: Board, playerId: string) => {
+  const mine = await env.DB.prepare(`SELECT ${VALUE[b]} AS value FROM arcade_results r WHERE r.player_id = ?1`).bind(playerId).first<{ value: number | null }>();
+  const value = mine?.value ?? 0;
+  let rank: number | null = null;
+  if (value > 0) {
+    const above = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM (SELECT ${VALUE[b]} AS value FROM arcade_results r JOIN players p ON p.id = r.player_id
+          WHERE p.deleted_at IS NULL GROUP BY r.player_id HAVING value > ?1)`,
+    )
+      .bind(value)
+      .first<{ n: number }>();
+    rank = (above?.n ?? 0) + 1;
+  }
+  return { rank, value };
+};
+
 export async function leaderboard(env: Env, board: string, playerId: string | null, now: number) {
   if (!(BOARDS as readonly string[]).includes(board)) throw notFound('沒有這個排行榜');
   const b = board as Board;
@@ -135,22 +152,7 @@ export async function leaderboard(env: Env, board: string, playerId: string | nu
       LIMIT 50`,
   ).all<{ nickname: string; avatar_seed: number; player_id: string; value: number } & AggRow>();
   const rows = results.map((r, i) => ({ rank: i + 1, id: r.player_id, nickname: r.nickname, avatarSeed: r.avatar_seed, value: r.value, isMe: r.player_id === playerId, ...aggOut(r) }));
-  let me: { rank: number | null; value: number } | null = null;
-  if (playerId) {
-    const mine = await env.DB.prepare(`SELECT ${VALUE[b]} AS value FROM arcade_results r WHERE r.player_id = ?1`).bind(playerId).first<{ value: number | null }>();
-    const value = mine?.value ?? 0;
-    let rank: number | null = null;
-    if (value > 0) {
-      const above = await env.DB.prepare(
-        `SELECT COUNT(*) AS n FROM (SELECT ${VALUE[b]} AS value FROM arcade_results r JOIN players p ON p.id = r.player_id
-            WHERE p.deleted_at IS NULL GROUP BY r.player_id HAVING value > ?1)`,
-      )
-        .bind(value)
-        .first<{ n: number }>();
-      rank = (above?.n ?? 0) + 1;
-    }
-    me = { rank, value };
-  }
+  const me = playerId ? { id: playerId, ...(await rankOf(env, b, playerId)) } : null;
   // 歷史累計：since 是最早一筆成績的時間（畫面上寫「自 X 月起」）
   const first = await env.DB.prepare(`SELECT MIN(created_at) AS t FROM arcade_results`).first<{ t: number | null }>();
   void now;
@@ -218,8 +220,10 @@ export async function playerCard(env: Env, id: string) {
   )
     .bind(id)
     .all<{ mode: string; difficulty: string; venue: string; won: number; score_me: number; score_opp: number; rallies: number; created_at: number }>();
-  const [favVenue, favCharacter, favPaddle] = await Promise.all([favorite(env, id, 'venue'), favorite(env, id, 'character'), favorite(env, id, 'paddle')]);
+  const [favVenue, favCharacter, favPaddle, pts] = await Promise.all([favorite(env, id, 'venue'), favorite(env, id, 'character'), favorite(env, id, 'paddle'), rankOf(env, 'points', id)]);
   return {
+    id,
+    rank: pts.rank,
     nickname: p.nickname,
     avatarSeed: p.avatar_seed,
     joinedAt: p.created_at,

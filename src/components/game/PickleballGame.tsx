@@ -53,6 +53,8 @@ import { CoachTip, TutorialDone, TutorialPanel } from './TutorialOverlay';
 const TIPS_KEY = 'pm-game-tips';
 
 const RECORDS_KEY = 'pm-game-records';
+/** 上一次看到的歷史積分榜名次（結算時比對有沒有進步） */
+const RANK_KEY = 'pm-game-rank';
 const SETTINGS_KEY = 'pm-game-settings';
 const WELCOME_KEY = 'pm-game-welcome';
 
@@ -237,6 +239,36 @@ const PickleballGame = () => {
   const [boardOpen, setBoardOpen] = useState(false);
   const [accountName, setAccountName] = useState<string | null>(() => (cloud.signedIn() ? (getCachedMe()?.nickname ?? null) : null));
   const matchStart = useRef(0);
+  /** 主選單上的榜首與自己的名次；結算畫面的名次變化 */
+  const [glory, setGlory] = useState<{ champion: { nickname: string; value: number } | null; myRank: number | null } | null>(null);
+  const [rankInfo, setRankInfo] = useState<{ now: number; prev: number | null } | null>(null);
+  useEffect(() => {
+    if (screen !== 'menu') return;
+    let alive = true;
+    cloud
+      .loadBoard('points')
+      .then((d) => alive && setGlory({ champion: d.rows[0] ? { nickname: d.rows[0].nickname, value: d.rows[0].value } : null, myRank: d.me?.rank ?? null }))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [screen]);
+  /** 成績送出後：清榜的快取、重讀自己的名次，進榜或升名次就在結算畫面慶祝 */
+  const afterSubmit = useCallback((pts: number | null) => {
+    if (pts === null) return;
+    cloud.invalidateBoards();
+    cloud
+      .loadBoard('points', true)
+      .then((d) => {
+        const now = d.me?.rank ?? null;
+        if (!now) return;
+        const prev = load<number | null>(RANK_KEY, null);
+        save(RANK_KEY, now);
+        setRankInfo({ now, prev });
+        setGlory({ champion: d.rows[0] ? { nickname: d.rows[0].nickname, value: d.rows[0].value } : null, myRank: now });
+      })
+      .catch(() => {});
+  }, []);
   /** 雲端存檔合併回本機之後，重新讀進畫面 */
   const reloadSaved = useCallback(() => {
     setRecords(load<Records>(RECORDS_KEY, emptyRecords()));
@@ -477,7 +509,7 @@ const PickleballGame = () => {
           if (cleared > 0) {
             void cloud
               .submitResult({ mode: 'survival', difficulty: ev.round.difficulty, venue: ev.round.venue, doubles: false, specials: settings.specials, rallies: cleared, durationMs: Date.now() - survivalStart.current, ...detail(summary.longestRally) })
-              .then((pts) => pts !== null && cloud.invalidateBoards());
+              .then(afterSubmit);
           }
         }
         setLiveResult({ kind: 'survival', round: r, cleared, best: Math.max(readSurvivalBest(), cleared), ended: !summary.won });
@@ -500,7 +532,7 @@ const PickleballGame = () => {
                 ? { mode: 'daily', difficulty: d, venue: ev.challenge.venue, doubles: false, specials: settings.specials, rallies: Math.max(1, eng.dinkStreak), durationMs: summary.durationMs, ...detail(summary.longestRally) }
                 : { mode: 'daily', difficulty: d, venue: ev.challenge.venue, doubles: eng.doubles, specials: settings.specials, scoreMe: summary.score[0], scoreOpp: summary.score[1], durationMs: summary.durationMs, ...detail(summary.longestRally) },
             )
-            .then((pts) => pts !== null && cloud.invalidateBoards());
+            .then(afterSubmit);
           setLiveResult({ kind: 'daily', done: true, streak: p.streak, title: ev.challenge.title });
         } else setLiveResult({ kind: 'daily', done, streak: dailyStatus().streak, title: ev.challenge.title });
         setLiveTick((n) => n + 1);
@@ -537,7 +569,7 @@ const PickleballGame = () => {
           durationMs: Date.now() - matchStart.current,
           ...detail(summary.longestRally),
         })
-        .then((pts) => pts !== null && cloud.invalidateBoards());
+        .then(afterSubmit);
       setNewRecord(record);
       audio.ambience(false);
       const won = eng.mode === 'dink' ? record : eng.match.winner === 0;
@@ -545,7 +577,7 @@ const PickleballGame = () => {
       audio.say(won ? 'win' : 'lose', { priority: true, cooldown: 0, delay: 0.5 });
       setScreen('over');
     },
-    [records, settings.venue, settings.specials, settings.character, settings.paddle, audio, tour, liveVenue],
+    [records, settings.venue, settings.specials, settings.character, settings.paddle, audio, tour, liveVenue, afterSubmit],
   );
 
   /** 關卡中的得分彈出字 */
@@ -1005,6 +1037,7 @@ const PickleballGame = () => {
 
   /** 開打：一般比賽，或踢館之旅的某一關（關卡用自己的規則、對手和海邊場地） */
   const start = (s: Settings = settings, level: LevelId | null = null, liveStart: LiveStart | null = null) => {
+    setRankInfo(null);
     matchStart.current = Date.now();
     live.current = liveStart;
     setLiveResult(null);
@@ -1481,6 +1514,7 @@ const PickleballGame = () => {
             onTutorial={startTutorial}
             tutorialDone={doneBefore}
             onBoard={() => setBoardOpen(true)}
+            glory={glory}
             onAccount={() => setAccountOpen(true)}
             accountName={accountName}
             daily={{ challenge: dailyChallenge(), ...dailyStatus(), tick: liveTick }}
@@ -1637,6 +1671,7 @@ const PickleballGame = () => {
             }
             challenge={engine.mode === 'match' && challenge?.difficulty === settings.difficulty && !live.current ? challenge : null}
             live={liveResult}
+            rank={rankInfo}
             onAgain={() => {
               const lv = live.current;
               if (lv?.kind === 'survival') {

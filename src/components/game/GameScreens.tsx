@@ -141,8 +141,10 @@ interface MenuProps {
   onNext: () => void;
   /** 快速開打：沿用上次的選手、球拍、場地直接比賽 */
   onQuick: () => void;
-  /** 每週排行榜、球友身分（雲端存檔） */
+  /** 歷史排行榜、球友身分（雲端存檔） */
   onBoard: () => void;
+  /** 榜首與自己的名次（讀過排行榜才有） */
+  glory: { champion: { nickname: string; value: number } | null; myRank: number | null } | null;
   onAccount: () => void;
   /** 已有球友身分時顯示暱稱 */
   accountName: string | null;
@@ -158,7 +160,7 @@ interface MenuProps {
   tutorialDone: boolean;
 }
 
-export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onQuick, onBoard, onAccount, accountName, onTutorial, tutorialDone, daily, rule, survivalBest, onDaily, onRule, onSurvival }: MenuProps) => {
+export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChange, onNext, onQuick, onBoard, glory, onAccount, accountName, onTutorial, tutorialDone, daily, rule, survivalBest, onDaily, onRule, onSurvival }: MenuProps) => {
   // 標題畫面只放「選一個玩法就開打」；對手、場地、操作這些細項收進設定面板（像多數獨立遊戲的標題選單）
   const [sheet, setSheet] = useState(false);
   const [news, setNews] = useState(false);
@@ -395,9 +397,14 @@ export const MenuScreen = ({ settings, records, touch, tourStars, onTour, onChan
             <button
               type="button"
               onClick={onBoard}
-              className="flex items-center gap-1.5 rounded-full bg-amber-300 px-3.5 py-2 text-xs font-black text-amber-950 shadow-lg shadow-amber-500/20"
+              className="flex max-w-[15rem] items-center gap-1.5 rounded-full bg-amber-300 px-3.5 py-2 text-xs font-black text-amber-950 shadow-lg shadow-amber-500/20"
             >
-              🏆 排行榜
+              <span>🏆 排行榜</span>
+              {glory?.myRank ? (
+                <span className="truncate rounded-full bg-amber-950/15 px-1.5 py-px text-[10px] font-black">你第 {glory.myRank} 名</span>
+              ) : glory?.champion ? (
+                <span className="truncate rounded-full bg-amber-950/15 px-1.5 py-px text-[10px] font-bold">👑 {glory.champion.nickname}</span>
+              ) : null}
             </button>
             <button
               type="button"
@@ -719,7 +726,32 @@ interface OverProps {
   onMenu: () => void;
   /** 活動模式的結果（每日挑戰、規則賽、生存賽） */
   live?: LiveResult | null;
+  /** 這場送出後在歷史積分榜的名次，與上一次的名次（進榜、升名次時慶祝） */
+  rank?: { now: number; prev: number | null } | null;
 }
+
+/** 結算畫面的名次：第一次進榜、名次上升時放大慶祝，沒變就一行小字 */
+const RankLine = ({ rank }: { rank: NonNullable<OverProps['rank']> }) => {
+  const up = rank.prev === null ? null : rank.prev - rank.now;
+  const big = rank.prev === null || (up !== null && up > 0);
+  const medal = rank.now <= 3 ? ['🥇', '🥈', '🥉'][rank.now - 1] : '🏆';
+  return (
+    <motion.div
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 18 }}
+      className={`mt-4 rounded-2xl px-4 py-3 ${big ? 'bg-gradient-to-r from-amber-300/25 via-orange-400/15 to-amber-300/25 ring-1 ring-amber-300/60' : 'bg-white/5 ring-1 ring-white/10'}`}
+    >
+      <div className="text-xs font-bold tracking-wider text-amber-300">歷史積分榜</div>
+      <div className={`mt-0.5 font-black text-white ${big ? 'text-2xl' : 'text-base'}`}>
+        {medal} 第 {rank.now} 名
+        {rank.prev === null && <span className="ml-2 text-base text-amber-200">進榜了！</span>}
+        {up !== null && up > 0 && <span className="ml-2 text-base text-emerald-300">↑ {up}</span>}
+        {up !== null && up < 0 && <span className="ml-2 text-xs text-white/50">↓ {-up}</span>}
+      </div>
+    </motion.div>
+  );
+};
 
 /** 結算畫面上方的活動結果：達成／連續天數、本週規則、生存賽關數 */
 const LiveBanner = ({ live }: { live: LiveResult }) => {
@@ -796,6 +828,7 @@ export const GameOverScreen = (p: OverProps) => {
             </div>
             {p.challenge && <ChallengeVerdict challenge={p.challenge} score={p.score} />}
             {p.live && <LiveBanner live={p.live} />}
+            {p.rank && <RankLine rank={p.rank} />}
             {p.result && <ShareActions result={p.result} />}
           </>
         )}

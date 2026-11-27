@@ -366,7 +366,7 @@ export interface ArcadeLeaderboard {
   /** 最早一筆成績的時間（榜是歷史累計） */
   since: number | null;
   rows: ArcadeBoardRow[];
-  me: { rank: number | null; value: number } | null;
+  me: { id: string; rank: number | null; value: number } | null;
 }
 
 export const getArcadeProfile = () => request<{ data: Record<string, unknown> | null; updatedAt: number | null }>('/api/arcade/profile');
@@ -374,6 +374,9 @@ export const putArcadeProfile = (data: Record<string, unknown>) => request<{ upd
 export const postArcadeResult = (r: ArcadeResult) => request<{ points: number; week: number }>('/api/arcade/results', { body: r });
 
 export interface ArcadePlayerCard extends ArcadeStats {
+  id: string;
+  /** 歷史積分榜名次（沒積分是 null） */
+  rank: number | null;
   nickname: string;
   avatarSeed: number;
   joinedAt: number;

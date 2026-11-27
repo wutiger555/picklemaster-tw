@@ -11,42 +11,14 @@ import {
   challengeHeadline,
   challengeUrl,
   compareToChallenge,
+  copyText,
+  download,
   drawShareCard,
   type MatchResult,
   shareText,
   tourUrl,
 } from './share';
 
-/** 複製文字：先用 Clipboard API，不行（舊版 in-app 瀏覽器）再退回 execCommand */
-const copyText = async (text: string) => {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    try {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      const ok = document.execCommand('copy');
-      ta.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-};
-
-const download = (url: string) => {
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'pickle-master-result.png';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-};
 
 /* ───────────────────────── 朋友點挑戰連結進來看到的卡片 ───────────────────────── */
 

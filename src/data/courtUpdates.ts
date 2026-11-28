@@ -29,6 +29,13 @@ export const COURT_UPDATE_KIND_LABEL: Record<CourtUpdateKind, string> = {
 // 新的在前
 export const COURT_UPDATES: CourtUpdate[] = [
   {
+    date: '2026-11-28',
+    kind: 'added',
+    title: '桃園再收 3 座公有場館：中壢、平鎮國民運動中心與龍潭體育園區',
+    detail: '三座都以教育部體育署「全國運動場館資訊網」(iPlay) 的官方設施清單為憑——清單明列「匹克球場」才收。這是當初刪掉臺北市網球中心所用的同一個判準。場館官網首頁都沒提到匹克球（綜合球場常只列主力項目），面數與收費也未公開，頁面顯示「面數未公告」並附電話。同批查證的大里國民暨兒童運動中心，官方清單裡沒有匹克球場，因此沒有收。',
+    courtIds: [240, 241, 242],
+  },
+  {
     date: '2026-11-23',
     kind: 'added',
     title: '新增 18 座：高雄 4、台北 3、新北 4、台中 2，以及桃園、新竹縣、彰化、雲林、宜蘭',

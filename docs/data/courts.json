@@ -8948,6 +8948,120 @@
       "is_new": true,
       "added_date": "2026-11",
       "last_updated": "2026-11-23"
+    },
+    {
+      "id": 240,
+      "name": "桃園市中壢國民運動中心",
+      "location": {
+        "address": "桃園市中壢區三光路350號",
+        "lat": 24.9642409,
+        "lng": 121.2155697,
+        "city": "桃園市",
+        "district": "中壢區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "依運動中心公告",
+      "contact": "03-4951930",
+      "contact_details": {
+        "phone": "03-4951930",
+        "website": "https://zlcsc.cyc.org.tw/"
+      },
+      "facilities": [
+        "室內",
+        "綜合球場",
+        "游泳池",
+        "健身房",
+        "停車場"
+      ],
+      "features": [
+        "iPlay 官方設施清單列有匹克球場",
+        "面數未對外公告"
+      ],
+      "website": "https://zlcsc.cyc.org.tw/",
+      "reviews": "依教育部體育署「全國運動場館資訊網」(iPlay) 的官方設施清單，本場館列有「匹克球場」。場館官網首頁未提及匹克球（綜合球場類場地常只列主力項目），面數、開放時段與收費均未公開，本站不以推測數字填補，前往前請先去電確認。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-28"
+    },
+    {
+      "id": 241,
+      "name": "桃園市平鎮國民運動中心",
+      "location": {
+        "address": "桃園市平鎮區中庸路18號",
+        "lat": 24.9138933,
+        "lng": 121.2092936,
+        "city": "桃園市",
+        "district": "平鎮區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "依運動中心公告",
+      "contact": "03-4396175",
+      "contact_details": {
+        "phone": "03-4396175",
+        "website": "http://pzsc.chanchao.com.tw/"
+      },
+      "facilities": [
+        "室內",
+        "綜合球場",
+        "游泳池",
+        "健身房",
+        "停車場"
+      ],
+      "features": [
+        "iPlay 官方設施清單列有匹克球場",
+        "面數未對外公告"
+      ],
+      "website": "http://pzsc.chanchao.com.tw/",
+      "reviews": "依教育部體育署「全國運動場館資訊網」(iPlay) 的官方設施清單，本場館列有「匹克球場」。場館官網首頁未提及匹克球（綜合球場類場地常只列主力項目），面數、開放時段與收費均未公開，本站不以推測數字填補，前往前請先去電確認。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-28"
+    },
+    {
+      "id": 242,
+      "name": "桃園市龍潭體育園區",
+      "location": {
+        "address": "桃園市龍潭區双連街582巷131號",
+        "lat": 24.8557263,
+        "lng": 121.2314701,
+        "city": "桃園市",
+        "district": "龍潭區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "依園區公告",
+      "contact": "03-3194510",
+      "contact_details": {
+        "phone": "03-3194510"
+      },
+      "facilities": [
+        "室內",
+        "羽球場",
+        "健身房",
+        "韻律教室"
+      ],
+      "features": [
+        "iPlay 官方設施清單列有匹克球場",
+        "面數未對外公告"
+      ],
+      "reviews": "依教育部體育署「全國運動場館資訊網」(iPlay) 的官方設施清單，本場館列有「匹克球場」。場館官網首頁未提及匹克球（綜合球場類場地常只列主力項目），面數、開放時段與收費均未公開，本站不以推測數字填補，前往前請先去電確認。 另注意園區官網的場地介紹亦未列匹克球，兩邊說法不一致。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-28"
     }
   ]
 }

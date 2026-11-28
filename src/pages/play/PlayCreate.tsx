@@ -9,6 +9,7 @@ import { getFixedSessions } from '../../utils/fixedSessions';
 import { distanceKm } from '../../utils/geo';
 import { useGeolocation } from '../../hooks/useGeolocation';
 import type { Court } from '../../types';
+import { isCourtsCountUnknown, COURTS_COUNT_UNKNOWN } from '../../utils/courtsCount';
 
 const TIMES: [string, string][] = [['06:30', '晨打'], ['08:00', '早上'], ['10:00', ''], ['14:00', '午後'], ['16:00', ''], ['18:30', '下班'], ['19:00', ''], ['20:00', '夜打']];
 const TYPE = { indoor: '室內', outdoor: '戶外', covered: '風雨' } as const;
@@ -234,7 +235,7 @@ export default function PlayCreate() {
               {list.map(({ c, km }) => (
                 <button key={c.id} type="button" onClick={() => pick(c)} aria-pressed={court?.id === c.id}
                   className={`flex items-center gap-3 rounded-2xl border-2 bg-white p-3 text-left shadow-sm ${court?.id === c.id ? 'border-teal-500' : 'border-transparent'}`}>
-                  <span className={`grid h-11 w-11 flex-none place-items-center rounded-xl text-sm font-black text-white ${c.type === 'indoor' ? 'bg-emerald-500' : c.type === 'covered' ? 'bg-violet-500' : 'bg-[#2f6fd6]'}`}>{c.courts_count}面</span>
+                  <span className={`grid h-11 w-11 flex-none place-items-center rounded-xl text-sm font-black text-white ${c.type === 'indoor' ? 'bg-emerald-500' : c.type === 'covered' ? 'bg-violet-500' : 'bg-[#2f6fd6]'}`} title={isCourtsCountUnknown(c.courts_count) ? COURTS_COUNT_UNKNOWN : undefined}>{isCourtsCountUnknown(c.courts_count) ? '?' : `${c.courts_count}面`}</span>
                   <span className="min-w-0 flex-1">
                     <b className="block truncate text-sm text-neutral-900">{c.name}</b>
                     <small className="text-xs text-neutral-500">{c.location.city}{c.location.district ?? ''} · {TYPE[c.type]} · {c.fee === 'free' ? '免費' : '收費'}{needsNet(c.net_type) ? ' · 要帶網' : ''}{fixedIds.has(c.id) ? ' · 有固定球敘' : ''}</small>
@@ -295,7 +296,7 @@ export default function PlayCreate() {
           <section>
             <h2 className="text-xl font-black text-neutral-900">幾面場、幾個人？</h2>
             <p className="mb-4 mt-1 text-[13px] text-neutral-500">人數上限預設「面數 × 4 ＋ 2」，多出來的人在休息區輪替。額滿後自動轉候補。</p>
-            <Stepper label="訂了幾面場" sub={`這座球場共 ${court.courts_count} 面`} value={courtsBooked} min={1} max={Math.max(1, Math.min(court.courts_count, 12))}
+            <Stepper label="訂了幾面場" sub={isCourtsCountUnknown(court.courts_count) ? '這座球場未公告面數，請依現場實際訂場數填寫' : `這座球場共 ${court.courts_count} 面`} value={courtsBooked} min={1} max={isCourtsCountUnknown(court.courts_count) ? 12 : Math.max(1, Math.min(court.courts_count, 12))}
               onChange={(v) => { setCourtsBooked(v); setCapacity(v * 4 + 2); }} />
             <Stepper label="人數上限" sub="包含你自己" value={capacity} min={2} max={courtsBooked * 8} onChange={setCapacity} />
             <p className="mb-2 mt-5 text-xs font-bold text-neutral-500">賽制</p>

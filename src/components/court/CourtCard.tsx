@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import type { Court } from '../../types';
 import { courtSlug } from '../../utils/slugify';
 import { is24h } from '../../utils/courtAttributes';
+import { formatCourts } from '../../utils/courtsCount';
 
 const TYPE_STYLE: Record<string, { label: string; icon: string; chip: string; bar: string }> = {
   indoor: { label: '室內', icon: '🏠', chip: 'bg-emerald-50 text-emerald-700 border-emerald-100', bar: 'from-emerald-400 to-teal-500' },
@@ -59,7 +60,7 @@ const CourtCard = ({ court, index = 0, subline }: CourtCardProps) => {
             {court.fee === 'free' ? '免費' : '付費'}
           </span>
           <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-50 text-neutral-600 border border-neutral-200">
-            {court.courts_count} 面
+            {formatCourts(court.courts_count)}
           </span>
           {is24h(court.opening_hours) && (
             <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-violet-50 text-violet-700 border border-violet-100">24H</span>

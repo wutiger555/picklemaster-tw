@@ -1920,14 +1920,15 @@
       ],
       "is_new": false,
       "added_date": "2026-01",
-      "last_updated": "2026-09-19",
+      "last_updated": "2026-11-05",
       "reviews": "台南專用匹克球場，會員制經營",
       "iplay": {
         "verified": "2026-09-02",
         "note": "座標依 OpenStreetMap「哈赫拿爾森林」與 iPlay 永華體育園區（體育路）交叉定位，兩者相距約 400 公尺；園區型場地實際球場位置可能略有差異"
       },
       "features": [
-        "球敘時段：平日 07:00~09:00、17:00~22:00／假日 07:00~11:00、17:00~22:00（陳俊欽 0937-562-012）"
+        "球敘時段：平日 07:00~09:00、17:00~22:00／假日 07:00~11:00、17:00~22:00（陳俊欽 0937-562-012）",
+        "Google 地圖另有「竹溪匹克球場」的標示，與本場同址（南區體育路 90 號），是同一座球場的別名"
       ]
     },
     {
@@ -3095,14 +3096,14 @@
       ],
       "is_new": false,
       "added_date": "2026-07",
-      "last_updated": "2026-09-11",
+      "last_updated": "2026-11-05",
       "reviews": "2025 年封館整修後於 2026 年 1 月試營運重啟，正式支援匹克球",
       "iplay": {
         "venue": "淡水國民運動中心",
         "authority": "新北市政府體育局",
         "operator": "桑斯伯國際",
         "tel": "02-26261891",
-        "website": "http://tssc.tw",
+        "website": "https://wstssc.com.tw/",
         "park": "一般及無障礙停車場",
         "verified": "2026-09-02",
         "open_condition": "付費對外開放使用",
@@ -8288,6 +8289,103 @@
       "last_updated": "2026-11-05"
     },
     {
+      "id": 219,
+      "name": "匹克立 PickleRi",
+      "location": {
+        "address": "新北市泰山區中港南路172-7號",
+        "lat": 25.0601998,
+        "lng": 121.4427313,
+        "city": "新北市",
+        "district": "泰山區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "24 小時營業（Google 地圖標示）",
+      "contact": "0911-729-728",
+      "contact_details": {
+        "phone": "0911-729-728"
+      },
+      "facilities": [
+        "室內",
+        "24 小時"
+      ],
+      "features": [
+        "24 小時營業",
+        "面數未對外公告"
+      ],
+      "reviews": "泰山中港南路的室內球館，Google 地圖標示 24 小時營業並列有聯絡電話。面數、收費與預約方式查不到公開資料——官網、社群與各家場地目錄皆無——需去電確認，本站不以推測數字填補。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-05"
+    },
+    {
+      "id": 220,
+      "name": "VAMOS! Pickleball Club",
+      "location": {
+        "address": "台南市仁德區中正路一段585號",
+        "lat": 22.9397379,
+        "lng": 120.2481982,
+        "city": "台南市",
+        "district": "仁德區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告（Google 地圖提供線上預訂）",
+      "courts_count": 0,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "24 小時營業（Google 地圖標示）",
+      "contact": "無公開電話，Google 地圖提供線上預訂",
+      "facilities": [
+        "室內",
+        "24 小時"
+      ],
+      "features": [
+        "24 小時營業",
+        "面數未對外公告"
+      ],
+      "reviews": "仁德中正路一段的球館，本站在仁德區收錄的第一座。Google 地圖標示 24 小時營業並提供線上預訂，這是台灣無人自助球館的常見型態，室內與收費是依此判讀，尚未取得官方說明。面數未公開，本站不以推測數字填補。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-05"
+    },
+    {
+      "id": 221,
+      "name": "匹咖揪 Pickle Chill 匹克球工作室",
+      "location": {
+        "address": "台南市中西區樹林街二段149號1樓",
+        "lat": 22.9860974,
+        "lng": 120.2023622,
+        "city": "台南市",
+        "district": "中西區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "permanent",
+      "ownership": "private",
+      "opening_hours": "未公告，請去電確認",
+      "contact": "0912-766-551",
+      "contact_details": {
+        "phone": "0912-766-551"
+      },
+      "facilities": [
+        "室內"
+      ],
+      "features": [
+        "面數未對外公告"
+      ],
+      "reviews": "台南中西區的小型室內匹克球工作室，位於樹林街二段一樓。Google 地圖列有聯絡電話但未公開營業時間與面數，需去電確認。與台中勤美誠品的 PiCKLE & CHiLL 是不同場館，請勿混淆。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-05"
+    },
+    {
       "id": 222,
       "name": "Pickle Space 匹克空間",
       "location": {
@@ -8850,6 +8948,120 @@
       "is_new": true,
       "added_date": "2026-11",
       "last_updated": "2026-11-23"
+    },
+    {
+      "id": 240,
+      "name": "桃園市中壢國民運動中心",
+      "location": {
+        "address": "桃園市中壢區三光路350號",
+        "lat": 24.9642409,
+        "lng": 121.2155697,
+        "city": "桃園市",
+        "district": "中壢區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "依運動中心公告",
+      "contact": "03-4951930",
+      "contact_details": {
+        "phone": "03-4951930",
+        "website": "https://zlcsc.cyc.org.tw/"
+      },
+      "facilities": [
+        "室內",
+        "綜合球場",
+        "游泳池",
+        "健身房",
+        "停車場"
+      ],
+      "features": [
+        "iPlay 官方設施清單列有匹克球場",
+        "面數未對外公告"
+      ],
+      "website": "https://zlcsc.cyc.org.tw/",
+      "reviews": "依教育部體育署「全國運動場館資訊網」(iPlay) 的官方設施清單，本場館列有「匹克球場」。場館官網首頁未提及匹克球（綜合球場類場地常只列主力項目），面數、開放時段與收費均未公開，本站不以推測數字填補，前往前請先去電確認。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-28"
+    },
+    {
+      "id": 241,
+      "name": "桃園市平鎮國民運動中心",
+      "location": {
+        "address": "桃園市平鎮區中庸路18號",
+        "lat": 24.9138933,
+        "lng": 121.2092936,
+        "city": "桃園市",
+        "district": "平鎮區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "依運動中心公告",
+      "contact": "03-4396175",
+      "contact_details": {
+        "phone": "03-4396175",
+        "website": "http://pzsc.chanchao.com.tw/"
+      },
+      "facilities": [
+        "室內",
+        "綜合球場",
+        "游泳池",
+        "健身房",
+        "停車場"
+      ],
+      "features": [
+        "iPlay 官方設施清單列有匹克球場",
+        "面數未對外公告"
+      ],
+      "website": "http://pzsc.chanchao.com.tw/",
+      "reviews": "依教育部體育署「全國運動場館資訊網」(iPlay) 的官方設施清單，本場館列有「匹克球場」。場館官網首頁未提及匹克球（綜合球場類場地常只列主力項目），面數、開放時段與收費均未公開，本站不以推測數字填補，前往前請先去電確認。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-28"
+    },
+    {
+      "id": 242,
+      "name": "桃園市龍潭體育園區",
+      "location": {
+        "address": "桃園市龍潭區双連街582巷131號",
+        "lat": 24.8557263,
+        "lng": 121.2314701,
+        "city": "桃園市",
+        "district": "龍潭區"
+      },
+      "type": "indoor",
+      "fee": "paid",
+      "price": "依場館公告，請去電確認",
+      "courts_count": 0,
+      "net_type": "provided",
+      "ownership": "public",
+      "opening_hours": "依園區公告",
+      "contact": "03-3194510",
+      "contact_details": {
+        "phone": "03-3194510"
+      },
+      "facilities": [
+        "室內",
+        "羽球場",
+        "健身房",
+        "韻律教室"
+      ],
+      "features": [
+        "iPlay 官方設施清單列有匹克球場",
+        "面數未對外公告"
+      ],
+      "reviews": "依教育部體育署「全國運動場館資訊網」(iPlay) 的官方設施清單，本場館列有「匹克球場」。場館官網首頁未提及匹克球（綜合球場類場地常只列主力項目），面數、開放時段與收費均未公開，本站不以推測數字填補，前往前請先去電確認。 另注意園區官網的場地介紹亦未列匹克球，兩邊說法不一致。",
+      "is_new": true,
+      "added_date": "2026-11",
+      "last_updated": "2026-11-28"
     }
   ]
 }

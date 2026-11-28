@@ -9,6 +9,7 @@ import { distanceKm, formatDistance } from '../../utils/geo';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import { formatCourts } from '../../utils/courtsCount';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -396,7 +397,7 @@ const CourtMap = ({
         : null;
 
       marker.bindTooltip(
-        `${court.name} · ${court.courts_count} 面${distance !== null ? ` · ${formatDistance(distance)}` : ''}`,
+        `${court.name} · ${formatCourts(court.courts_count)}${distance !== null ? ` · ${formatDistance(distance)}` : ''}`,
         { direction: 'top', offset: [0, -10], opacity: 0.95 }
       );
 
@@ -436,7 +437,7 @@ const CourtMap = ({
               </div>
               <div>
                 <span style="color: #9CA3AF; font-size: 11px;">球場數</span>
-                <p style="margin: 2px 0 0 0; font-weight: 600; color: #374151;">${court.courts_count} 面</p>
+                <p style="margin: 2px 0 0 0; font-weight: 600; color: #374151;">${formatCourts(court.courts_count)}</p>
               </div>
               <div>
                 <span style="color: #9CA3AF; font-size: 11px;">收費</span>

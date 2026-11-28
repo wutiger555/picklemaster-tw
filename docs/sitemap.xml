@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     <url>
         <loc>https://picklemastertw.com/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-28</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-28</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
@@ -572,6 +572,56 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://picklemastertw.com/paddles/selkirk-boomstik-st-elongated/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/joola-perseus-power-fx-16mm/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/gearbox-pressure-x-8e/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/bread-butter-loco-2/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/rpm-jade-16mm/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/elevensix24-jelly-bean-2/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/vatic-pro-v-sol-tour/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/onix-theory-16mm/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/diadem-edge-flex-pro-16/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/paddles/luzz-cannon-xpp-m1/</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://picklemastertw.com/articles/beginner-first-paddle-2026/</loc>
         <lastmod>2026-09-02</lastmod>
         <changefreq>monthly</changefreq>
@@ -597,7 +647,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/articles/2026-best-pickleball-paddles/</loc>
-        <lastmod>2026-04-25</lastmod>
+        <lastmod>2026-10-21</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -656,8 +706,86 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://picklemastertw.com/news/tw-202611-aepl-station7/</loc>
+        <lastmod>2026-11-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-lujiang-solar-court/</loc>
+        <lastmod>2026-11-21</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-nantou-indigenous-cup/</loc>
+        <lastmod>2026-11-21</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-aepl-station6/</loc>
+        <lastmod>2026-11-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-ncyu-courts/</loc>
+        <lastmod>2026-11-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-shinkong-cup-result/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-tainan-changjung-cup/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-kaohsiung-wheelchair-pickleball/</loc>
+        <lastmod>2026-11-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-taichung-renhua-park/</loc>
+        <lastmod>2026-11-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-hsinchu-mayor-cup-wukong/</loc>
+        <lastmod>2026-11-08</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202611-chiayi-west-sports-center/</loc>
+        <lastmod>2026-11-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
         <loc>https://picklemastertw.com/news/tw-202611-aepl-station5/</loc>
         <lastmod>2026-11-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202610-tainan-yongkang-solar-courts/</loc>
+        <lastmod>2026-10-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202610-miaoli-courts-plan/</loc>
+        <lastmod>2026-10-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -676,6 +804,18 @@
     <url>
         <loc>https://picklemastertw.com/news/tw-202610-tmlp-linkou/</loc>
         <lastmod>2026-10-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202610-mailiao-park-courts/</loc>
+        <lastmod>2026-10-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/news/tw-202610-taipei-court-expansion/</loc>
+        <lastmod>2026-10-16</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -933,13 +1073,13 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/taipei/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/new-taipei/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -951,13 +1091,13 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/taoyuan/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-28</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/hsinchu/</loc>
-        <lastmod>2026-10-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -969,13 +1109,13 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/taichung/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/changhua/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -987,19 +1127,19 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/yunlin/</loc>
-        <lastmod>2026-10-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/chiayi/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/chiayi-county/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -1011,7 +1151,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/kaohsiung/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -1023,7 +1163,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/yilan/</loc>
-        <lastmod>2026-09-02</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -1035,31 +1175,31 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/free/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/indoor/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-28</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/outdoor/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/24h/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/updates/</loc>
-        <lastmod>2026-11-05</lastmod>
+        <lastmod>2026-11-28</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.85</priority>
     </url>
@@ -1311,7 +1451,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-41/</loc>
-        <lastmod>2026-09-19</lastmod>
+        <lastmod>2026-11-05</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -1479,7 +1619,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-74/</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-11-05</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -1587,7 +1727,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-92/</loc>
-        <lastmod>2026-09-02</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -1611,7 +1751,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-96/</loc>
-        <lastmod>2026-09-02</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -1743,7 +1883,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-119/</loc>
-        <lastmod>2026-07-14</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -1755,7 +1895,7 @@
     </url>
     <url>
         <loc>https://picklemastertw.com/courts/court-121/</loc>
-        <lastmod>2026-07-14</lastmod>
+        <lastmod>2026-11-23</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -2338,6 +2478,150 @@
     <url>
         <loc>https://picklemastertw.com/courts/court-218/</loc>
         <lastmod>2026-11-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-219/</loc>
+        <lastmod>2026-11-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-220/</loc>
+        <lastmod>2026-11-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-221/</loc>
+        <lastmod>2026-11-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-222/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-223/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-224/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-225/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-226/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-227/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-228/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-229/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-230/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-231/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-232/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-233/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-234/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-235/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-236/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-237/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-238/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-239/</loc>
+        <lastmod>2026-11-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-240/</loc>
+        <lastmod>2026-11-28</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-241/</loc>
+        <lastmod>2026-11-28</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://picklemastertw.com/courts/court-242/</loc>
+        <lastmod>2026-11-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>

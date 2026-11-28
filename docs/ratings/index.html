@@ -20,6 +20,11 @@
   <!-- Theme Color -->
   <meta name="theme-color" content="#10b981" />
 
+  <!-- Google AdSense（帳號驗證 + 廣告腳本） -->
+  <meta name="google-adsense-account" content="ca-pub-1245763004722958">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1245763004722958"
+    crossorigin="anonymous"></script>
+
   <!-- SEO Meta Tags (2026 Revision) -->
   <meta name="description" content="2026 起 DUPR 成為全球匹克球賽事標準。1.0-8.0 評級意義、技術對照、典型球員、如何取得評分。台灣選手完整指南。" />
   <meta name="keywords" content="DUPR,DUPR評級,匹克球評分,匹克球等級,Dynamic Universal Pickleball Rating,匹克球 DUPR 台灣,pickleball rating" />
@@ -41,10 +46,10 @@
   <meta property="og:url" content="https://picklemastertw.com/ratings/" />
   <meta property="og:title" content="DUPR 評級指南 2026 | 全球通用匹克球動態評分系統完整解析" />
   <meta property="og:description" content="2026 起 DUPR 成為全球匹克球賽事標準。1.0-8.0 評級意義、技術對照、典型球員、如何取得評分。台灣選手完整指南。" />
-  <meta property="og:image" content="https://picklemastertw.com/og-image.png" />
+  <meta property="og:image" content="https://picklemastertw.com/og/page-ratings.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Picklemaster Taiwan - 台灣匹克球權威平台" />
+  <meta property="og:image:alt" content="DUPR 匹克球評級完整說明" />
   <meta property="og:locale" content="zh_TW" />
   <meta property="og:locale:alternate" content="en_US" />
   <meta property="og:site_name" content="Picklemaster Taiwan" />
@@ -54,7 +59,7 @@
   <meta name="twitter:url" content="https://picklemastertw.com/ratings/" />
   <meta name="twitter:title" content="DUPR 評級指南 2026 | 全球通用匹克球動態評分系統完整解析" />
   <meta name="twitter:description" content="2026 起 DUPR 成為全球匹克球賽事標準。1.0-8.0 評級意義、技術對照、典型球員、如何取得評分。台灣選手完整指南。" />
-  <meta name="twitter:image" content="https://picklemastertw.com/og-image.png" />
+  <meta name="twitter:image" content="https://picklemastertw.com/og/page-ratings.png" />
   <meta name="twitter:image:alt" content="Picklemaster Taiwan" />
 
   <!-- Canonical URL -->
@@ -92,14 +97,14 @@
   </noscript>
 
   <title>DUPR 評級指南 2026 | 全球通用匹克球動態評分系統完整解析</title>
-  <script type="module" crossorigin src="/assets/index-DMlwp5yP.js"></script>
+  <script type="module" crossorigin src="/assets/index-BE3Re4Ol.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-BWu-_AVp.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-BS1nVvjk.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-QiFbFOfb.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-CFutg3IW.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-Oou_fHkk.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-core-CfaIVu1o.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-fiber-BTrURcCn.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-three-drei-Dd22CFIS.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-framer-BKmw5esz.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-lenis-BbENNM21.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-CyqwVxxW.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-TmDaJEWE.css">
 </head>
 
 <body>
@@ -155,26 +160,6 @@
     }
   </script>
 
-  <!-- Lazy Load Google AdSense -->
-  <script>
-    const loadAdSense = () => {
-      const script = document.createElement('script');
-      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7062108661079564";
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      document.head.appendChild(script);
-
-      // Remove event listeners after loading the script
-      ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-        window.removeEventListener(event, loadAdSense, { once: true })
-      );
-    };
-
-    // Add event listeners to trigger AdSense loading on user interaction
-    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event =>
-      window.addEventListener(event, loadAdSense, { once: true, passive: true })
-    );
-  </script>
 </body>
 
 </html>
